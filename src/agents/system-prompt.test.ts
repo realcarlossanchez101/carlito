@@ -225,8 +225,8 @@ describe("buildAgentSystemPrompt", () => {
       workspaceDir: "/tmp/openclaw",
     });
 
-    expect(prompt).toContain("## OpenClaw CLI Quick Reference");
-    expect(prompt).toContain("openclaw gateway restart");
+    expect(prompt).toContain("## Carlito CLI Quick Reference");
+    expect(prompt).toContain("carlito gateway restart");
     expect(prompt).toContain("Do not invent commands");
   });
 
@@ -261,9 +261,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("## Control UI Embed");
     expect(prompt).toContain("Use `[embed ...]` only in Control UI/webchat sessions");
     expect(prompt).toContain('[embed ref="cv_123" title="Status" height="320" /]');
-    expect(prompt).toContain(
-      '[embed url="/__openclaw__/canvas/documents/cv_123/index.html" title="Status" height="320" /]',
-    );
+    expect(prompt).toContain('Always use `ref="cv_..."` for hosted documents.');
     expect(prompt).toContain(
       "Never use local filesystem paths or `file://...` URLs in `[embed ...]`.",
     );
@@ -346,7 +344,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).not.toContain('runtime="acp" requires `agentId`');
     expect(prompt).not.toContain("not ACP harness ids");
     expect(prompt).toContain("- sessions_spawn: Spawn an isolated sub-agent session");
-    expect(prompt).toContain("- agents_list: List OpenClaw agent ids allowed for sessions_spawn");
+    expect(prompt).toContain("- agents_list: List Carlito agent ids allowed for sessions_spawn");
   });
 
   it("omits ACP harness spawn guidance for sandboxed sessions and shows ACP block note", () => {
@@ -385,9 +383,9 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain(
       "- If exactly one skill clearly applies: read its SKILL.md at <location> with `Read`, then follow it.",
     );
-    expect(prompt).toContain("OpenClaw docs: /tmp/openclaw/docs");
+    expect(prompt).toContain("Carlito docs: /tmp/openclaw/docs");
     expect(prompt).toContain(
-      "For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
+      "For Carlito behavior, commands, config, or architecture: consult local docs first.",
     );
   });
 
@@ -398,9 +396,9 @@ describe("buildAgentSystemPrompt", () => {
     });
 
     expect(prompt).toContain("## Documentation");
-    expect(prompt).toContain("OpenClaw docs: /tmp/openclaw/docs");
+    expect(prompt).toContain("Carlito docs: /tmp/openclaw/docs");
     expect(prompt).toContain(
-      "For OpenClaw behavior, commands, config, or architecture: consult local docs first.",
+      "For Carlito behavior, commands, config, or architecture: consult local docs first.",
     );
   });
 
@@ -530,7 +528,7 @@ describe("buildAgentSystemPrompt", () => {
       toolNames: ["gateway", "exec"],
     });
 
-    expect(prompt).toContain("## OpenClaw Self-Update");
+    expect(prompt).toContain("## Carlito Self-Update");
     expect(prompt).toContain("config.schema.lookup");
     expect(prompt).toContain("config.apply");
     expect(prompt).toContain("config.patch");
