@@ -242,9 +242,9 @@ describe("OpenAIWebSocketManager", () => {
       const sock = lastSocket();
       expect(sock.options).toMatchObject({
         headers: expect.objectContaining({
-          originator: "openclaw",
+          originator: "carlito",
           version: expect.any(String),
-          "User-Agent": expect.stringMatching(/^openclaw\//),
+          "User-Agent": expect.stringMatching(/^carlito\//),
         }),
       });
 
