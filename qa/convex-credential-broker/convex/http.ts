@@ -320,7 +320,7 @@ http.route({
         ownerId: requireString(body, "ownerId"),
         actorRole,
         leaseTtlMs: optionalPositiveInteger(body, "leaseTtlMs"),
-        heartbeatIntervalMs: optionalPositiveInteger(body, "heartbeatIntervalMs"),
+        pulsecheckIntervalMs: optionalPositiveInteger(body, "pulsecheckIntervalMs"),
       });
 
       return jsonResponse(200, result);
@@ -332,7 +332,7 @@ http.route({
 });
 
 http.route({
-  path: "/qa-credentials/v1/heartbeat",
+  path: "/qa-credentials/v1/pulsecheck",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     try {
@@ -341,7 +341,7 @@ http.route({
       const actorRole = parseActorRole(body);
       assertRoleAllowed(tokenRole, actorRole);
 
-      const result = await ctx.runMutation(internal.credentials.heartbeatLease, {
+      const result = await ctx.runMutation(internal.credentials.pulsecheckLease, {
         kind: requireString(body, "kind"),
         ownerId: requireString(body, "ownerId"),
         actorRole,

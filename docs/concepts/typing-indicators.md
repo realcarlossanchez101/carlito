@@ -16,8 +16,8 @@ When `agents.defaults.typingMode` is **unset**, OpenClaw keeps the legacy behavi
 - **Direct chats**: typing starts immediately once the model loop begins.
 - **Group chats with a mention**: typing starts immediately.
 - **Group chats without a mention**: typing starts only when message text begins streaming.
-- **Heartbeat runs**: typing starts when the heartbeat run begins if the
-  resolved heartbeat target is a typing-capable chat and typing is not disabled.
+- **Pulsecheck runs**: typing starts when the pulsecheck run begins if the
+  resolved pulsecheck target is a typing-capable chat and typing is not disabled.
 
 ## Modes
 
@@ -63,11 +63,11 @@ You can override mode or cadence per session:
   matched case-insensitively).
 - `thinking` only fires if the run streams reasoning (`reasoningLevel: "stream"`).
   If the model doesn’t emit reasoning deltas, typing won’t start.
-- Heartbeat typing is a liveness signal for the resolved delivery target. It
-  starts at heartbeat run start instead of following `message` or `thinking`
+- Pulsecheck typing is a liveness signal for the resolved delivery target. It
+  starts at pulsecheck run start instead of following `message` or `thinking`
   stream timing. Set `typingMode: "never"` to disable it.
-- Heartbeats do not show typing when `target: "none"`, when the target cannot
-  be resolved, when chat delivery is disabled for the heartbeat, or when the
+- Pulsechecks do not show typing when `target: "none"`, when the target cannot
+  be resolved, when chat delivery is disabled for the pulsecheck, or when the
   channel does not support typing.
 - `typingIntervalSeconds` controls the **refresh cadence**, not the start time.
   The default is 6 seconds.

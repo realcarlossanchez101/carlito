@@ -1,6 +1,6 @@
 import { escapeRegExp } from "../utils.js";
 
-export const HEARTBEAT_TOKEN = "HEARTBEAT_OK";
+export const PULSECHECK_TOKEN = "PULSECHECK_OK";
 export const SILENT_REPLY_TOKEN = "NO_REPLY";
 
 const silentExactRegexByToken = new Map<string, RegExp>();
@@ -173,7 +173,7 @@ export function isSilentReplyPrefixText(
     return true;
   }
   // Keep underscore guard for generic tokens to avoid suppressing unrelated
-  // uppercase words (e.g. HEART/HE with HEARTBEAT_OK). Only allow bare "NO"
+  // uppercase words (e.g. HEART/HE with PULSECHECK_OK). Only allow bare "NO"
   // because NO_REPLY streaming can transiently emit that fragment.
   return tokenUpper === SILENT_REPLY_TOKEN && normalized === "NO";
 }

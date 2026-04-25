@@ -264,18 +264,18 @@ export async function runPreparedReply(
   const isFirstTurnInSession = isNewSession || !currentSystemSent;
   const isGroupChat = sessionCtx.ChatType === "group";
   const wasMentioned = ctx.WasMentioned === true;
-  const isHeartbeat = opts?.isHeartbeat === true;
+  const isPulsecheck = opts?.isPulsecheck === true;
   const { typingPolicy, suppressTyping } = resolveRunTypingPolicy({
     requestedPolicy: opts?.typingPolicy,
     suppressTyping: opts?.suppressTyping === true,
-    isHeartbeat,
+    isPulsecheck,
     originatingChannel: ctx.OriginatingChannel,
   });
   const typingMode = resolveTypingMode({
     configured: sessionCfg?.typingMode ?? agentCfg?.typingMode,
     isGroupChat,
     wasMentioned,
-    isHeartbeat,
+    isPulsecheck,
     typingPolicy,
     suppressTyping,
   });
@@ -638,7 +638,7 @@ export async function runPreparedReply(
     resolvedQueue.mode === "steer-backlog";
   const activeRunQueueAction = resolveActiveRunQueueAction({
     isActive,
-    isHeartbeat: opts?.isHeartbeat === true,
+    isPulsecheck: opts?.isPulsecheck === true,
     shouldFollowup,
     queueMode: resolvedQueue.mode,
   });

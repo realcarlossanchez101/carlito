@@ -13,8 +13,8 @@ import {
   logWebhookProcessed,
   logWebhookReceived,
   normalizeOptionalString,
-  startDiagnosticHeartbeat,
-  stopDiagnosticHeartbeat,
+  startDiagnosticPulsecheck,
+  stopDiagnosticPulsecheck,
 } from "openclaw/plugin-sdk/text-runtime";
 import {
   applyBasicWebhookRequestGuards,
@@ -285,7 +285,7 @@ export async function startTelegramWebhook(opts: {
   });
 
   if (diagnosticsEnabled) {
-    startDiagnosticHeartbeat(opts.config);
+    startDiagnosticPulsecheck(opts.config);
   }
 
   const server = createServer((req, res) => {
@@ -430,7 +430,7 @@ export async function startTelegramWebhook(opts: {
     server.close();
     void bot.stop();
     if (diagnosticsEnabled) {
-      stopDiagnosticHeartbeat();
+      stopDiagnosticPulsecheck();
     }
     throw err;
   }
@@ -454,7 +454,7 @@ export async function startTelegramWebhook(opts: {
     server.close();
     void bot.stop();
     if (diagnosticsEnabled) {
-      stopDiagnosticHeartbeat();
+      stopDiagnosticPulsecheck();
     }
   };
   if (opts.abortSignal) {

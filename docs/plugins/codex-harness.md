@@ -313,7 +313,7 @@ codex app-server --listen stdio://
 By default, OpenClaw starts local Codex harness sessions in YOLO mode:
 `approvalPolicy: "never"`, `approvalsReviewer: "user"`, and
 `sandbox: "danger-full-access"`. This is the trusted local operator posture used
-for autonomous heartbeats: Codex can use shell and network tools without
+for autonomous pulsechecks: Codex can use shell and network tools without
 stopping on native approval prompts that nobody is around to answer.
 
 To opt in to Codex guardian-reviewed approvals, set `appServer.mode:

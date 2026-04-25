@@ -11,7 +11,7 @@ import {
   resolveAcpThreadSessionDetailLines,
 } from "../acp/runtime/session-identifiers.js";
 import type { AcpRuntimeSessionMode } from "../acp/runtime/types.js";
-import { DEFAULT_HEARTBEAT_EVERY } from "../auto-reply/heartbeat.js";
+import { DEFAULT_PULSECHECK_EVERY } from "../auto-reply/pulsecheck.js";
 import {
   resolveChannelDefaultBindingPlacement,
   resolveInboundConversationResolution,
@@ -39,12 +39,12 @@ import { resolveSessionTranscriptFile } from "../config/sessions/transcript.js";
 import type { SessionEntry } from "../config/sessions/types.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { callGateway } from "../gateway/call.js";
-import { areHeartbeatsEnabled } from "../infra/heartbeat-wake.js";
 import {
   getSessionBindingService,
   isSessionBindingError,
   type SessionBindingRecord,
 } from "../infra/outbound/session-binding-service.js";
+import { arePulsechecksEnabled } from "../infra/pulsecheck-wake.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import {
   isSubagentSessionKey,
@@ -214,8 +214,8 @@ type AcpSpawnRequesterState = {
   isSubagentSession: boolean;
   hasActiveSubagentBinding: boolean;
   hasThreadContext: boolean;
-  heartbeatEnabled: boolean;
-  heartbeatRelayRouteUsable: boolean;
+  pulsecheckEnabled: boolean;
+  pulsecheckRelayRouteUsable: boolean;
   origin: ReturnType<typeof normalizeDeliveryContext>;
 };
 
@@ -299,11 +299,11 @@ function resolveAcpSessionMode(mode: SpawnAcpMode): AcpRuntimeSessionMode {
   return mode === "session" ? "persistent" : "oneshot";
 }
 
-function isHeartbeatEnabledForSessionAgent(params: {
+function isPulsecheckEnabledForSessionAgent(params: {
   cfg: OpenClawConfig;
   sessionKey?: string;
 }): boolean {
-  if (!areHeartbeatsEnabled()) {
+  if (!arePulsechecksEnabled()) {
     return false;
   }
   const requesterAgentId = parseAgentSessionKey(params.sessionKey)?.agentId;
@@ -312,21 +312,21 @@ function isHeartbeatEnabledForSessionAgent(params: {
   }
 
   const agentEntries = params.cfg.agents?.list ?? [];
-  const hasExplicitHeartbeatAgents = agentEntries.some((entry) => Boolean(entry?.heartbeat));
-  const enabledByPolicy = hasExplicitHeartbeatAgents
+  const hasExplicitPulsecheckAgents = agentEntries.some((entry) => Boolean(entry?.pulsecheck));
+  const enabledByPolicy = hasExplicitPulsecheckAgents
     ? agentEntries.some(
-        (entry) => Boolean(entry?.heartbeat) && normalizeAgentId(entry?.id) === requesterAgentId,
+        (entry) => Boolean(entry?.pulsecheck) && normalizeAgentId(entry?.id) === requesterAgentId,
       )
     : requesterAgentId === resolveDefaultAgentId(params.cfg);
   if (!enabledByPolicy) {
     return false;
   }
 
-  const heartbeatEvery =
-    resolveAgentConfig(params.cfg, requesterAgentId)?.heartbeat?.every ??
-    params.cfg.agents?.defaults?.heartbeat?.every ??
-    DEFAULT_HEARTBEAT_EVERY;
-  const trimmedEvery = normalizeOptionalString(heartbeatEvery) ?? "";
+  const pulsecheckEvery =
+    resolveAgentConfig(params.cfg, requesterAgentId)?.pulsecheck?.every ??
+    params.cfg.agents?.defaults?.pulsecheck?.every ??
+    DEFAULT_PULSECHECK_EVERY;
+  const trimmedEvery = normalizeOptionalString(pulsecheckEvery) ?? "";
   if (!trimmedEvery) {
     return false;
   }
@@ -337,12 +337,12 @@ function isHeartbeatEnabledForSessionAgent(params: {
   }
 }
 
-function resolveHeartbeatConfigForAgent(params: {
+function resolvePulsecheckConfigForAgent(params: {
   cfg: OpenClawConfig;
   agentId: string;
-}): NonNullable<NonNullable<OpenClawConfig["agents"]>["defaults"]>["heartbeat"] {
-  const defaults = params.cfg.agents?.defaults?.heartbeat;
-  const overrides = resolveAgentConfig(params.cfg, params.agentId)?.heartbeat;
+}): NonNullable<NonNullable<OpenClawConfig["agents"]>["defaults"]>["pulsecheck"] {
+  const defaults = params.cfg.agents?.defaults?.pulsecheck;
+  const overrides = resolveAgentConfig(params.cfg, params.agentId)?.pulsecheck;
   if (!defaults && !overrides) {
     return undefined;
   }
@@ -352,7 +352,7 @@ function resolveHeartbeatConfigForAgent(params: {
   };
 }
 
-function hasSessionLocalHeartbeatRelayRoute(params: {
+function hasSessionLocalPulsecheckRelayRoute(params: {
   cfg: OpenClawConfig;
   parentSessionKey: string;
   requesterAgentId: string;
@@ -362,20 +362,20 @@ function hasSessionLocalHeartbeatRelayRoute(params: {
     return false;
   }
 
-  const heartbeat = resolveHeartbeatConfigForAgent({
+  const pulsecheck = resolvePulsecheckConfigForAgent({
     cfg: params.cfg,
     agentId: params.requesterAgentId,
   });
-  if ((heartbeat?.target ?? "none") !== "last") {
+  if ((pulsecheck?.target ?? "none") !== "last") {
     return false;
   }
 
   // Explicit delivery overrides are not session-local and can route updates
   // to unrelated destinations (for example a pinned ops channel).
-  if (normalizeOptionalString(heartbeat?.to)) {
+  if (normalizeOptionalString(pulsecheck?.to)) {
     return false;
   }
-  if (normalizeOptionalString(heartbeat?.accountId)) {
+  if (normalizeOptionalString(pulsecheck?.accountId)) {
     return false;
   }
 
@@ -676,13 +676,13 @@ function resolveAcpSpawnRequesterState(params: {
     isSubagentSession,
     hasActiveSubagentBinding,
     hasThreadContext,
-    heartbeatEnabled: isHeartbeatEnabledForSessionAgent({
+    pulsecheckEnabled: isPulsecheckEnabledForSessionAgent({
       cfg: params.cfg,
       sessionKey: params.parentSessionKey,
     }),
-    heartbeatRelayRouteUsable:
+    pulsecheckRelayRouteUsable:
       params.parentSessionKey && requesterAgentId
-        ? hasSessionLocalHeartbeatRelayRoute({
+        ? hasSessionLocalPulsecheckRelayRoute({
             cfg: params.cfg,
             parentSessionKey: params.parentSessionKey,
             requesterAgentId,
@@ -797,8 +797,8 @@ function resolveAcpSpawnStreamPlan(params: {
   requester: AcpSpawnRequesterState;
 }): AcpSpawnStreamPlan {
   // For mode=run without thread binding, implicitly route output to parent
-  // only for spawned subagent orchestrator sessions with heartbeat enabled
-  // AND a session-local heartbeat delivery route (target=last + usable last route).
+  // only for spawned subagent orchestrator sessions with pulsecheck enabled
+  // AND a session-local pulsecheck delivery route (target=last + usable last route).
   // Skip requester sessions that are thread-bound (or carrying thread context)
   // so user-facing threads do not receive unsolicited ACP progress chatter
   // unless streamTo="parent" is explicitly requested. Use resolved spawnMode
@@ -810,8 +810,8 @@ function resolveAcpSpawnStreamPlan(params: {
     params.requester.isSubagentSession &&
     !params.requester.hasActiveSubagentBinding &&
     !params.requester.hasThreadContext &&
-    params.requester.heartbeatEnabled &&
-    params.requester.heartbeatRelayRouteUsable;
+    params.requester.pulsecheckEnabled &&
+    params.requester.pulsecheckRelayRouteUsable;
 
   return {
     implicitStreamToParent,

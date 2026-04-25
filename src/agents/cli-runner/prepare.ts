@@ -25,7 +25,6 @@ import {
 import { CLI_AUTH_EPOCH_VERSION, resolveCliAuthEpoch } from "../cli-auth-epoch.js";
 import { resolveCliBackendConfig } from "../cli-backends.js";
 import { hashCliSessionText, resolveCliSessionReuse } from "../cli-session.js";
-import { resolveHeartbeatPromptForSystemPrompt } from "../heartbeat-system-prompt.js";
 import {
   resolveBootstrapMaxChars,
   resolveBootstrapPromptTruncationWarningMode,
@@ -35,6 +34,7 @@ import { resolvePromptBuildHookResult } from "../pi-embedded-runner/run/attempt.
 import { resolveAttemptPrependSystemContext } from "../pi-embedded-runner/run/attempt.prompt-helpers.js";
 import { composeSystemPromptWithHookContext } from "../pi-embedded-runner/run/attempt.thread-helpers.js";
 import { applyPluginTextReplacements } from "../plugin-text-transforms.js";
+import { resolvePulsecheckPromptForSystemPrompt } from "../pulsecheck-system-prompt.js";
 import { resolveSkillsPromptForRun } from "../skills.js";
 import { resolveSystemPromptOverride } from "../system-prompt-override.js";
 import { buildSystemPromptReport } from "../system-prompt-report.js";
@@ -259,7 +259,7 @@ export async function prepareCliRunContext(
       `cli session reset: provider=${params.provider} reason=${reusableCliSession.invalidatedReason}`,
     );
   }
-  const heartbeatPrompt = resolveHeartbeatPromptForSystemPrompt({
+  const pulsecheckPrompt = resolvePulsecheckPromptForSystemPrompt({
     config: params.config,
     agentId: sessionAgentId,
     defaultAgentId,
@@ -287,7 +287,7 @@ export async function prepareCliRunContext(
       defaultThinkLevel: params.thinkLevel,
       extraSystemPrompt,
       ownerNumbers: params.ownerNumbers,
-      heartbeatPrompt,
+      pulsecheckPrompt,
       docsPath: docsPath ?? undefined,
       skillsPrompt,
       tools: [],
@@ -391,7 +391,7 @@ export async function prepareCliRunContext(
     systemPrompt,
     systemPromptReport,
     bootstrapPromptWarningLines: bootstrapPromptWarning.lines,
-    heartbeatPrompt,
+    pulsecheckPrompt,
     authEpoch,
     authEpochVersion: CLI_AUTH_EPOCH_VERSION,
     extraSystemPromptHash,

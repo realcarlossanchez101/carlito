@@ -162,7 +162,7 @@ export async function resolveReplyDirectives(params: {
   aliasIndex: ModelAliasIndex;
   provider: string;
   model: string;
-  hasResolvedHeartbeatModelOverride: boolean;
+  hasResolvedPulsecheckModelOverride: boolean;
   typing: TypingController;
   opts?: GetReplyOptions;
   skillFilter?: string[];
@@ -188,7 +188,7 @@ export async function resolveReplyDirectives(params: {
     defaultModel,
     provider: initialProvider,
     model: initialModel,
-    hasResolvedHeartbeatModelOverride,
+    hasResolvedPulsecheckModelOverride,
     typing,
     opts,
     skillFilter,
@@ -456,7 +456,7 @@ export async function resolveReplyDirectives(params: {
 
   const useFastModelSelection =
     useFastReplyRuntime &&
-    !hasResolvedHeartbeatModelOverride &&
+    !hasResolvedPulsecheckModelOverride &&
     !(agentCfg?.models && Object.keys(agentCfg.models).length > 0) &&
     !normalizeOptionalString(targetSessionEntry?.modelOverride) &&
     !normalizeOptionalString(targetSessionEntry?.providerOverride) &&
@@ -487,7 +487,7 @@ export async function resolveReplyDirectives(params: {
         provider,
         model,
         hasModelDirective: directives.hasModelDirective,
-        hasResolvedHeartbeatModelOverride,
+        hasResolvedPulsecheckModelOverride,
       });
   provider = modelState.provider;
   model = modelState.model;

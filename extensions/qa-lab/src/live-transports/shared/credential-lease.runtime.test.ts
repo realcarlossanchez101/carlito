@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   acquireQaCredentialLease,
-  startQaCredentialLeaseHeartbeat,
+  startQaCredentialLeasePulsecheck,
 } from "./credential-lease.runtime.js";
 
 function jsonResponse(payload: unknown, status = 200) {
@@ -35,7 +35,7 @@ describe("credential lease runtime", () => {
     });
   });
 
-  it("acquires, heartbeats, and releases convex credentials", async () => {
+  it("acquires, pulsechecks, and releases convex credentials", async () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(
@@ -45,7 +45,7 @@ describe("credential lease runtime", () => {
           leaseToken: "lease-1",
           payload: { groupId: "-100123", driverToken: "driver", sutToken: "sut" },
           leaseTtlMs: 1_200_000,
-          heartbeatIntervalMs: 30_000,
+          pulsecheckIntervalMs: 30_000,
         }),
       )
       .mockResolvedValueOnce(jsonResponse({ status: "ok" }))
@@ -69,7 +69,7 @@ describe("credential lease runtime", () => {
     expect(lease.credentialId).toBe("cred-1");
     expect(lease.payload.groupId).toBe("-100123");
 
-    await lease.heartbeat();
+    await lease.pulsecheck();
     await lease.release();
 
     expect(fetchImpl).toHaveBeenCalledTimes(3);
@@ -309,23 +309,23 @@ describe("credential lease runtime", () => {
     ).rejects.toThrow("OPENCLAW_QA_CONVEX_SECRET_MAINTAINER");
   });
 
-  it("captures heartbeat failures for fail-fast checks", async () => {
+  it("captures pulsecheck failures for fail-fast checks", async () => {
     vi.useFakeTimers();
-    const heartbeat = startQaCredentialLeaseHeartbeat(
+    const pulsecheck = startQaCredentialLeasePulsecheck(
       {
         source: "convex",
         kind: "telegram",
-        heartbeatIntervalMs: 50,
-        heartbeat: async () => {
-          throw new Error("heartbeat-down");
+        pulsecheckIntervalMs: 50,
+        pulsecheck: async () => {
+          throw new Error("pulsecheck-down");
         },
       },
       { intervalMs: 50 },
     );
 
     await vi.advanceTimersByTimeAsync(55);
-    expect(heartbeat.getFailure()).toBeInstanceOf(Error);
-    expect(() => heartbeat.throwIfFailed()).toThrow("heartbeat-down");
-    await heartbeat.stop();
+    expect(pulsecheck.getFailure()).toBeInstanceOf(Error);
+    expect(() => pulsecheck.throwIfFailed()).toThrow("pulsecheck-down");
+    await pulsecheck.stop();
   });
 });

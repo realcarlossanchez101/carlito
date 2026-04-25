@@ -13,7 +13,7 @@ import { buildAssistantMessageWithZeroUsage } from "./stream-message-shared.js";
 export const LIVE_CACHE_TEST_ENABLED =
   isLiveTestEnabled() && isTruthyEnvValue(process.env.OPENCLAW_LIVE_CACHE_TEST);
 
-const DEFAULT_HEARTBEAT_MS = 20_000;
+const DEFAULT_PULSECHECK_MS = 20_000;
 const DEFAULT_TIMEOUT_MS = 90_000;
 
 type LiveResolvedModel = {
@@ -34,28 +34,28 @@ export function logLiveCache(message: string): void {
   process.stderr.write(`[live-cache] ${message}\n`);
 }
 
-export async function withLiveCacheHeartbeat<T>(
+export async function withLiveCachePulsecheck<T>(
   operation: Promise<T>,
   context: string,
 ): Promise<T> {
-  const heartbeatMs = Math.max(
+  const pulsecheckMs = Math.max(
     1_000,
-    toInt(process.env.OPENCLAW_LIVE_HEARTBEAT_MS, DEFAULT_HEARTBEAT_MS),
+    toInt(process.env.OPENCLAW_LIVE_PULSECHECK_MS, DEFAULT_PULSECHECK_MS),
   );
   const startedAt = Date.now();
-  let heartbeatCount = 0;
+  let pulsecheckCount = 0;
   const timer = setInterval(() => {
-    heartbeatCount += 1;
+    pulsecheckCount += 1;
     logLiveCache(
       `${context}: still running (${Math.max(1, Math.round((Date.now() - startedAt) / 1_000))}s)`,
     );
-  }, heartbeatMs);
+  }, pulsecheckMs);
   timer.unref?.();
   try {
     return await operation;
   } finally {
     clearInterval(timer);
-    if (heartbeatCount > 0) {
+    if (pulsecheckCount > 0) {
       logLiveCache(
         `${context}: completed (${Math.max(1, Math.round((Date.now() - startedAt) / 1_000))}s)`,
       );
@@ -84,7 +84,7 @@ export async function completeSimpleWithLiveTimeout<TApi extends Api>(
     hardTimer.unref?.();
   });
   try {
-    return await withLiveCacheHeartbeat(
+    return await withLiveCachePulsecheck(
       Promise.race([
         completeSimple(model, context, {
           ...options,

@@ -9,6 +9,8 @@ import {
   wrapProviderStreamFn as wrapProviderStreamFnRuntime,
 } from "../../plugins/provider-hook-runtime.js";
 import type { ProviderRuntimeModel } from "../../plugins/provider-runtime-model.types.js";
+import { wrapStreamFnWithCarlitoRewriter } from "../carlito-outbound-rewriter.js";
+import { wrapStreamFnWithToolNameMask } from "../carlito-toolname-mask.js";
 import { createGoogleThinkingPayloadWrapper } from "./google-stream-wrappers.js";
 import { log } from "./logger.js";
 import { createMinimaxThinkingDisabledWrapper } from "./minimax-stream-wrappers.js";
@@ -512,5 +514,39 @@ export function applyExtraParamsToAgent(
     providerWrapperHandled,
   });
 
+  if (agent.streamFn) {
+    agent.streamFn = wrapStreamFnWithToolNameMask(agent.streamFn);
+  }
+
+  if (agent.streamFn) {
+    agent.streamFn = wrapStreamFnWithCarlitoRewriter(agent.streamFn);
+  }
+
+  agent.streamFn = createProviderRequestLogWrapper(agent.streamFn, {
+    provider,
+    modelId,
+  });
+
   return { effectiveExtraParams };
+}
+
+function createProviderRequestLogWrapper(
+  underlying: StreamFn | undefined,
+  meta: { provider: string; modelId: string },
+): StreamFn | undefined {
+  if (!underlying) {
+    return underlying;
+  }
+  return (model, context, options) => {
+    const originalOnPayload = options?.onPayload;
+    return underlying(model, context, {
+      ...options,
+      onPayload: (payload) => {
+        log.info(
+          `provider request payload ${meta.provider}/${meta.modelId}: ${JSON.stringify(payload)}`,
+        );
+        return originalOnPayload?.(payload, model);
+      },
+    });
+  };
 }

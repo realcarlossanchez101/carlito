@@ -41,11 +41,11 @@ const hoisted = vi.hoisted(() => {
     }
   }
 
-  const heartbeatStop = vi.fn();
-  const heartbeatUpdateConfig = vi.fn();
-  const startHeartbeatRunner = vi.fn(() => ({
-    stop: heartbeatStop,
-    updateConfig: heartbeatUpdateConfig,
+  const pulsecheckStop = vi.fn();
+  const pulsecheckUpdateConfig = vi.fn();
+  const startPulsecheckRunner = vi.fn(() => ({
+    stop: pulsecheckStop,
+    updateConfig: pulsecheckUpdateConfig,
   }));
   const activeEmbeddedRunCount = { value: 0 };
   const totalPendingReplies = { value: 0 };
@@ -146,9 +146,9 @@ const hoisted = vi.hoisted(() => {
   return {
     CronService: CronServiceMock,
     cronInstances,
-    heartbeatStop,
-    heartbeatUpdateConfig,
-    startHeartbeatRunner,
+    pulsecheckStop,
+    pulsecheckUpdateConfig,
+    startPulsecheckRunner,
     activeEmbeddedRunCount,
     totalPendingReplies,
     totalQueueSize,
@@ -171,8 +171,8 @@ vi.mock("../cron/service.js", () => ({
   CronService: hoisted.CronService,
 }));
 
-vi.mock("../infra/heartbeat-runner.js", () => ({
-  startHeartbeatRunner: hoisted.startHeartbeatRunner,
+vi.mock("../infra/pulsecheck-runner.js", () => ({
+  startPulsecheckRunner: hoisted.startPulsecheckRunner,
 }));
 
 vi.mock("../hooks/gmail-watcher.js", () => ({
@@ -417,7 +417,7 @@ describe("gateway hot reload", () => {
           gmail: { account: "me@example.com" },
         },
         cron: { enabled: true, store: "/tmp/cron.json" },
-        agents: { defaults: { heartbeat: { every: "1m" }, maxConcurrent: 2 } },
+        agents: { defaults: { pulsecheck: { every: "1m" }, maxConcurrent: 2 } },
         web: { enabled: true },
         channels: {
           telegram: { botToken: "token" },
@@ -432,7 +432,7 @@ describe("gateway hot reload", () => {
           changedPaths: [
             "hooks.gmail.account",
             "cron.enabled",
-            "agents.defaults.heartbeat.every",
+            "agents.defaults.pulsecheck.every",
             "web.enabled",
             "channels.telegram.botToken",
             "channels.discord.token",
@@ -445,7 +445,7 @@ describe("gateway hot reload", () => {
           reloadHooks: true,
           restartGmailWatcher: true,
           restartCron: true,
-          restartHeartbeat: true,
+          restartPulsecheck: true,
           restartChannels: new Set(["whatsapp", "telegram", "discord", "signal", "imessage"]),
           noopPaths: [],
         },
@@ -455,9 +455,9 @@ describe("gateway hot reload", () => {
       expect(hoisted.stopGmailWatcher).toHaveBeenCalled();
       expect(hoisted.startGmailWatcher).toHaveBeenCalledWith(expect.objectContaining(nextConfig));
 
-      expect(hoisted.startHeartbeatRunner).toHaveBeenCalledTimes(1);
-      expect(hoisted.heartbeatUpdateConfig).toHaveBeenCalledTimes(1);
-      expect(hoisted.heartbeatUpdateConfig).toHaveBeenCalledWith(
+      expect(hoisted.startPulsecheckRunner).toHaveBeenCalledTimes(1);
+      expect(hoisted.pulsecheckUpdateConfig).toHaveBeenCalledTimes(1);
+      expect(hoisted.pulsecheckUpdateConfig).toHaveBeenCalledWith(
         expect.objectContaining(nextConfig),
       );
 
@@ -493,7 +493,7 @@ describe("gateway hot reload", () => {
           reloadHooks: false,
           restartGmailWatcher: false,
           restartCron: false,
-          restartHeartbeat: false,
+          restartPulsecheck: false,
           restartChannels: new Set(),
           noopPaths: [],
         },
@@ -521,7 +521,7 @@ describe("gateway hot reload", () => {
         reloadHooks: false,
         restartGmailWatcher: false,
         restartCron: false,
-        restartHeartbeat: false,
+        restartPulsecheck: false,
         restartChannels: new Set(),
         noopPaths: [],
       };
@@ -566,7 +566,7 @@ describe("gateway hot reload", () => {
           reloadHooks: false,
           restartGmailWatcher: false,
           restartCron: false,
-          restartHeartbeat: false,
+          restartPulsecheck: false,
           restartChannels: new Set(),
           noopPaths: [],
         },
@@ -646,7 +646,7 @@ describe("gateway hot reload", () => {
             reloadHooks: false,
             restartGmailWatcher: false,
             restartCron: false,
-            restartHeartbeat: false,
+            restartPulsecheck: false,
             restartChannels: new Set(),
             noopPaths: [],
           },

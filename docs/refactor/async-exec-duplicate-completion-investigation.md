@@ -2,7 +2,7 @@
 summary: "Investigation notes for duplicate async exec completion injection"
 read_when:
   - Debugging repeated node exec completion events
-  - Working on heartbeat/system-event dedupe
+  - Working on pulsecheck/system-event dedupe
 title: "Async exec duplicate completion investigation"
 ---
 
@@ -19,8 +19,8 @@ Most likely this is **duplicate session injection**, not a pure outbound deliver
 The strongest gateway-side gap is in the **node exec completion path**:
 
 1. A node-side exec finish emits `exec.finished` with the full `runId`.
-2. Gateway `server-node-events` converts that into a system event and requests a heartbeat.
-3. The heartbeat run injects the drained system event block into the agent prompt.
+2. Gateway `server-node-events` converts that into a system event and requests a pulsecheck.
+3. The pulsecheck run injects the drained system event block into the agent prompt.
 4. The embedded runner persists that prompt as a new user turn in the session transcript.
 
 If the same `exec.finished` reaches the gateway twice for the same `runId` for any reason (replay, reconnect duplicate, upstream resend, duplicated producer), OpenClaw currently has **no idempotency check keyed by `runId`/`contextKey`** on this path. The second copy will become a second user message with the same content.
@@ -42,7 +42,7 @@ If the same `exec.finished` reaches the gateway twice for the same `runId` for a
   - Enqueues it via:
     - `enqueueSystemEvent(text, { sessionKey, contextKey: runId ? \`exec:${runId}\` : "exec", trusted: false })`
   - Immediately requests a wake:
-    - `requestHeartbeatNow(scopedHeartbeatWakeOptions(sessionKey, { reason: "exec-event" }))`
+    - `requestPulsecheckNow(scopedPulsecheckWakeOptions(sessionKey, { reason: "exec-event" }))`
 
 ### 3. System event dedupe weakness
 
@@ -56,15 +56,15 @@ This means a replayed `exec.finished` with the same `runId` can be accepted agai
 
 ### 4. Wake handling is not the primary duplicator
 
-- `src/infra/heartbeat-wake.ts:79-117`
+- `src/infra/pulsecheck-wake.ts:79-117`
   - Wakes are coalesced by `(agentId, sessionKey)`.
   - Duplicate wake requests for the same target collapse to one pending wake entry.
 
 This makes **duplicate wake handling alone** a weaker explanation than duplicate event ingestion.
 
-### 5. Heartbeat consumes the event and turns it into prompt input
+### 5. Pulsecheck consumes the event and turns it into prompt input
 
-- `src/infra/heartbeat-runner.ts:535-574`
+- `src/infra/pulsecheck-runner.ts:535-574`
   - Preflight peeks pending system events and classifies exec-event runs.
 - `src/auto-reply/reply/session-system-events.ts:86-90`
   - `drainFormattedSystemEvents(...)` drains the queue for the session.
@@ -81,9 +81,9 @@ So once the same system event is rebuilt into the prompt twice, duplicate LCM us
 
 ## Why plain outbound delivery retry is less likely
 
-There is a real outbound failure path in the heartbeat runner:
+There is a real outbound failure path in the pulsecheck runner:
 
-- `src/infra/heartbeat-runner.ts:1194-1242`
+- `src/infra/pulsecheck-runner.ts:1194-1242`
   - The reply is generated first.
   - Outbound delivery happens later via `deliverOutboundPayloads(...)`.
   - Failure there returns `{ status: "failed" }`.
@@ -116,7 +116,7 @@ Highest-confidence hypothesis:
 - The `keen-nexus` completion came through the **node exec event path**.
 - The same `exec.finished` was delivered to `server-node-events` twice.
 - Gateway accepted both because `enqueueSystemEvent(...)` does not dedupe by `contextKey` / `runId`.
-- Each accepted event triggered a heartbeat and was injected as a user turn into the PI transcript.
+- Each accepted event triggered a pulsecheck and was injected as a user turn into the PI transcript.
 
 ## Proposed Tiny Surgical Fix
 

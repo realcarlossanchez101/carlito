@@ -76,9 +76,9 @@ Use `channels.modelByChannel` to pin specific channel IDs to a model. Values acc
 }
 ```
 
-### Channel defaults and heartbeat
+### Channel defaults and pulsecheck
 
-Use `channels.defaults` for shared group-policy and heartbeat behavior across providers:
+Use `channels.defaults` for shared group-policy and pulsecheck behavior across providers:
 
 ```json5
 {
@@ -86,7 +86,7 @@ Use `channels.defaults` for shared group-policy and heartbeat behavior across pr
     defaults: {
       groupPolicy: "allowlist", // open | allowlist | disabled
       contextVisibility: "all", // all | allowlist | allowlist_quote
-      heartbeat: {
+      pulsecheck: {
         showOk: false,
         showAlerts: true,
         useIndicator: true,
@@ -98,9 +98,9 @@ Use `channels.defaults` for shared group-policy and heartbeat behavior across pr
 
 - `channels.defaults.groupPolicy`: fallback group policy when a provider-level `groupPolicy` is unset.
 - `channels.defaults.contextVisibility`: default supplemental context visibility mode for all channels. Values: `all` (default, include all quoted/thread/history context), `allowlist` (only include context from allowlisted senders), `allowlist_quote` (same as allowlist but keep explicit quote/reply context). Per-channel override: `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk`: include healthy channel statuses in heartbeat output.
-- `channels.defaults.heartbeat.showAlerts`: include degraded/error statuses in heartbeat output.
-- `channels.defaults.heartbeat.useIndicator`: render compact indicator-style heartbeat output.
+- `channels.defaults.pulsecheck.showOk`: include healthy channel statuses in pulsecheck output.
+- `channels.defaults.pulsecheck.showAlerts`: include degraded/error statuses in pulsecheck output.
+- `channels.defaults.pulsecheck.useIndicator`: render compact indicator-style pulsecheck output.
 
 ### WhatsApp
 
@@ -125,7 +125,7 @@ WhatsApp runs through the gateway's web channel (Baileys Web). It starts automat
   },
   web: {
     enabled: true,
-    heartbeatSeconds: 60,
+    pulsecheckSeconds: 60,
     reconnect: {
       initialMs: 2000,
       maxMs: 120000,
@@ -931,7 +931,7 @@ Optional default skill allowlist for agents that do not set
 
 ### `agents.defaults.skipBootstrap`
 
-Disables automatic creation of workspace bootstrap files (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`).
+Disables automatic creation of workspace bootstrap files (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `PULSECHECK.md`, `BOOTSTRAP.md`).
 
 ```json5
 {
@@ -943,7 +943,7 @@ Disables automatic creation of workspace bootstrap files (`AGENTS.md`, `SOUL.md`
 
 Controls when workspace bootstrap files are injected into the system prompt. Default: `"always"`.
 
-- `"continuation-skip"`: safe continuation turns (after a completed assistant response) skip workspace bootstrap re-injection, reducing prompt size. Heartbeat runs and post-compaction retries still rebuild context.
+- `"continuation-skip"`: safe continuation turns (after a completed assistant response) skip workspace bootstrap re-injection, reducing prompt size. Pulsecheck runs and post-compaction retries still rebuild context.
 
 ```json5
 {
@@ -1361,26 +1361,26 @@ Provider-independent prompt overlays applied by model family. GPT-5-family model
 - `"off"` disables only the friendly layer; the tagged GPT-5 behavior contract remains enabled.
 - Legacy `plugins.entries.openai.config.personality` is still read when this shared setting is unset.
 
-### `agents.defaults.heartbeat`
+### `agents.defaults.pulsecheck`
 
-Periodic heartbeat runs.
+Periodic pulsecheck runs.
 
 ```json5
 {
   agents: {
     defaults: {
-      heartbeat: {
+      pulsecheck: {
         every: "30m", // 0m disables
         model: "openai/gpt-5.4-mini",
         includeReasoning: false,
-        includeSystemPromptSection: true, // default: true; false omits the Heartbeat section from the system prompt
-        lightContext: false, // default: false; true keeps only HEARTBEAT.md from workspace bootstrap files
-        isolatedSession: false, // default: false; true runs each heartbeat in a fresh session (no conversation history)
+        includeSystemPromptSection: true, // default: true; false omits the Pulsecheck section from the system prompt
+        lightContext: false, // default: false; true keeps only PULSECHECK.md from workspace bootstrap files
+        isolatedSession: false, // default: false; true runs each pulsecheck in a fresh session (no conversation history)
         session: "main",
         to: "+15555550123",
         directPolicy: "allow", // allow (default) | block
         target: "none", // default: none | options: last | whatsapp | telegram | discord | ...
-        prompt: "Read HEARTBEAT.md if it exists...",
+        prompt: "Read PULSECHECK.md if it exists...",
         ackMaxChars: 300,
         suppressToolErrorWarnings: false,
         timeoutSeconds: 45,
@@ -1391,14 +1391,14 @@ Periodic heartbeat runs.
 ```
 
 - `every`: duration string (ms/s/m/h). Default: `30m` (API-key auth) or `1h` (OAuth auth). Set to `0m` to disable.
-- `includeSystemPromptSection`: when false, omits the Heartbeat section from the system prompt and skips `HEARTBEAT.md` injection into bootstrap context. Default: `true`.
-- `suppressToolErrorWarnings`: when true, suppresses tool error warning payloads during heartbeat runs.
-- `timeoutSeconds`: maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to use `agents.defaults.timeoutSeconds`.
+- `includeSystemPromptSection`: when false, omits the Pulsecheck section from the system prompt and skips `PULSECHECK.md` injection into bootstrap context. Default: `true`.
+- `suppressToolErrorWarnings`: when true, suppresses tool error warning payloads during pulsecheck runs.
+- `timeoutSeconds`: maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to use `agents.defaults.timeoutSeconds`.
 - `directPolicy`: direct/DM delivery policy. `allow` (default) permits direct-target delivery. `block` suppresses direct-target delivery and emits `reason=dm-blocked`.
-- `lightContext`: when true, heartbeat runs use lightweight bootstrap context and keep only `HEARTBEAT.md` from workspace bootstrap files.
-- `isolatedSession`: when true, each heartbeat runs in a fresh session with no prior conversation history. Same isolation pattern as cron `sessionTarget: "isolated"`. Reduces per-heartbeat token cost from ~100K to ~2-5K tokens.
-- Per-agent: set `agents.list[].heartbeat`. When any agent defines `heartbeat`, **only those agents** run heartbeats.
-- Heartbeats run full agent turns — shorter intervals burn more tokens.
+- `lightContext`: when true, pulsecheck runs use lightweight bootstrap context and keep only `PULSECHECK.md` from workspace bootstrap files.
+- `isolatedSession`: when true, each pulsecheck runs in a fresh session with no prior conversation history. Same isolation pattern as cron `sessionTarget: "isolated"`. Reduces per-pulsecheck token cost from ~100K to ~2-5K tokens.
+- Per-agent: set `agents.list[].pulsecheck`. When any agent defines `pulsecheck`, **only those agents** run pulsechecks.
+- Pulsechecks run full agent turns — shorter intervals burn more tokens.
 
 ### `agents.defaults.compaction`
 
@@ -3255,7 +3255,7 @@ Validation and safety notes:
 
 **Endpoints:**
 
-- `POST /hooks/wake` → `{ text, mode?: "now"|"next-heartbeat" }`
+- `POST /hooks/wake` → `{ text, mode?: "now"|"next-pulsecheck" }`
 - `POST /hooks/agent` → `{ message, name?, agentId?, sessionKey?, wakeMode?, deliver?, channel?, to?, model?, thinking?, timeoutSeconds? }`
   - `sessionKey` from request payload is accepted only when `hooks.allowRequestSessionKey=true` (default: `false`).
 - `POST /hooks/<name>` → resolved via `hooks.mappings`

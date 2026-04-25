@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 
-type ResolveTargetMode = "explicit" | "implicit" | "heartbeat";
+type ResolveTargetMode = "explicit" | "implicit" | "pulsecheck";
 
 type ResolveTargetResult = {
   ok: boolean;

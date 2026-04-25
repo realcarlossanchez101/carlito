@@ -80,15 +80,15 @@ describe("diffConfigPaths", () => {
     expect(diffConfigPaths(prev, next)).toContain("memory.qmd.paths");
   });
 
-  it("collapses changed agents.list heartbeat entries to agents.list", () => {
+  it("collapses changed agents.list pulsecheck entries to agents.list", () => {
     const prev = {
       agents: {
-        list: [{ id: "ops", heartbeat: { every: "5m", lightContext: false } }],
+        list: [{ id: "ops", pulsecheck: { every: "5m", lightContext: false } }],
       },
     };
     const next = {
       agents: {
-        list: [{ id: "ops", heartbeat: { every: "5m", lightContext: true } }],
+        list: [{ id: "ops", pulsecheck: { every: "5m", lightContext: true } }],
       },
     };
 
@@ -211,30 +211,30 @@ describe("buildGatewayReloadPlan", () => {
     expect(plan.restartChannels).toEqual(expected);
   });
 
-  it("restarts heartbeat when model-related config changes", () => {
+  it("restarts pulsecheck when model-related config changes", () => {
     const plan = buildGatewayReloadPlan([
       "models.providers.openai.models",
       "agents.defaults.model",
     ]);
     expect(plan.restartGateway).toBe(false);
-    expect(plan.restartHeartbeat).toBe(true);
+    expect(plan.restartPulsecheck).toBe(true);
     expect(plan.hotReasons).toEqual(
       expect.arrayContaining(["models.providers.openai.models", "agents.defaults.model"]),
     );
   });
 
-  it("restarts heartbeat when agents.defaults.models allowlist changes", () => {
+  it("restarts pulsecheck when agents.defaults.models allowlist changes", () => {
     const plan = buildGatewayReloadPlan(["agents.defaults.models"]);
     expect(plan.restartGateway).toBe(false);
-    expect(plan.restartHeartbeat).toBe(true);
+    expect(plan.restartPulsecheck).toBe(true);
     expect(plan.hotReasons).toContain("agents.defaults.models");
     expect(plan.noopPaths).toEqual([]);
   });
 
-  it("restarts heartbeat when agents.list entries change", () => {
+  it("restarts pulsecheck when agents.list entries change", () => {
     const plan = buildGatewayReloadPlan(["agents.list"]);
     expect(plan.restartGateway).toBe(false);
-    expect(plan.restartHeartbeat).toBe(true);
+    expect(plan.restartPulsecheck).toBe(true);
     expect(plan.hotReasons).toContain("agents.list");
     expect(plan.noopPaths).toEqual([]);
   });
@@ -358,7 +358,7 @@ describe("buildGatewayReloadPlan", () => {
       path: "agents.list",
       expectRestartGateway: false,
       expectHotPath: "agents.list",
-      expectRestartHeartbeat: true,
+      expectRestartPulsecheck: true,
     },
     {
       path: "gateway.remote.url",
@@ -396,8 +396,8 @@ describe("buildGatewayReloadPlan", () => {
     if (testCase.expectReloadHooks) {
       expect(plan.reloadHooks).toBe(true);
     }
-    if (testCase.expectRestartHeartbeat) {
-      expect(plan.restartHeartbeat).toBe(true);
+    if (testCase.expectRestartPulsecheck) {
+      expect(plan.restartPulsecheck).toBe(true);
     }
   });
 });

@@ -154,7 +154,7 @@ describe("anthropic provider replay hooks", () => {
       mode: "cache-ttl",
       ttl: "1h",
     });
-    expect(next?.agents?.defaults?.heartbeat).toMatchObject({
+    expect(next?.agents?.defaults?.pulsecheck).toMatchObject({
       every: "30m",
     });
     expect(
@@ -185,7 +185,7 @@ describe("anthropic provider replay hooks", () => {
       },
     } as never);
 
-    expect(next?.agents?.defaults?.heartbeat).toMatchObject({
+    expect(next?.agents?.defaults?.pulsecheck).toMatchObject({
       every: "1h",
     });
     expect(next?.agents?.defaults?.models).toMatchObject({

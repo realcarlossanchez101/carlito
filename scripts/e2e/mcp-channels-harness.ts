@@ -211,7 +211,7 @@ async function connectGatewayOnce(params: {
         minProtocol: PROTOCOL_VERSION,
         maxProtocol: PROTOCOL_VERSION,
         client: {
-          id: "openclaw-tui",
+          id: "carlito-tui",
           displayName: "docker-mcp-channels",
           version: "1.0.0",
           platform: process.platform,

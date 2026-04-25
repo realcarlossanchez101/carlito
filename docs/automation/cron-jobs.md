@@ -3,7 +3,7 @@ summary: "Scheduled jobs, webhooks, and Gmail PubSub triggers for the Gateway sc
 read_when:
   - Scheduling background jobs or wakeups
   - Wiring external triggers (webhooks, Gmail) into OpenClaw
-  - Deciding between heartbeat and cron for scheduled tasks
+  - Deciding between pulsecheck and cron for scheduled tasks
 title: "Scheduled tasks"
 ---
 
@@ -81,12 +81,12 @@ This fires ~5–6 times per month instead of 0–1 times per month. OpenClaw use
 
 | Style           | `--session` value   | Runs in                  | Best for                        |
 | --------------- | ------------------- | ------------------------ | ------------------------------- |
-| Main session    | `main`              | Next heartbeat turn      | Reminders, system events        |
+| Main session    | `main`              | Next pulsecheck turn     | Reminders, system events        |
 | Isolated        | `isolated`          | Dedicated `cron:<jobId>` | Reports, background chores      |
 | Current session | `current`           | Bound at creation time   | Context-aware recurring work    |
 | Custom session  | `session:custom-id` | Persistent named session | Workflows that build on history |
 
-**Main session** jobs enqueue a system event and optionally wake the heartbeat (`--wake now` or `--wake next-heartbeat`). **Isolated** jobs run a dedicated agent turn with a fresh session. **Custom sessions** (`session:xxx`) persist context across runs, enabling workflows like daily standups that build on previous summaries.
+**Main session** jobs enqueue a system event and optionally wake the pulsecheck (`--wake now` or `--wake next-pulsecheck`). **Isolated** jobs run a dedicated agent turn with a fresh session. **Custom sessions** (`session:xxx`) persist context across runs, enabling workflows like daily standups that build on previous summaries.
 
 For isolated jobs, runtime teardown now includes best-effort browser cleanup for that cron session. Cleanup failures are ignored so the actual cron result still wins.
 
@@ -158,7 +158,7 @@ openclaw cron add \
   --name "Calendar check" \
   --at "20m" \
   --session main \
-  --system-event "Next heartbeat: check calendar." \
+  --system-event "Next pulsecheck: check calendar." \
   --wake now
 ```
 
@@ -225,7 +225,7 @@ curl -X POST http://127.0.0.1:18789/hooks/wake \
 ```
 
 - `text` (required): event description
-- `mode` (optional): `now` (default) or `next-heartbeat`
+- `mode` (optional): `now` (default) or `next-pulsecheck`
 
 ### POST /hooks/agent
 
@@ -395,7 +395,7 @@ openclaw gateway status
 openclaw cron status
 openclaw cron list
 openclaw cron runs --id <jobId> --limit 20
-openclaw system heartbeat last
+openclaw system pulsecheck last
 openclaw logs --follow
 openclaw doctor
 ```
@@ -423,11 +423,11 @@ openclaw doctor
 
 - Cron without `--tz` uses the gateway host timezone.
 - `at` schedules without timezone are treated as UTC.
-- Heartbeat `activeHours` uses configured timezone resolution.
+- Pulsecheck `activeHours` uses configured timezone resolution.
 
 ## Related
 
 - [Automation & Tasks](/automation) — all automation mechanisms at a glance
 - [Background Tasks](/automation/tasks) — task ledger for cron executions
-- [Heartbeat](/gateway/heartbeat) — periodic main-session turns
+- [Pulsecheck](/gateway/pulsecheck) — periodic main-session turns
 - [Timezone](/concepts/timezone) — timezone configuration

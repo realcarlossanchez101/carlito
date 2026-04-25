@@ -354,7 +354,7 @@ async function createMockStatusScanResult(params: { includePluginCompatibility?:
     },
     summary: {
       runtimeVersion: null,
-      heartbeat: { defaultAgentId: "main", agents: [] },
+      pulsecheck: { defaultAgentId: "main", agents: [] },
       channelSummary: [],
       queuedSystemEvents: [],
       tasks: mocks.getInspectableTaskRegistrySummary(),
@@ -769,7 +769,7 @@ vi.mock("./status-runtime-shared.ts", () => ({
         securityAudit,
         usage: undefined,
         health: undefined,
-        lastHeartbeat: null,
+        lastPulsecheck: null,
         gatewayService: await createStatusServiceSummary(mocks.resolveGatewayService()),
         nodeService: await createStatusServiceSummary(mocks.resolveNodeService()),
       };

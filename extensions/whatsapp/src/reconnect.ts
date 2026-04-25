@@ -11,7 +11,7 @@ export type ReconnectPolicy = BackoffPolicy & {
   maxAttempts: number;
 };
 
-export const DEFAULT_HEARTBEAT_SECONDS = 60;
+export const DEFAULT_PULSECHECK_SECONDS = 60;
 export const DEFAULT_RECONNECT_POLICY: ReconnectPolicy = {
   initialMs: 2_000,
   maxMs: 30_000,
@@ -20,12 +20,12 @@ export const DEFAULT_RECONNECT_POLICY: ReconnectPolicy = {
   maxAttempts: 12,
 };
 
-export function resolveHeartbeatSeconds(cfg: OpenClawConfig, overrideSeconds?: number): number {
-  const candidate = overrideSeconds ?? cfg.web?.heartbeatSeconds;
+export function resolvePulsecheckSeconds(cfg: OpenClawConfig, overrideSeconds?: number): number {
+  const candidate = overrideSeconds ?? cfg.web?.pulsecheckSeconds;
   if (typeof candidate === "number" && candidate > 0) {
     return candidate;
   }
-  return DEFAULT_HEARTBEAT_SECONDS;
+  return DEFAULT_PULSECHECK_SECONDS;
 }
 
 export function resolveReconnectPolicy(

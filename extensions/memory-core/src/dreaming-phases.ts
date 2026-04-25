@@ -1719,7 +1719,7 @@ async function runPhaseIfTriggered(
   params: RunPhaseIfTriggeredParams,
 ): Promise<{ handled: true; reason: string } | undefined> {
   const hasEventToken = params.cleanedBody.trim().split(/\s+/).includes(params.eventText);
-  if (params.trigger !== "heartbeat" || !hasEventToken) {
+  if (params.trigger !== "pulsecheck" || !hasEventToken) {
     return undefined;
   }
   if (!params.config.enabled) {
@@ -1772,7 +1772,7 @@ async function runPhaseIfTriggered(
  */
 export function registerMemoryDreamingPhases(_api: OpenClawPluginApi): void {
   // LEGACY(memory-v1): kept as a no-op compatibility shim while the unified
-  // dreaming controller owns startup reconciliation and heartbeat triggers.
+  // dreaming controller owns startup reconciliation and pulsecheck triggers.
 }
 
 export const __testing = {

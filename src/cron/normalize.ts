@@ -337,7 +337,7 @@ function normalizeWakeMode(raw: unknown) {
     return undefined;
   }
   const trimmed = normalizeOptionalLowercaseString(raw);
-  if (trimmed === "now" || trimmed === "next-heartbeat") {
+  if (trimmed === "now" || trimmed === "next-pulsecheck") {
     return trimmed;
   }
   return undefined;

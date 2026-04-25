@@ -126,7 +126,7 @@ export default function register(api) {
       ownsCompaction: true,
     },
 
-    async ingest({ sessionId, message, isHeartbeat }) {
+    async ingest({ sessionId, message, isPulsecheck }) {
       // Store the message in your data store
       return { ingested: true };
     },

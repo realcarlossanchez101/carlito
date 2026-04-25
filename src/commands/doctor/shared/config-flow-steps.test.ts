@@ -24,8 +24,8 @@ describe("doctor config flow steps", () => {
   it("collects legacy compatibility issue lines and preview fix hints", () => {
     const result = createLegacyStepResult({
       exists: true,
-      parsed: { heartbeat: { enabled: true } },
-      legacyIssues: [{ path: "heartbeat", message: "use agents.defaults.heartbeat" }],
+      parsed: { pulsecheck: { enabled: true } },
+      legacyIssues: [{ path: "pulsecheck", message: "use agents.defaults.pulsecheck" }],
       path: "/tmp/config.json",
       valid: true,
       issues: [],
@@ -37,7 +37,7 @@ describe("doctor config flow steps", () => {
       warnings: [],
     } satisfies DoctorConfigPreflightResult["snapshot"]);
 
-    expect(result.issueLines).toEqual([expect.stringContaining("- heartbeat:")]);
+    expect(result.issueLines).toEqual([expect.stringContaining("- pulsecheck:")]);
     expect(result.changeLines).not.toEqual([]);
     expect(result.state.fixHints).toContain(
       'Run "openclaw doctor --fix" to migrate legacy config keys.',

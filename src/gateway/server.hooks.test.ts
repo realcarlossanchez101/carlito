@@ -143,7 +143,10 @@ describe("gateway server hooks", () => {
       const resNoAuth = await postHook(port, "/hooks/wake", { text: "Ping" }, { token: null });
       expect(resNoAuth.status).toBe(401);
 
-      const resWake = await postHook(port, "/hooks/wake", { text: "Ping", mode: "next-heartbeat" });
+      const resWake = await postHook(port, "/hooks/wake", {
+        text: "Ping",
+        mode: "next-pulsecheck",
+      });
       expect(resWake.status).toBe(200);
       const wakeEvents = await waitForSystemEvent();
       expect(wakeEvents.some((e) => e.includes("Ping"))).toBe(true);

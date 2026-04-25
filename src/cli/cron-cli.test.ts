@@ -104,7 +104,7 @@ function createCronJob(id: string, name: string): CronJob {
     updatedAtMs: now,
     schedule: { kind: "at", at: new Date(now + 3_600_000).toISOString() },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "hello" },
     state: {},
   };

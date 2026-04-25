@@ -306,7 +306,7 @@ struct InstancesSettings: View {
         case "launch":
             return "Launch"
         case "periodic":
-            return "Heartbeat"
+            return "Pulsecheck"
         case "instances-refresh":
             return "Instances"
         case "seq gap":

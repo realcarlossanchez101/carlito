@@ -18,7 +18,7 @@ struct InstancesSettingsSmokeTests {
                 modelIdentifier: "MacBookPro18,1",
                 lastInputSeconds: 15,
                 mode: "local",
-                reason: "heartbeat",
+                reason: "pulsecheck",
                 text: "MacBook Pro local",
                 ts: 1_700_000_000_000),
             InstanceInfo(

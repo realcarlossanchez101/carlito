@@ -380,15 +380,15 @@ Related:
 - [/channels/telegram](/channels/telegram)
 - [/channels/discord](/channels/discord)
 
-## Cron and heartbeat delivery
+## Cron and pulsecheck delivery
 
-If cron or heartbeat did not run or did not deliver, verify scheduler state first, then delivery target.
+If cron or pulsecheck did not run or did not deliver, verify scheduler state first, then delivery target.
 
 ```bash
 openclaw cron status
 openclaw cron list
 openclaw cron runs --id <jobId> --limit 20
-openclaw system heartbeat last
+openclaw system pulsecheck last
 openclaw logs --follow
 ```
 
@@ -396,23 +396,23 @@ Look for:
 
 - Cron enabled and next wake present.
 - Job run history status (`ok`, `skipped`, `error`).
-- Heartbeat skip reasons (`quiet-hours`, `requests-in-flight`, `alerts-disabled`, `empty-heartbeat-file`, `no-tasks-due`).
+- Pulsecheck skip reasons (`quiet-hours`, `requests-in-flight`, `alerts-disabled`, `empty-pulsecheck-file`, `no-tasks-due`).
 
 Common signatures:
 
 - `cron: scheduler disabled; jobs will not run automatically` → cron disabled.
 - `cron: timer tick failed` → scheduler tick failed; check file/log/runtime errors.
-- `heartbeat skipped` with `reason=quiet-hours` → outside active hours window.
-- `heartbeat skipped` with `reason=empty-heartbeat-file` → `HEARTBEAT.md` exists but only contains blank lines / markdown headers, so OpenClaw skips the model call.
-- `heartbeat skipped` with `reason=no-tasks-due` → `HEARTBEAT.md` contains a `tasks:` block, but none of the tasks are due on this tick.
-- `heartbeat: unknown accountId` → invalid account id for heartbeat delivery target.
-- `heartbeat skipped` with `reason=dm-blocked` → heartbeat target resolved to a DM-style destination while `agents.defaults.heartbeat.directPolicy` (or per-agent override) is set to `block`.
+- `pulsecheck skipped` with `reason=quiet-hours` → outside active hours window.
+- `pulsecheck skipped` with `reason=empty-pulsecheck-file` → `PULSECHECK.md` exists but only contains blank lines / markdown headers, so OpenClaw skips the model call.
+- `pulsecheck skipped` with `reason=no-tasks-due` → `PULSECHECK.md` contains a `tasks:` block, but none of the tasks are due on this tick.
+- `pulsecheck: unknown accountId` → invalid account id for pulsecheck delivery target.
+- `pulsecheck skipped` with `reason=dm-blocked` → pulsecheck target resolved to a DM-style destination while `agents.defaults.pulsecheck.directPolicy` (or per-agent override) is set to `block`.
 
 Related:
 
 - [/automation/cron-jobs#troubleshooting](/automation/cron-jobs#troubleshooting)
 - [/automation/cron-jobs](/automation/cron-jobs)
-- [/gateway/heartbeat](/gateway/heartbeat)
+- [/gateway/pulsecheck](/gateway/pulsecheck)
 
 ## Node paired tool fails
 

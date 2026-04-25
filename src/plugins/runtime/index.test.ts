@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from "../../agents/defaults.js";
 import { onAgentEvent } from "../../infra/agent-events.js";
-import { requestHeartbeatNow } from "../../infra/heartbeat-wake.js";
+import { requestPulsecheckNow } from "../../infra/pulsecheck-wake.js";
 import * as execModule from "../../process/exec.js";
 import { onSessionTranscriptUpdate } from "../../sessions/transcript-events.js";
 import { VERSION } from "../../version.js";
@@ -142,10 +142,10 @@ describe("plugin runtime command execution", () => {
       expected: onSessionTranscriptUpdate,
     },
     {
-      name: "exposes runtime.system.requestHeartbeatNow",
+      name: "exposes runtime.system.requestPulsecheckNow",
       readValue: (runtime: ReturnType<typeof createPluginRuntime>) =>
-        runtime.system.requestHeartbeatNow,
-      expected: requestHeartbeatNow,
+        runtime.system.requestPulsecheckNow,
+      expected: requestPulsecheckNow,
     },
     {
       name: "exposes runtime.version from the shared VERSION constant",

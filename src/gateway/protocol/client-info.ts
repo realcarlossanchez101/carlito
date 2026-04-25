@@ -3,7 +3,7 @@ import { normalizeOptionalLowercaseString } from "../../shared/string-coerce.js"
 export const GATEWAY_CLIENT_IDS = {
   WEBCHAT_UI: "webchat-ui",
   CONTROL_UI: "openclaw-control-ui",
-  TUI: "openclaw-tui",
+  TUI: "carlito-tui",
   WEBCHAT: "webchat",
   CLI: "cli",
   GATEWAY_CLIENT: "gateway-client",

@@ -562,7 +562,7 @@ describe("compactEmbeddedPiSessionDirect hooks", () => {
 
   it("skips compaction when the transcript only contains boilerplate replies and tool output", async () => {
     const messages = [
-      { role: "user", content: "<b>HEARTBEAT_OK</b>", timestamp: 1 },
+      { role: "user", content: "<b>PULSECHECK_OK</b>", timestamp: 1 },
       {
         role: "toolResult",
         toolCallId: "t1",
@@ -576,9 +576,9 @@ describe("compactEmbeddedPiSessionDirect hooks", () => {
     expect(compactTesting.containsRealConversationMessages(messages)).toBe(false);
   });
 
-  it("skips compaction when the transcript only contains heartbeat boilerplate and reasoning blocks", async () => {
+  it("skips compaction when the transcript only contains pulsecheck boilerplate and reasoning blocks", async () => {
     const messages = [
-      { role: "user", content: "<b>HEARTBEAT_OK</b>", timestamp: 1 },
+      { role: "user", content: "<b>PULSECHECK_OK</b>", timestamp: 1 },
       {
         role: "assistant",
         content: [{ type: "thinking", thinking: "checking" }],
@@ -599,8 +599,8 @@ describe("compactEmbeddedPiSessionDirect hooks", () => {
   });
 
   it("counts tool output as real only when a meaningful user ask exists in the lookback window", () => {
-    const heartbeatToolResultWindow = [
-      { role: "user", content: "<b>HEARTBEAT_OK</b>" },
+    const pulsecheckToolResultWindow = [
+      { role: "user", content: "<b>PULSECHECK_OK</b>" },
       {
         role: "toolResult",
         toolCallId: "t1",
@@ -610,8 +610,8 @@ describe("compactEmbeddedPiSessionDirect hooks", () => {
     ] as AgentMessage[];
     expect(
       compactTesting.hasRealConversationContent(
-        heartbeatToolResultWindow[1],
-        heartbeatToolResultWindow,
+        pulsecheckToolResultWindow[1],
+        pulsecheckToolResultWindow,
         1,
       ),
     ).toBe(false);

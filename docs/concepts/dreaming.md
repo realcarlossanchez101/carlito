@@ -231,16 +231,16 @@ When enabled, the Gateway **Dreams** tab shows:
 
 ### Dreaming never runs (status shows blocked)
 
-The managed dreaming cron rides the default agent's heartbeat. If heartbeat is not firing for that agent, the cron enqueues a system event that nobody consumes and dreaming silently does not run. Both `openclaw memory status` and `/dreaming status` will report `blocked` in that case and name the agent whose heartbeat is the blocker.
+The managed dreaming cron rides the default agent's pulsecheck. If pulsecheck is not firing for that agent, the cron enqueues a system event that nobody consumes and dreaming silently does not run. Both `openclaw memory status` and `/dreaming status` will report `blocked` in that case and name the agent whose pulsecheck is the blocker.
 
 Two common causes:
 
-- Another agent declares an explicit `heartbeat:` block. When any entry in `agents.list` has its own `heartbeat` block, only those agents heartbeat — the defaults stop applying to everyone else, so the default agent can go silent. Move the heartbeat settings to `agents.defaults.heartbeat`, or add an explicit `heartbeat` block on the default agent. See [Scope and precedence](/gateway/heartbeat#scope-and-precedence).
-- `heartbeat.every` is `0`, empty, or unparsable. The cron has no interval to schedule against, so the heartbeat is effectively disabled. Set `every` to a positive duration such as `30m`. See [Defaults](/gateway/heartbeat#defaults).
+- Another agent declares an explicit `pulsecheck:` block. When any entry in `agents.list` has its own `pulsecheck` block, only those agents pulsecheck — the defaults stop applying to everyone else, so the default agent can go silent. Move the pulsecheck settings to `agents.defaults.pulsecheck`, or add an explicit `pulsecheck` block on the default agent. See [Scope and precedence](/gateway/pulsecheck#scope-and-precedence).
+- `pulsecheck.every` is `0`, empty, or unparsable. The cron has no interval to schedule against, so the pulsecheck is effectively disabled. Set `every` to a positive duration such as `30m`. See [Defaults](/gateway/pulsecheck#defaults).
 
 ## Related
 
-- [Heartbeat](/gateway/heartbeat)
+- [Pulsecheck](/gateway/pulsecheck)
 - [Memory](/concepts/memory)
 - [Memory Search](/concepts/memory-search)
 - [memory CLI](/cli/memory)

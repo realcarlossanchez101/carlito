@@ -169,7 +169,7 @@ export function resolveTelegramAccount(params: {
 
   // If accountId is omitted, prefer a configured account token over failing on
   // the implicit "default" account. This keeps env-based setups working while
-  // making config-only tokens work for things like heartbeats.
+  // making config-only tokens work for things like pulsechecks.
   return resolveAccountWithDefaultFallback({
     accountId: params.accountId,
     normalizeAccountId,

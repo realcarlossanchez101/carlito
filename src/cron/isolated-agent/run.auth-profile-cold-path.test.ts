@@ -29,7 +29,7 @@ function makeParams(overrides?: Record<string, unknown>) {
       schedule: { kind: "cron" as const, expr: "0 * * * *", tz: "UTC" },
       sessionTarget: "isolated" as const,
       state: {},
-      wakeMode: "next-heartbeat" as const,
+      wakeMode: "next-pulsecheck" as const,
       payload: { kind: "agentTurn" as const, message: "run task" },
     },
     message: "run task",

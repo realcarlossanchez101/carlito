@@ -7,7 +7,7 @@ import type {
 } from "./types.base.js";
 import type {
   ChannelHealthMonitorConfig,
-  ChannelHeartbeatVisibilityConfig,
+  ChannelPulsecheckVisibilityConfig,
 } from "./types.channels.js";
 import type { DmConfig } from "./types.messages.js";
 import type { SecretInput } from "./types.secrets.js";
@@ -163,8 +163,8 @@ export type MSTeamsConfig = {
   mediaMaxMb?: number;
   /** SharePoint site ID for file uploads in group chats/channels (e.g., "contoso.sharepoint.com,guid1,guid2"). */
   sharePointSiteId?: string;
-  /** Heartbeat visibility settings for this channel. */
-  heartbeat?: ChannelHeartbeatVisibilityConfig;
+  /** Pulsecheck visibility settings for this channel. */
+  pulsecheck?: ChannelPulsecheckVisibilityConfig;
   /** Channel health monitor overrides for this channel. */
   healthMonitor?: ChannelHealthMonitorConfig;
   /** Outbound response prefix override for this channel/account. */

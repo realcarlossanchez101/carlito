@@ -1,31 +1,31 @@
-import { requestHeartbeatNow } from "../../infra/heartbeat-wake.js";
+import { requestPulsecheckNow } from "../../infra/pulsecheck-wake.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
 import { runCommandWithTimeout } from "../../process/exec.js";
 import { createLazyRuntimeMethod, createLazyRuntimeModule } from "../../shared/lazy-runtime.js";
 import { formatNativeDependencyHint } from "./native-deps.js";
-import type { RunHeartbeatOnceOptions } from "./types-core.js";
+import type { RunPulsecheckOnceOptions } from "./types-core.js";
 import type { PluginRuntime } from "./types.js";
 
-const loadHeartbeatRunnerRuntime = createLazyRuntimeModule(
-  () => import("../../infra/heartbeat-runner.js"),
+const loadPulsecheckRunnerRuntime = createLazyRuntimeModule(
+  () => import("../../infra/pulsecheck-runner.js"),
 );
-const runHeartbeatOnceInternal = createLazyRuntimeMethod(
-  loadHeartbeatRunnerRuntime,
-  (runtime) => runtime.runHeartbeatOnce,
+const runPulsecheckOnceInternal = createLazyRuntimeMethod(
+  loadPulsecheckRunnerRuntime,
+  (runtime) => runtime.runPulsecheckOnce,
 );
 
 export function createRuntimeSystem(): PluginRuntime["system"] {
   return {
     enqueueSystemEvent,
-    requestHeartbeatNow,
-    runHeartbeatOnce: (opts?: RunHeartbeatOnceOptions) => {
+    requestPulsecheckNow,
+    runPulsecheckOnce: (opts?: RunPulsecheckOnceOptions) => {
       // Destructure to forward only the plugin-safe subset; prevent cfg/deps injection at runtime.
-      const { reason, agentId, sessionKey, heartbeat } = opts ?? {};
-      return runHeartbeatOnceInternal({
+      const { reason, agentId, sessionKey, pulsecheck } = opts ?? {};
+      return runPulsecheckOnceInternal({
         reason,
         agentId,
         sessionKey,
-        heartbeat: heartbeat ? { target: heartbeat.target } : undefined,
+        pulsecheck: pulsecheck ? { target: pulsecheck.target } : undefined,
       });
     },
     runCommandWithTimeout,

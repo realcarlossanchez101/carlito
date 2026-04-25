@@ -54,7 +54,7 @@ struct GatewayProcessManagerTests {
               "channelLabels": {
                 "telegram": "Telegram"
               },
-              "heartbeatSeconds": 30,
+              "pulsecheckSeconds": 30,
               "sessions": {
                 "path": "/tmp/sessions",
                 "count": 1,

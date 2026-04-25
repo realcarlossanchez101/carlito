@@ -16,7 +16,7 @@ const PER_USER_QUEUE_SIZE = 20;
 const MAX_CONCURRENT_USERS = 10;
 
 /**
- * Queue item used for asynchronous message handling without blocking heartbeats.
+ * Queue item used for asynchronous message handling without blocking pulsechecks.
  */
 export interface QueuedMessage {
   type: "c2c" | "guild" | "dm" | "group";

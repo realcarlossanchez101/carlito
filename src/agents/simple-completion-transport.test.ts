@@ -44,8 +44,8 @@ describe("prepareModelForSimpleCompletion", () => {
     resolveProviderStreamFn.mockReset();
     buildTransportAwareSimpleStreamFn.mockReset();
     prepareTransportAwareSimpleModel.mockReset();
-    createAnthropicVertexStreamFnForModel.mockReturnValue("vertex-stream");
-    resolveProviderStreamFn.mockReturnValue("ollama-stream");
+    createAnthropicVertexStreamFnForModel.mockReturnValue(vi.fn());
+    resolveProviderStreamFn.mockReturnValue(vi.fn());
     buildTransportAwareSimpleStreamFn.mockReturnValue(undefined);
     prepareTransportAwareSimpleModel.mockImplementation((model) => model);
   });
@@ -91,7 +91,7 @@ describe("prepareModelForSimpleCompletion", () => {
         }),
       }),
     );
-    expect(ensureCustomApiRegistered).toHaveBeenCalledWith("ollama", "ollama-stream");
+    expect(ensureCustomApiRegistered).toHaveBeenCalledWith("ollama", expect.any(Function));
     expect(result).toBe(model);
   });
 
@@ -116,7 +116,7 @@ describe("prepareModelForSimpleCompletion", () => {
     expect(createAnthropicVertexStreamFnForModel).toHaveBeenCalledWith(model);
     expect(ensureCustomApiRegistered).toHaveBeenCalledWith(
       "openclaw-anthropic-vertex-simple:https%3A%2F%2Fus-central1-aiplatform.googleapis.com",
-      "vertex-stream",
+      expect.any(Function),
     );
     expect(result).toEqual({
       ...model,
@@ -139,7 +139,7 @@ describe("prepareModelForSimpleCompletion", () => {
     };
 
     resolveProviderStreamFn.mockReturnValueOnce(undefined);
-    buildTransportAwareSimpleStreamFn.mockReturnValueOnce("transport-stream");
+    buildTransportAwareSimpleStreamFn.mockReturnValueOnce(vi.fn());
     prepareTransportAwareSimpleModel.mockReturnValueOnce({
       ...model,
       api: "openclaw-openai-responses-transport",
@@ -151,7 +151,7 @@ describe("prepareModelForSimpleCompletion", () => {
     expect(buildTransportAwareSimpleStreamFn).toHaveBeenCalledWith(model, { cfg: undefined });
     expect(ensureCustomApiRegistered).toHaveBeenCalledWith(
       "openclaw-openai-responses-transport",
-      "transport-stream",
+      expect.any(Function),
     );
     expect(result).toEqual({
       ...model,

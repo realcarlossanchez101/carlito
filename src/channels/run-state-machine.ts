@@ -9,17 +9,17 @@ export type RunStateStatusSink = (patch: RunStateStatusPatch) => void;
 type RunStateMachineParams = {
   setStatus?: RunStateStatusSink;
   abortSignal?: AbortSignal;
-  heartbeatMs?: number;
+  pulsecheckMs?: number;
   now?: () => number;
 };
 
-const DEFAULT_RUN_ACTIVITY_HEARTBEAT_MS = 60_000;
+const DEFAULT_RUN_ACTIVITY_PULSECHECK_MS = 60_000;
 
 export function createRunStateMachine(params: RunStateMachineParams) {
-  const heartbeatMs = params.heartbeatMs ?? DEFAULT_RUN_ACTIVITY_HEARTBEAT_MS;
+  const pulsecheckMs = params.pulsecheckMs ?? DEFAULT_RUN_ACTIVITY_PULSECHECK_MS;
   const now = params.now ?? Date.now;
   let activeRuns = 0;
-  let runActivityHeartbeat: ReturnType<typeof setInterval> | null = null;
+  let runActivityPulsecheck: ReturnType<typeof setInterval> | null = null;
   let lifecycleActive = !params.abortSignal?.aborted;
 
   const publish = () => {
@@ -33,31 +33,31 @@ export function createRunStateMachine(params: RunStateMachineParams) {
     });
   };
 
-  const clearHeartbeat = () => {
-    if (!runActivityHeartbeat) {
+  const clearPulsecheck = () => {
+    if (!runActivityPulsecheck) {
       return;
     }
-    clearInterval(runActivityHeartbeat);
-    runActivityHeartbeat = null;
+    clearInterval(runActivityPulsecheck);
+    runActivityPulsecheck = null;
   };
 
-  const ensureHeartbeat = () => {
-    if (runActivityHeartbeat || activeRuns <= 0 || !lifecycleActive) {
+  const ensurePulsecheck = () => {
+    if (runActivityPulsecheck || activeRuns <= 0 || !lifecycleActive) {
       return;
     }
-    runActivityHeartbeat = setInterval(() => {
+    runActivityPulsecheck = setInterval(() => {
       if (!lifecycleActive || activeRuns <= 0) {
-        clearHeartbeat();
+        clearPulsecheck();
         return;
       }
       publish();
-    }, heartbeatMs);
-    runActivityHeartbeat.unref?.();
+    }, pulsecheckMs);
+    runActivityPulsecheck.unref?.();
   };
 
   const deactivate = () => {
     lifecycleActive = false;
-    clearHeartbeat();
+    clearPulsecheck();
   };
 
   const onAbort = () => {
@@ -85,12 +85,12 @@ export function createRunStateMachine(params: RunStateMachineParams) {
     onRunStart() {
       activeRuns += 1;
       publish();
-      ensureHeartbeat();
+      ensurePulsecheck();
     },
     onRunEnd() {
       activeRuns = Math.max(0, activeRuns - 1);
       if (activeRuns <= 0) {
-        clearHeartbeat();
+        clearPulsecheck();
       }
       publish();
     },

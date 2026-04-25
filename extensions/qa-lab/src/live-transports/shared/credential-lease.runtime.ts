@@ -12,7 +12,7 @@ import {
 
 const DEFAULT_ACQUIRE_TIMEOUT_MS = 90_000;
 const DEFAULT_ENDPOINT_PREFIX = QA_CREDENTIALS_DEFAULT_ENDPOINT_PREFIX;
-const DEFAULT_HEARTBEAT_INTERVAL_MS = 30_000;
+const DEFAULT_PULSECHECK_INTERVAL_MS = 30_000;
 const DEFAULT_HTTP_TIMEOUT_MS = 15_000;
 const DEFAULT_LEASE_TTL_MS = 20 * 60 * 1_000;
 const RETRY_BACKOFF_MS = [500, 1_000, 2_000, 4_000, 5_000] as const;
@@ -24,7 +24,7 @@ const convexAcquireSuccessSchema = z.object({
   leaseToken: z.string().min(1),
   payload: z.unknown(),
   leaseTtlMs: z.number().int().positive().optional(),
-  heartbeatIntervalMs: z.number().int().positive().optional(),
+  pulsecheckIntervalMs: z.number().int().positive().optional(),
 });
 
 const convexErrorSchema = z.object({
@@ -42,8 +42,8 @@ type ConvexCredentialBrokerConfig = {
   acquireTimeoutMs: number;
   acquireUrl: string;
   authToken: string;
-  heartbeatIntervalMs: number;
-  heartbeatUrl: string;
+  pulsecheckIntervalMs: number;
+  pulsecheckUrl: string;
   httpTimeoutMs: number;
   leaseTtlMs: number;
   ownerId: string;
@@ -51,7 +51,7 @@ type ConvexCredentialBrokerConfig = {
   role: QaCredentialRole;
 };
 
-export type QaCredentialLeaseHeartbeat = {
+export type QaCredentialLeasePulsecheck = {
   getFailure(): Error | null;
   stop(): Promise<void>;
   throwIfFailed(): void;
@@ -63,8 +63,8 @@ export type QaCredentialLeaseSource = "convex" | "env";
 
 export type QaCredentialLease<TPayload> = {
   credentialId?: string;
-  heartbeat(): Promise<void>;
-  heartbeatIntervalMs: number;
+  pulsecheck(): Promise<void>;
+  pulsecheckIntervalMs: number;
   kind: string;
   leaseToken?: string;
   leaseTtlMs: number;
@@ -179,10 +179,10 @@ function resolveConvexCredentialBrokerConfig(params: {
       "OPENCLAW_QA_CREDENTIAL_LEASE_TTL_MS",
       DEFAULT_LEASE_TTL_MS,
     ),
-    heartbeatIntervalMs: parsePositiveIntegerEnv(
+    pulsecheckIntervalMs: parsePositiveIntegerEnv(
       params.env,
-      "OPENCLAW_QA_CREDENTIAL_HEARTBEAT_INTERVAL_MS",
-      DEFAULT_HEARTBEAT_INTERVAL_MS,
+      "OPENCLAW_QA_CREDENTIAL_PULSECHECK_INTERVAL_MS",
+      DEFAULT_PULSECHECK_INTERVAL_MS,
     ),
     acquireTimeoutMs: parsePositiveIntegerEnv(
       params.env,
@@ -195,7 +195,7 @@ function resolveConvexCredentialBrokerConfig(params: {
       DEFAULT_HTTP_TIMEOUT_MS,
     ),
     acquireUrl: joinQaCredentialEndpoint(baseUrl, endpointPrefix, "acquire"),
-    heartbeatUrl: joinQaCredentialEndpoint(baseUrl, endpointPrefix, "heartbeat"),
+    pulsecheckUrl: joinQaCredentialEndpoint(baseUrl, endpointPrefix, "pulsecheck"),
     releaseUrl: joinQaCredentialEndpoint(baseUrl, endpointPrefix, "release"),
   };
 }
@@ -299,9 +299,9 @@ export async function acquireQaCredentialLease<TPayload>(
       source: "env",
       kind: opts.kind,
       payload: opts.resolveEnvPayload(),
-      heartbeatIntervalMs: 0,
+      pulsecheckIntervalMs: 0,
       leaseTtlMs: 0,
-      async heartbeat() {},
+      async pulsecheck() {},
       async release() {},
     };
   }
@@ -333,7 +333,7 @@ export async function acquireQaCredentialLease<TPayload>(
           ownerId: config.ownerId,
           actorRole: config.role,
           leaseTtlMs: config.leaseTtlMs,
-          heartbeatIntervalMs: config.heartbeatIntervalMs,
+          pulsecheckIntervalMs: config.pulsecheckIntervalMs,
         },
       });
       const acquired = convexAcquireSuccessSchema.parse(payload);
@@ -371,7 +371,7 @@ export async function acquireQaCredentialLease<TPayload>(
         );
       }
       const leaseTtlMs = acquired.leaseTtlMs ?? config.leaseTtlMs;
-      const heartbeatIntervalMs = acquired.heartbeatIntervalMs ?? config.heartbeatIntervalMs;
+      const pulsecheckIntervalMs = acquired.pulsecheckIntervalMs ?? config.pulsecheckIntervalMs;
       return {
         source: "convex",
         kind: opts.kind,
@@ -380,14 +380,14 @@ export async function acquireQaCredentialLease<TPayload>(
         credentialId: acquired.credentialId,
         leaseToken: acquired.leaseToken,
         leaseTtlMs,
-        heartbeatIntervalMs,
+        pulsecheckIntervalMs,
         payload: parsedPayload,
-        async heartbeat() {
-          const heartbeatPayload = await postConvexBroker({
+        async pulsecheck() {
+          const pulsecheckPayload = await postConvexBroker({
             fetchImpl,
             timeoutMs: config.httpTimeoutMs,
             authToken: config.authToken,
-            url: config.heartbeatUrl,
+            url: config.pulsecheckUrl,
             body: {
               kind: opts.kind,
               ownerId: config.ownerId,
@@ -397,7 +397,7 @@ export async function acquireQaCredentialLease<TPayload>(
               leaseTtlMs,
             },
           });
-          assertConvexOk(heartbeatPayload, "heartbeat");
+          assertConvexOk(pulsecheckPayload, "pulsecheck");
         },
         async release() {
           await releaseLease();
@@ -439,14 +439,17 @@ export async function acquireQaCredentialLease<TPayload>(
   }
 }
 
-export function startQaCredentialLeaseHeartbeat(
-  lease: Pick<QaCredentialLease<unknown>, "heartbeat" | "heartbeatIntervalMs" | "kind" | "source">,
+export function startQaCredentialLeasePulsecheck(
+  lease: Pick<
+    QaCredentialLease<unknown>,
+    "pulsecheck" | "pulsecheckIntervalMs" | "kind" | "source"
+  >,
   opts?: {
     intervalMs?: number;
     setTimeoutImpl?: typeof setTimeout;
     clearTimeoutImpl?: typeof clearTimeout;
   },
-): QaCredentialLeaseHeartbeat {
+): QaCredentialLeasePulsecheck {
   if (lease.source !== "convex") {
     return {
       getFailure: () => null,
@@ -454,7 +457,7 @@ export function startQaCredentialLeaseHeartbeat(
       throwIfFailed() {},
     };
   }
-  const intervalMs = opts?.intervalMs ?? lease.heartbeatIntervalMs;
+  const intervalMs = opts?.intervalMs ?? lease.pulsecheckIntervalMs;
   if (!Number.isFinite(intervalMs) || intervalMs < 1) {
     return {
       getFailure: () => null,
@@ -481,10 +484,10 @@ export function startQaCredentialLeaseHeartbeat(
       }
       inFlight = (async () => {
         try {
-          await lease.heartbeat();
+          await lease.pulsecheck();
         } catch (error) {
           failure = new Error(
-            `Credential lease heartbeat failed for kind "${lease.kind}": ${formatErrorMessage(error)}`,
+            `Credential lease pulsecheck failed for kind "${lease.kind}": ${formatErrorMessage(error)}`,
           );
           return;
         } finally {
@@ -522,7 +525,7 @@ export function startQaCredentialLeaseHeartbeat(
 export const __testing = {
   DEFAULT_ACQUIRE_TIMEOUT_MS,
   DEFAULT_ENDPOINT_PREFIX,
-  DEFAULT_HEARTBEAT_INTERVAL_MS,
+  DEFAULT_PULSECHECK_INTERVAL_MS,
   DEFAULT_LEASE_TTL_MS,
   computeAcquireBackoffMs,
   normalizeQaCredentialRole,

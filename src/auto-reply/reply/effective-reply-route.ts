@@ -18,7 +18,7 @@ export type EffectiveReplyRoute = {
 };
 
 export function isSystemEventProvider(provider?: string): boolean {
-  return provider === "heartbeat" || provider === "cron-event" || provider === "exec-event";
+  return provider === "pulsecheck" || provider === "cron-event" || provider === "exec-event";
 }
 
 export function resolveEffectiveReplyRoute(params: {

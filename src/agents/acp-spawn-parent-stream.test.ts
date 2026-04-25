@@ -2,7 +2,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { mergeMockedModule } from "../test-utils/vitest-module-mocks.js";
 
 const enqueueSystemEventMock = vi.fn();
-const requestHeartbeatNowMock = vi.fn();
+const requestPulsecheckNowMock = vi.fn();
 const readAcpSessionEntryMock = vi.fn();
 const resolveSessionFilePathMock = vi.fn();
 const resolveSessionFilePathOptionsMock = vi.fn();
@@ -11,13 +11,13 @@ vi.mock("../infra/system-events.js", () => ({
   enqueueSystemEvent: (...args: unknown[]) => enqueueSystemEventMock(...args),
 }));
 
-vi.mock("../infra/heartbeat-wake.js", async () => {
+vi.mock("../infra/pulsecheck-wake.js", async () => {
   return await mergeMockedModule(
-    await vi.importActual<typeof import("../infra/heartbeat-wake.js")>(
-      "../infra/heartbeat-wake.js",
+    await vi.importActual<typeof import("../infra/pulsecheck-wake.js")>(
+      "../infra/pulsecheck-wake.js",
     ),
     () => ({
-      requestHeartbeatNow: (...args: unknown[]) => requestHeartbeatNowMock(...args),
+      requestPulsecheckNow: (...args: unknown[]) => requestPulsecheckNowMock(...args),
     }),
   );
 });
@@ -63,7 +63,7 @@ describe("startAcpSpawnParentStreamRelay", () => {
 
   beforeEach(() => {
     enqueueSystemEventMock.mockClear();
-    requestHeartbeatNowMock.mockClear();
+    requestPulsecheckNowMock.mockClear();
     readAcpSessionEntryMock.mockReset();
     resolveSessionFilePathMock.mockReset();
     resolveSessionFilePathOptionsMock.mockReset();
@@ -129,7 +129,7 @@ describe("startAcpSpawnParentStreamRelay", () => {
         trusted: false,
       }),
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith(
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith(
       expect.objectContaining({
         reason: "acp:spawn:stream",
         sessionKey: "agent:main:main",
@@ -255,7 +255,7 @@ describe("startAcpSpawnParentStreamRelay", () => {
     });
 
     expect(collectedTexts()).toEqual([]);
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
     relay.dispose();
   });
 

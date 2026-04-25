@@ -19,7 +19,7 @@ const defaultSessions: HealthSummary["sessions"] = {
 const createMainAgentSummary = (sessions = defaultSessions) => ({
   agentId: "main",
   isDefault: true,
-  heartbeat: {
+  pulsecheck: {
     enabled: true,
     every: "1m",
     everyMs: 60_000,
@@ -44,7 +44,7 @@ const createHealthSummary = (params: {
     channels: params.channels,
     channelOrder: params.channelOrder,
     channelLabels: params.channelLabels,
-    heartbeatSeconds: 60,
+    pulsecheckSeconds: 60,
     defaultAgentId: "main",
     agents: [createMainAgentSummary(sessions)],
     sessions,

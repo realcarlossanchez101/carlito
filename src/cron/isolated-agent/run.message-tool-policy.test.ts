@@ -6,7 +6,7 @@ import {
   clearFastTestEnv,
   dispatchCronDeliveryMock,
   getChannelPluginMock,
-  isHeartbeatOnlyResponseMock,
+  isPulsecheckOnlyResponseMock,
   loadRunCronIsolatedAgentTurn,
   makeCronSession,
   mockRunCronFallbackPassthrough,
@@ -435,10 +435,10 @@ describe("runCronIsolatedAgentTurn message tool policy", () => {
     expect(runEmbeddedPiAgentMock.mock.calls[0]?.[0]?.disableMessageTool).toBe(false);
   });
 
-  it("skips cron delivery when output is heartbeat-only", async () => {
+  it("skips cron delivery when output is pulsecheck-only", async () => {
     mockRunCronFallbackPassthrough();
     resolveCronDeliveryPlanMock.mockReturnValue(makeAnnounceDeliveryPlan());
-    isHeartbeatOnlyResponseMock.mockReturnValue(true);
+    isPulsecheckOnlyResponseMock.mockReturnValue(true);
 
     await runCronIsolatedAgentTurn({
       ...makeParams(),
@@ -449,7 +449,7 @@ describe("runCronIsolatedAgentTurn message tool policy", () => {
     expect(dispatchCronDeliveryMock.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({
         deliveryRequested: true,
-        skipHeartbeatDelivery: true,
+        skipPulsecheckDelivery: true,
       }),
     );
   });

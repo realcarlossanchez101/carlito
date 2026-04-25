@@ -13,7 +13,7 @@ UPDATE_BASELINE_VERSION="${OPENCLAW_INSTALL_UPDATE_BASELINE:-latest}"
 UPDATE_BASELINE_TAG_URL="${OPENCLAW_INSTALL_UPDATE_BASELINE_TAG_URL:-}"
 UPDATE_EXPECT_VERSION="${OPENCLAW_INSTALL_UPDATE_EXPECT_VERSION:-}"
 UPDATE_TAG_URL="${OPENCLAW_INSTALL_UPDATE_TAG_URL:-}"
-HEARTBEAT_INTERVAL="${OPENCLAW_INSTALL_SMOKE_HEARTBEAT_INTERVAL:-60}"
+PULSECHECK_INTERVAL="${OPENCLAW_INSTALL_SMOKE_PULSECHECK_INTERVAL:-60}"
 INSTALL_COMMAND_TIMEOUT="${OPENCLAW_INSTALL_SMOKE_COMMAND_TIMEOUT:-900}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -66,10 +66,10 @@ print_install_audit() {
   fi
 }
 
-run_with_heartbeat() {
+run_with_pulsecheck() {
   local label="$1"
   shift
-  local interval="$HEARTBEAT_INTERVAL"
+  local interval="$PULSECHECK_INTERVAL"
   if ! [[ "$interval" =~ ^[0-9]+$ ]] || [[ "$interval" == "0" ]]; then
     "$@"
     return
@@ -77,7 +77,7 @@ run_with_heartbeat() {
 
   local start
   local command_pid
-  local heartbeat_pid
+  local pulsecheck_pid
   local status
   start="$(date +%s)"
   set +e
@@ -100,11 +100,11 @@ run_with_heartbeat() {
       fi
     done
   ) &
-  heartbeat_pid=$!
+  pulsecheck_pid=$!
   wait "$command_pid"
   status=$?
-  kill "$heartbeat_pid" >/dev/null 2>&1 || true
-  wait "$heartbeat_pid" >/dev/null 2>&1 || true
+  kill "$pulsecheck_pid" >/dev/null 2>&1 || true
+  wait "$pulsecheck_pid" >/dev/null 2>&1 || true
   set -e
   return "$status"
 }
@@ -112,7 +112,7 @@ run_with_heartbeat() {
 npm_install_global() {
   local label="$1"
   shift
-  run_with_heartbeat "$label" \
+  run_with_pulsecheck "$label" \
     timeout --foreground "${INSTALL_COMMAND_TIMEOUT}s" \
       npm \
       --loglevel=error \
@@ -249,7 +249,7 @@ run_update_smoke() {
   update_stderr_file="$(mktemp)"
   set +e
   UPDATE_JSON="$(
-    run_with_heartbeat "openclaw update" \
+    run_with_pulsecheck "openclaw update" \
       env npm_config_omit=optional NPM_CONFIG_OMIT=optional \
       openclaw update --tag "$UPDATE_TAG_URL" --yes --json 2>"$update_stderr_file"
   )"

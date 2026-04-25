@@ -83,7 +83,7 @@ import { callGateway } from "../../gateway/call.runtime.js";
 import { deliverOutboundPayloads } from "../../infra/outbound/deliver.js";
 import { buildOutboundSessionContext } from "../../infra/outbound/session-context.js";
 import { enqueueSystemEvent } from "../../infra/system-events.js";
-import { shouldEnqueueCronMainSummary } from "../heartbeat-policy.js";
+import { shouldEnqueueCronMainSummary } from "../pulsecheck-policy.js";
 import {
   dispatchCronDelivery,
   getCompletedDirectCronDeliveriesCountForTests,
@@ -150,7 +150,7 @@ function makeBaseParams(overrides: {
     timeoutMs: 30_000,
     resolvedDelivery,
     deliveryRequested: overrides.deliveryRequested ?? true,
-    skipHeartbeatDelivery: false,
+    skipPulsecheckDelivery: false,
     deliveryBestEffort: overrides.deliveryBestEffort ?? false,
     deliveryPayloadHasStructuredContent: false,
     deliveryPayloads: overrides.synthesizedText ? [{ text: overrides.synthesizedText }] : [],
@@ -522,7 +522,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
     vi.mocked(countActiveDescendantRuns).mockReturnValue(0);
     vi.mocked(isLikelyInterimCronMessage).mockReturnValue(false);
 
-    const params = makeBaseParams({ synthesizedText: "HEARTBEAT_OK 🦞" });
+    const params = makeBaseParams({ synthesizedText: "PULSECHECK_OK 🦞" });
     (params.job as { deleteAfterRun?: boolean }).deleteAfterRun = true;
 
     const state = await dispatchCronDelivery(params);
@@ -837,7 +837,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
         deliveryAttempted: true,
       }),
     );
-    // deliveryAttempted must be true so the heartbeat timer does not fire
+    // deliveryAttempted must be true so the pulsecheck timer does not fire
     // a fallback enqueueSystemEvent with the NO_REPLY sentinel text.
     expect(state.deliveryAttempted).toBe(true);
 
@@ -985,11 +985,11 @@ describe("dispatchCronDelivery — double-announce guard", () => {
     });
   });
 
-  it("delivers structured heartbeat/media payloads once through the outbound adapter", async () => {
+  it("delivers structured pulsecheck/media payloads once through the outbound adapter", async () => {
     vi.mocked(countActiveDescendantRuns).mockReturnValue(0);
     vi.mocked(isLikelyInterimCronMessage).mockReturnValue(false);
 
-    const params = makeBaseParams({ synthesizedText: "HEARTBEAT_OK" });
+    const params = makeBaseParams({ synthesizedText: "PULSECHECK_OK" });
     params.cfgWithAgentDefaults = {
       channels: {
         telegram: {
@@ -999,7 +999,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
     } as never;
     params.deliveryPayloadHasStructuredContent = true;
     params.deliveryPayloads = [
-      { text: "HEARTBEAT_OK", mediaUrl: "https://example.com/img.png" },
+      { text: "PULSECHECK_OK", mediaUrl: "https://example.com/img.png" },
     ] as never;
 
     const state = await dispatchCronDelivery(params);
@@ -1011,7 +1011,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
       expect.objectContaining({
         channel: "telegram",
         to: "123456",
-        payloads: [{ text: "HEARTBEAT_OK", mediaUrl: "https://example.com/img.png" }],
+        payloads: [{ text: "PULSECHECK_OK", mediaUrl: "https://example.com/img.png" }],
       }),
     );
   });
@@ -1020,10 +1020,10 @@ describe("dispatchCronDelivery — double-announce guard", () => {
     vi.mocked(countActiveDescendantRuns).mockReturnValue(0);
     vi.mocked(isLikelyInterimCronMessage).mockReturnValue(false);
 
-    const params = makeBaseParams({ synthesizedText: "HEARTBEAT_OK" });
+    const params = makeBaseParams({ synthesizedText: "PULSECHECK_OK" });
     params.deliveryPayloadHasStructuredContent = true;
     params.deliveryPayloads = [
-      { text: "HEARTBEAT_OK", mediaUrl: "https://example.com/img.png" },
+      { text: "PULSECHECK_OK", mediaUrl: "https://example.com/img.png" },
     ] as never;
     (params.job as { deleteAfterRun?: boolean }).deleteAfterRun = true;
 

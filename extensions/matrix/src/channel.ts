@@ -521,7 +521,7 @@ export const matrixPlugin: ChannelPlugin<ResolvedMatrixAccount, MatrixProbe> =
       lifecycle: {
         runStartupMaintenance: runMatrixStartupMaintenance,
       },
-      heartbeat: {
+      pulsecheck: {
         sendTyping: async ({ cfg, to, accountId }) => {
           await (
             await loadMatrixChannelRuntime()

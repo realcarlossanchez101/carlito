@@ -82,7 +82,7 @@ describe("CronService read ops while job is running", () => {
     vi.setSystemTime(new Date("2025-12-13T00:00:00.000Z"));
     const store = await makeStorePath();
     const enqueueSystemEvent = vi.fn();
-    const requestHeartbeatNow = vi.fn();
+    const requestPulsecheckNow = vi.fn();
     let resolveFinished: (() => void) | undefined;
     const finished = new Promise<void>((resolve) => {
       resolveFinished = resolve;
@@ -95,7 +95,7 @@ describe("CronService read ops while job is running", () => {
       cronEnabled: true,
       log: noopLogger,
       enqueueSystemEvent,
-      requestHeartbeatNow,
+      requestPulsecheckNow,
       runIsolatedAgentJob: isolatedRun.runIsolatedAgentJob,
       onEvent: (evt) => {
         if (evt.action === "finished" && evt.status === "ok") {
@@ -117,7 +117,7 @@ describe("CronService read ops while job is running", () => {
           at: new Date("2025-12-13T00:00:01.000Z").toISOString(),
         },
         sessionTarget: "isolated",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "agentTurn", message: "long task" },
         delivery: { mode: "none" },
       });
@@ -164,7 +164,7 @@ describe("CronService read ops while job is running", () => {
   it("keeps list and status responsive during manual cron.run execution", async () => {
     const store = await makeStorePath();
     const enqueueSystemEvent = vi.fn();
-    const requestHeartbeatNow = vi.fn();
+    const requestPulsecheckNow = vi.fn();
     const isolatedRun = createDeferredIsolatedRun();
 
     const cron = new CronService({
@@ -172,7 +172,7 @@ describe("CronService read ops while job is running", () => {
       cronEnabled: true,
       log: noopLogger,
       enqueueSystemEvent,
-      requestHeartbeatNow,
+      requestPulsecheckNow,
       runIsolatedAgentJob: isolatedRun.runIsolatedAgentJob,
     });
 
@@ -187,7 +187,7 @@ describe("CronService read ops while job is running", () => {
           at: new Date("2030-01-01T00:00:00.000Z").toISOString(),
         },
         sessionTarget: "isolated",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "agentTurn", message: "manual run" },
         delivery: { mode: "none" },
       });
@@ -217,7 +217,7 @@ describe("CronService read ops while job is running", () => {
   it("keeps list and status responsive during startup catch-up runs", async () => {
     const store = await makeStorePath();
     const enqueueSystemEvent = vi.fn();
-    const requestHeartbeatNow = vi.fn();
+    const requestPulsecheckNow = vi.fn();
     const nowMs = Date.parse("2025-12-13T00:00:00.000Z");
 
     await writeCronStoreSnapshot({
@@ -231,7 +231,7 @@ describe("CronService read ops while job is running", () => {
           updatedAtMs: nowMs - 86_400_000,
           schedule: { kind: "at", at: new Date(nowMs - 60_000).toISOString() },
           sessionTarget: "isolated",
-          wakeMode: "next-heartbeat",
+          wakeMode: "next-pulsecheck",
           payload: { kind: "agentTurn", message: "startup replay" },
           delivery: { mode: "none" },
           state: { nextRunAtMs: nowMs - 60_000 },
@@ -247,7 +247,7 @@ describe("CronService read ops while job is running", () => {
       log: noopLogger,
       nowMs: () => nowMs,
       enqueueSystemEvent,
-      requestHeartbeatNow,
+      requestPulsecheckNow,
       runIsolatedAgentJob: isolatedRun.runIsolatedAgentJob,
     });
 

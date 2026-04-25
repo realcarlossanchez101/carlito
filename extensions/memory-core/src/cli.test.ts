@@ -384,7 +384,7 @@ describe("memory cli", () => {
     });
   });
 
-  it("reports dreaming blocked when another explicit heartbeat agent excludes main", async () => {
+  it("reports dreaming blocked when another explicit pulsecheck agent excludes main", async () => {
     loadConfig.mockReturnValue({
       plugins: {
         entries: {
@@ -399,7 +399,7 @@ describe("memory cli", () => {
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
           },
         },
@@ -407,7 +407,7 @@ describe("memory cli", () => {
           { id: "main", default: true },
           {
             id: "ops",
-            heartbeat: {
+            pulsecheck: {
               every: "1h",
             },
           },
@@ -426,13 +426,13 @@ describe("memory cli", () => {
 
     expect(log).toHaveBeenCalledWith(
       expect.stringContaining(
-        'Dreaming status: blocked - dreaming is enabled but will not run because heartbeat is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+        'Dreaming status: blocked - dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
       ),
     );
     expect(close).toHaveBeenCalled();
   });
 
-  it('reports dreaming blocked when main heartbeat interval is "0m"', async () => {
+  it('reports dreaming blocked when main pulsecheck interval is "0m"', async () => {
     loadConfig.mockReturnValue({
       plugins: {
         entries: {
@@ -447,7 +447,7 @@ describe("memory cli", () => {
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "0m",
           },
         },
@@ -466,7 +466,7 @@ describe("memory cli", () => {
 
     expect(log).toHaveBeenCalledWith(
       expect.stringContaining(
-        'Dreaming status: blocked - dreaming is enabled but will not run because heartbeat is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+        'Dreaming status: blocked - dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
       ),
     );
     expect(close).toHaveBeenCalled();
@@ -488,7 +488,7 @@ describe("memory cli", () => {
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "0m",
           },
         },
@@ -507,7 +507,7 @@ describe("memory cli", () => {
 
     expect(log).toHaveBeenCalledWith(
       expect.stringContaining(
-        'Dreaming status: blocked - dreaming is enabled but will not run because heartbeat is disabled for "ops". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+        'Dreaming status: blocked - dreaming is enabled but will not run because pulsecheck is disabled for "ops". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
       ),
     );
     expect(close).toHaveBeenCalled();
@@ -1391,18 +1391,18 @@ describe("memory cli", () => {
       await fs.writeFile(
         historyPath,
         [
-          "## Heartbeat checks",
-          "- 04:17 (Europe/Madrid) heartbeat run.",
+          "## Pulsecheck checks",
+          "- 04:17 (Europe/Madrid) pulsecheck run.",
           "- Ariston check returned warning/error:",
           "  - Pressure LOW: 1.1 bar",
-          "- Action: alert Mariano on this heartbeat.",
+          "- Action: alert Mariano on this pulsecheck.",
           "",
           "## 07:15 life-context sync (travel + now)",
           "- mariano@tpmcap.com calendar access failed (invalid_grant: token expired/revoked).",
           "- memory/email-tracker.json checkpoint at 2025-02-17T07:03:53+01:00.",
           "- memory/travel.md updated.",
           "",
-          "## Heartbeat checks (07:18)",
+          "## Pulsecheck checks (07:18)",
           "- Ariston check again reports low pressure: 1.1 bar.",
           "- collect-temps.sh completed OK (exit 0).",
         ].join("\n") + "\n",

@@ -1,6 +1,6 @@
 import { resolveFailoverReasonFromError } from "../../agents/failover-error.js";
 import type { CronConfig, CronRetryOn } from "../../config/types.cron.js";
-import type { HeartbeatRunResult } from "../../infra/heartbeat-wake.js";
+import type { PulsecheckRunResult } from "../../infra/pulsecheck-wake.js";
 import { DEFAULT_AGENT_ID } from "../../routing/session-key.js";
 import { normalizeOptionalLowercaseString } from "../../shared/string-coerce.js";
 import {
@@ -379,7 +379,7 @@ function emitFailureAlert(
 
   state.deps.enqueueSystemEvent(text, { agentId: params.job.agentId });
   if (params.job.wakeMode === "now") {
-    state.deps.requestHeartbeatNow({ reason: `cron:${params.job.id}:failure-alert` });
+    state.deps.requestPulsecheckNow({ reason: `cron:${params.job.id}:failure-alert` });
   }
 }
 
@@ -1208,36 +1208,39 @@ async function executeMainSessionCronJob(
     sessionKey: targetMainSessionKey,
     contextKey: `cron:${job.id}`,
   });
-  if (job.wakeMode === "now" && state.deps.runHeartbeatOnce) {
+  if (job.wakeMode === "now" && state.deps.runPulsecheckOnce) {
     const reason = `cron:${job.id}`;
     const isRecurringJob = job.schedule.kind !== "at";
-    const maxWaitMs = state.deps.wakeNowHeartbeatBusyMaxWaitMs ?? 2 * 60_000;
-    const retryDelayMs = state.deps.wakeNowHeartbeatBusyRetryDelayMs ?? 250;
+    const maxWaitMs = state.deps.wakeNowPulsecheckBusyMaxWaitMs ?? 2 * 60_000;
+    const retryDelayMs = state.deps.wakeNowPulsecheckBusyRetryDelayMs ?? 250;
     const waitStartedAt = state.deps.nowMs();
 
-    let heartbeatResult: HeartbeatRunResult;
+    let pulsecheckResult: PulsecheckRunResult;
     for (;;) {
       if (abortSignal?.aborted) {
         return { status: "error", error: timeoutErrorMessage() };
       }
-      heartbeatResult = await state.deps.runHeartbeatOnce({
+      pulsecheckResult = await state.deps.runPulsecheckOnce({
         reason,
         agentId: job.agentId,
         sessionKey: targetMainSessionKey,
-        heartbeat: { target: "last" },
+        pulsecheck: { target: "last" },
       });
-      if (heartbeatResult.status !== "skipped" || heartbeatResult.reason !== "requests-in-flight") {
+      if (
+        pulsecheckResult.status !== "skipped" ||
+        pulsecheckResult.reason !== "requests-in-flight"
+      ) {
         break;
       }
       if (isRecurringJob) {
         // Recurring main-session cron jobs should not hold the cron lane open
         // while the main lane is busy, or their measured duration starts to
         // reflect queue wait instead of cron bookkeeping (#58833).
-        state.deps.requestHeartbeatNow({
+        state.deps.requestPulsecheckNow({
           reason,
           agentId: job.agentId,
           sessionKey: targetMainSessionKey,
-          heartbeat: { target: "last" },
+          pulsecheck: { target: "last" },
         });
         return { status: "ok", summary: text };
       }
@@ -1248,34 +1251,34 @@ async function executeMainSessionCronJob(
         if (abortSignal?.aborted) {
           return { status: "error", error: timeoutErrorMessage() };
         }
-        state.deps.requestHeartbeatNow({
+        state.deps.requestPulsecheckNow({
           reason,
           agentId: job.agentId,
           sessionKey: targetMainSessionKey,
-          heartbeat: { target: "last" },
+          pulsecheck: { target: "last" },
         });
         return { status: "ok", summary: text };
       }
       await waitWithAbort(retryDelayMs);
     }
 
-    if (heartbeatResult.status === "ran") {
+    if (pulsecheckResult.status === "ran") {
       return { status: "ok", summary: text };
     }
-    if (heartbeatResult.status === "skipped") {
-      return { status: "skipped", error: heartbeatResult.reason, summary: text };
+    if (pulsecheckResult.status === "skipped") {
+      return { status: "skipped", error: pulsecheckResult.reason, summary: text };
     }
-    return { status: "error", error: heartbeatResult.reason, summary: text };
+    return { status: "error", error: pulsecheckResult.reason, summary: text };
   }
 
   if (abortSignal?.aborted) {
     return { status: "error", error: timeoutErrorMessage() };
   }
-  state.deps.requestHeartbeatNow({
+  state.deps.requestPulsecheckNow({
     reason: `cron:${job.id}`,
     agentId: job.agentId,
     sessionKey: targetMainSessionKey,
-    heartbeat: { target: "last" },
+    pulsecheck: { target: "last" },
   });
   return { status: "ok", summary: text };
 }
@@ -1408,7 +1411,7 @@ function emitJobFinished(
 
 export function wake(
   state: CronServiceState,
-  opts: { mode: "now" | "next-heartbeat"; text: string },
+  opts: { mode: "now" | "next-pulsecheck"; text: string },
 ) {
   const text = opts.text.trim();
   if (!text) {
@@ -1416,7 +1419,7 @@ export function wake(
   }
   state.deps.enqueueSystemEvent(text);
   if (opts.mode === "now") {
-    state.deps.requestHeartbeatNow({ reason: "wake" });
+    state.deps.requestPulsecheckNow({ reason: "wake" });
   }
   return { ok: true } as const;
 }

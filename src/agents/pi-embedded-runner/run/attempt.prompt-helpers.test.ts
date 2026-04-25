@@ -49,7 +49,7 @@ describe("resolveAttemptPrependSystemContext", () => {
 
     const result = resolveAttemptPrependSystemContext({
       sessionKey: "agent:main:discord:direct:123",
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       hookPrependSystemContext: "Hook system context",
     });
 

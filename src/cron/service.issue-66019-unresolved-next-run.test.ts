@@ -34,7 +34,7 @@ function createIssue66019State(params: {
     log: noopLogger,
     nowMs: params.nowMs,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: params.runIsolatedAgentJob,
   });
 }

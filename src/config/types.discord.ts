@@ -9,7 +9,7 @@ import type {
 } from "./types.base.js";
 import type {
   ChannelHealthMonitorConfig,
-  ChannelHeartbeatVisibilityConfig,
+  ChannelPulsecheckVisibilityConfig,
 } from "./types.channels.js";
 import type { DmConfig, ProviderCommandsConfig } from "./types.messages.js";
 import type { SecretInput } from "./types.secrets.js";
@@ -294,8 +294,8 @@ export type DiscordAccountConfig = {
   dm?: DiscordDmConfig;
   /** New per-guild config keyed by guild id or slug. */
   guilds?: Record<string, DiscordGuildEntry>;
-  /** Heartbeat visibility settings for this channel. */
-  heartbeat?: ChannelHeartbeatVisibilityConfig;
+  /** Pulsecheck visibility settings for this channel. */
+  pulsecheck?: ChannelPulsecheckVisibilityConfig;
   /** Channel health monitor overrides for this channel/account. */
   healthMonitor?: ChannelHealthMonitorConfig;
   /** Exec approval forwarding configuration. */

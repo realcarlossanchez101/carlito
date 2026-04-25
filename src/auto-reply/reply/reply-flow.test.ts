@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../../config/types.openclaw.js";
-import { HEARTBEAT_TOKEN, SILENT_REPLY_TOKEN } from "../tokens.js";
+import { PULSECHECK_TOKEN, SILENT_REPLY_TOKEN } from "../tokens.js";
 import { createReplyDispatcher } from "./reply-dispatcher.js";
 import { createReplyToModeFilter } from "./reply-threading.js";
 
@@ -84,25 +84,25 @@ describe("createReplyDispatcher", () => {
     expect(deliver).not.toHaveBeenCalled();
   });
 
-  it("strips heartbeat tokens and applies responsePrefix", async () => {
+  it("strips pulsecheck tokens and applies responsePrefix", async () => {
     const deliver = vi.fn().mockResolvedValue(undefined);
-    const onHeartbeatStrip = vi.fn();
+    const onPulsecheckStrip = vi.fn();
     const dispatcher = createReplyDispatcher({
       deliver,
       responsePrefix: "PFX",
-      onHeartbeatStrip,
+      onPulsecheckStrip,
     });
 
-    expect(dispatcher.sendFinalReply({ text: HEARTBEAT_TOKEN })).toBe(false);
-    expect(dispatcher.sendToolResult({ text: `${HEARTBEAT_TOKEN} hello` })).toBe(true);
+    expect(dispatcher.sendFinalReply({ text: PULSECHECK_TOKEN })).toBe(false);
+    expect(dispatcher.sendToolResult({ text: `${PULSECHECK_TOKEN} hello` })).toBe(true);
     await dispatcher.waitForIdle();
 
     expect(deliver).toHaveBeenCalledTimes(1);
     expect(deliver.mock.calls[0][0].text).toBe("PFX hello");
-    expect(onHeartbeatStrip).toHaveBeenCalledTimes(2);
+    expect(onPulsecheckStrip).toHaveBeenCalledTimes(2);
   });
 
-  it("avoids double-prefixing and keeps media when heartbeat is the only text", async () => {
+  it("avoids double-prefixing and keeps media when pulsecheck is the only text", async () => {
     const deliver = vi.fn().mockResolvedValue(undefined);
     const dispatcher = createReplyDispatcher({
       deliver,
@@ -117,7 +117,7 @@ describe("createReplyDispatcher", () => {
     ).toBe(true);
     expect(
       dispatcher.sendFinalReply({
-        text: HEARTBEAT_TOKEN,
+        text: PULSECHECK_TOKEN,
         mediaUrl: "file:///tmp/photo.jpg",
       }),
     ).toBe(true);

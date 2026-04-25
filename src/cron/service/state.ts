@@ -1,5 +1,5 @@
 import type { CronConfig } from "../../config/types.cron.js";
-import type { HeartbeatRunResult, HeartbeatWakeRequest } from "../../infra/heartbeat-wake.js";
+import type { PulsecheckRunResult, PulsecheckWakeRequest } from "../../infra/pulsecheck-wake.js";
 import type {
   CronDeliveryStatus,
   CronDeliveryTrace,
@@ -66,22 +66,22 @@ export type CronServiceDeps = {
     text: string,
     opts?: { agentId?: string; sessionKey?: string; contextKey?: string; trusted?: boolean },
   ) => void;
-  requestHeartbeatNow: (opts?: HeartbeatWakeRequest) => void;
-  runHeartbeatOnce?: (opts?: {
+  requestPulsecheckNow: (opts?: PulsecheckWakeRequest) => void;
+  runPulsecheckOnce?: (opts?: {
     reason?: string;
     agentId?: string;
     sessionKey?: string;
-    /** Optional heartbeat config override (e.g. target: "last" for cron-triggered heartbeats). */
-    heartbeat?: { target?: string };
-  }) => Promise<HeartbeatRunResult>;
+    /** Optional pulsecheck config override (e.g. target: "last" for cron-triggered pulsechecks). */
+    pulsecheck?: { target?: string };
+  }) => Promise<PulsecheckRunResult>;
   /**
-   * WakeMode=now: max time to wait for runHeartbeatOnce to stop returning
+   * WakeMode=now: max time to wait for runPulsecheckOnce to stop returning
    * { status:"skipped", reason:"requests-in-flight" } before falling back to
-   * requestHeartbeatNow.
+   * requestPulsecheckNow.
    */
-  wakeNowHeartbeatBusyMaxWaitMs?: number;
-  /** WakeMode=now: delay between runHeartbeatOnce retries while busy. */
-  wakeNowHeartbeatBusyRetryDelayMs?: number;
+  wakeNowPulsecheckBusyMaxWaitMs?: number;
+  /** WakeMode=now: delay between runPulsecheckOnce retries while busy. */
+  wakeNowPulsecheckBusyRetryDelayMs?: number;
   runIsolatedAgentJob: (params: {
     job: CronJob;
     message: string;
@@ -146,7 +146,7 @@ export function createCronServiceState(deps: CronServiceDeps): CronServiceState 
 }
 
 export type CronRunMode = "due" | "force";
-export type CronWakeMode = "now" | "next-heartbeat";
+export type CronWakeMode = "now" | "next-pulsecheck";
 
 export type CronStatusSummary = {
   enabled: boolean;

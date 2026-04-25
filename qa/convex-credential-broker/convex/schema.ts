@@ -25,7 +25,7 @@ export default defineSchema({
         actorRole,
         leaseToken: v.string(),
         acquiredAtMs: v.number(),
-        heartbeatAtMs: v.number(),
+        pulsecheckAtMs: v.number(),
         expiresAtMs: v.number(),
       }),
     ),

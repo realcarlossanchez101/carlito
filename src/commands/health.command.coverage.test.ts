@@ -100,13 +100,13 @@ describe("healthCommand (coverage)", () => {
         telegram: "Telegram",
         discord: "Discord",
       },
-      heartbeatSeconds: 60,
+      pulsecheckSeconds: 60,
       defaultAgentId: "main",
       agents: [
         {
           agentId: "main",
           isDefault: true,
-          heartbeat: {
+          pulsecheck: {
             enabled: true,
             every: "1m",
             everyMs: 60_000,

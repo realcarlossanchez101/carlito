@@ -27,7 +27,7 @@ execution:
   config:
     prompt: |-
       Subagent fanout synthesis check: delegate exactly two bounded subagents sequentially.
-      Subagent 1: verify that `HEARTBEAT.md` exists and report `ok` if it does.
+      Subagent 1: verify that `PULSECHECK.md` exists and report `ok` if it does.
       Subagent 2: verify that `repo/qa/scenarios/agents/subagent-fanout-synthesis.md` exists and report `ok` if it does.
       Wait for both subagents to finish.
       Then reply with exactly these two lines and nothing else:

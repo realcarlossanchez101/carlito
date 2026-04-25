@@ -1,8 +1,13 @@
-export const INTERNAL_RUNTIME_CONTEXT_BEGIN = "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>";
-export const INTERNAL_RUNTIME_CONTEXT_END = "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>";
+export const INTERNAL_RUNTIME_CONTEXT_BEGIN = "<<<BEGIN_CARLITO_INTERNAL_CONTEXT>>>";
+export const INTERNAL_RUNTIME_CONTEXT_END = "<<<END_CARLITO_INTERNAL_CONTEXT>>>";
 
-const ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN = "[[OPENCLAW_INTERNAL_CONTEXT_BEGIN]]";
-const ESCAPED_INTERNAL_RUNTIME_CONTEXT_END = "[[OPENCLAW_INTERNAL_CONTEXT_END]]";
+const ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN = "[[CARLITO_INTERNAL_CONTEXT_BEGIN]]";
+const ESCAPED_INTERNAL_RUNTIME_CONTEXT_END = "[[CARLITO_INTERNAL_CONTEXT_END]]";
+
+const LEGACY_OPENCLAW_DELIMITED_BEGIN = "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>";
+const LEGACY_OPENCLAW_DELIMITED_END = "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>";
+const LEGACY_OPENCLAW_ESCAPED_BEGIN = "[[OPENCLAW_INTERNAL_CONTEXT_BEGIN]]";
+const LEGACY_OPENCLAW_ESCAPED_END = "[[OPENCLAW_INTERNAL_CONTEXT_END]]";
 
 const LEGACY_INTERNAL_CONTEXT_HEADER =
   [
@@ -19,7 +24,9 @@ const LEGACY_UNTRUSTED_RESULT_END = "<<<END_UNTRUSTED_CHILD_RESULT>>>";
 export function escapeInternalRuntimeContextDelimiters(value: string): string {
   return value
     .replaceAll(INTERNAL_RUNTIME_CONTEXT_BEGIN, ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN)
-    .replaceAll(INTERNAL_RUNTIME_CONTEXT_END, ESCAPED_INTERNAL_RUNTIME_CONTEXT_END);
+    .replaceAll(INTERNAL_RUNTIME_CONTEXT_END, ESCAPED_INTERNAL_RUNTIME_CONTEXT_END)
+    .replaceAll(LEGACY_OPENCLAW_DELIMITED_BEGIN, LEGACY_OPENCLAW_ESCAPED_BEGIN)
+    .replaceAll(LEGACY_OPENCLAW_DELIMITED_END, LEGACY_OPENCLAW_ESCAPED_END);
 }
 
 function escapeRegExp(value: string): string {
@@ -158,12 +165,17 @@ export function stripInternalRuntimeContext(text: string): string {
   if (!text) {
     return text;
   }
-  const withoutDelimitedBlocks = stripDelimitedBlock(
+  const withoutCurrentBlocks = stripDelimitedBlock(
     text,
     INTERNAL_RUNTIME_CONTEXT_BEGIN,
     INTERNAL_RUNTIME_CONTEXT_END,
   );
-  return stripLegacyInternalRuntimeContext(withoutDelimitedBlocks);
+  const withoutLegacyBlocks = stripDelimitedBlock(
+    withoutCurrentBlocks,
+    LEGACY_OPENCLAW_DELIMITED_BEGIN,
+    LEGACY_OPENCLAW_DELIMITED_END,
+  );
+  return stripLegacyInternalRuntimeContext(withoutLegacyBlocks);
 }
 
 export function hasInternalRuntimeContext(text: string): boolean {
@@ -172,6 +184,7 @@ export function hasInternalRuntimeContext(text: string): boolean {
   }
   return (
     findDelimitedTokenIndex(text, INTERNAL_RUNTIME_CONTEXT_BEGIN, 0) !== -1 ||
+    findDelimitedTokenIndex(text, LEGACY_OPENCLAW_DELIMITED_BEGIN, 0) !== -1 ||
     text.includes(LEGACY_INTERNAL_CONTEXT_HEADER)
   );
 }

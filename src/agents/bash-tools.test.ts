@@ -2,11 +2,11 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { drainFormattedSystemEvents } from "../auto-reply/reply/session-system-events.js";
 import type { OpenClawConfig } from "../config/config.js";
-import {
-  resetHeartbeatWakeStateForTests,
-  setHeartbeatWakeHandler,
-} from "../infra/heartbeat-wake.js";
 import { applyPathPrepend, findPathKey } from "../infra/path-prepend.js";
+import {
+  resetPulsecheckWakeStateForTests,
+  setPulsecheckWakeHandler,
+} from "../infra/pulsecheck-wake.js";
 import {
   peekSystemEventEntries,
   peekSystemEvents,
@@ -390,8 +390,8 @@ async function startBackgroundCommand(tool: ExecToolInstance, command: string) {
 
 async function expectNotifyOnExitWake(tool: ExecToolInstance, expected: Record<string, unknown>) {
   const wakeHandler = vi.fn().mockResolvedValue({ status: "skipped", reason: "disabled" });
-  const dispose = setHeartbeatWakeHandler(
-    wakeHandler as unknown as Parameters<typeof setHeartbeatWakeHandler>[0],
+  const dispose = setPulsecheckWakeHandler(
+    wakeHandler as unknown as Parameters<typeof setPulsecheckWakeHandler>[0],
   );
   try {
     await startBackgroundCommand(tool, shellEcho("notify"));
@@ -745,11 +745,11 @@ describe("exec exit codes", () => {
 
 describe("exec notifyOnExit", () => {
   beforeEach(() => {
-    resetHeartbeatWakeStateForTests();
+    resetPulsecheckWakeStateForTests();
   });
 
   afterEach(() => {
-    resetHeartbeatWakeStateForTests();
+    resetPulsecheckWakeStateForTests();
   });
 
   it("enqueues a system event when a backgrounded exec exits", async () => {
@@ -795,14 +795,14 @@ describe("exec notifyOnExit", () => {
     });
   });
 
-  it("scopes notifyOnExit heartbeat wake to the exec session key", async () => {
+  it("scopes notifyOnExit pulsecheck wake to the exec session key", async () => {
     await expectNotifyOnExitWake(createNotifyOnExitExecTool(), {
       reason: "exec-event",
       sessionKey: DEFAULT_NOTIFY_SESSION_KEY,
     });
   });
 
-  it("keeps notifyOnExit heartbeat wake unscoped for non-agent session keys", async () => {
+  it("keeps notifyOnExit pulsecheck wake unscoped for non-agent session keys", async () => {
     await expectNotifyOnExitWake(createNotifyOnExitExecTool({ sessionKey: "global" }), {
       reason: "exec-event",
     });

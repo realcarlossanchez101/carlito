@@ -574,7 +574,7 @@ export async function processDiscordMessage(
           error: err,
         });
       },
-      // Long tool-heavy runs are expected on Discord; keep heartbeats alive.
+      // Long tool-heavy runs are expected on Discord; keep pulsechecks alive.
       maxDurationMs: DISCORD_TYPING_MAX_DURATION_MS,
     },
   });

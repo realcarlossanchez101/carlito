@@ -389,9 +389,9 @@ export function logActiveRuns() {
   markActivity();
 }
 
-let heartbeatInterval: NodeJS.Timeout | null = null;
+let pulsecheckInterval: NodeJS.Timeout | null = null;
 
-export function startDiagnosticHeartbeat(
+export function startDiagnosticPulsecheck(
   config?: OpenClawConfig,
   opts?: { getConfig?: () => OpenClawConfig; emitMemorySample?: EmitDiagnosticMemorySample },
 ) {
@@ -400,19 +400,19 @@ export function startDiagnosticHeartbeat(
   }
   startDiagnosticStabilityRecorder();
   installDiagnosticStabilityFatalHook();
-  if (heartbeatInterval) {
+  if (pulsecheckInterval) {
     return;
   }
-  heartbeatInterval = setInterval(() => {
-    let heartbeatConfig = config;
-    if (!heartbeatConfig) {
+  pulsecheckInterval = setInterval(() => {
+    let pulsecheckConfig = config;
+    if (!pulsecheckConfig) {
       try {
-        heartbeatConfig = (opts?.getConfig ?? getRuntimeConfig)();
+        pulsecheckConfig = (opts?.getConfig ?? getRuntimeConfig)();
       } catch {
-        heartbeatConfig = undefined;
+        pulsecheckConfig = undefined;
       }
     }
-    const stuckSessionWarnMs = resolveStuckSessionWarnMs(heartbeatConfig);
+    const stuckSessionWarnMs = resolveStuckSessionWarnMs(pulsecheckConfig);
     const now = Date.now();
     pruneDiagnosticSessionStates(now, true);
     const work = getDiagnosticWorkSnapshot();
@@ -427,10 +427,10 @@ export function startDiagnosticHeartbeat(
     }
 
     diag.debug(
-      `heartbeat: webhooks=${webhookStats.received}/${webhookStats.processed}/${webhookStats.errors} active=${work.activeCount} waiting=${work.waitingCount} queued=${work.queuedCount}`,
+      `pulsecheck: webhooks=${webhookStats.received}/${webhookStats.processed}/${webhookStats.errors} active=${work.activeCount} waiting=${work.waitingCount} queued=${work.queuedCount}`,
     );
     emitDiagnosticEvent({
-      type: "diagnostic.heartbeat",
+      type: "diagnostic.pulsecheck",
       webhooks: {
         received: webhookStats.received,
         processed: webhookStats.processed,
@@ -463,13 +463,13 @@ export function startDiagnosticHeartbeat(
       }
     }
   }, 30_000);
-  heartbeatInterval.unref?.();
+  pulsecheckInterval.unref?.();
 }
 
-export function stopDiagnosticHeartbeat() {
-  if (heartbeatInterval) {
-    clearInterval(heartbeatInterval);
-    heartbeatInterval = null;
+export function stopDiagnosticPulsecheck() {
+  if (pulsecheckInterval) {
+    clearInterval(pulsecheckInterval);
+    pulsecheckInterval = null;
   }
   stopDiagnosticStabilityRecorder();
   uninstallDiagnosticStabilityFatalHook();
@@ -486,7 +486,7 @@ export function resetDiagnosticStateForTest(): void {
   webhookStats.processed = 0;
   webhookStats.errors = 0;
   webhookStats.lastReceived = 0;
-  stopDiagnosticHeartbeat();
+  stopDiagnosticPulsecheck();
   resetDiagnosticMemoryForTest();
   resetDiagnosticStabilityRecorderForTest();
   resetDiagnosticStabilityBundleForTest();

@@ -27,7 +27,7 @@ function createDueRecurringJob(params: {
     updatedAtMs: params.nowMs,
     schedule: { kind: "every", everyMs: 5 * 60_000 },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "test" },
     delivery: { mode: "none" },
     state: { nextRunAtMs: params.nextRunAtMs },
@@ -125,7 +125,7 @@ describe("CronService - timer re-arm when running (#12025)", () => {
       log: noopLogger,
       nowMs: () => now,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn(async () => await deferredRun.promise),
     });
 

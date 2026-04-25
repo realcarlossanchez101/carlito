@@ -24,7 +24,7 @@ import { resolveInternalSessionKey, resolveMainSessionAlias } from "./sessions-h
 const CRON_ACTIONS = ["status", "list", "add", "update", "remove", "run", "runs", "wake"] as const;
 
 const CRON_SCHEDULE_KINDS = ["at", "every", "cron"] as const;
-const CRON_WAKE_MODES = ["now", "next-heartbeat"] as const;
+const CRON_WAKE_MODES = ["now", "next-pulsecheck"] as const;
 const CRON_PAYLOAD_KINDS = ["systemEvent", "agentTurn"] as const;
 const CRON_DELIVERY_MODES = ["none", "announce", "webhook"] as const;
 const CRON_RUN_MODES = ["due", "force"] as const;
@@ -420,7 +420,7 @@ export function createCronTool(opts?: CronToolOptions, deps?: CronToolDeps): Any
     displaySummary: CRON_TOOL_DISPLAY_SUMMARY,
     description: `Manage Gateway cron jobs (status/list/add/update/remove/run/runs) and send wake events. Use this for reminders, "check back later" requests, delayed follow-ups, and recurring tasks. Do not emulate scheduling with exec sleep or process polling.
 
-Main-session cron jobs enqueue system events for heartbeat handling. Isolated cron jobs create background task runs that appear in \`openclaw tasks\`.
+Main-session cron jobs enqueue system events for pulsecheck handling. Isolated cron jobs create background task runs that appear in \`openclaw tasks\`.
 
 ACTIONS:
 - status: Check cron scheduler status
@@ -483,7 +483,7 @@ CRITICAL CONSTRAINTS:
 Default: prefer isolated agentTurn jobs unless the user explicitly wants current-session binding.
 
 WAKE MODES (for wake action):
-- "next-heartbeat" (default): Wake on next heartbeat
+- "next-pulsecheck" (default): Wake on next pulsecheck
 - "now": Wake immediately
 
 Use jobId as the canonical identifier; id is accepted for compatibility. Use contextMessages (0-10) to add previous messages as context to the job text.`,
@@ -678,9 +678,9 @@ Use jobId as the canonical identifier; id is accepted for compatibility. Use con
         case "wake": {
           const text = readStringParam(params, "text", { required: true });
           const mode =
-            params.mode === "now" || params.mode === "next-heartbeat"
+            params.mode === "now" || params.mode === "next-pulsecheck"
               ? params.mode
-              : "next-heartbeat";
+              : "next-pulsecheck";
           return jsonResult(
             await callGateway("wake", gatewayOpts, { mode, text }, { expectFinal: false }),
           );

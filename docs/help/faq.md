@@ -126,18 +126,18 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
   </Accordion>
 
-  <Accordion title="Heartbeat keeps skipping. What do the skip reasons mean?">
-    Common heartbeat skip reasons:
+  <Accordion title="Pulsecheck keeps skipping. What do the skip reasons mean?">
+    Common pulsecheck skip reasons:
 
     - `quiet-hours`: outside the configured active-hours window
-    - `empty-heartbeat-file`: `HEARTBEAT.md` exists but only contains blank/header-only scaffolding
-    - `no-tasks-due`: `HEARTBEAT.md` task mode is active but none of the task intervals are due yet
-    - `alerts-disabled`: all heartbeat visibility is disabled (`showOk`, `showAlerts`, and `useIndicator` are all off)
+    - `empty-pulsecheck-file`: `PULSECHECK.md` exists but only contains blank/header-only scaffolding
+    - `no-tasks-due`: `PULSECHECK.md` task mode is active but none of the task intervals are due yet
+    - `alerts-disabled`: all pulsecheck visibility is disabled (`showOk`, `showAlerts`, and `useIndicator` are all off)
 
-    In task mode, due timestamps are only advanced after a real heartbeat run
+    In task mode, due timestamps are only advanced after a real pulsecheck run
     completes. Skipped runs do not mark tasks as completed.
 
-    Docs: [Heartbeat](/gateway/heartbeat), [Automation & Tasks](/automation).
+    Docs: [Pulsecheck](/gateway/pulsecheck), [Automation & Tasks](/automation).
 
   </Accordion>
 
@@ -969,7 +969,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
     - **Personal briefings:** summaries of inbox, calendar, and news you care about.
     - **Research and drafting:** quick research, summaries, and first drafts for emails or docs.
-    - **Reminders and follow ups:** cron or heartbeat driven nudges and checklists.
+    - **Reminders and follow ups:** cron or pulsecheck driven nudges and checklists.
     - **Browser automation:** filling forms, collecting data, and repeating web tasks.
     - **Cross device coordination:** send a task from your phone, let the Gateway run it on a server, and get the result back in chat.
 
@@ -1182,11 +1182,11 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
     Yes. Use the Gateway scheduler:
 
     - **Cron jobs** for scheduled or recurring tasks (persist across restarts).
-    - **Heartbeat** for "main session" periodic checks.
+    - **Pulsecheck** for "main session" periodic checks.
     - **Isolated jobs** for autonomous agents that post summaries or deliver to chats.
 
     Docs: [Cron jobs](/automation/cron-jobs), [Automation & Tasks](/automation),
-    [Heartbeat](/gateway/heartbeat).
+    [Pulsecheck](/gateway/pulsecheck).
 
   </Accordion>
 
@@ -1422,7 +1422,7 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
     These files live in the **agent workspace**, not `~/.openclaw`.
 
     - **Workspace (per agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
-      `MEMORY.md`, `memory/YYYY-MM-DD.md`, optional `HEARTBEAT.md`.
+      `MEMORY.md`, `memory/YYYY-MM-DD.md`, optional `PULSECHECK.md`.
       Lowercase root `memory.md` is legacy repair input only; `openclaw doctor --fix`
       can merge it into `MEMORY.md` when both files exist.
     - **State dir (`~/.openclaw`)**: config, channel/provider state, auth profiles, sessions, logs,
@@ -2105,14 +2105,14 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
   </Accordion>
 
-  <Accordion title="Why am I getting heartbeat messages every 30 minutes?">
-    Heartbeats run every **30m** by default (**1h** when using OAuth auth). Tune or disable them:
+  <Accordion title="Why am I getting pulsecheck messages every 30 minutes?">
+    Pulsechecks run every **30m** by default (**1h** when using OAuth auth). Tune or disable them:
 
     ```json5
     {
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "2h", // or "0m" to disable
           },
         },
@@ -2120,11 +2120,11 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
     }
     ```
 
-    If `HEARTBEAT.md` exists but is effectively empty (only blank lines and markdown
-    headers like `# Heading`), OpenClaw skips the heartbeat run to save API calls.
-    If the file is missing, the heartbeat still runs and the model decides what to do.
+    If `PULSECHECK.md` exists but is effectively empty (only blank lines and markdown
+    headers like `# Heading`), OpenClaw skips the pulsecheck run to save API calls.
+    If the file is missing, the pulsecheck still runs and the model decides what to do.
 
-    Per-agent overrides use `agents.list[].heartbeat`. Docs: [Heartbeat](/gateway/heartbeat).
+    Per-agent overrides use `agents.list[].pulsecheck`. Docs: [Pulsecheck](/gateway/pulsecheck).
 
   </Accordion>
 

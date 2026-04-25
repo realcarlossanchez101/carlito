@@ -12,7 +12,7 @@ const minimalAddParams = {
   name: "daily-summary",
   schedule: { kind: "every", everyMs: 60_000 },
   sessionTarget: "main",
-  wakeMode: "next-heartbeat",
+  wakeMode: "next-pulsecheck",
   payload: { kind: "systemEvent", text: "tick" },
 } as const;
 

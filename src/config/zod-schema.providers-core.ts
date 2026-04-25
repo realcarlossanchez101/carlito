@@ -10,7 +10,7 @@ import { normalizeOptionalString } from "../shared/string-coerce.js";
 import { ToolPolicySchema } from "./zod-schema.agent-runtime.js";
 import {
   ChannelHealthMonitorSchema,
-  ChannelHeartbeatVisibilitySchema,
+  ChannelPulsecheckVisibilitySchema,
 } from "./zod-schema.channels.js";
 import {
   BlockStreamingChunkSchema,
@@ -319,7 +319,7 @@ export const TelegramAccountSchemaBase = z
       .optional(),
     reactionNotifications: z.enum(["off", "own", "all"]).optional(),
     reactionLevel: z.enum(["off", "ack", "minimal", "extensive"]).optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     linkPreview: z.boolean().optional(),
     silentErrorReplies: z.boolean().optional(),
@@ -572,7 +572,7 @@ export const DiscordAccountSchema = z
     defaultTo: z.string().optional(),
     dm: DiscordDmSchema.optional(),
     guilds: z.record(z.string(), DiscordGuildSchema.optional()).optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     execApprovals: z
       .object({
@@ -964,7 +964,7 @@ export const SlackAccountSchema = z
     defaultTo: z.string().optional(),
     dm: SlackDmSchema.optional(),
     channels: z.record(z.string(), SlackChannelSchema.optional()).optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
     ackReaction: z.string().optional(),
@@ -1100,7 +1100,7 @@ export const SignalAccountSchemaBase = z
       .strict()
       .optional(),
     reactionLevel: z.enum(["off", "ack", "minimal", "extensive"]).optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
   })
@@ -1215,7 +1215,7 @@ export const IrcAccountSchemaBase = z
     blockStreaming: z.boolean().optional(),
     blockStreamingCoalesce: BlockStreamingCoalesceSchema.optional(),
     mediaMaxMb: z.number().positive().optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
   })
@@ -1344,7 +1344,7 @@ export const IMessageAccountSchemaBase = z
           .optional(),
       )
       .optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
   })
@@ -1465,7 +1465,7 @@ export const BlueBubblesAccountSchemaBase = z
     blockStreamingCoalesce: BlockStreamingCoalesceSchema.optional(),
     groups: z.record(z.string(), BlueBubblesGroupConfigSchema.optional()).optional(),
     enrichGroupParticipantsFromContacts: z.boolean().optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
     coalesceSameSenderDms: z.boolean().optional(),
@@ -1591,7 +1591,7 @@ export const MSTeamsConfigSchema = z
     mediaMaxMb: z.number().positive().optional(),
     /** SharePoint site ID for file uploads in group chats/channels (e.g., "contoso.sharepoint.com,guid1,guid2") */
     sharePointSiteId: z.string().optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
     responsePrefix: z.string().optional(),
     welcomeCard: z.boolean().optional(),

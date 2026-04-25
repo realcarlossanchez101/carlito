@@ -1,10 +1,10 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-const requestHeartbeatNowMock = vi.hoisted(() => vi.fn());
+const requestPulsecheckNowMock = vi.hoisted(() => vi.fn());
 const enqueueSystemEventMock = vi.hoisted(() => vi.fn());
 
-vi.mock("../infra/heartbeat-wake.js", () => ({
-  requestHeartbeatNow: requestHeartbeatNowMock,
+vi.mock("../infra/pulsecheck-wake.js", () => ({
+  requestPulsecheckNow: requestPulsecheckNowMock,
 }));
 
 vi.mock("../infra/system-events.js", () => ({
@@ -297,11 +297,11 @@ describe("resolveExecTarget", () => {
 
 describe("emitExecSystemEvent", () => {
   beforeEach(() => {
-    requestHeartbeatNowMock.mockClear();
+    requestPulsecheckNowMock.mockClear();
     enqueueSystemEventMock.mockClear();
   });
 
-  it("scopes heartbeat wake to the event session key", () => {
+  it("scopes pulsecheck wake to the event session key", () => {
     emitExecSystemEvent("Exec finished", {
       sessionKey: "agent:ops:main",
       contextKey: "exec:run-1",
@@ -321,7 +321,7 @@ describe("emitExecSystemEvent", () => {
         threadId: 47,
       },
     });
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith(
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith(
       expect.objectContaining({
         coalesceMs: 0,
         reason: "exec-event",
@@ -340,7 +340,7 @@ describe("emitExecSystemEvent", () => {
       sessionKey: "global",
       contextKey: "exec:run-global",
     });
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith(
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith(
       expect.objectContaining({
         coalesceMs: 0,
         reason: "exec-event",
@@ -355,7 +355,7 @@ describe("emitExecSystemEvent", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 });
 

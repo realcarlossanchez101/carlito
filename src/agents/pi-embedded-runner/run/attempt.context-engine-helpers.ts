@@ -33,12 +33,12 @@ export async function resolveAttemptBootstrapContext<
   const isContinuationTurn =
     params.bootstrapMode !== "full" &&
     params.contextInjectionMode === "continuation-skip" &&
-    params.bootstrapContextRunKind !== "heartbeat" &&
+    params.bootstrapContextRunKind !== "pulsecheck" &&
     (await params.hasCompletedBootstrapTurn(params.sessionFile));
   const shouldRecordCompletedBootstrapTurn =
     !isContinuationTurn &&
     params.bootstrapContextMode !== "lightweight" &&
-    params.bootstrapContextRunKind !== "heartbeat" &&
+    params.bootstrapContextRunKind !== "pulsecheck" &&
     params.bootstrapMode === "full";
 
   const context = isContinuationTurn

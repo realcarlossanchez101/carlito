@@ -13,7 +13,7 @@ import { runPreparedCliAgent } from "./cli-runner.js";
 import {
   createManagedRun,
   enqueueSystemEventMock,
-  requestHeartbeatNowMock,
+  requestPulsecheckNowMock,
   supervisorSpawnMock,
 } from "./cli-runner.test-support.js";
 import { executePreparedCliRun } from "./cli-runner/execute.js";
@@ -148,7 +148,7 @@ describe("runCliAgent reliability", () => {
     ).rejects.toThrow("produced no output");
   });
 
-  it("enqueues a system event and heartbeat wake on no-output watchdog timeout for session runs", async () => {
+  it("enqueues a system event and pulsecheck wake on no-output watchdog timeout for session runs", async () => {
     supervisorSpawnMock.mockResolvedValueOnce(
       createManagedRun({
         reason: "no-output-timeout",
@@ -178,7 +178,7 @@ describe("runCliAgent reliability", () => {
     expect(String(notice)).toContain("produced no output");
     expect(String(notice)).toContain("interactive input or an approval prompt");
     expect(opts).toMatchObject({ sessionKey: "agent:main:main" });
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "cli:watchdog:stall",
       sessionKey: "agent:main:main",
     });

@@ -113,7 +113,7 @@ export function evaluateChannelHealth(
     return { healthy: false, reason: "disconnected" };
   }
   // App-level events are not socket liveness: quiet Slack/Discord workspaces can
-  // go idle while their upstream clients maintain heartbeats internally.
+  // go idle while their upstream clients maintain pulsechecks internally.
   const shouldCheckStaleSocket = snapshot.connected === true && lastTransportActivityAt != null;
   if (shouldCheckStaleSocket) {
     if (lastStartAt != null && lastTransportActivityAt < lastStartAt) {

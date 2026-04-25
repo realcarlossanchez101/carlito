@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { onAgentEvent } from "../infra/agent-events.js";
 import { formatErrorMessage } from "../infra/errors.js";
-import { requestHeartbeatNow } from "../infra/heartbeat-wake.js";
+import { requestPulsecheckNow } from "../infra/pulsecheck-wake.js";
 import { enqueueSystemEvent } from "../infra/system-events.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { parseAgentSessionKey } from "../routing/session-key.js";
@@ -986,7 +986,7 @@ function queueTaskSystemEvent(task: TaskRecord, text: string) {
     contextKey: `task:${task.taskId}`,
     deliveryContext: owner.requesterOrigin,
   });
-  requestHeartbeatNow({
+  requestPulsecheckNow({
     reason: "background-task",
     sessionKey: ownerKey,
   });
@@ -1008,7 +1008,7 @@ function queueBlockedTaskFollowup(task: TaskRecord) {
     contextKey: `task:${task.taskId}:blocked-followup`,
     deliveryContext: owner.requesterOrigin,
   });
-  requestHeartbeatNow({
+  requestPulsecheckNow({
     reason: "background-task-blocked",
     sessionKey: ownerKey,
   });

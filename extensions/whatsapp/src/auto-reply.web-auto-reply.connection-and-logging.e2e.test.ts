@@ -33,7 +33,7 @@ async function startWatchdogScenario(params: {
     monitorWebChannelFn: params.monitorWebChannel as never,
     listenerFactory: scripted.listenerFactory,
     sleep,
-    heartbeatSeconds: 60,
+    pulsecheckSeconds: 60,
     messageTimeoutMs: 30,
     watchdogCheckMs: 5,
   });
@@ -473,9 +473,9 @@ describe("web auto-reply connection", () => {
     });
   });
 
-  it("emits heartbeat logs with connection metadata", async () => {
+  it("emits pulsecheck logs with connection metadata", async () => {
     vi.useFakeTimers();
-    const logPath = `/tmp/openclaw-heartbeat-${crypto.randomUUID()}.log`;
+    const logPath = `/tmp/openclaw-pulsecheck-${crypto.randomUUID()}.log`;
     setLoggerOverride({ level: "trace", file: logPath });
 
     const runtime = {
@@ -500,7 +500,7 @@ describe("web auto-reply connection", () => {
       runtime as never,
       controller.signal,
       {
-        heartbeatSeconds: 1,
+        pulsecheckSeconds: 1,
         reconnect: { initialMs: 5, maxMs: 5, maxAttempts: 1, factor: 1.1 },
       },
     );
@@ -511,7 +511,7 @@ describe("web auto-reply connection", () => {
     await run.catch(() => {});
 
     const content = await fs.readFile(logPath, "utf-8");
-    expect(content).toMatch(/web-heartbeat/);
+    expect(content).toMatch(/web-pulsecheck/);
     expect(content).toMatch(/connectionId/);
     expect(content).toMatch(/messagesHandled/);
   });

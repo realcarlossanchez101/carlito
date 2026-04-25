@@ -47,7 +47,7 @@ const LIVE = isLiveTestEnabled();
 const DIRECT_ENABLED = Boolean(process.env.OPENCLAW_LIVE_MODELS?.trim());
 const REQUIRE_PROFILE_KEYS = isLiveProfileKeyModeEnabled();
 const LIVE_CREDENTIAL_PRECEDENCE = REQUIRE_PROFILE_KEYS ? "profile-first" : "env-first";
-const LIVE_HEARTBEAT_MS = Math.max(1_000, toInt(process.env.OPENCLAW_LIVE_HEARTBEAT_MS, 30_000));
+const LIVE_PULSECHECK_MS = Math.max(1_000, toInt(process.env.OPENCLAW_LIVE_PULSECHECK_MS, 30_000));
 const LIVE_SETUP_TIMEOUT_MS = Math.max(
   1_000,
   toInt(process.env.OPENCLAW_LIVE_SETUP_TIMEOUT_MS, 45_000),
@@ -78,19 +78,19 @@ function formatElapsedSeconds(ms: number): string {
   return `${Math.max(1, Math.round(ms / 1_000))}s`;
 }
 
-async function withLiveHeartbeat<T>(operation: Promise<T>, context: string): Promise<T> {
+async function withLivePulsecheck<T>(operation: Promise<T>, context: string): Promise<T> {
   const startedAt = Date.now();
-  let heartbeatCount = 0;
+  let pulsecheckCount = 0;
   const timer = setInterval(() => {
-    heartbeatCount += 1;
+    pulsecheckCount += 1;
     logProgress(`${context}: still running (${formatElapsedSeconds(Date.now() - startedAt)})`);
-  }, LIVE_HEARTBEAT_MS);
+  }, LIVE_PULSECHECK_MS);
   timer.unref?.();
   try {
     return await operation;
   } finally {
     clearInterval(timer);
-    if (heartbeatCount > 0) {
+    if (pulsecheckCount > 0) {
       logProgress(`${context}: completed after ${formatElapsedSeconds(Date.now() - startedAt)}`);
     }
   }
@@ -103,7 +103,7 @@ async function withLiveStageTimeout<T>(
 ): Promise<T> {
   let hardTimer: ReturnType<typeof setTimeout> | undefined;
   try {
-    return await withLiveHeartbeat(
+    return await withLivePulsecheck(
       Promise.race([
         operation,
         new Promise<never>((_, reject) => {
@@ -389,7 +389,7 @@ async function completeSimpleWithTimeout<TApi extends Api>(
     hardTimer.unref?.();
   });
   try {
-    return await withLiveHeartbeat(
+    return await withLivePulsecheck(
       Promise.race([
         completeSimple(model, context, {
           ...options,
@@ -657,7 +657,7 @@ describeLive("live models (profile keys)", () => {
       }
       logProgress(`[live-models] running ${selectedCandidates.length} models`);
       logProgress(
-        `[live-models] heartbeat=${formatElapsedSeconds(LIVE_HEARTBEAT_MS)} timeout=${formatElapsedSeconds(perModelTimeoutMs)}`,
+        `[live-models] pulsecheck=${formatElapsedSeconds(LIVE_PULSECHECK_MS)} timeout=${formatElapsedSeconds(perModelTimeoutMs)}`,
       );
       const total = selectedCandidates.length;
 

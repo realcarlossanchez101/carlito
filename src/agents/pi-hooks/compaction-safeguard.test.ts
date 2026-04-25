@@ -1929,7 +1929,7 @@ describe("compaction-safeguard double-compaction guard", () => {
           content: [{ type: "text", text: "done" }],
         } as AgentMessage,
         [
-          { role: "user", content: "<b>HEARTBEAT_OK</b>" } as AgentMessage,
+          { role: "user", content: "<b>PULSECHECK_OK</b>" } as AgentMessage,
           {
             role: "toolResult",
             toolCallId: "t1",
@@ -1988,12 +1988,12 @@ describe("compaction-safeguard double-compaction guard", () => {
     ).toBe(false);
   });
 
-  it("treats markup-wrapped heartbeat tokens as boilerplate", () => {
+  it("treats markup-wrapped pulsecheck tokens as boilerplate", () => {
     expect(
       __testing.hasMeaningfulConversationContent(
         castAgentMessage({
           role: "assistant",
-          content: "<b>HEARTBEAT_OK</b>",
+          content: "<b>PULSECHECK_OK</b>",
         }),
       ),
     ).toBe(false);

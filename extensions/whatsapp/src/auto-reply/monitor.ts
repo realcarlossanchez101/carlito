@@ -23,13 +23,13 @@ import {
 import { attachWebInboxToSocket } from "../inbound/monitor.js";
 import {
   newConnectionId,
-  resolveHeartbeatSeconds,
+  resolvePulsecheckSeconds,
   resolveReconnectPolicy,
   sleepWithAbort,
 } from "../reconnect.js";
 import { formatError, getWebAuthAgeMs, readWebSelfId } from "../session.js";
 import { getRuntimeConfigSourceSnapshot, loadConfig } from "./config.runtime.js";
-import { whatsappHeartbeatLog, whatsappLog } from "./loggers.js";
+import { whatsappPulsecheckLog, whatsappLog } from "./loggers.js";
 import { buildMentionConfig } from "./mentions.js";
 import { createWebChannelStatusController } from "./monitor-state.js";
 import { createEchoTracker } from "./monitor/echo.js";
@@ -109,7 +109,7 @@ export async function monitorWebChannel(
     replyResolver ?? (await loadReplyResolverRuntime()).getReplyFromConfig;
   const runId = newConnectionId();
   const replyLogger = getChildLogger({ module: "web-auto-reply", runId });
-  const heartbeatLogger = getChildLogger({ module: "web-heartbeat", runId });
+  const pulsecheckLogger = getChildLogger({ module: "web-pulsecheck", runId });
   const reconnectLogger = getChildLogger({ module: "web-reconnect", runId });
   const statusController = createWebChannelStatusController(tuning.statusSink);
   statusController.emit();
@@ -141,7 +141,7 @@ export async function monitorWebChannel(
   } satisfies ReturnType<typeof loadConfig>;
 
   const maxMediaBytes = resolveWhatsAppMediaMaxBytes(account);
-  const heartbeatSeconds = resolveHeartbeatSeconds(cfg, tuning.heartbeatSeconds);
+  const pulsecheckSeconds = resolvePulsecheckSeconds(cfg, tuning.pulsecheckSeconds);
   const reconnectPolicy = resolveReconnectPolicy(cfg, tuning.reconnect);
   const baseMentionConfig = buildMentionConfig(cfg);
   const groupHistoryLimit =
@@ -187,7 +187,7 @@ export async function monitorWebChannel(
     authDir: account.authDir,
     verbose,
     keepAlive,
-    heartbeatSeconds,
+    pulsecheckSeconds,
     messageTimeoutMs,
     watchdogCheckMs,
     reconnectPolicy,
@@ -269,7 +269,7 @@ export async function monitorWebChannel(
               sock,
             })) as ManagedWhatsAppListener;
           },
-          onHeartbeat: (snapshot) => {
+          onPulsecheck: (snapshot) => {
             const authAgeMs = getWebAuthAgeMs(account.authDir);
             const minutesSinceLastMessage = snapshot.lastInboundAt
               ? Math.floor((Date.now() - snapshot.lastInboundAt) / 60000)
@@ -288,19 +288,19 @@ export async function monitorWebChannel(
             };
 
             if (minutesSinceLastMessage && minutesSinceLastMessage > 30) {
-              heartbeatLogger.warn(
+              pulsecheckLogger.warn(
                 logData,
-                "⚠️ web gateway heartbeat - no messages in 30+ minutes",
+                "⚠️ web gateway pulsecheck - no messages in 30+ minutes",
               );
             } else {
-              heartbeatLogger.info(logData, "web gateway heartbeat");
+              pulsecheckLogger.info(logData, "web gateway pulsecheck");
             }
           },
           onWatchdogTimeout: (snapshot) => {
             const watchdogBaselineAt = snapshot.lastInboundAt ?? snapshot.startedAt;
             const minutesSinceLastMessage = Math.floor((Date.now() - watchdogBaselineAt) / 60000);
             statusController.noteWatchdogStale();
-            heartbeatLogger.warn(
+            pulsecheckLogger.warn(
               {
                 connectionId: snapshot.connectionId,
                 minutesSinceLastMessage,
@@ -309,7 +309,7 @@ export async function monitorWebChannel(
               },
               "Message timeout detected - forcing reconnect",
             );
-            whatsappHeartbeatLog.warn(
+            whatsappPulsecheckLog.warn(
               `No messages received in ${minutesSinceLastMessage}m - restarting connection`,
             );
           },

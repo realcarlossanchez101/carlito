@@ -389,7 +389,7 @@
       "destination": "/automation/cron-jobs"
     },
     {
-      "source": "/cron-vs-heartbeat",
+      "source": "/cron-vs-pulsecheck",
       "destination": "/automation"
     },
     {
@@ -477,8 +477,8 @@
       "destination": "/gateway/health"
     },
     {
-      "source": "/heartbeat",
-      "destination": "/gateway/heartbeat"
+      "source": "/pulsecheck",
+      "destination": "/gateway/pulsecheck"
     },
     {
       "source": "/hubs",
@@ -737,8 +737,8 @@
       "destination": "/reference/templates/BOOTSTRAP"
     },
     {
-      "source": "/templates/HEARTBEAT",
-      "destination": "/reference/templates/HEARTBEAT"
+      "source": "/templates/PULSECHECK",
+      "destination": "/reference/templates/PULSECHECK"
     },
     {
       "source": "/templates/IDENTITY",
@@ -913,7 +913,7 @@
       "destination": "/automation/cron-jobs"
     },
     {
-      "source": "/automation/cron-vs-heartbeat",
+      "source": "/automation/cron-vs-pulsecheck",
       "destination": "/automation"
     },
     {
@@ -1371,7 +1371,7 @@
                       "gateway/trusted-proxy-auth",
                       "gateway/health",
                       "gateway/diagnostics",
-                      "gateway/heartbeat",
+                      "gateway/pulsecheck",
                       "gateway/doctor",
                       "gateway/logging",
                       "logging",
@@ -1555,7 +1555,7 @@
                   "reference/templates/AGENTS",
                   "reference/templates/BOOT",
                   "reference/templates/BOOTSTRAP",
-                  "reference/templates/HEARTBEAT",
+                  "reference/templates/PULSECHECK",
                   "reference/templates/IDENTITY",
                   "reference/templates/SOUL",
                   "reference/templates/TOOLS",

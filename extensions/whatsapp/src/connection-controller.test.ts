@@ -34,7 +34,7 @@ describe("WhatsAppConnectionController", () => {
       authDir: "/tmp/wa-auth",
       verbose: false,
       keepAlive: false,
-      heartbeatSeconds: 30,
+      pulsecheckSeconds: 30,
       messageTimeoutMs: 60_000,
       watchdogCheckMs: 5_000,
       reconnectPolicy: {
@@ -99,7 +99,7 @@ describe("WhatsAppConnectionController", () => {
       authDir: "/tmp/wa-auth",
       verbose: false,
       keepAlive: false,
-      heartbeatSeconds: 30,
+      pulsecheckSeconds: 30,
       messageTimeoutMs: 60_000,
       watchdogCheckMs: 5_000,
       reconnectPolicy: {
@@ -125,7 +125,7 @@ describe("WhatsAppConnectionController", () => {
       authDir: "/tmp/wa-auth-2",
       verbose: false,
       keepAlive: false,
-      heartbeatSeconds: 30,
+      pulsecheckSeconds: 30,
       messageTimeoutMs: 60_000,
       watchdogCheckMs: 5_000,
       reconnectPolicy: {

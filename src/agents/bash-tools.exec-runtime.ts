@@ -7,11 +7,11 @@ import {
   type ExecApprovalDecision,
   type ExecTarget,
 } from "../infra/exec-approvals.js";
-import { requestHeartbeatNow } from "../infra/heartbeat-wake.js";
 import { isDangerousHostInheritedEnvVarName } from "../infra/host-env-security.js";
 import { findPathKey, mergePathPrepend } from "../infra/path-prepend.js";
+import { requestPulsecheckNow } from "../infra/pulsecheck-wake.js";
 import { enqueueSystemEvent } from "../infra/system-events.js";
-import { scopedHeartbeatWakeOptions } from "../routing/session-key.js";
+import { scopedPulsecheckWakeOptions } from "../routing/session-key.js";
 import type { ProcessSession } from "./bash-process-registry.js";
 import type { ExecToolDetails } from "./bash-tools.exec-types.js";
 import type { BashSandboxConfig } from "./bash-tools.shared.js";
@@ -302,8 +302,8 @@ function maybeNotifyOnExit(session: ProcessSession, status: "completed" | "faile
     deliveryContext: session.notifyDeliveryContext,
     trusted: false,
   });
-  requestHeartbeatNow(
-    scopedHeartbeatWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
+  requestPulsecheckNow(
+    scopedPulsecheckWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
   );
 }
 
@@ -380,8 +380,8 @@ export function emitExecSystemEvent(
     contextKey: opts.contextKey,
     deliveryContext: opts.deliveryContext,
   });
-  requestHeartbeatNow(
-    scopedHeartbeatWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
+  requestPulsecheckNow(
+    scopedPulsecheckWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
   );
 }
 

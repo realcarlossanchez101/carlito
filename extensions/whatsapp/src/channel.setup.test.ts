@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createQueuedWizardPrompter } from "../../../test/helpers/plugins/setup-wizard.js";
 import { WHATSAPP_AUTH_UNSTABLE_CODE } from "./auth-store.js";
 import { whatsappSetupPlugin } from "./channel.setup.js";
-import { checkWhatsAppHeartbeatReady } from "./heartbeat.js";
+import { checkWhatsAppPulsecheckReady } from "./pulsecheck.js";
 import type { OpenClawConfig } from "./runtime-api.js";
 import { finalizeWhatsAppSetup } from "./setup-finalize.js";
 import {
@@ -398,8 +398,8 @@ describe("whatsapp setup wizard", () => {
     expectWhatsAppLoginFollowup(harness);
   });
 
-  it("heartbeat readiness uses configured defaultAccount for active listener checks", async () => {
-    const result = await checkWhatsAppHeartbeatReady({
+  it("pulsecheck readiness uses configured defaultAccount for active listener checks", async () => {
+    const result = await checkWhatsAppPulsecheckReady({
       cfg: {
         channels: {
           whatsapp: {
@@ -424,8 +424,8 @@ describe("whatsapp setup wizard", () => {
     expect(result).toEqual({ ok: true, reason: "ok" });
   });
 
-  it("heartbeat readiness returns unstable when auth state timing is unresolved", async () => {
-    const result = await checkWhatsAppHeartbeatReady({
+  it("pulsecheck readiness returns unstable when auth state timing is unresolved", async () => {
+    const result = await checkWhatsAppPulsecheckReady({
       cfg: {
         channels: {
           whatsapp: {

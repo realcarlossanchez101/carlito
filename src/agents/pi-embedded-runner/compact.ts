@@ -18,8 +18,8 @@ import {
   type CapturedCompactionCheckpointSnapshot,
 } from "../../gateway/session-compaction-checkpoints.js";
 import { formatErrorMessage } from "../../infra/errors.js";
-import { resolveHeartbeatSummaryForAgent } from "../../infra/heartbeat-summary.js";
 import { getMachineDisplayName } from "../../infra/machine-name.js";
+import { resolvePulsecheckSummaryForAgent } from "../../infra/pulsecheck-summary.js";
 import { generateSecureToken } from "../../infra/secure-random.js";
 import { getGlobalHookRunner } from "../../plugins/hook-runner-global.js";
 import type { ProviderRuntimeModel } from "../../plugins/provider-runtime-model.types.js";
@@ -52,7 +52,6 @@ import { resolveContextWindowInfo } from "../context-window-guard.js";
 import { formatUserTime, resolveUserTimeFormat, resolveUserTimezone } from "../date-time.js";
 import { DEFAULT_CONTEXT_TOKENS, DEFAULT_MODEL, DEFAULT_PROVIDER } from "../defaults.js";
 import { resolveOpenClawDocsPath } from "../docs-path.js";
-import { resolveHeartbeatPromptForSystemPrompt } from "../heartbeat-system-prompt.js";
 import {
   applyAuthHeaderOverride,
   applyLocalNoAuthHeaderOverride,
@@ -75,6 +74,7 @@ import { applyPiCompactionSettingsFromConfig } from "../pi-settings.js";
 import { createOpenClawCodingTools } from "../pi-tools.js";
 import { wrapStreamFnTextTransforms } from "../plugin-text-transforms.js";
 import { registerProviderStreamForModel } from "../provider-stream.js";
+import { resolvePulsecheckPromptForSystemPrompt } from "../pulsecheck-system-prompt.js";
 import { ensureRuntimePluginsLoaded } from "../runtime-plugins.js";
 import { resolveSandboxContext } from "../sandbox.js";
 import { repairSessionFileIfNeeded } from "../session-file-repair.js";
@@ -734,7 +734,7 @@ export async function compactEmbeddedPiSessionDirect(
           ownerDisplay: ownerDisplay.ownerDisplay,
           ownerDisplaySecret: ownerDisplay.ownerDisplaySecret,
           reasoningTagHint,
-          heartbeatPrompt: resolveHeartbeatPromptForSystemPrompt({
+          pulsecheckPrompt: resolvePulsecheckPromptForSystemPrompt({
             config: params.config,
             agentId: sessionAgentId,
             defaultAgentId,
@@ -1138,14 +1138,14 @@ export async function compactEmbeddedPiSessionDirect(
           // Truncate session file to remove compacted entries (#39953)
           if (params.config?.agents?.defaults?.compaction?.truncateAfterCompaction) {
             try {
-              const heartbeatSummary = resolveHeartbeatSummaryForAgent(
+              const pulsecheckSummary = resolvePulsecheckSummaryForAgent(
                 params.config,
                 sessionAgentId,
               );
               const truncResult = await truncateSessionAfterCompaction({
                 sessionFile: params.sessionFile,
-                ackMaxChars: heartbeatSummary.ackMaxChars,
-                heartbeatPrompt: heartbeatSummary.prompt,
+                ackMaxChars: pulsecheckSummary.ackMaxChars,
+                pulsecheckPrompt: pulsecheckSummary.prompt,
               });
               if (truncResult.truncated) {
                 log.info(

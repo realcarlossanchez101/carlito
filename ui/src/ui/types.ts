@@ -510,7 +510,7 @@ export type CronSchedule =
   | { kind: "cron"; expr: string; tz?: string; staggerMs?: number };
 
 export type CronSessionTarget = "main" | "isolated" | "current" | `session:${string}`;
-export type CronWakeMode = "next-heartbeat" | "now";
+export type CronWakeMode = "next-pulsecheck" | "now";
 
 export type CronPayload =
   | { kind: "systemEvent"; text: string }
@@ -690,7 +690,7 @@ export type HealthSummary = {
   ok: boolean;
   ts: number;
   durationMs: number;
-  heartbeatSeconds: number;
+  pulsecheckSeconds: number;
   defaultAgentId: string;
   agents: Array<{ id: string; name?: string }>;
   sessions: {

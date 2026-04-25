@@ -25,7 +25,7 @@ export function buildColdStartAgentLocalStatuses() {
 export function buildColdStartStatusSummary() {
   return {
     runtimeVersion: null,
-    heartbeat: {
+    pulsecheck: {
       defaultAgentId: "main",
       agents: [],
     },

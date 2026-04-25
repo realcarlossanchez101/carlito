@@ -60,7 +60,7 @@ const hoisted = vi.hoisted(() => {
   const loadSessionStoreMock = vi.fn();
   const resolveStorePathMock = vi.fn();
   const resolveSessionTranscriptFileMock = vi.fn();
-  const areHeartbeatsEnabledMock = vi.fn();
+  const arePulsechecksEnabledMock = vi.fn();
   const getChannelPluginMock = vi.fn();
   const getLoadedChannelPluginMock = vi.fn();
   const normalizeChannelIdMock = vi.fn((channelId: string) => {
@@ -89,7 +89,7 @@ const hoisted = vi.hoisted(() => {
     loadSessionStoreMock,
     resolveStorePathMock,
     resolveSessionTranscriptFileMock,
-    areHeartbeatsEnabledMock,
+    arePulsechecksEnabledMock,
     getChannelPluginMock,
     getLoadedChannelPluginMock,
     normalizeChannelIdMock,
@@ -137,8 +137,8 @@ vi.mock("../gateway/call.js", () => ({
   callGateway: hoisted.callGatewayMock,
 }));
 
-vi.mock("../infra/heartbeat-wake.js", () => ({
-  areHeartbeatsEnabled: hoisted.areHeartbeatsEnabledMock,
+vi.mock("../infra/pulsecheck-wake.js", () => ({
+  arePulsechecksEnabled: hoisted.arePulsechecksEnabledMock,
 }));
 
 vi.mock("../tasks/detached-task-runtime.js", () => ({
@@ -513,7 +513,7 @@ function enableTelegramCurrentConversationBindings(): void {
 describe("spawnAcpDirect", () => {
   beforeEach(() => {
     replaceSpawnConfig(createDefaultSpawnConfig());
-    hoisted.areHeartbeatsEnabledMock.mockReset().mockReturnValue(true);
+    hoisted.arePulsechecksEnabledMock.mockReset().mockReturnValue(true);
     hoisted.getChannelPluginMock.mockReset().mockReturnValue(undefined);
     hoisted.getLoadedChannelPluginMock.mockReset().mockReturnValue(undefined);
     hoisted.cleanupFailedAcpSpawnMock.mockReset().mockResolvedValue(undefined);
@@ -1918,7 +1918,7 @@ describe("spawnAcpDirect", () => {
       agents: {
         defaults: {
           ...hoisted.state.cfg.agents?.defaults,
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "last",
           },
@@ -2002,7 +2002,7 @@ describe("spawnAcpDirect", () => {
       agents: {
         defaults: {
           ...hoisted.state.cfg.agents?.defaults,
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "last",
           },
@@ -2065,13 +2065,13 @@ describe("spawnAcpDirect", () => {
     expect(hoisted.startAcpSpawnParentStreamRelayMock).not.toHaveBeenCalled();
   });
 
-  it("does not implicitly stream when heartbeat target is not session-local", async () => {
+  it("does not implicitly stream when pulsecheck target is not session-local", async () => {
     replaceSpawnConfig({
       ...hoisted.state.cfg,
       agents: {
         defaults: {
           ...hoisted.state.cfg.agents?.defaults,
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "discord",
             to: "channel:ops-room",
@@ -2106,7 +2106,7 @@ describe("spawnAcpDirect", () => {
       agents: {
         defaults: {
           ...hoisted.state.cfg.agents?.defaults,
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "last",
           },
@@ -2130,12 +2130,12 @@ describe("spawnAcpDirect", () => {
     expect(hoisted.startAcpSpawnParentStreamRelayMock).not.toHaveBeenCalled();
   });
 
-  it("does not implicitly stream for subagent requester sessions when heartbeat is disabled", async () => {
+  it("does not implicitly stream for subagent requester sessions when pulsecheck is disabled", async () => {
     replaceSpawnConfig({
       ...hoisted.state.cfg,
       agents: {
         ...hoisted.state.cfg.agents,
-        list: [{ id: "main", heartbeat: { every: "30m" } }, { id: "research" }],
+        list: [{ id: "main", pulsecheck: { every: "30m" } }, { id: "research" }],
       },
     });
 
@@ -2155,7 +2155,7 @@ describe("spawnAcpDirect", () => {
     expect(hoisted.startAcpSpawnParentStreamRelayMock).not.toHaveBeenCalled();
   });
 
-  it("does not implicitly stream for subagent requester sessions when heartbeat cadence is invalid", async () => {
+  it("does not implicitly stream for subagent requester sessions when pulsecheck cadence is invalid", async () => {
     replaceSpawnConfig({
       ...hoisted.state.cfg,
       agents: {
@@ -2163,7 +2163,7 @@ describe("spawnAcpDirect", () => {
         list: [
           {
             id: "research",
-            heartbeat: { every: "0m" },
+            pulsecheck: { every: "0m" },
           },
         ],
       },
@@ -2175,7 +2175,7 @@ describe("spawnAcpDirect", () => {
         agentId: "codex",
       },
       {
-        agentSessionKey: "agent:research:subagent:invalid-heartbeat",
+        agentSessionKey: "agent:research:subagent:invalid-pulsecheck",
       },
     );
 
@@ -2185,8 +2185,8 @@ describe("spawnAcpDirect", () => {
     expect(hoisted.startAcpSpawnParentStreamRelayMock).not.toHaveBeenCalled();
   });
 
-  it("does not implicitly stream when heartbeats are runtime-disabled", async () => {
-    hoisted.areHeartbeatsEnabledMock.mockReturnValue(false);
+  it("does not implicitly stream when pulsechecks are runtime-disabled", async () => {
+    hoisted.arePulsechecksEnabledMock.mockReturnValue(false);
 
     const result = await spawnAcpDirect(
       {

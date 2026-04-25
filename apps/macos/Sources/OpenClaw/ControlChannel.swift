@@ -4,7 +4,7 @@ import OpenClawKit
 import OpenClawProtocol
 import SwiftUI
 
-struct ControlHeartbeatEvent: Codable {
+struct ControlPulsecheckEvent: Codable {
     let ts: Double
     let status: String
     let to: String?
@@ -155,9 +155,9 @@ final class ControlChannel {
         }
     }
 
-    func lastHeartbeat() async throws -> ControlHeartbeatEvent? {
-        let data = try await self.request(method: "last-heartbeat")
-        return try JSONDecoder().decode(ControlHeartbeatEvent?.self, from: data)
+    func lastPulsecheck() async throws -> ControlPulsecheckEvent? {
+        let data = try await self.request(method: "last-pulsecheck")
+        return try JSONDecoder().decode(ControlPulsecheckEvent?.self, from: data)
     }
 
     func request(
@@ -356,12 +356,12 @@ final class ControlChannel {
                 AgentEventStore.shared.append(agent)
                 self.routeWorkActivity(from: agent)
             }
-        case let .event(evt) where evt.event == "heartbeat":
+        case let .event(evt) where evt.event == "pulsecheck":
             if let payload = evt.payload,
-               let heartbeat = try? GatewayPayloadDecoding.decode(payload, as: ControlHeartbeatEvent.self),
-               let data = try? JSONEncoder().encode(heartbeat)
+               let pulsecheck = try? GatewayPayloadDecoding.decode(payload, as: ControlPulsecheckEvent.self),
+               let data = try? JSONEncoder().encode(pulsecheck)
             {
-                NotificationCenter.default.post(name: .controlHeartbeat, object: data)
+                NotificationCenter.default.post(name: .controlPulsecheck, object: data)
             }
         case let .event(evt) where evt.event == "shutdown":
             self.state = .degraded("gateway shutdown")
@@ -421,6 +421,6 @@ final class ControlChannel {
 }
 
 extension Notification.Name {
-    static let controlHeartbeat = Notification.Name("openclaw.control.heartbeat")
+    static let controlPulsecheck = Notification.Name("openclaw.control.pulsecheck")
     static let controlAgentEvent = Notification.Name("openclaw.control.agent")
 }

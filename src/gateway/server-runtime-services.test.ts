@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => {
-  const heartbeatRunner = {
+  const pulsecheckRunner = {
     stop: vi.fn(),
     updateConfig: vi.fn(),
   };
   return {
-    heartbeatRunner,
-    startHeartbeatRunner: vi.fn(() => heartbeatRunner),
+    pulsecheckRunner,
+    startPulsecheckRunner: vi.fn(() => pulsecheckRunner),
     startChannelHealthMonitor: vi.fn(() => ({ stop: vi.fn() })),
     startGatewayModelPricingRefresh: vi.fn(() => vi.fn()),
     recoverPendingDeliveries: vi.fn(async () => undefined),
@@ -15,8 +15,8 @@ const hoisted = vi.hoisted(() => {
   };
 });
 
-vi.mock("../infra/heartbeat-runner.js", () => ({
-  startHeartbeatRunner: hoisted.startHeartbeatRunner,
+vi.mock("../infra/pulsecheck-runner.js", () => ({
+  startPulsecheckRunner: hoisted.startPulsecheckRunner,
 }));
 
 vi.mock("../infra/outbound/deliver.js", () => ({
@@ -41,9 +41,9 @@ const { activateGatewayScheduledServices, startGatewayRuntimeServices } =
 describe("server-runtime-services", () => {
   beforeEach(() => {
     vi.useRealTimers();
-    hoisted.heartbeatRunner.stop.mockClear();
-    hoisted.heartbeatRunner.updateConfig.mockClear();
-    hoisted.startHeartbeatRunner.mockClear();
+    hoisted.pulsecheckRunner.stop.mockClear();
+    hoisted.pulsecheckRunner.updateConfig.mockClear();
+    hoisted.startPulsecheckRunner.mockClear();
     hoisted.startChannelHealthMonitor.mockClear();
     hoisted.startGatewayModelPricingRefresh.mockClear();
     hoisted.recoverPendingDeliveries.mockClear();
@@ -63,14 +63,14 @@ describe("server-runtime-services", () => {
     });
 
     expect(hoisted.startChannelHealthMonitor).toHaveBeenCalledTimes(1);
-    expect(hoisted.startHeartbeatRunner).not.toHaveBeenCalled();
+    expect(hoisted.startPulsecheckRunner).not.toHaveBeenCalled();
     expect(hoisted.recoverPendingDeliveries).not.toHaveBeenCalled();
 
-    services.heartbeatRunner.stop();
-    expect(hoisted.heartbeatRunner.stop).not.toHaveBeenCalled();
+    services.pulsecheckRunner.stop();
+    expect(hoisted.pulsecheckRunner.stop).not.toHaveBeenCalled();
   });
 
-  it("activates heartbeat, cron, and delivery recovery after sidecars are ready", async () => {
+  it("activates pulsecheck, cron, and delivery recovery after sidecars are ready", async () => {
     const cron = { start: vi.fn(async () => undefined) };
     const log = createLog();
 
@@ -82,9 +82,9 @@ describe("server-runtime-services", () => {
       log,
     });
 
-    expect(hoisted.startHeartbeatRunner).toHaveBeenCalledTimes(1);
+    expect(hoisted.startPulsecheckRunner).toHaveBeenCalledTimes(1);
     expect(cron.start).toHaveBeenCalledTimes(1);
-    expect(services.heartbeatRunner).toBe(hoisted.heartbeatRunner);
+    expect(services.pulsecheckRunner).toBe(hoisted.pulsecheckRunner);
     await vi.dynamicImportSettled();
     expect(hoisted.recoverPendingDeliveries).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -105,12 +105,12 @@ describe("server-runtime-services", () => {
       log: createLog(),
     });
 
-    expect(hoisted.startHeartbeatRunner).not.toHaveBeenCalled();
+    expect(hoisted.startPulsecheckRunner).not.toHaveBeenCalled();
     expect(cron.start).not.toHaveBeenCalled();
     expect(hoisted.recoverPendingDeliveries).not.toHaveBeenCalled();
 
-    services.heartbeatRunner.stop();
-    expect(hoisted.heartbeatRunner.stop).not.toHaveBeenCalled();
+    services.pulsecheckRunner.stop();
+    expect(hoisted.pulsecheckRunner.stop).not.toHaveBeenCalled();
   });
 });
 

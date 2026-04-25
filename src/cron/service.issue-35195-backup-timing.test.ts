@@ -23,7 +23,7 @@ describe("cron backup timing for edit", () => {
         updatedAtMs: base,
         schedule: { kind: "every", everyMs: 60_000, anchorMs: base },
         sessionTarget: "main",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "systemEvent", text: "hello" },
         state: {},
       },
@@ -34,7 +34,7 @@ describe("cron backup timing for edit", () => {
       cronEnabled: true,
       log: noopLogger,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn(async () => ({ status: "ok" as const })),
     });
 
@@ -66,7 +66,7 @@ describe("cron backup timing for edit", () => {
       cronEnabled: true,
       log: noopLogger,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn(async () => ({ status: "ok" as const })),
     });
 

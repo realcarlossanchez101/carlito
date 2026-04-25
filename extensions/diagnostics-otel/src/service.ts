@@ -603,10 +603,10 @@ export function createDiagnosticsOtelService(): OpenClawPluginService {
         runAttemptCounter.add(1, { "openclaw.attempt": evt.attempt });
       };
 
-      const recordHeartbeat = (
-        evt: Extract<DiagnosticEventPayload, { type: "diagnostic.heartbeat" }>,
+      const recordPulsecheck = (
+        evt: Extract<DiagnosticEventPayload, { type: "diagnostic.pulsecheck" }>,
       ) => {
-        queueDepthHistogram.record(evt.queued, { "openclaw.channel": "heartbeat" });
+        queueDepthHistogram.record(evt.queued, { "openclaw.channel": "pulsecheck" });
       };
 
       unsubscribe = onDiagnosticEvent((evt: DiagnosticEventPayload) => {
@@ -645,8 +645,8 @@ export function createDiagnosticsOtelService(): OpenClawPluginService {
             case "run.attempt":
               recordRunAttempt(evt);
               return;
-            case "diagnostic.heartbeat":
-              recordHeartbeat(evt);
+            case "diagnostic.pulsecheck":
+              recordPulsecheck(evt);
               return;
             case "tool.loop":
             case "diagnostic.memory.sample":

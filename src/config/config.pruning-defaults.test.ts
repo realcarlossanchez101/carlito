@@ -4,10 +4,10 @@ import { clearBundledProviderPolicySurfaceCache } from "../plugins/provider-publ
 import type { OpenClawConfig } from "./config.js";
 import { applyProviderConfigDefaultsForConfig } from "./provider-policy.js";
 
-function expectAnthropicPruningDefaults(cfg: OpenClawConfig, heartbeatEvery = "30m") {
+function expectAnthropicPruningDefaults(cfg: OpenClawConfig, pulsecheckEvery = "30m") {
   expect(cfg.agents?.defaults?.contextPruning?.mode).toBe("cache-ttl");
   expect(cfg.agents?.defaults?.contextPruning?.ttl).toBe("1h");
-  expect(cfg.agents?.defaults?.heartbeat?.every).toBe(heartbeatEvery);
+  expect(cfg.agents?.defaults?.pulsecheck?.every).toBe(pulsecheckEvery);
 }
 
 function applyAnthropicDefaultsForTest(config: OpenClawConfig) {
@@ -34,7 +34,7 @@ describe("config pruning defaults", () => {
     expect(cfg.agents?.defaults?.contextPruning?.mode).toBeUndefined();
   });
 
-  it("enables cache-ttl pruning + 1h heartbeat for Anthropic OAuth", async () => {
+  it("enables cache-ttl pruning + 1h pulsecheck for Anthropic OAuth", async () => {
     const cfg = applyAnthropicDefaultsForTest({
       auth: {
         profiles: {

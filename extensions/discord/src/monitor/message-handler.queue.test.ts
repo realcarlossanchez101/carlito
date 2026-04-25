@@ -558,16 +558,16 @@ describe("createDiscordMessageHandler queue behavior", () => {
         createPreflightContext(params.data.channel_id),
     );
 
-    let heartbeatTick: () => void = () => {};
-    let capturedHeartbeat = false;
+    let pulsecheckTick: () => void = () => {};
+    let capturedPulsecheck = false;
     const setIntervalSpy = vi
       .spyOn(globalThis, "setInterval")
       .mockImplementation((callback: TimerHandler) => {
         if (typeof callback === "function") {
-          heartbeatTick = () => {
+          pulsecheckTick = () => {
             callback();
           };
-          capturedHeartbeat = true;
+          capturedPulsecheck = true;
         }
         return 1 as unknown as ReturnType<typeof setInterval>;
       });
@@ -584,12 +584,12 @@ describe("createDiscordMessageHandler queue behavior", () => {
         expect(processDiscordMessageMock).toHaveBeenCalledTimes(1);
       });
 
-      expect(capturedHeartbeat).toBe(true);
+      expect(capturedPulsecheck).toBe(true);
       const busyCallsBefore = setStatus.mock.calls.filter(
         ([patch]) => (patch as { busy?: boolean }).busy === true,
       ).length;
 
-      heartbeatTick();
+      pulsecheckTick();
 
       const busyCallsAfter = setStatus.mock.calls.filter(
         ([patch]) => (patch as { busy?: boolean }).busy === true,

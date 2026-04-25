@@ -13,7 +13,7 @@ function createJob(id: string): CronJob {
     updatedAtMs: 0,
     schedule: { kind: "cron", expr: "0 9 * * *" },
     sessionTarget: "main",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "systemEvent", text: "ping" },
   };
 }

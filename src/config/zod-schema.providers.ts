@@ -6,12 +6,12 @@ import { collectBundledChannelConfigs } from "../plugins/bundled-channel-config-
 import { listBundledPluginMetadata } from "../plugins/bundled-plugin-metadata.js";
 import { resolveLoaderPackageRoot } from "../plugins/sdk-alias.js";
 import type { ChannelsConfig } from "./types.channels.js";
-import { ChannelHeartbeatVisibilitySchema } from "./zod-schema.channels.js";
+import { ChannelPulsecheckVisibilitySchema } from "./zod-schema.channels.js";
 import { ContextVisibilityModeSchema, GroupPolicySchema } from "./zod-schema.core.js";
 
 export * from "./zod-schema.providers-core.js";
 export * from "./zod-schema.providers-whatsapp.js";
-export { ChannelHeartbeatVisibilitySchema } from "./zod-schema.channels.js";
+export { ChannelPulsecheckVisibilitySchema } from "./zod-schema.channels.js";
 
 const ChannelModelByChannelSchema = z
   .record(z.string(), z.record(z.string(), z.string()))
@@ -146,7 +146,7 @@ export const ChannelsSchema: z.ZodType<ChannelsConfig | undefined> = z
       .object({
         groupPolicy: GroupPolicySchema.optional(),
         contextVisibility: ContextVisibilityModeSchema.optional(),
-        heartbeat: ChannelHeartbeatVisibilitySchema,
+        pulsecheck: ChannelPulsecheckVisibilitySchema,
       })
       .strict()
       .optional(),

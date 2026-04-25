@@ -17,7 +17,7 @@ import { registerAgentRunContext } from "../../infra/agent-events.js";
 import { formatErrorMessage } from "../../infra/errors.js";
 import { defaultRuntime } from "../../runtime.js";
 import { isInternalMessageChannel } from "../../utils/message-channel.js";
-import { stripHeartbeatToken } from "../heartbeat.js";
+import { stripPulsecheckToken } from "../pulsecheck.js";
 import { isSilentReplyText, SILENT_REPLY_TOKEN } from "../tokens.js";
 import type { GetReplyOptions, ReplyPayload } from "../types.js";
 import { runPreflightCompactionIfNeeded } from "./agent-runner-memory.js";
@@ -60,7 +60,7 @@ export function createFollowupRunner(params: {
   const typingSignals = createTypingSignaler({
     typing,
     mode: typingMode,
-    isHeartbeat: opts?.isHeartbeat === true,
+    isPulsecheck: opts?.isPulsecheck === true,
   });
 
   /**
@@ -187,7 +187,7 @@ export function createFollowupRunner(params: {
         sessionStore,
         sessionKey,
         storePath,
-        isHeartbeat: opts?.isHeartbeat === true,
+        isPulsecheck: opts?.isPulsecheck === true,
         replyOperation,
       });
       let bootstrapPromptWarningSignaturesSeen = resolveBootstrapWarningSignaturesSeen(
@@ -338,10 +338,10 @@ export function createFollowupRunner(params: {
       }
       const sanitizedPayloads = payloadArray.flatMap((payload) => {
         const text = payload.text;
-        if (!text || !text.includes("HEARTBEAT_OK")) {
+        if (!text || !text.includes("PULSECHECK_OK")) {
           return [payload];
         }
-        const stripped = stripHeartbeatToken(text, { mode: "message" });
+        const stripped = stripPulsecheckToken(text, { mode: "message" });
         const hasMedia = resolveSendableOutboundReplyParts(payload).hasMedia;
         if (stripped.shouldSkip && !hasMedia) {
           return [];

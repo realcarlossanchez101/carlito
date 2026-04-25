@@ -137,7 +137,7 @@ describe("launchTuiCli", () => {
       expect.objectContaining({
         env: expect.objectContaining({
           OPENCLAW_GATEWAY_URL: "ws://127.0.0.1:18789",
-          OPENCLAW_TUI_SETUP_AUTH_SOURCE: "config",
+          CARLITO_TUI_SETUP_AUTH_SOURCE: "config",
         }),
       }),
     );

@@ -102,10 +102,10 @@ title: "Thinking levels"
 
 - Elevated mode docs live in [Elevated mode](/tools/elevated).
 
-## Heartbeats
+## Pulsechecks
 
-- Heartbeat probe body is the configured heartbeat prompt (default: `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`). Inline directives in a heartbeat message apply as usual (but avoid changing session defaults from heartbeats).
-- Heartbeat delivery defaults to the final payload only. To also send the separate `Reasoning:` message (when available), set `agents.defaults.heartbeat.includeReasoning: true` or per-agent `agents.list[].heartbeat.includeReasoning: true`.
+- Pulsecheck probe body is the configured pulsecheck prompt (default: `Read PULSECHECK.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply PULSECHECK_OK.`). Inline directives in a pulsecheck message apply as usual (but avoid changing session defaults from pulsechecks).
+- Pulsecheck delivery defaults to the final payload only. To also send the separate `Reasoning:` message (when available), set `agents.defaults.pulsecheck.includeReasoning: true` or per-agent `agents.list[].pulsecheck.includeReasoning: true`.
 
 ## Web chat UI
 

@@ -84,16 +84,16 @@ describe("test-install-sh-docker", () => {
 });
 
 describe("install-sh smoke runner", () => {
-  it("wraps long npm/update operations with heartbeat and install-size audits", () => {
+  it("wraps long npm/update operations with pulsecheck and install-size audits", () => {
     const script = readFileSync(SMOKE_RUNNER_PATH, "utf8");
 
     expect(script).toContain(
-      'HEARTBEAT_INTERVAL="${OPENCLAW_INSTALL_SMOKE_HEARTBEAT_INTERVAL:-60}"',
+      'PULSECHECK_INTERVAL="${OPENCLAW_INSTALL_SMOKE_PULSECHECK_INTERVAL:-60}"',
     );
     expect(script).toContain(
       'INSTALL_COMMAND_TIMEOUT="${OPENCLAW_INSTALL_SMOKE_COMMAND_TIMEOUT:-900}"',
     );
-    expect(script).toContain("run_with_heartbeat");
+    expect(script).toContain("run_with_pulsecheck");
     expect(script).toContain("npm_install_global");
     expect(script).toContain('timeout --foreground "${INSTALL_COMMAND_TIMEOUT}s"');
     expect(script).toContain("==> Still running");

@@ -4,14 +4,14 @@ export type ActiveRunQueueAction = "run-now" | "enqueue-followup" | "drop";
 
 export function resolveActiveRunQueueAction(params: {
   isActive: boolean;
-  isHeartbeat: boolean;
+  isPulsecheck: boolean;
   shouldFollowup: boolean;
   queueMode: QueueSettings["mode"];
 }): ActiveRunQueueAction {
   if (!params.isActive) {
     return "run-now";
   }
-  if (params.isHeartbeat) {
+  if (params.isPulsecheck) {
     return "drop";
   }
   if (params.shouldFollowup || params.queueMode === "steer") {

@@ -5,15 +5,15 @@ import { normalizeOptionalString } from "../shared/string-coerce.js";
 import { resolveSessionAgentIds } from "./agent-scope.js";
 import { getOrLoadBootstrapFiles } from "./bootstrap-cache.js";
 import { applyBootstrapHookOverrides } from "./bootstrap-hooks.js";
-import { shouldIncludeHeartbeatGuidanceForSystemPrompt } from "./heartbeat-system-prompt.js";
 import type { EmbeddedContextFile } from "./pi-embedded-helpers.js";
 import {
   buildBootstrapContextFiles,
   resolveBootstrapMaxChars,
   resolveBootstrapTotalMaxChars,
 } from "./pi-embedded-helpers.js";
+import { shouldIncludePulsecheckGuidanceForSystemPrompt } from "./pulsecheck-system-prompt.js";
 import {
-  DEFAULT_HEARTBEAT_FILENAME,
+  DEFAULT_PULSECHECK_FILENAME,
   filterBootstrapFilesForSession,
   isWorkspaceBootstrapPending,
   loadWorkspaceBootstrapFiles,
@@ -21,7 +21,7 @@ import {
 } from "./workspace.js";
 
 export type BootstrapContextMode = "full" | "lightweight";
-export type BootstrapContextRunKind = "default" | "heartbeat" | "cron";
+export type BootstrapContextRunKind = "default" | "pulsecheck" | "cron";
 
 const CONTINUATION_SCAN_MAX_TAIL_BYTES = 256 * 1024;
 const CONTINUATION_SCAN_MAX_RECORDS = 500;
@@ -172,21 +172,21 @@ function applyContextModeFilter(params: {
   if (contextMode !== "lightweight") {
     return params.files;
   }
-  if (runKind === "heartbeat") {
-    return params.files.filter((file) => file.name === "HEARTBEAT.md");
+  if (runKind === "pulsecheck") {
+    return params.files.filter((file) => file.name === "PULSECHECK.md");
   }
   // cron/default lightweight mode keeps bootstrap context empty on purpose.
   return [];
 }
 
-function shouldExcludeHeartbeatBootstrapFile(params: {
+function shouldExcludePulsecheckBootstrapFile(params: {
   config?: OpenClawConfig;
   sessionKey?: string;
   sessionId?: string;
   agentId?: string;
   runKind?: BootstrapContextRunKind;
 }): boolean {
-  if (!params.config || params.runKind === "heartbeat") {
+  if (!params.config || params.runKind === "pulsecheck") {
     return false;
   }
   const { defaultAgentId, sessionAgentId } = resolveSessionAgentIds({
@@ -197,21 +197,21 @@ function shouldExcludeHeartbeatBootstrapFile(params: {
   if (sessionAgentId !== defaultAgentId) {
     return false;
   }
-  return !shouldIncludeHeartbeatGuidanceForSystemPrompt({
+  return !shouldIncludePulsecheckGuidanceForSystemPrompt({
     config: params.config,
     agentId: sessionAgentId,
     defaultAgentId,
   });
 }
 
-function filterHeartbeatBootstrapFile(
+function filterPulsecheckBootstrapFile(
   files: WorkspaceBootstrapFile[],
-  excludeHeartbeatBootstrapFile: boolean,
+  excludePulsecheckBootstrapFile: boolean,
 ): WorkspaceBootstrapFile[] {
-  if (!excludeHeartbeatBootstrapFile) {
+  if (!excludePulsecheckBootstrapFile) {
     return files;
   }
-  return files.filter((file) => file.name !== DEFAULT_HEARTBEAT_FILENAME);
+  return files.filter((file) => file.name !== DEFAULT_PULSECHECK_FILENAME);
 }
 
 export async function resolveBootstrapFilesForRun(params: {
@@ -224,7 +224,7 @@ export async function resolveBootstrapFilesForRun(params: {
   contextMode?: BootstrapContextMode;
   runKind?: BootstrapContextRunKind;
 }): Promise<WorkspaceBootstrapFile[]> {
-  const excludeHeartbeatBootstrapFile = shouldExcludeHeartbeatBootstrapFile(params);
+  const excludePulsecheckBootstrapFile = shouldExcludePulsecheckBootstrapFile(params);
   const sessionKey = params.sessionKey ?? params.sessionId;
   const rawFiles = params.sessionKey
     ? await getOrLoadBootstrapFiles({
@@ -247,7 +247,7 @@ export async function resolveBootstrapFilesForRun(params: {
     agentId: params.agentId,
   });
   return sanitizeBootstrapFiles(
-    filterHeartbeatBootstrapFile(updated, excludeHeartbeatBootstrapFile),
+    filterPulsecheckBootstrapFile(updated, excludePulsecheckBootstrapFile),
     params.warn,
   );
 }

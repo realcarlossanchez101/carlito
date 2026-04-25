@@ -122,8 +122,8 @@ export type DiagnosticRunAttemptEvent = DiagnosticBaseEvent & {
   attempt: number;
 };
 
-export type DiagnosticHeartbeatEvent = DiagnosticBaseEvent & {
-  type: "diagnostic.heartbeat";
+export type DiagnosticPulsecheckEvent = DiagnosticBaseEvent & {
+  type: "diagnostic.pulsecheck";
   webhooks: {
     received: number;
     processed: number;
@@ -200,7 +200,7 @@ export type DiagnosticEventPayload =
   | DiagnosticLaneEnqueueEvent
   | DiagnosticLaneDequeueEvent
   | DiagnosticRunAttemptEvent
-  | DiagnosticHeartbeatEvent
+  | DiagnosticPulsecheckEvent
   | DiagnosticToolLoopEvent
   | DiagnosticMemorySampleEvent
   | DiagnosticMemoryPressureEvent

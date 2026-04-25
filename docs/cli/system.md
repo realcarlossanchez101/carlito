@@ -1,15 +1,15 @@
 ---
-summary: "CLI reference for `openclaw system` (system events, heartbeat, presence)"
+summary: "CLI reference for `openclaw system` (system events, pulsecheck, presence)"
 read_when:
   - You want to enqueue a system event without creating a cron job
-  - You need to enable or disable heartbeats
+  - You need to enable or disable pulsechecks
   - You want to inspect system presence entries
 title: "System"
 ---
 
 # `openclaw system`
 
-System-level helpers for the Gateway: enqueue system events, control heartbeats,
+System-level helpers for the Gateway: enqueue system events, control pulsechecks,
 and view presence.
 
 All `system` subcommands use Gateway RPC and accept the shared client flags:
@@ -24,31 +24,31 @@ All `system` subcommands use Gateway RPC and accept the shared client flags:
 ```bash
 openclaw system event --text "Check for urgent follow-ups" --mode now
 openclaw system event --text "Check for urgent follow-ups" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
-openclaw system heartbeat enable
-openclaw system heartbeat last
+openclaw system pulsecheck enable
+openclaw system pulsecheck last
 openclaw system presence
 ```
 
 ## `system event`
 
-Enqueue a system event on the **main** session. The next heartbeat will inject
-it as a `System:` line in the prompt. Use `--mode now` to trigger the heartbeat
-immediately; `next-heartbeat` waits for the next scheduled tick.
+Enqueue a system event on the **main** session. The next pulsecheck will inject
+it as a `System:` line in the prompt. Use `--mode now` to trigger the pulsecheck
+immediately; `next-pulsecheck` waits for the next scheduled tick.
 
 Flags:
 
 - `--text <text>`: required system event text.
-- `--mode <mode>`: `now` or `next-heartbeat` (default).
+- `--mode <mode>`: `now` or `next-pulsecheck` (default).
 - `--json`: machine-readable output.
 - `--url`, `--token`, `--timeout`, `--expect-final`: shared Gateway RPC flags.
 
-## `system heartbeat last|enable|disable`
+## `system pulsecheck last|enable|disable`
 
-Heartbeat controls:
+Pulsecheck controls:
 
-- `last`: show the last heartbeat event.
-- `enable`: turn heartbeats back on (use this if they were disabled).
-- `disable`: pause heartbeats.
+- `last`: show the last pulsecheck event.
+- `enable`: turn pulsechecks back on (use this if they were disabled).
+- `disable`: pause pulsechecks.
 
 Flags:
 

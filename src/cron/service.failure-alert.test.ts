@@ -35,7 +35,7 @@ function createFailureAlertCron(params: {
     cronConfig: params.cronConfig,
     log: noopLogger,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: params.runIsolatedAgentJob,
     sendCronFailureAlert: params.sendCronFailureAlert,
   });
@@ -82,7 +82,7 @@ describe("CronService failure alerts", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "run report" },
       delivery: { mode: "announce", channel: "telegram", to: "19098680" },
     });
@@ -142,7 +142,7 @@ describe("CronService failure alerts", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "run report" },
       failureAlert: {
         after: 1,
@@ -191,7 +191,7 @@ describe("CronService failure alerts", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "run report" },
       failureAlert: false,
     });
@@ -232,7 +232,7 @@ describe("CronService failure alerts", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "run report" },
       delivery: { mode: "announce", channel: "telegram", to: "19098680" },
     });
@@ -241,7 +241,7 @@ describe("CronService failure alerts", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "run report" },
       delivery: {
         mode: "announce",

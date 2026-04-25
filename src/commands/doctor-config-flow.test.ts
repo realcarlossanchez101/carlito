@@ -112,38 +112,40 @@ const legacyConfigMigrationForTest = vi.hoisted(() => {
     const next = structuredClone(root);
     const changes: string[] = [];
 
-    const heartbeat = asRecord(next.heartbeat);
-    if (heartbeat) {
+    const pulsecheck = asRecord(next.pulsecheck);
+    if (pulsecheck) {
       const agents = ensureRecord(next, "agents");
       const agentDefaults = ensureRecord(agents, "defaults");
       const channels = ensureRecord(next, "channels");
       const channelDefaults = ensureRecord(channels, "defaults");
-      const agentHeartbeat: Record<string, unknown> = {};
-      const channelHeartbeat: Record<string, unknown> = {};
+      const agentPulsecheck: Record<string, unknown> = {};
+      const channelPulsecheck: Record<string, unknown> = {};
       for (const key of ["model", "every"]) {
-        if (key in heartbeat) {
-          agentHeartbeat[key] = heartbeat[key];
+        if (key in pulsecheck) {
+          agentPulsecheck[key] = pulsecheck[key];
         }
       }
       for (const key of ["showOk", "showAlerts", "useIndicator"]) {
-        if (key in heartbeat) {
-          channelHeartbeat[key] = heartbeat[key];
+        if (key in pulsecheck) {
+          channelPulsecheck[key] = pulsecheck[key];
         }
       }
-      if (Object.keys(agentHeartbeat).length > 0) {
-        agentDefaults.heartbeat = {
-          ...asRecord(agentDefaults.heartbeat),
-          ...agentHeartbeat,
+      if (Object.keys(agentPulsecheck).length > 0) {
+        agentDefaults.pulsecheck = {
+          ...asRecord(agentDefaults.pulsecheck),
+          ...agentPulsecheck,
         };
       }
-      if (Object.keys(channelHeartbeat).length > 0) {
-        channelDefaults.heartbeat = {
-          ...asRecord(channelDefaults.heartbeat),
-          ...channelHeartbeat,
+      if (Object.keys(channelPulsecheck).length > 0) {
+        channelDefaults.pulsecheck = {
+          ...asRecord(channelDefaults.pulsecheck),
+          ...channelPulsecheck,
         };
       }
-      delete next.heartbeat;
-      changes.push("Moved heartbeat to agents.defaults.heartbeat and channels.defaults.heartbeat.");
+      delete next.pulsecheck;
+      changes.push(
+        "Moved pulsecheck to agents.defaults.pulsecheck and channels.defaults.pulsecheck.",
+      );
     }
 
     const gateway = asRecord(next.gateway);
@@ -303,11 +305,11 @@ vi.mock("../config/legacy.js", () => {
       const sourceRoot = asRecord(sourceRaw) ?? root;
       const issues: Array<{ path: string; message: string }> = [];
 
-      if ("heartbeat" in root) {
+      if ("pulsecheck" in root) {
         addIssue(
           issues,
-          ["heartbeat"],
-          'heartbeat is legacy; use agents.defaults.heartbeat and channels.defaults.heartbeat. Run "openclaw doctor --fix".',
+          ["pulsecheck"],
+          'pulsecheck is legacy; use agents.defaults.pulsecheck and channels.defaults.pulsecheck. Run "openclaw doctor --fix".',
         );
       }
       if ("memorySearch" in root) {
@@ -2266,7 +2268,7 @@ describe("doctor config flow", () => {
     const result = await runDoctorConfigWithInput({
       repair: true,
       config: {
-        heartbeat: {
+        pulsecheck: {
           model: "anthropic/claude-3-5-haiku-20241022",
           every: "30m",
           showOk: true,
@@ -2299,7 +2301,7 @@ describe("doctor config flow", () => {
     });
 
     const cfg = result.cfg as {
-      heartbeat?: unknown;
+      pulsecheck?: unknown;
       gateway?: {
         bind?: string;
       };
@@ -2311,7 +2313,7 @@ describe("doctor config flow", () => {
       };
       agents?: {
         defaults?: {
-          heartbeat?: {
+          pulsecheck?: {
             model?: string;
             every?: string;
           };
@@ -2319,7 +2321,7 @@ describe("doctor config flow", () => {
       };
       channels?: {
         defaults?: {
-          heartbeat?: {
+          pulsecheck?: {
             showOk?: boolean;
             showAlerts?: boolean;
             useIndicator?: boolean;
@@ -2342,8 +2344,8 @@ describe("doctor config flow", () => {
         };
       };
     };
-    expect(cfg.heartbeat).toBeUndefined();
-    expect(cfg.agents?.defaults?.heartbeat).toMatchObject({
+    expect(cfg.pulsecheck).toBeUndefined();
+    expect(cfg.agents?.defaults?.pulsecheck).toMatchObject({
       model: "anthropic/claude-3-5-haiku-20241022",
       every: "30m",
     });
@@ -2360,7 +2362,7 @@ describe("doctor config flow", () => {
     expect(cfg.session?.threadBindings?.ttlHours).toBeUndefined();
     expect(cfg.channels?.discord?.threadBindings?.ttlHours).toBeUndefined();
     expect(cfg.channels?.discord?.accounts?.alpha?.threadBindings?.ttlHours).toBeUndefined();
-    expect(cfg.channels?.defaults?.heartbeat).toMatchObject({
+    expect(cfg.channels?.defaults?.pulsecheck).toMatchObject({
       showOk: true,
       showAlerts: false,
     });
@@ -2371,7 +2373,7 @@ describe("doctor config flow", () => {
     try {
       await runDoctorConfigWithInput({
         config: {
-          heartbeat: {
+          pulsecheck: {
             model: "anthropic/claude-3-5-haiku-20241022",
             every: "30m",
             showOk: true,
@@ -2438,9 +2440,9 @@ describe("doctor config flow", () => {
         .map(([message]) => message)
         .join("\n");
 
-      expect(legacyMessages).toContain("heartbeat:");
-      expect(legacyMessages).toContain("agents.defaults.heartbeat");
-      expect(legacyMessages).toContain("channels.defaults.heartbeat");
+      expect(legacyMessages).toContain("pulsecheck:");
+      expect(legacyMessages).toContain("agents.defaults.pulsecheck");
+      expect(legacyMessages).toContain("channels.defaults.pulsecheck");
       expect(legacyMessages).toContain("memorySearch:");
       expect(legacyMessages).toContain("agents.defaults.memorySearch");
       expect(legacyMessages).toContain("gateway.bind:");

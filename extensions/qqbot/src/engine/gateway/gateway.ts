@@ -1,7 +1,7 @@
 /**
  * Core gateway entry point — thin shell that wires together:
  *
- * - GatewayConnection: WebSocket lifecycle, heartbeat, reconnect
+ * - GatewayConnection: WebSocket lifecycle, pulsecheck, reconnect
  * - buildInboundContext: content building, attachments, quote resolution
  * - dispatchOutbound: AI dispatch, deliver callbacks, timeouts
  *

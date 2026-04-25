@@ -196,25 +196,25 @@ export async function getReplyFromConfig(
   });
   let provider = defaultProvider;
   let model = defaultModel;
-  let hasResolvedHeartbeatModelOverride = false;
-  if (opts?.isHeartbeat) {
-    // Prefer the resolved per-agent heartbeat model passed from the heartbeat runner,
-    // fall back to the global defaults heartbeat model for backward compatibility.
-    const heartbeatRaw =
-      normalizeOptionalString(opts.heartbeatModelOverride) ??
-      normalizeOptionalString(agentCfg?.heartbeat?.model) ??
+  let hasResolvedPulsecheckModelOverride = false;
+  if (opts?.isPulsecheck) {
+    // Prefer the resolved per-agent pulsecheck model passed from the pulsecheck runner,
+    // fall back to the global defaults pulsecheck model for backward compatibility.
+    const pulsecheckRaw =
+      normalizeOptionalString(opts.pulsecheckModelOverride) ??
+      normalizeOptionalString(agentCfg?.pulsecheck?.model) ??
       "";
-    const heartbeatRef = heartbeatRaw
+    const pulsecheckRef = pulsecheckRaw
       ? resolveModelRefFromString({
-          raw: heartbeatRaw,
+          raw: pulsecheckRaw,
           defaultProvider,
           aliasIndex,
         })
       : null;
-    if (heartbeatRef) {
-      provider = heartbeatRef.ref.provider;
-      model = heartbeatRef.ref.model;
-      hasResolvedHeartbeatModelOverride = true;
+    if (pulsecheckRef) {
+      provider = pulsecheckRef.ref.provider;
+      model = pulsecheckRef.ref.model;
+      hasResolvedPulsecheckModelOverride = true;
     }
   }
 
@@ -342,11 +342,11 @@ export async function getReplyFromConfig(
     parentSessionKey: sessionEntry.parentSessionKey ?? sessionCtx.ParentSessionKey,
     defaultProvider,
   });
-  if (storedModelOverride?.model && !hasResolvedHeartbeatModelOverride) {
+  if (storedModelOverride?.model && !hasResolvedPulsecheckModelOverride) {
     provider = storedModelOverride.provider ?? defaultProvider;
     model = storedModelOverride.model;
   }
-  if (!hasResolvedHeartbeatModelOverride && !hasSessionModelOverride && channelModelOverride) {
+  if (!hasResolvedPulsecheckModelOverride && !hasSessionModelOverride && channelModelOverride) {
     const resolved = resolveModelRefFromString({
       raw: channelModelOverride.model,
       defaultProvider,
@@ -362,7 +362,7 @@ export async function getReplyFromConfig(
     shouldUseReplyFastDirectiveExecution({
       isFastTestBootstrap: useFastTestRuntime,
       isGroup,
-      isHeartbeat: opts?.isHeartbeat === true,
+      isPulsecheck: opts?.isPulsecheck === true,
       resetTriggered,
       triggerBodyNormalized,
     })
@@ -454,7 +454,7 @@ export async function getReplyFromConfig(
     aliasIndex,
     provider,
     model,
-    hasResolvedHeartbeatModelOverride,
+    hasResolvedPulsecheckModelOverride,
     typing,
     opts: resolvedOpts,
     skillFilter: mergedSkillFilter,
@@ -582,7 +582,7 @@ export async function getReplyFromConfig(
           sessionId,
           workspaceDir,
           messageProvider: hookMessageProvider,
-          trigger: opts?.isHeartbeat ? "heartbeat" : "user",
+          trigger: opts?.isPulsecheck ? "pulsecheck" : "user",
           channelId: hookMessageProvider,
         },
       );

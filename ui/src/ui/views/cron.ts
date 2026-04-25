@@ -823,7 +823,7 @@ export function renderCron(props: CronProps) {
                     })}
                 >
                   <option value="now">${t("cron.form.now")}</option>
-                  <option value="next-heartbeat">${t("cron.form.nextHeartbeat")}</option>
+                  <option value="next-pulsecheck">${t("cron.form.nextPulsecheck")}</option>
                 </select>
                 <div class="cron-help">${t("cron.form.wakeModeHelp")}</div>
               </label>

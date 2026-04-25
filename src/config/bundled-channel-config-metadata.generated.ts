@@ -1318,7 +1318,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
             additionalProperties: false,
           },
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -2491,7 +2491,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                   additionalProperties: false,
                 },
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {
@@ -3698,7 +3698,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
           exclusiveMinimum: 0,
           maximum: 300000,
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             visibility: {
@@ -4254,7 +4254,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                 exclusiveMinimum: 0,
                 maximum: 300000,
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   visibility: {
@@ -5373,7 +5373,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
             additionalProperties: false,
           },
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -5653,7 +5653,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                   additionalProperties: false,
                 },
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {
@@ -8233,7 +8233,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
         sharePointSiteId: {
           type: "string",
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -10003,7 +10003,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
           type: "string",
           enum: ["off", "ack", "minimal", "extensive"],
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -10322,7 +10322,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                 type: "string",
                 enum: ["off", "ack", "minimal", "extensive"],
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {
@@ -11260,7 +11260,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
             additionalProperties: false,
           },
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -12169,7 +12169,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                   additionalProperties: false,
                 },
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {
@@ -13311,7 +13311,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
           type: "string",
           enum: ["off", "ack", "minimal", "extensive"],
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -14349,7 +14349,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                 type: "string",
                 enum: ["off", "ack", "minimal", "extensive"],
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {
@@ -15247,7 +15247,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
             },
           ],
         },
-        heartbeat: {
+        pulsecheck: {
           type: "object",
           properties: {
             showOk: {
@@ -15535,7 +15535,7 @@ export const GENERATED_BUNDLED_CHANNEL_CONFIG_METADATA = [
                   },
                 ],
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   showOk: {

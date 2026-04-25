@@ -244,7 +244,7 @@ describe("discordPlugin outbound", () => {
     }
   });
 
-  it("forwards heartbeat typing through the run config and attached target", async () => {
+  it("forwards pulsecheck typing through the run config and attached target", async () => {
     const sendTypingDiscord = vi.fn(async () => ({ ok: true, channelId: "thread-123" }));
     const sendTypingSpy = vi
       .spyOn(sendModule, "sendTypingDiscord")
@@ -252,7 +252,7 @@ describe("discordPlugin outbound", () => {
     try {
       const cfg = createCfg();
 
-      await discordPlugin.heartbeat!.sendTyping!({
+      await discordPlugin.pulsecheck!.sendTyping!({
         cfg,
         to: "channel:123",
         accountId: "work",

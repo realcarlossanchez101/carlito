@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { drainFormattedSystemEvents } from "../auto-reply/reply/session-system-events.js";
 import type { OpenClawConfig } from "../config/config.js";
 import { resolveMainSessionKey } from "../config/sessions/main-session.js";
-import { isCronSystemEvent } from "./heartbeat-events-filter.js";
+import { isCronSystemEvent } from "./pulsecheck-events-filter.js";
 import {
   consumeSystemEventEntries,
   drainSystemEventEntries,
@@ -183,10 +183,10 @@ describe("system events (session routing)", () => {
     first.resetSystemEventsForTest();
   });
 
-  it("filters heartbeat/noise lines, returning undefined", async () => {
-    const key = "agent:main:test-heartbeat-filter";
-    enqueueSystemEvent("Read HEARTBEAT.md before continuing", { sessionKey: key });
-    enqueueSystemEvent("heartbeat poll: pending", { sessionKey: key });
+  it("filters pulsecheck/noise lines, returning undefined", async () => {
+    const key = "agent:main:test-pulsecheck-filter";
+    enqueueSystemEvent("Read PULSECHECK.md before continuing", { sessionKey: key });
+    enqueueSystemEvent("pulsecheck poll: pending", { sessionKey: key });
     enqueueSystemEvent("reason periodic: 5m", { sessionKey: key });
 
     const result = await drainFormattedEvents(key);
@@ -232,13 +232,13 @@ describe("isCronSystemEvent", () => {
   it.each([
     "",
     "   ",
-    "HEARTBEAT_OK",
-    "HEARTBEAT_OK 🦞",
-    "heartbeat_ok",
-    "HEARTBEAT_OK:",
-    "HEARTBEAT_OK, continue",
-    "heartbeat poll: pending",
-    "heartbeat wake complete",
+    "PULSECHECK_OK",
+    "PULSECHECK_OK 🦞",
+    "pulsecheck_ok",
+    "PULSECHECK_OK:",
+    "PULSECHECK_OK, continue",
+    "pulsecheck poll: pending",
+    "pulsecheck wake complete",
     "Exec finished (gateway id=abc, code 0)",
   ])("returns false for non-cron noise %j", (entry) => {
     expect(isCronSystemEvent(entry)).toBe(false);

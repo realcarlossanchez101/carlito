@@ -25,7 +25,7 @@ async function withCronService(
   run: (context: {
     cron: CronService;
     enqueueSystemEvent: ReturnType<typeof vi.fn>;
-    requestHeartbeatNow: ReturnType<typeof vi.fn>;
+    requestPulsecheckNow: ReturnType<typeof vi.fn>;
   }) => Promise<void>,
 ) {
   await withCronServiceForTest(
@@ -43,7 +43,7 @@ async function addIsolatedAgentTurnJob(
   cron: CronService,
   params: {
     name: string;
-    wakeMode: "next-heartbeat" | "now";
+    wakeMode: "next-pulsecheck" | "now";
     delivery?: DeliveryOverride;
   },
 ) {
@@ -74,7 +74,7 @@ describe("CronService delivery plan consistency", () => {
     await withCronService({}, async ({ cron, enqueueSystemEvent }) => {
       const job = await addIsolatedAgentTurnJob(cron, {
         name: "delivery-off",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         delivery: { mode: "none" },
       });
 
@@ -88,7 +88,7 @@ describe("CronService delivery plan consistency", () => {
     await withCronService({}, async ({ cron, enqueueSystemEvent }) => {
       const job = await addIsolatedAgentTurnJob(cron, {
         name: "partial-delivery",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         delivery: { channel: "telegram", to: "123" } as DeliveryOverride,
       });
 
@@ -108,7 +108,7 @@ describe("CronService delivery plan consistency", () => {
           delivered: true,
         })),
       },
-      async ({ cron, enqueueSystemEvent, requestHeartbeatNow }) => {
+      async ({ cron, enqueueSystemEvent, requestPulsecheckNow }) => {
         const job = await addIsolatedAgentTurnJob(cron, {
           name: "announce-delivered",
           wakeMode: "now",
@@ -118,7 +118,7 @@ describe("CronService delivery plan consistency", () => {
         const result = await cron.run(job.id, "force");
         expect(result).toEqual({ ok: true, ran: true });
         expect(enqueueSystemEvent).not.toHaveBeenCalled();
-        expect(requestHeartbeatNow).not.toHaveBeenCalled();
+        expect(requestPulsecheckNow).not.toHaveBeenCalled();
       },
     );
   });

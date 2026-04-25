@@ -93,7 +93,7 @@ class MockContextEngine implements ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
   }): Promise<IngestResult> {
     return { ingested: true };
   }
@@ -164,7 +164,7 @@ class LegacySessionKeyStrictEngine implements ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
   }): Promise<IngestResult> {
     this.ingestCalls.push({ ...params });
     this.rejectSessionKey(params);
@@ -243,7 +243,7 @@ class SessionKeyRuntimeErrorEngine implements ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
   }): Promise<IngestResult> {
     return { ingested: true };
   }
@@ -289,7 +289,7 @@ class LegacyAssembleStrictEngine implements ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
   }): Promise<IngestResult> {
     return { ingested: true };
   }

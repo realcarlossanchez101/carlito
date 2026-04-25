@@ -32,7 +32,7 @@ function normalizeToken(value: string | undefined | null): string {
   return normalizeLowercaseStringOrEmpty(value);
 }
 
-export function scopedHeartbeatWakeOptions<T extends object>(
+export function scopedPulsecheckWakeOptions<T extends object>(
   sessionKey: string,
   wakeOptions: T,
 ): T | (T & { sessionKey: string }) {

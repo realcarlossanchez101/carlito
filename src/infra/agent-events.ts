@@ -109,7 +109,7 @@ export type AgentEventPayload = {
 export type AgentRunContext = {
   sessionKey?: string;
   verboseLevel?: VerboseLevel;
-  isHeartbeat?: boolean;
+  isPulsecheck?: boolean;
   /** Whether control UI clients should receive chat/agent updates for this run. */
   isControlUiVisible?: boolean;
   /** Timestamp when this context was first registered (for TTL-based cleanup). */
@@ -156,8 +156,8 @@ export function registerAgentRunContext(runId: string, context: AgentRunContext)
   if (context.isControlUiVisible !== undefined) {
     existing.isControlUiVisible = context.isControlUiVisible;
   }
-  if (context.isHeartbeat !== undefined && existing.isHeartbeat !== context.isHeartbeat) {
-    existing.isHeartbeat = context.isHeartbeat;
+  if (context.isPulsecheck !== undefined && existing.isPulsecheck !== context.isPulsecheck) {
+    existing.isPulsecheck = context.isPulsecheck;
   }
 }
 

@@ -3,7 +3,7 @@ summary: "Background task tracking for ACP runs, subagents, isolated cron jobs, 
 read_when:
   - Inspecting background work in progress or recently completed
   - Debugging delivery failures for detached agent runs
-  - Understanding how background runs relate to sessions, cron, and heartbeat
+  - Understanding how background runs relate to sessions, cron, and pulsecheck
 title: "Background tasks"
 ---
 
@@ -12,26 +12,26 @@ title: "Background tasks"
 Background tasks track work that runs **outside your main conversation session**:
 ACP runs, subagent spawns, isolated cron job executions, and CLI-initiated operations.
 
-Tasks do **not** replace sessions, cron jobs, or heartbeats — they are the **activity ledger** that records what detached work happened, when, and whether it succeeded.
+Tasks do **not** replace sessions, cron jobs, or pulsechecks — they are the **activity ledger** that records what detached work happened, when, and whether it succeeded.
 
 <Note>
-Not every agent run creates a task. Heartbeat turns and normal interactive chat do not. All cron executions, ACP spawns, subagent spawns, and CLI agent commands do.
+Not every agent run creates a task. Pulsecheck turns and normal interactive chat do not. All cron executions, ACP spawns, subagent spawns, and CLI agent commands do.
 </Note>
 
 ## TL;DR
 
-- Tasks are **records**, not schedulers — cron and heartbeat decide _when_ work runs, tasks track _what happened_.
-- ACP, subagents, all cron jobs, and CLI operations create tasks. Heartbeat turns do not.
+- Tasks are **records**, not schedulers — cron and pulsecheck decide _when_ work runs, tasks track _what happened_.
+- ACP, subagents, all cron jobs, and CLI operations create tasks. Pulsecheck turns do not.
 - Each task moves through `queued → running → terminal` (succeeded, failed, timed_out, cancelled, or lost).
 - Cron tasks stay live while the cron runtime still owns the job; chat-backed CLI tasks stay live only while their owning run context is still active.
 - Completion is push-driven: detached work can notify directly or wake the
-  requester session/heartbeat when it finishes, so status polling loops are
+  requester session/pulsecheck when it finishes, so status polling loops are
   usually the wrong shape.
 - Isolated cron runs and subagent completions best-effort clean up tracked browser tabs/processes for their child session before final cleanup bookkeeping.
 - Isolated cron delivery suppresses stale interim parent replies while
   descendant subagent work is still draining, and it prefers final descendant
   output when that arrives before delivery.
-- Completion notifications are delivered directly to a channel or queued for the next heartbeat.
+- Completion notifications are delivered directly to a channel or queued for the next pulsecheck.
 - `openclaw tasks list` shows all tasks; `openclaw tasks audit` surfaces issues.
 - Terminal records are kept for 7 days, then automatically pruned.
 
@@ -85,7 +85,7 @@ While a session-backed `video_generate` task is still active, the tool also acts
 
 **What does not create tasks:**
 
-- Heartbeat turns — main-session; see [Heartbeat](/gateway/heartbeat)
+- Pulsecheck turns — main-session; see [Pulsecheck](/gateway/pulsecheck)
 - Normal interactive chat turns
 - Direct `/command` responses
 
@@ -128,10 +128,10 @@ When a task reaches a terminal state, OpenClaw notifies you. There are two deliv
 
 **Direct delivery** — if the task has a channel target (the `requesterOrigin`), the completion message goes straight to that channel (Telegram, Discord, Slack, etc.). For subagent completions, OpenClaw also preserves bound thread/topic routing when available and can fill a missing `to` / account from the requester session's stored route (`lastChannel` / `lastTo` / `lastAccountId`) before giving up on direct delivery.
 
-**Session-queued delivery** — if direct delivery fails or no origin is set, the update is queued as a system event in the requester's session and surfaces on the next heartbeat.
+**Session-queued delivery** — if direct delivery fails or no origin is set, the update is queued as a system event in the requester's session and surfaces on the next pulsecheck.
 
 <Tip>
-Task completion triggers an immediate heartbeat wake so you see the result quickly — you do not have to wait for the next scheduled heartbeat tick.
+Task completion triggers an immediate pulsecheck wake so you see the result quickly — you do not have to wait for the next scheduled pulsecheck tick.
 </Tip>
 
 That means the usual workflow is push-based: start detached work once, then let
@@ -303,11 +303,11 @@ A cron job **definition** lives in `~/.openclaw/cron/jobs.json`; runtime executi
 
 See [Cron Jobs](/automation/cron-jobs).
 
-### Tasks and heartbeat
+### Tasks and pulsecheck
 
-Heartbeat runs are main-session turns — they do not create task records. When a task completes, it can trigger a heartbeat wake so you see the result promptly.
+Pulsecheck runs are main-session turns — they do not create task records. When a task completes, it can trigger a pulsecheck wake so you see the result promptly.
 
-See [Heartbeat](/gateway/heartbeat).
+See [Pulsecheck](/gateway/pulsecheck).
 
 ### Tasks and sessions
 
@@ -322,5 +322,5 @@ A task's `runId` links to the agent run doing the work. Agent lifecycle events (
 - [Automation & Tasks](/automation) — all automation mechanisms at a glance
 - [Task Flow](/automation/taskflow) — flow orchestration above tasks
 - [Scheduled Tasks](/automation/cron-jobs) — scheduling background work
-- [Heartbeat](/gateway/heartbeat) — periodic main-session turns
+- [Pulsecheck](/gateway/pulsecheck) — periodic main-session turns
 - [CLI: Tasks](/cli/tasks) — CLI command reference

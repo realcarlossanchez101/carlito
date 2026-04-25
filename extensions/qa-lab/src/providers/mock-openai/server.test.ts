@@ -1236,7 +1236,7 @@ describe("qa mock openai server", () => {
     expect(await firstB.text()).toContain('\\"label\\":\\"qa-fanout-alpha\\"');
   });
 
-  it("answers heartbeat prompts without spawning extra subagents", async () => {
+  it("answers pulsecheck prompts without spawning extra subagents", async () => {
     const server = await startQaMockOpenAiServer({
       host: "127.0.0.1",
       port: 0,
@@ -1258,7 +1258,7 @@ describe("qa mock openai server", () => {
             content: [
               {
                 type: "input_text",
-                text: "System: Gateway restart config-apply ok\nSystem: QA-SUBAGENT-RECOVERY-1234\n\nRead HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.",
+                text: "System: Gateway restart config-apply ok\nSystem: QA-SUBAGENT-RECOVERY-1234\n\nRead PULSECHECK.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply PULSECHECK_OK.",
               },
             ],
           },
@@ -1270,7 +1270,7 @@ describe("qa mock openai server", () => {
     expect(await response.json()).toMatchObject({
       output: [
         {
-          content: [{ text: "HEARTBEAT_OK" }],
+          content: [{ text: "PULSECHECK_OK" }],
         },
       ],
     });
@@ -2003,7 +2003,7 @@ describe("qa mock openai server", () => {
     expect(body).toContain("Evidence");
   });
 
-  it("keeps Anthropic remember prompts on the prose branch even when system text mentions HEARTBEAT", async () => {
+  it("keeps Anthropic remember prompts on the prose branch even when system text mentions PULSECHECK", async () => {
     const server = await startQaMockOpenAiServer({
       host: "127.0.0.1",
       port: 0,
@@ -2022,7 +2022,7 @@ describe("qa mock openai server", () => {
         system: [
           {
             type: "text",
-            text: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. If nothing needs attention, reply HEARTBEAT_OK.",
+            text: "Read PULSECHECK.md if it exists (workspace context). Follow it strictly. If nothing needs attention, reply PULSECHECK_OK.",
           },
         ],
         messages: [
@@ -2042,11 +2042,11 @@ describe("qa mock openai server", () => {
     expect(response.status).toBe(200);
     const body = await response.text();
     expect(body).toContain("Remembered ALPHA-7.");
-    expect(body).not.toContain("HEARTBEAT_OK");
+    expect(body).not.toContain("PULSECHECK_OK");
     expect(body).not.toContain('"name":"read"');
   });
 
-  it("prefers the prompt-local exact reply directive over heartbeat context", async () => {
+  it("prefers the prompt-local exact reply directive over pulsecheck context", async () => {
     const server = await startQaMockOpenAiServer({
       host: "127.0.0.1",
       port: 0,
@@ -2066,9 +2066,9 @@ describe("qa mock openai server", () => {
           {
             type: "text",
             text: [
-              "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly.",
-              "If the current user message is a heartbeat poll and nothing needs attention, reply exactly:",
-              "HEARTBEAT_OK",
+              "Read PULSECHECK.md if it exists (workspace context). Follow it strictly.",
+              "If the current user message is a pulsecheck poll and nothing needs attention, reply exactly:",
+              "PULSECHECK_OK",
             ].join("\n"),
           },
         ],
@@ -2089,7 +2089,7 @@ describe("qa mock openai server", () => {
     expect(response.status).toBe(200);
     const body = await response.text();
     expect(body).toContain("Remembered ALPHA-7.");
-    expect(body).not.toContain("HEARTBEAT_OK");
+    expect(body).not.toContain("PULSECHECK_OK");
   });
 
   it("rejects malformed Anthropic /v1/messages JSON with an invalid_request_error", async () => {
@@ -2453,7 +2453,7 @@ describe("qa mock openai server provider variant tagging", () => {
       body: JSON.stringify({
         model: "openai/gpt-5.4",
         stream: false,
-        input: [{ role: "user", content: [{ type: "input_text", text: "Heartbeat check" }] }],
+        input: [{ role: "user", content: [{ type: "input_text", text: "Pulsecheck check" }] }],
       }),
     });
 
@@ -2480,7 +2480,7 @@ describe("qa mock openai server provider variant tagging", () => {
       body: JSON.stringify({
         model: "claude-opus-4-6",
         max_tokens: 256,
-        messages: [{ role: "user", content: "Heartbeat check" }],
+        messages: [{ role: "user", content: "Pulsecheck check" }],
       }),
     });
 
@@ -2507,7 +2507,7 @@ describe("qa mock openai server provider variant tagging", () => {
       body: JSON.stringify({
         model: "mistral/mistral-large",
         stream: false,
-        input: [{ role: "user", content: [{ type: "input_text", text: "Heartbeat check" }] }],
+        input: [{ role: "user", content: [{ type: "input_text", text: "Pulsecheck check" }] }],
       }),
     });
 

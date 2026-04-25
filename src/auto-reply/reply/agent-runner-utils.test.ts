@@ -190,7 +190,7 @@ describe("agent-runner-utils", () => {
     const resolved = buildEmbeddedRunContexts({
       run,
       sessionCtx: {
-        Provider: "heartbeat",
+        Provider: "pulsecheck",
         OriginatingChannel: "Telegram",
         OriginatingTo: "268300329",
       },

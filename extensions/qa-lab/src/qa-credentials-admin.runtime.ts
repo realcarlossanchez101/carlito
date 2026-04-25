@@ -26,7 +26,7 @@ const credentialLeaseSchema = z.object({
   ownerId: z.string().min(1),
   actorRole: actorRoleSchema,
   acquiredAtMs: z.number().int(),
-  heartbeatAtMs: z.number().int(),
+  pulsecheckAtMs: z.number().int(),
   expiresAtMs: z.number().int(),
 });
 

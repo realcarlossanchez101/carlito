@@ -28,7 +28,7 @@ Sections:
   missingPackages              Workspace packages whose deps are not mirrored at the root
   seamTestInventory            High-signal seam candidates with nearby-test gap signals,
                                including cron orchestration seams for agent handoff,
-                               outbound/media delivery, heartbeat/followup handoff,
+                               outbound/media delivery, pulsecheck/followup handoff,
                                and scheduler state crossings, plus subagent seams
                                for spawn/session handoff, announce delivery,
                                lifecycle registry, cleanup, and parent streaming
@@ -599,11 +599,11 @@ function describeCronSeamKinds(relativePath, source) {
     "../cli/outbound-send-deps.js",
     "../../cli/outbound-send-deps.js",
   ]);
-  const importsHeartbeat = hasAnyImportSource(source, [
-    "../auto-reply/heartbeat.js",
-    "../../auto-reply/heartbeat.js",
-    "../infra/heartbeat-wake.js",
-    "../../infra/heartbeat-wake.js",
+  const importsPulsecheck = hasAnyImportSource(source, [
+    "../auto-reply/pulsecheck.js",
+    "../../auto-reply/pulsecheck.js",
+    "../infra/pulsecheck-wake.js",
+    "../../infra/pulsecheck-wake.js",
   ]);
   const importsFollowup = hasAnyImportSource(source, [
     "./subagent-followup.js",
@@ -642,10 +642,10 @@ function describeCronSeamKinds(relativePath, source) {
   }
 
   if (
-    importsHeartbeat &&
-    /\bstripHeartbeatToken\b|\bHeartbeat\b|\bheartbeat\b|\bnext-heartbeat\b/.test(source)
+    importsPulsecheck &&
+    /\bstripPulsecheckToken\b|\bPulsecheck\b|\bpulsecheck\b|\bnext-pulsecheck\b/.test(source)
   ) {
-    seamKinds.push("cron-heartbeat-handoff");
+    seamKinds.push("cron-pulsecheck-handoff");
   }
 
   if (
@@ -721,7 +721,7 @@ function describeSubagentSeamKinds(relativePath, source) {
   ]);
   const importsParentStream = hasAnyImportSource(source, [
     "./acp-spawn-parent-stream.js",
-    "../infra/heartbeat-wake.js",
+    "../infra/pulsecheck-wake.js",
     "../infra/system-events.js",
     "../infra/agent-events.js",
   ]);
@@ -764,7 +764,7 @@ function describeSubagentSeamKinds(relativePath, source) {
 
   if (
     importsParentStream &&
-    /\bstartAcpSpawnParentStreamRelay\b|\brequestHeartbeatNow\b|\benqueueSystemEvent\b|\bonAgentEvent\b|\bstreamTo\b/.test(
+    /\bstartAcpSpawnParentStreamRelay\b|\brequestPulsecheckNow\b|\benqueueSystemEvent\b|\bonAgentEvent\b|\bstreamTo\b/.test(
       source,
     )
   ) {
@@ -946,7 +946,7 @@ export function determineSeamTestStatus(seamKinds, relatedTestMatches) {
     seamKinds.includes("tool-result-media") ||
     seamKinds.includes("cron-agent-handoff") ||
     seamKinds.includes("cron-outbound-delivery") ||
-    seamKinds.includes("cron-heartbeat-handoff") ||
+    seamKinds.includes("cron-pulsecheck-handoff") ||
     seamKinds.includes("cron-scheduler-state") ||
     seamKinds.includes("cron-media-delivery") ||
     seamKinds.includes("cron-followup-handoff") ||

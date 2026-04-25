@@ -271,7 +271,7 @@ export async function dispatchWhatsAppBufferedReply(params: {
   const mediaLocalRoots = getAgentScopedMediaLocalRoots(params.cfg, params.route.agentId);
   const disableBlockStreaming = resolveWhatsAppDisableBlockStreaming(params.cfg);
   let didSendReply = false;
-  let didLogHeartbeatStrip = false;
+  let didLogPulsecheckStrip = false;
 
   const { queuedFinal, counts } = await dispatchReplyWithBufferedBlockDispatcher({
     ctx: params.context,
@@ -279,10 +279,10 @@ export async function dispatchWhatsAppBufferedReply(params: {
     replyResolver: params.replyResolver,
     dispatcherOptions: {
       ...params.replyPipeline,
-      onHeartbeatStrip: () => {
-        if (!didLogHeartbeatStrip) {
-          didLogHeartbeatStrip = true;
-          logVerbose("Stripped stray HEARTBEAT_OK token from web reply");
+      onPulsecheckStrip: () => {
+        if (!didLogPulsecheckStrip) {
+          didLogPulsecheckStrip = true;
+          logVerbose("Stripped stray PULSECHECK_OK token from web reply");
         }
       },
       deliver: async (payload: ReplyPayload, info: { kind: ReplyLifecycleKind }) => {

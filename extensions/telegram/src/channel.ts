@@ -690,7 +690,7 @@ export const telegramPlugin = createChatChannelPlugin({
         resolveTelegramSessionConversation({ kind, rawId }),
       parseExplicitTarget: ({ raw }) => parseTelegramExplicitTarget(raw),
       inferTargetChatType: ({ to }) => parseTelegramExplicitTarget(to).chatType,
-      preserveHeartbeatThreadIdForGroupRoute: true,
+      preservePulsecheckThreadIdForGroupRoute: true,
       formatTargetDisplay: ({ target, display, kind }) => {
         const formatted = display?.trim();
         if (formatted) {
@@ -735,7 +735,7 @@ export const telegramPlugin = createChatChannelPlugin({
         await deleteTelegramUpdateOffset({ accountId });
       },
     },
-    heartbeat: {
+    pulsecheck: {
       sendTyping: async ({ cfg, to, accountId, threadId }) => {
         const { sendTypingTelegram } = await loadTelegramSendModule();
         await sendTypingTelegram(to, {

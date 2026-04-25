@@ -1,6 +1,6 @@
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { isVitestRuntimeEnv } from "../infra/env.js";
-import { startHeartbeatRunner, type HeartbeatRunner } from "../infra/heartbeat-runner.js";
+import { startPulsecheckRunner, type PulsecheckRunner } from "../infra/pulsecheck-runner.js";
 import type { ChannelHealthMonitor } from "./channel-health-monitor.js";
 import { startChannelHealthMonitor } from "./channel-health-monitor.js";
 import { startGatewayModelPricingRefresh } from "./model-pricing-cache.js";
@@ -18,7 +18,7 @@ export type GatewayChannelManager = Parameters<
   typeof startChannelHealthMonitor
 >[0]["channelManager"];
 
-function createNoopHeartbeatRunner(): HeartbeatRunner {
+function createNoopPulsecheckRunner(): PulsecheckRunner {
   return {
     stop: () => {},
     updateConfig: (_cfg: OpenClawConfig) => {},
@@ -74,7 +74,7 @@ export function startGatewayRuntimeServices(params: {
   channelManager: GatewayChannelManager;
   log: GatewayRuntimeServiceLogger;
 }): {
-  heartbeatRunner: HeartbeatRunner;
+  pulsecheckRunner: PulsecheckRunner;
   channelHealthMonitor: ChannelHealthMonitor | null;
   stopModelPricingRefresh: () => void;
 } {
@@ -85,7 +85,7 @@ export function startGatewayRuntimeServices(params: {
   });
 
   return {
-    heartbeatRunner: createNoopHeartbeatRunner(),
+    pulsecheckRunner: createNoopPulsecheckRunner(),
     channelHealthMonitor,
     stopModelPricingRefresh:
       !params.minimalTestGateway && !isVitestRuntimeEnv()
@@ -95,7 +95,7 @@ export function startGatewayRuntimeServices(params: {
 }
 
 /**
- * Activate cron scheduler, heartbeat runner, and pending delivery recovery
+ * Activate cron scheduler, pulsecheck runner, and pending delivery recovery
  * after gateway sidecars are fully started and chat.history is available.
  */
 export function activateGatewayScheduledServices(params: {
@@ -104,11 +104,11 @@ export function activateGatewayScheduledServices(params: {
   cron: { start: () => Promise<void> };
   logCron: { error: (message: string) => void };
   log: GatewayRuntimeServiceLogger;
-}): { heartbeatRunner: HeartbeatRunner } {
+}): { pulsecheckRunner: PulsecheckRunner } {
   if (params.minimalTestGateway) {
-    return { heartbeatRunner: createNoopHeartbeatRunner() };
+    return { pulsecheckRunner: createNoopPulsecheckRunner() };
   }
-  const heartbeatRunner = startHeartbeatRunner({ cfg: params.cfgAtStart });
+  const pulsecheckRunner = startPulsecheckRunner({ cfg: params.cfgAtStart });
   startGatewayCronWithLogging({
     cron: params.cron,
     logCron: params.logCron,
@@ -117,5 +117,5 @@ export function activateGatewayScheduledServices(params: {
     cfg: params.cfgAtStart,
     log: params.log,
   });
-  return { heartbeatRunner };
+  return { pulsecheckRunner };
 }

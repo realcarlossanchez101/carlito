@@ -91,7 +91,7 @@ flowchart TD
   B --> D[Dashboard or Control UI will not connect]
   B --> E[Gateway will not start or service not running]
   B --> F[Channel connects but messages do not flow]
-  B --> G[Cron or heartbeat did not fire or did not deliver]
+  B --> G[Cron or pulsecheck did not fire or did not deliver]
   B --> H[Node is paired but camera canvas screen exec fails]
   B --> I[Browser tool fails]
 
@@ -236,7 +236,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Cron or heartbeat did not fire or did not deliver">
+  <Accordion title="Cron or pulsecheck did not fire or did not deliver">
     ```bash
     openclaw status
     openclaw gateway status
@@ -250,23 +250,23 @@ flowchart TD
 
     - `cron.status` shows enabled with a next wake.
     - `cron runs` shows recent `ok` entries.
-    - Heartbeat is enabled and not outside active hours.
+    - Pulsecheck is enabled and not outside active hours.
 
     Common log signatures:
 
     - `cron: scheduler disabled; jobs will not run automatically` → cron is disabled.
-    - `heartbeat skipped` with `reason=quiet-hours` → outside configured active hours.
-    - `heartbeat skipped` with `reason=empty-heartbeat-file` → `HEARTBEAT.md` exists but only contains blank/header-only scaffolding.
-    - `heartbeat skipped` with `reason=no-tasks-due` → `HEARTBEAT.md` task mode is active but none of the task intervals are due yet.
-    - `heartbeat skipped` with `reason=alerts-disabled` → all heartbeat visibility is disabled (`showOk`, `showAlerts`, and `useIndicator` are all off).
-    - `requests-in-flight` → main lane busy; heartbeat wake was deferred.
-    - `unknown accountId` → heartbeat delivery target account does not exist.
+    - `pulsecheck skipped` with `reason=quiet-hours` → outside configured active hours.
+    - `pulsecheck skipped` with `reason=empty-pulsecheck-file` → `PULSECHECK.md` exists but only contains blank/header-only scaffolding.
+    - `pulsecheck skipped` with `reason=no-tasks-due` → `PULSECHECK.md` task mode is active but none of the task intervals are due yet.
+    - `pulsecheck skipped` with `reason=alerts-disabled` → all pulsecheck visibility is disabled (`showOk`, `showAlerts`, and `useIndicator` are all off).
+    - `requests-in-flight` → main lane busy; pulsecheck wake was deferred.
+    - `unknown accountId` → pulsecheck delivery target account does not exist.
 
     Deep pages:
 
-    - [/gateway/troubleshooting#cron-and-heartbeat-delivery](/gateway/troubleshooting#cron-and-heartbeat-delivery)
+    - [/gateway/troubleshooting#cron-and-pulsecheck-delivery](/gateway/troubleshooting#cron-and-pulsecheck-delivery)
     - [/automation/cron-jobs#troubleshooting](/automation/cron-jobs#troubleshooting)
-    - [/gateway/heartbeat](/gateway/heartbeat)
+    - [/gateway/pulsecheck](/gateway/pulsecheck)
 
   </Accordion>
 
@@ -389,4 +389,4 @@ flowchart TD
 - [Gateway Troubleshooting](/gateway/troubleshooting) — gateway-specific issues
 - [Doctor](/gateway/doctor) — automated health checks and repairs
 - [Channel Troubleshooting](/channels/troubleshooting) — channel connectivity issues
-- [Automation Troubleshooting](/automation/cron-jobs#troubleshooting) — cron and heartbeat issues
+- [Automation Troubleshooting](/automation/cron-jobs#troubleshooting) — cron and pulsecheck issues

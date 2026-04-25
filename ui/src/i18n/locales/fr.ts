@@ -788,9 +788,9 @@ export const fr: TranslationMap = {
       sessionHelp: "Principale publie un événement système. Isolée exécute un tour d’agent dédié.",
       wakeMode: "Mode de réveil",
       now: "Maintenant",
-      nextHeartbeat: "Prochain heartbeat",
+      nextPulsecheck: "Prochain pulsecheck",
       wakeModeHelp:
-        "Maintenant déclenche immédiatement. Prochain heartbeat attend le cycle suivant.",
+        "Maintenant déclenche immédiatement. Prochain pulsecheck attend le cycle suivant.",
       payloadKind: "Que faut-il exécuter ?",
       systemEvent: "Publier un message dans la chronologie principale",
       agentTurn: "Exécuter une tâche d’assistant (isolée)",

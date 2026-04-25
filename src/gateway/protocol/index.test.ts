@@ -117,7 +117,7 @@ describe("validateTalkConfigResult", () => {
 describe("validateWakeParams", () => {
   it("accepts valid wake params", () => {
     expect(validateWakeParams({ mode: "now", text: "hello" })).toBe(true);
-    expect(validateWakeParams({ mode: "next-heartbeat", text: "remind me" })).toBe(true);
+    expect(validateWakeParams({ mode: "next-pulsecheck", text: "remind me" })).toBe(true);
   });
 
   it("rejects missing required fields", () => {
@@ -137,7 +137,7 @@ describe("validateWakeParams", () => {
 
     expect(
       validateWakeParams({
-        mode: "next-heartbeat",
+        mode: "next-pulsecheck",
         text: "check back",
         unknownFutureField: 42,
         anotherExtra: true,

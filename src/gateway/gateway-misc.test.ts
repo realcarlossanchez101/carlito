@@ -354,7 +354,7 @@ describe("gateway broadcaster", () => {
     broadcast("cron", { jobId: "job-1" });
     broadcast("talk.mode", { enabled: true });
     broadcast("voicewake.changed", { triggers: ["hello"] });
-    broadcast("heartbeat", { ts: 1 });
+    broadcast("pulsecheck", { ts: 1 });
     broadcast("presence", { presence: [] });
     broadcast("health", { ok: true });
     broadcast("tick", { ts: 2 });
@@ -363,7 +363,7 @@ describe("gateway broadcaster", () => {
     broadcast("unknown.future.event", { hidden: true });
 
     expect(pairingSocket.sent.map((frame) => frame.event)).toEqual([
-      "heartbeat",
+      "pulsecheck",
       "presence",
       "health",
       "tick",
@@ -372,7 +372,7 @@ describe("gateway broadcaster", () => {
     ]);
     expect(nodeSocket.sent.map((frame) => frame.event)).toEqual([
       "voicewake.changed",
-      "heartbeat",
+      "pulsecheck",
       "presence",
       "health",
       "tick",
@@ -382,7 +382,7 @@ describe("gateway broadcaster", () => {
     expect(readSocket.sent.map((frame) => frame.event)).toEqual([
       "cron",
       "voicewake.changed",
-      "heartbeat",
+      "pulsecheck",
       "presence",
       "health",
       "tick",
@@ -393,7 +393,7 @@ describe("gateway broadcaster", () => {
       "cron",
       "talk.mode",
       "voicewake.changed",
-      "heartbeat",
+      "pulsecheck",
       "presence",
       "health",
       "tick",
@@ -404,7 +404,7 @@ describe("gateway broadcaster", () => {
       "cron",
       "talk.mode",
       "voicewake.changed",
-      "heartbeat",
+      "pulsecheck",
       "presence",
       "health",
       "tick",
@@ -431,17 +431,17 @@ describe("gateway broadcaster", () => {
     const { broadcast } = createGatewayBroadcaster({ clients });
 
     broadcast("chat", { sessionKey: "agent:main:main", message: "secret" });
-    broadcast("heartbeat", { ts: 1 });
+    broadcast("pulsecheck", { ts: 1 });
     broadcast("chat.side_result", { sessionKey: "agent:main:main", text: "tool output" });
     broadcast("tick", { ts: 2 });
 
     expect(pairingSocket.sent.map((frame) => [frame.event, frame.seq])).toEqual([
-      ["heartbeat", 1],
+      ["pulsecheck", 1],
       ["tick", 2],
     ]);
     expect(readSocket.sent.map((frame) => [frame.event, frame.seq])).toEqual([
       ["chat", 1],
-      ["heartbeat", 2],
+      ["pulsecheck", 2],
       ["chat.side_result", 3],
       ["tick", 4],
     ]);
@@ -467,14 +467,14 @@ describe("gateway broadcaster", () => {
 
     broadcast("chat", { sessionKey: "agent:main:main", message: "secret" }, { dropIfSlow: true });
     slowReadSocket.bufferedAmount = 0;
-    broadcast("heartbeat", { ts: 1 });
+    broadcast("pulsecheck", { ts: 1 });
 
     expect(slowReadSocket.sent.map((frame) => [frame.event, frame.seq])).toEqual([
-      ["heartbeat", 2],
+      ["pulsecheck", 2],
     ]);
     expect(readSocket.sent.map((frame) => [frame.event, frame.seq])).toEqual([
       ["chat", 1],
-      ["heartbeat", 2],
+      ["pulsecheck", 2],
     ]);
   });
 
@@ -495,7 +495,7 @@ describe("gateway broadcaster", () => {
       const { broadcast } = createGatewayBroadcaster({ clients });
 
       broadcast("chat", { sessionKey: "agent:main:main", message: "secret" }, { dropIfSlow: true });
-      broadcast("heartbeat", { ts: 1 });
+      broadcast("pulsecheck", { ts: 1 });
 
       expect(events).toContainEqual(
         expect.objectContaining({

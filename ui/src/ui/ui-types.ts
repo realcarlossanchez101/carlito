@@ -36,7 +36,7 @@ export type CronFormState = {
   staggerAmount: string;
   staggerUnit: "seconds" | "minutes";
   sessionTarget: "main" | "isolated" | "current" | `session:${string}`;
-  wakeMode: "next-heartbeat" | "now";
+  wakeMode: "next-pulsecheck" | "now";
   payloadKind: "systemEvent" | "agentTurn";
   payloadText: string;
   payloadModel: string;

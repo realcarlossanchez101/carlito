@@ -10,12 +10,12 @@ describe("wrapFileReferencesInHtml", () => {
   it("wraps supported file references and paths", () => {
     const cases = [
       ["Check README.md", "Check <code>README.md</code>"],
-      ["See HEARTBEAT.md for status", "See <code>HEARTBEAT.md</code> for status"],
+      ["See PULSECHECK.md for status", "See <code>PULSECHECK.md</code> for status"],
       ["Check main.go", "Check <code>main.go</code>"],
       ["Run script.py", "Run <code>script.py</code>"],
       ["Check backup.pl", "Check <code>backup.pl</code>"],
       ["Run backup.sh", "Run <code>backup.sh</code>"],
-      ["Look at squad/friday/HEARTBEAT.md", "Look at <code>squad/friday/HEARTBEAT.md</code>"],
+      ["Look at squad/friday/PULSECHECK.md", "Look at <code>squad/friday/PULSECHECK.md</code>"],
     ] as const;
     for (const [input, expected] of cases) {
       expect(wrapFileReferencesInHtml(input), input).toContain(expected);
@@ -70,8 +70,8 @@ describe("wrapFileReferencesInHtml", () => {
         expected: "<code>README.md</code>",
       },
       {
-        input: '<a href="http://squad/friday/HEARTBEAT.md">squad/friday/HEARTBEAT.md</a>',
-        expected: "<code>squad/friday/HEARTBEAT.md</code>",
+        input: '<a href="http://squad/friday/PULSECHECK.md">squad/friday/PULSECHECK.md</a>',
+        expected: "<code>squad/friday/PULSECHECK.md</code>",
       },
     ] as const;
     for (const testCase of cases) {

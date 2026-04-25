@@ -622,7 +622,7 @@ export const OpenClawSchema = z
     web: z
       .object({
         enabled: z.boolean().optional(),
-        heartbeatSeconds: z.number().int().positive().optional(),
+        pulsecheckSeconds: z.number().int().positive().optional(),
         reconnect: z
           .object({
             initialMs: z.number().positive().optional(),

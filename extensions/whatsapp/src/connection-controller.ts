@@ -37,7 +37,7 @@ export type WhatsAppLiveConnection = {
   startedAt: number;
   sock: WASocket;
   listener: ManagedWhatsAppListener;
-  heartbeat: TimerHandle | null;
+  pulsecheck: TimerHandle | null;
   watchdogTimer: TimerHandle | null;
   lastInboundAt: number | null;
   handledMessages: number;
@@ -105,7 +105,7 @@ function createLiveConnection(params: {
     startedAt: Date.now(),
     sock: params.sock,
     listener: params.listener,
-    heartbeat: null,
+    pulsecheck: null,
     watchdogTimer: null,
     lastInboundAt: null,
     handledMessages: 0,
@@ -227,7 +227,7 @@ export class WhatsAppConnectionController {
   readonly socketRef: { current: WASocket | null };
 
   private readonly reconnectPolicy: ReconnectPolicy;
-  private readonly heartbeatSeconds: number;
+  private readonly pulsecheckSeconds: number;
   private readonly keepAlive: boolean;
   private readonly messageTimeoutMs: number;
   private readonly watchdogCheckMs: number;
@@ -246,7 +246,7 @@ export class WhatsAppConnectionController {
     authDir: string;
     verbose: boolean;
     keepAlive: boolean;
-    heartbeatSeconds: number;
+    pulsecheckSeconds: number;
     messageTimeoutMs: number;
     watchdogCheckMs: number;
     reconnectPolicy: ReconnectPolicy;
@@ -258,7 +258,7 @@ export class WhatsAppConnectionController {
     this.authDir = params.authDir;
     this.verbose = params.verbose;
     this.keepAlive = params.keepAlive;
-    this.heartbeatSeconds = params.heartbeatSeconds;
+    this.pulsecheckSeconds = params.pulsecheckSeconds;
     this.messageTimeoutMs = params.messageTimeoutMs;
     this.watchdogCheckMs = params.watchdogCheckMs;
     this.reconnectPolicy = params.reconnectPolicy;
@@ -342,7 +342,7 @@ export class WhatsAppConnectionController {
       sock: WASocket;
       connection: WhatsAppLiveConnection;
     }) => Promise<ManagedWhatsAppListener>;
-    onHeartbeat?: (snapshot: WhatsAppConnectionSnapshot) => void;
+    onPulsecheck?: (snapshot: WhatsAppConnectionSnapshot) => void;
     onWatchdogTimeout?: (snapshot: WhatsAppConnectionSnapshot) => void;
   }): Promise<WhatsAppLiveConnection> {
     if (this.current) {
@@ -369,7 +369,7 @@ export class WhatsAppConnectionController {
       this.current = connection;
       registerWhatsAppConnectionController(this.accountId, this);
       this.startTimers(connection, {
-        onHeartbeat: params.onHeartbeat,
+        onPulsecheck: params.onPulsecheck,
         onWatchdogTimeout: params.onWatchdogTimeout,
       });
       return connection;
@@ -430,7 +430,7 @@ export class WhatsAppConnectionController {
     }
 
     const current = this.current;
-    if (current && Date.now() - current.startedAt > this.heartbeatSeconds * 1000) {
+    if (current && Date.now() - current.startedAt > this.pulsecheckSeconds * 1000) {
       this.reconnectAttempts = 0;
     }
 
@@ -513,8 +513,8 @@ export class WhatsAppConnectionController {
       this.socketRef.current = null;
     }
     connection.unregisterUnhandled?.();
-    if (connection.heartbeat) {
-      clearInterval(connection.heartbeat);
+    if (connection.pulsecheck) {
+      clearInterval(connection.pulsecheck);
     }
     if (connection.watchdogTimer) {
       clearInterval(connection.watchdogTimer);
@@ -544,7 +544,7 @@ export class WhatsAppConnectionController {
   private startTimers(
     connection: WhatsAppLiveConnection,
     hooks: {
-      onHeartbeat?: (snapshot: WhatsAppConnectionSnapshot) => void;
+      onPulsecheck?: (snapshot: WhatsAppConnectionSnapshot) => void;
       onWatchdogTimeout?: (snapshot: WhatsAppConnectionSnapshot) => void;
     },
   ): void {
@@ -552,13 +552,13 @@ export class WhatsAppConnectionController {
       return;
     }
 
-    connection.heartbeat = setInterval(() => {
+    connection.pulsecheck = setInterval(() => {
       const snapshot = this.getCurrentSnapshot(connection);
       if (!snapshot) {
         return;
       }
-      hooks.onHeartbeat?.(snapshot);
-    }, this.heartbeatSeconds * 1000);
+      hooks.onPulsecheck?.(snapshot);
+    }, this.pulsecheckSeconds * 1000);
 
     connection.watchdogTimer = setInterval(() => {
       const baselineAt = connection.lastInboundAt ?? connection.startedAt;

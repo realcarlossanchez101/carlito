@@ -210,7 +210,7 @@ export async function handleSessionHistoryHttpRequest(
   // Temporal-Dead-Zone leniency. A future refactor that wires the close event
   // listeners before the `setInterval` / `onSessionTranscriptUpdate` calls
   // would otherwise hit a `ReferenceError` on the first cleanup invocation.
-  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let pulsecheck: ReturnType<typeof setInterval> | undefined;
   let unsubscribe: (() => void) | undefined;
 
   const cleanup = () => {
@@ -218,8 +218,8 @@ export async function handleSessionHistoryHttpRequest(
       return;
     }
     cleanedUp = true;
-    if (heartbeat) {
-      clearInterval(heartbeat);
+    if (pulsecheck) {
+      clearInterval(pulsecheck);
     }
     if (unsubscribe) {
       unsubscribe();
@@ -267,7 +267,7 @@ export async function handleSessionHistoryHttpRequest(
     return authorizeOperatorScopesForMethod("chat.history", requestedScopes).allowed;
   };
 
-  heartbeat = setInterval(() => {
+  pulsecheck = setInterval(() => {
     queueStreamWork(async () => {
       if (!(await isStreamStillAuthorized())) {
         closeStream();

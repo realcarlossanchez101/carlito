@@ -92,13 +92,13 @@ describe("buildBootstrapContextFiles", () => {
     const maxChars = DEFAULT_BOOTSTRAP_MAX_CHARS;
     const files = [
       makeFile({
-        name: "HEARTBEAT.md",
-        path: "/tmp/HEARTBEAT.md",
+        name: "PULSECHECK.md",
+        path: "/tmp/PULSECHECK.md",
         content: "a".repeat(maxChars * 2),
       }),
     ];
     const [result] = buildBootstrapContextFiles(files, { maxChars });
-    expect(result?.content).toContain("[...truncated, read HEARTBEAT.md for full content...]");
+    expect(result?.content).toContain("[...truncated, read PULSECHECK.md for full content...]");
     expect(result?.content.length).toBeLessThanOrEqual(maxChars);
   });
   it("keeps bootstrap bytes in tiny per-file budgets when the marker is longer than the limit", () => {
@@ -106,8 +106,8 @@ describe("buildBootstrapContextFiles", () => {
     const content = `HEAD-${"a".repeat(1_000)}-TAIL`;
     const files = [
       makeFile({
-        name: "HEARTBEAT.md",
-        path: "/tmp/HEARTBEAT.md",
+        name: "PULSECHECK.md",
+        path: "/tmp/PULSECHECK.md",
         content,
       }),
     ];
@@ -122,8 +122,8 @@ describe("buildBootstrapContextFiles", () => {
     const content = `HEAD-${"a".repeat(1_000)}-TAIL`;
     const files = [
       makeFile({
-        name: "HEARTBEAT.md",
-        path: "/tmp/HEARTBEAT.md",
+        name: "PULSECHECK.md",
+        path: "/tmp/PULSECHECK.md",
         content,
       }),
     ];

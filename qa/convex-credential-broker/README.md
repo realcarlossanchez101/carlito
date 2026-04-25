@@ -5,7 +5,7 @@ Standalone Convex project for shared `qa-lab` live credentials with lease lockin
 This broker exposes:
 
 - `POST /qa-credentials/v1/acquire`
-- `POST /qa-credentials/v1/heartbeat`
+- `POST /qa-credentials/v1/pulsecheck`
 - `POST /qa-credentials/v1/release`
 - `POST /qa-credentials/v1/admin/add`
 - `POST /qa-credentials/v1/admin/remove`
@@ -82,14 +82,14 @@ curl -sS -X POST "<site-url>/qa-credentials/v1/acquire" \
     "ownerId":"local-dev",
     "actorRole":"maintainer",
     "leaseTtlMs":1200000,
-    "heartbeatIntervalMs":30000
+    "pulsecheckIntervalMs":30000
   }'
 ```
 
-Heartbeat:
+Pulsecheck:
 
 ```bash
-curl -sS -X POST "<site-url>/qa-credentials/v1/heartbeat" \
+curl -sS -X POST "<site-url>/qa-credentials/v1/pulsecheck" \
   -H "authorization: Bearer <token>" \
   -H "content-type: application/json" \
   -d '{

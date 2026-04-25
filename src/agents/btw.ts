@@ -22,6 +22,7 @@ import { prepareProviderRuntimeAuth } from "../plugins/provider-runtime.js";
 import { normalizeLowercaseStringOrEmpty } from "../shared/string-coerce.js";
 import { resolveAgentWorkspaceDir, resolveSessionAgentId } from "./agent-scope.js";
 import { resolveSessionAuthProfileOverride } from "./auth-profiles/session-override.js";
+import { rewriteOpenclawInPayload } from "./carlito-outbound-rewriter.js";
 import {
   resolveImageSanitizationLimits,
   type ImageSanitizationLimits,
@@ -503,6 +504,7 @@ export async function runBtwSideQuestion(
       if (Array.isArray(payloadObj.tools) && payloadObj.tools.length === 0) {
         delete payloadObj.tools;
       }
+      rewriteOpenclawInPayload(payloadObj);
     },
   );
 

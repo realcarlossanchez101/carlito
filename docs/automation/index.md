@@ -2,7 +2,7 @@
 summary: "Overview of automation mechanisms: tasks, cron, hooks, standing orders, and Task Flow"
 read_when:
   - Deciding how to automate work with OpenClaw
-  - Choosing between heartbeat, cron, hooks, and standing orders
+  - Choosing between pulsecheck, cron, hooks, and standing orders
   - Looking for the right automation entry point
 title: "Automation & tasks"
 ---
@@ -21,7 +21,7 @@ flowchart TD
 
     Q1 -->|Yes| Q1a{Exact timing or flexible?}
     Q1a -->|Exact| CRON["Scheduled Tasks (Cron)"]
-    Q1a -->|Flexible| HEARTBEAT[Heartbeat]
+    Q1a -->|Flexible| PULSECHECK[Pulsecheck]
 
     Q2 -->|Yes| TASKS[Background Tasks]
     Q3 -->|Yes| FLOW[Task Flow]
@@ -34,8 +34,8 @@ flowchart TD
 | Send daily report at 9 AM sharp         | Scheduled Tasks (Cron) | Exact timing, isolated execution                 |
 | Remind me in 20 minutes                 | Scheduled Tasks (Cron) | One-shot with precise timing (`--at`)            |
 | Run weekly deep analysis                | Scheduled Tasks (Cron) | Standalone task, can use different model         |
-| Check inbox every 30 min                | Heartbeat              | Batches with other checks, context-aware         |
-| Monitor calendar for upcoming events    | Heartbeat              | Natural fit for periodic awareness               |
+| Check inbox every 30 min                | Pulsecheck             | Batches with other checks, context-aware         |
+| Monitor calendar for upcoming events    | Pulsecheck             | Natural fit for periodic awareness               |
 | Inspect status of a subagent or ACP run | Background Tasks       | Tasks ledger tracks all detached work            |
 | Audit what ran and when                 | Background Tasks       | `openclaw tasks list` and `openclaw tasks audit` |
 | Multi-step research then summarize      | Task Flow              | Durable orchestration with revision tracking     |
@@ -43,9 +43,9 @@ flowchart TD
 | Execute code on every tool call         | Hooks                  | Hooks can filter by event type                   |
 | Always check compliance before replying | Standing Orders        | Injected into every session automatically        |
 
-### Scheduled Tasks (Cron) vs Heartbeat
+### Scheduled Tasks (Cron) vs Pulsecheck
 
-| Dimension       | Scheduled Tasks (Cron)              | Heartbeat                             |
+| Dimension       | Scheduled Tasks (Cron)              | Pulsecheck                            |
 | --------------- | ----------------------------------- | ------------------------------------- |
 | Timing          | Exact (cron expressions, one-shot)  | Approximate (default every 30 min)    |
 | Session context | Fresh (isolated) or shared          | Full main-session context             |
@@ -53,7 +53,7 @@ flowchart TD
 | Delivery        | Channel, webhook, or silent         | Inline in main session                |
 | Best for        | Reports, reminders, background jobs | Inbox checks, calendar, notifications |
 
-Use Scheduled Tasks (Cron) when you need precise timing or isolated execution. Use Heartbeat when the work benefits from full session context and approximate timing is fine.
+Use Scheduled Tasks (Cron) when you need precise timing or isolated execution. Use Pulsecheck when the work benefits from full session context and approximate timing is fine.
 
 ## Core concepts
 
@@ -87,16 +87,16 @@ Hooks are event-driven scripts triggered by agent lifecycle events (`/new`, `/re
 
 See [Hooks](/automation/hooks).
 
-### Heartbeat
+### Pulsecheck
 
-Heartbeat is a periodic main-session turn (default every 30 minutes). It batches multiple checks (inbox, calendar, notifications) in one agent turn with full session context. Heartbeat turns do not create task records. Use `HEARTBEAT.md` for a small checklist, or a `tasks:` block when you want due-only periodic checks inside heartbeat itself. Empty heartbeat files skip as `empty-heartbeat-file`; due-only task mode skips as `no-tasks-due`.
+Pulsecheck is a periodic main-session turn (default every 30 minutes). It batches multiple checks (inbox, calendar, notifications) in one agent turn with full session context. Pulsecheck turns do not create task records. Use `PULSECHECK.md` for a small checklist, or a `tasks:` block when you want due-only periodic checks inside pulsecheck itself. Empty pulsecheck files skip as `empty-pulsecheck-file`; due-only task mode skips as `no-tasks-due`.
 
-See [Heartbeat](/gateway/heartbeat).
+See [Pulsecheck](/gateway/pulsecheck).
 
 ## How they work together
 
 - **Cron** handles precise schedules (daily reports, weekly reviews) and one-shot reminders. All cron executions create task records.
-- **Heartbeat** handles routine monitoring (inbox, calendar, notifications) in one batched turn every 30 minutes.
+- **Pulsecheck** handles routine monitoring (inbox, calendar, notifications) in one batched turn every 30 minutes.
 - **Hooks** react to specific events (tool calls, session resets, compaction) with custom scripts.
 - **Standing orders** give the agent persistent context and authority boundaries.
 - **Task Flow** coordinates multi-step flows above individual tasks.
@@ -109,5 +109,5 @@ See [Heartbeat](/gateway/heartbeat).
 - [Task Flow](/automation/taskflow) — durable multi-step flow orchestration
 - [Hooks](/automation/hooks) — event-driven lifecycle scripts
 - [Standing Orders](/automation/standing-orders) — persistent agent instructions
-- [Heartbeat](/gateway/heartbeat) — periodic main-session turns
+- [Pulsecheck](/gateway/pulsecheck) — periodic main-session turns
 - [Configuration Reference](/gateway/configuration-reference) — all config keys

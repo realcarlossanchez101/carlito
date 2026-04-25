@@ -51,18 +51,19 @@ function stripInlineLeakedInternalContext(value: string): string {
   if (
     beginIndex !== -1 &&
     (value.includes(INTERNAL_RUNTIME_CONTEXT_END) ||
+      value.includes("Carlito runtime context (internal):") ||
       value.includes("OpenClaw runtime context (internal):") ||
       value.includes("[Internal task completion event]"))
   ) {
     return value.slice(0, beginIndex);
   }
-  const legacyHeaderIndex = value.indexOf("OpenClaw runtime context (internal):");
+  const inlineHeaderIndex = value.search(/(?:Carlito|OpenClaw) runtime context \(internal\):/);
   if (
-    legacyHeaderIndex !== -1 &&
+    inlineHeaderIndex !== -1 &&
     (value.includes("Keep internal details private.") ||
       value.includes("[Internal task completion event]"))
   ) {
-    return value.slice(0, legacyHeaderIndex);
+    return value.slice(0, inlineHeaderIndex);
   }
   return value;
 }

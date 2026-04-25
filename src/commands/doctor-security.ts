@@ -13,38 +13,38 @@ import { normalizeOptionalString } from "../shared/string-coerce.js";
 import { note } from "../terminal/note.js";
 import { resolveDefaultChannelAccountContext } from "./channel-account-context.js";
 
-function collectImplicitHeartbeatDirectPolicyWarnings(cfg: OpenClawConfig): string[] {
+function collectImplicitPulsecheckDirectPolicyWarnings(cfg: OpenClawConfig): string[] {
   const warnings: string[] = [];
 
   const maybeWarn = (params: {
     label: string;
-    heartbeat: AgentConfig["heartbeat"] | undefined;
+    pulsecheck: AgentConfig["pulsecheck"] | undefined;
     pathHint: string;
   }) => {
-    const heartbeat = params.heartbeat;
-    if (!heartbeat || heartbeat.target === undefined || heartbeat.target === "none") {
+    const pulsecheck = params.pulsecheck;
+    if (!pulsecheck || pulsecheck.target === undefined || pulsecheck.target === "none") {
       return;
     }
-    if (heartbeat.directPolicy !== undefined) {
+    if (pulsecheck.directPolicy !== undefined) {
       return;
     }
     warnings.push(
-      `- ${params.label}: heartbeat delivery is configured while ${params.pathHint} is unset.`,
-      '  Heartbeat now allows direct/DM targets by default. Set it explicitly to "allow" or "block" to pin upgrade behavior.',
+      `- ${params.label}: pulsecheck delivery is configured while ${params.pathHint} is unset.`,
+      '  Pulsecheck now allows direct/DM targets by default. Set it explicitly to "allow" or "block" to pin upgrade behavior.',
     );
   };
 
   maybeWarn({
-    label: "Heartbeat defaults",
-    heartbeat: cfg.agents?.defaults?.heartbeat,
-    pathHint: "agents.defaults.heartbeat.directPolicy",
+    label: "Pulsecheck defaults",
+    pulsecheck: cfg.agents?.defaults?.pulsecheck,
+    pathHint: "agents.defaults.pulsecheck.directPolicy",
   });
 
   for (const agent of cfg.agents?.list ?? []) {
     maybeWarn({
-      label: `Heartbeat agent "${agent.id}"`,
-      heartbeat: agent.heartbeat,
-      pathHint: `heartbeat.directPolicy for agent "${agent.id}"`,
+      label: `Pulsecheck agent "${agent.id}"`,
+      pulsecheck: agent.pulsecheck,
+      pathHint: `pulsecheck.directPolicy for agent "${agent.id}"`,
     });
   }
 
@@ -176,7 +176,7 @@ export async function noteSecurityWarnings(cfg: OpenClawConfig) {
     );
   }
 
-  warnings.push(...collectImplicitHeartbeatDirectPolicyWarnings(cfg));
+  warnings.push(...collectImplicitPulsecheckDirectPolicyWarnings(cfg));
   warnings.push(...collectExecPolicyConflictWarnings(cfg));
   warnings.push(...collectDurableExecApprovalWarnings(cfg));
 

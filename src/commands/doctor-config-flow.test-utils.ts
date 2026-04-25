@@ -33,7 +33,7 @@ function shouldUseCompatPreflight(path: ReadonlyArray<string>, value: unknown): 
   const joined = path.join(".");
   const last = path[path.length - 1];
   if (
-    joined === "heartbeat" ||
+    joined === "pulsecheck" ||
     joined === "memorySearch" ||
     joined === "gateway.bind" ||
     joined === "hooks.internal.handlers"

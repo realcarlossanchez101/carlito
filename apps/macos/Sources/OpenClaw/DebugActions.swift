@@ -144,12 +144,12 @@ enum DebugActions {
         await HealthStore.shared.refresh(onDemand: true)
     }
 
-    static func sendTestHeartbeat() async -> Result<ControlHeartbeatEvent?, Error> {
+    static func sendTestPulsecheck() async -> Result<ControlPulsecheckEvent?, Error> {
         do {
-            _ = await GatewayConnection.shared.setHeartbeatsEnabled(true)
+            _ = await GatewayConnection.shared.setPulsechecksEnabled(true)
             await ControlChannel.shared.configure()
-            let data = try await ControlChannel.shared.request(method: "last-heartbeat")
-            if let evt = try? JSONDecoder().decode(ControlHeartbeatEvent.self, from: data) {
+            let data = try await ControlChannel.shared.request(method: "last-pulsecheck")
+            if let evt = try? JSONDecoder().decode(ControlPulsecheckEvent.self, from: data) {
                 return .success(evt)
             }
             return .success(nil)

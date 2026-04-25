@@ -25,14 +25,14 @@ import {
   resolveWhatsAppGroupRequireMention,
   resolveWhatsAppGroupToolPolicy,
 } from "./group-policy.js";
-import { resolveWhatsAppHeartbeatRecipients } from "./heartbeat-recipients.js";
-import { checkWhatsAppHeartbeatReady } from "./heartbeat.js";
 import {
   isWhatsAppGroupJid,
   looksLikeWhatsAppTargetId,
   normalizeWhatsAppMessagingTarget,
   normalizeWhatsAppTarget,
 } from "./normalize.js";
+import { resolveWhatsAppPulsecheckRecipients } from "./pulsecheck-recipients.js";
+import { checkWhatsAppPulsecheckReady } from "./pulsecheck.js";
 import { getWhatsAppRuntime } from "./runtime.js";
 import { sendTypingWhatsApp } from "./send.js";
 import { resolveWhatsAppOutboundSessionRoute } from "./session-route.js";
@@ -173,16 +173,16 @@ export const whatsappPlugin: ChannelPlugin<ResolvedWhatsAppAccount> =
         detectLegacyStateMigrations: ({ oauthDir }) =>
           detectWhatsAppLegacyStateMigrations({ oauthDir }),
       },
-      heartbeat: {
+      pulsecheck: {
         checkReady: async ({ cfg, accountId, deps }) =>
-          await checkWhatsAppHeartbeatReady({ cfg, accountId: accountId ?? undefined, deps }),
+          await checkWhatsAppPulsecheckReady({ cfg, accountId: accountId ?? undefined, deps }),
         sendTyping: async ({ cfg, to, accountId }) => {
           await sendTypingWhatsApp(to, {
             cfg,
             ...(accountId ? { accountId } : {}),
           });
         },
-        resolveRecipients: ({ cfg, opts }) => resolveWhatsAppHeartbeatRecipients(cfg, opts),
+        resolveRecipients: ({ cfg, opts }) => resolveWhatsAppPulsecheckRecipients(cfg, opts),
       },
       status: createAsyncComputedAccountStatusAdapter<ResolvedWhatsAppAccount>({
         defaultRuntime: createDefaultChannelRuntimeState(DEFAULT_ACCOUNT_ID, {

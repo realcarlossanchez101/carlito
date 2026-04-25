@@ -60,15 +60,15 @@ function registerMalformedBootstrapFileHook() {
   });
 }
 
-async function createHeartbeatAgentsWorkspace() {
+async function createPulsecheckAgentsWorkspace() {
   const workspaceDir = await makeTempWorkspace("openclaw-bootstrap-");
-  await fs.writeFile(path.join(workspaceDir, "HEARTBEAT.md"), "check inbox", "utf8");
+  await fs.writeFile(path.join(workspaceDir, "PULSECHECK.md"), "check inbox", "utf8");
   await fs.writeFile(path.join(workspaceDir, "AGENTS.md"), "repo rules", "utf8");
   return workspaceDir;
 }
 
-function expectHeartbeatExcludedAndAgentsKept(files: WorkspaceBootstrapFile[]) {
-  expect(files.some((file) => file.name === "HEARTBEAT.md")).toBe(false);
+function expectPulsecheckExcludedAndAgentsKept(files: WorkspaceBootstrapFile[]) {
+  expect(files.some((file) => file.name === "PULSECHECK.md")).toBe(false);
   expect(files.some((file) => file.name === "AGENTS.md")).toBe(true);
 }
 
@@ -131,24 +131,24 @@ describe("resolveBootstrapContextForRun", () => {
     expect(result.contextFiles.some((file) => file.path.endsWith("AGENTS.md"))).toBe(true);
   });
 
-  it("uses heartbeat-only bootstrap files in lightweight heartbeat mode", async () => {
+  it("uses pulsecheck-only bootstrap files in lightweight pulsecheck mode", async () => {
     const workspaceDir = await makeTempWorkspace("openclaw-bootstrap-");
-    await fs.writeFile(path.join(workspaceDir, "HEARTBEAT.md"), "check inbox", "utf8");
+    await fs.writeFile(path.join(workspaceDir, "PULSECHECK.md"), "check inbox", "utf8");
     await fs.writeFile(path.join(workspaceDir, "SOUL.md"), "persona", "utf8");
 
     const files = await resolveBootstrapFilesForRun({
       workspaceDir,
       contextMode: "lightweight",
-      runKind: "heartbeat",
+      runKind: "pulsecheck",
     });
 
     expect(files.length).toBeGreaterThan(0);
-    expect(files.every((file) => file.name === "HEARTBEAT.md")).toBe(true);
+    expect(files.every((file) => file.name === "PULSECHECK.md")).toBe(true);
   });
 
   it("keeps bootstrap context empty in lightweight cron mode", async () => {
     const workspaceDir = await makeTempWorkspace("openclaw-bootstrap-");
-    await fs.writeFile(path.join(workspaceDir, "HEARTBEAT.md"), "check inbox", "utf8");
+    await fs.writeFile(path.join(workspaceDir, "PULSECHECK.md"), "check inbox", "utf8");
 
     const files = await resolveBootstrapFilesForRun({
       workspaceDir,
@@ -159,15 +159,15 @@ describe("resolveBootstrapContextForRun", () => {
     expect(files).toEqual([]);
   });
 
-  it("drops HEARTBEAT.md for non-heartbeat runs when the heartbeat prompt section is disabled", async () => {
-    const workspaceDir = await createHeartbeatAgentsWorkspace();
+  it("drops PULSECHECK.md for non-pulsecheck runs when the pulsecheck prompt section is disabled", async () => {
+    const workspaceDir = await createPulsecheckAgentsWorkspace();
 
     const files = await resolveBootstrapFilesForRun({
       workspaceDir,
       config: {
         agents: {
           defaults: {
-            heartbeat: {
+            pulsecheck: {
               includeSystemPromptSection: false,
             },
           },
@@ -176,18 +176,18 @@ describe("resolveBootstrapContextForRun", () => {
       },
     });
 
-    expectHeartbeatExcludedAndAgentsKept(files);
+    expectPulsecheckExcludedAndAgentsKept(files);
   });
 
-  it("drops HEARTBEAT.md for non-heartbeat runs when the heartbeat cadence is disabled", async () => {
-    const workspaceDir = await createHeartbeatAgentsWorkspace();
+  it("drops PULSECHECK.md for non-pulsecheck runs when the pulsecheck cadence is disabled", async () => {
+    const workspaceDir = await createPulsecheckAgentsWorkspace();
 
     const files = await resolveBootstrapFilesForRun({
       workspaceDir,
       config: {
         agents: {
           defaults: {
-            heartbeat: {
+            pulsecheck: {
               every: "0m",
             },
           },
@@ -196,20 +196,20 @@ describe("resolveBootstrapContextForRun", () => {
       },
     });
 
-    expectHeartbeatExcludedAndAgentsKept(files);
+    expectPulsecheckExcludedAndAgentsKept(files);
   });
 
-  it("keeps HEARTBEAT.md for actual heartbeat runs even when the prompt section is disabled", async () => {
+  it("keeps PULSECHECK.md for actual pulsecheck runs even when the prompt section is disabled", async () => {
     const workspaceDir = await makeTempWorkspace("openclaw-bootstrap-");
-    await fs.writeFile(path.join(workspaceDir, "HEARTBEAT.md"), "check inbox", "utf8");
+    await fs.writeFile(path.join(workspaceDir, "PULSECHECK.md"), "check inbox", "utf8");
 
     const files = await resolveBootstrapFilesForRun({
       workspaceDir,
-      runKind: "heartbeat",
+      runKind: "pulsecheck",
       config: {
         agents: {
           defaults: {
-            heartbeat: {
+            pulsecheck: {
               includeSystemPromptSection: false,
             },
           },
@@ -218,7 +218,7 @@ describe("resolveBootstrapContextForRun", () => {
       },
     });
 
-    expect(files.some((file) => file.name === "HEARTBEAT.md")).toBe(true);
+    expect(files.some((file) => file.name === "PULSECHECK.md")).toBe(true);
   });
 });
 

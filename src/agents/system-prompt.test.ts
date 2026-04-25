@@ -104,7 +104,7 @@ describe("buildAgentSystemPrompt", () => {
       ownerNumbers: ["+123"],
       skillsPrompt:
         "<available_skills>\n  <skill>\n    <name>demo</name>\n  </skill>\n</available_skills>",
-      heartbeatPrompt: "ping",
+      pulsecheckPrompt: "ping",
       toolNames: ["message", "memory_search"],
       docsPath: "/tmp/openclaw/docs",
       extraSystemPrompt: "Subagent details",
@@ -120,7 +120,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).not.toContain("## Messaging");
     expect(prompt).not.toContain("## Voice (TTS)");
     expect(prompt).not.toContain("## Silent Replies");
-    expect(prompt).not.toContain("## Heartbeats");
+    expect(prompt).not.toContain("## Pulsechecks");
     expect(prompt).toContain("## Safety");
     expect(prompt).toContain(
       "For long waits, avoid rapid poll loops: use exec with enough yieldMs or process(action=poll, timeout=<ms>).",
@@ -173,16 +173,16 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("Supported tags are stripped before user-visible rendering");
   });
 
-  it("omits the heartbeat section when no heartbeat prompt is provided", () => {
+  it("omits the pulsecheck section when no pulsecheck prompt is provided", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/openclaw",
       promptMode: "full",
-      heartbeatPrompt: undefined,
+      pulsecheckPrompt: undefined,
     });
 
-    expect(prompt).not.toContain("## Heartbeats");
-    expect(prompt).not.toContain("HEARTBEAT_OK");
-    expect(prompt).not.toContain("Read HEARTBEAT.md");
+    expect(prompt).not.toContain("## Pulsechecks");
+    expect(prompt).not.toContain("PULSECHECK_OK");
+    expect(prompt).not.toContain("Read PULSECHECK.md");
   });
 
   it("includes safety guardrails in full prompts", () => {

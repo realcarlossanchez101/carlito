@@ -11,7 +11,7 @@ import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { info } from "../globals.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { formatErrorMessage } from "../infra/errors.js";
-import { resolveHeartbeatSummaryForAgent } from "../infra/heartbeat-summary.js";
+import { resolvePulsecheckSummaryForAgent } from "../infra/pulsecheck-summary.js";
 import { buildChannelAccountBindings, resolvePreferredAccountId } from "../routing/bindings.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { type RuntimeEnv, writeRuntimeJson } from "../runtime.js";
@@ -80,8 +80,8 @@ const formatDurationParts = (ms: number): string => {
   return parts.join(" ");
 };
 
-const resolveHeartbeatSummary = (cfg: OpenClawConfig, agentId: string) =>
-  resolveHeartbeatSummaryForAgent(cfg, agentId);
+const resolvePulsecheckSummary = (cfg: OpenClawConfig, agentId: string) =>
+  resolvePulsecheckSummaryForAgent(cfg, agentId);
 
 const resolveAgentOrder = (cfg: OpenClawConfig) => {
   const defaultAgentId = resolveDefaultAgentId(cfg);
@@ -231,13 +231,13 @@ export async function getHealthSnapshot(params?: {
       agentId: entry.id,
       name: entry.name,
       isDefault: entry.id === defaultAgentId,
-      heartbeat: resolveHeartbeatSummary(cfg, entry.id),
+      pulsecheck: resolvePulsecheckSummary(cfg, entry.id),
       sessions,
     });
   }
   const defaultAgent = agents.find((agent) => agent.isDefault) ?? agents[0];
-  const heartbeatSeconds = defaultAgent?.heartbeat.everyMs
-    ? Math.round(defaultAgent.heartbeat.everyMs / 1000)
+  const pulsecheckSeconds = defaultAgent?.pulsecheck.everyMs
+    ? Math.round(defaultAgent.pulsecheck.everyMs / 1000)
     : 0;
   const sessions =
     defaultAgent?.sessions ??
@@ -380,7 +380,7 @@ export async function getHealthSnapshot(params?: {
     channels,
     channelOrder,
     channelLabels,
-    heartbeatSeconds,
+    pulsecheckSeconds,
     defaultAgentId,
     agents,
     sessions: {
@@ -439,7 +439,7 @@ export async function healthCommand(
         agentId: entry.id,
         name: entry.name,
         isDefault: entry.id === localAgents.defaultAgentId,
-        heartbeat: resolveHeartbeatSummary(cfg, entry.id),
+        pulsecheck: resolvePulsecheckSummary(cfg, entry.id),
         sessions: await buildSessionSummary(storePath),
       });
     }
@@ -602,15 +602,15 @@ export async function healthCommand(
       );
       runtime.log(info(`Agents: ${agentLabels.join(", ")}`));
     }
-    const heartbeatParts = displayAgents
+    const pulsecheckParts = displayAgents
       .map((agent) => {
-        const everyMs = agent.heartbeat?.everyMs;
+        const everyMs = agent.pulsecheck?.everyMs;
         const label = everyMs ? formatDurationParts(everyMs) : "disabled";
         return `${label} (${agent.agentId})`;
       })
       .filter(Boolean);
-    if (heartbeatParts.length > 0) {
-      runtime.log(info(`Heartbeat interval: ${heartbeatParts.join(", ")}`));
+    if (pulsecheckParts.length > 0) {
+      runtime.log(info(`Pulsecheck interval: ${pulsecheckParts.join(", ")}`));
     }
     if (displayAgents.length === 0) {
       runtime.log(

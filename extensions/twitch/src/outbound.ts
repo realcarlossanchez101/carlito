@@ -34,7 +34,7 @@ export const twitchOutbound: ChannelOutboundAdapter = {
   /**
    * Resolve target from context.
    *
-   * Handles target resolution with allowlist support for implicit/heartbeat modes.
+   * Handles target resolution with allowlist support for implicit/pulsecheck modes.
    * For explicit mode, accepts any valid channel name.
    *
    * @param params - Resolution parameters
@@ -61,8 +61,8 @@ export const twitchOutbound: ChannelOutboundAdapter = {
         };
       }
 
-      // For implicit/heartbeat modes with allowList, check against allowlist
-      if (mode === "implicit" || mode === "heartbeat") {
+      // For implicit/pulsecheck modes with allowList, check against allowlist
+      if (mode === "implicit" || mode === "pulsecheck") {
         if (hasWildcard || allowList.length === 0) {
           return { ok: true, to: normalizedTo };
         }

@@ -585,7 +585,7 @@ describe("deliverOutboundPayloads", () => {
       },
       channel: "matrix",
       to: "!explicit:example",
-      payloads: [{ text: "HEARTBEAT_OK", mediaUrl: "https://example.com/img.png" }],
+      payloads: [{ text: "PULSECHECK_OK", mediaUrl: "https://example.com/img.png" }],
       skipQueue: true,
     });
 
@@ -593,7 +593,7 @@ describe("deliverOutboundPayloads", () => {
     expect(sendMedia).toHaveBeenCalledWith(
       expect.objectContaining({
         to: "!explicit:example",
-        text: "HEARTBEAT_OK",
+        text: "PULSECHECK_OK",
         mediaUrl: "https://example.com/img.png",
         accountId: undefined,
       }),

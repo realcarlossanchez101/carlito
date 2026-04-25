@@ -788,7 +788,7 @@ export const es: TranslationMap = {
         "Principal publica un evento del sistema. Aislada ejecuta un turno dedicado del agente.",
       wakeMode: "Modo de activación",
       now: "Ahora",
-      nextHeartbeat: "Próximo latido",
+      nextPulsecheck: "Próximo latido",
       wakeModeHelp: "Ahora se activa inmediatamente. Próximo latido espera el siguiente ciclo.",
       payloadKind: "¿Qué debe ejecutarse?",
       systemEvent: "Publicar mensaje en la línea de tiempo principal",

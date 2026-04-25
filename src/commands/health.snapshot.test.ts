@@ -418,18 +418,18 @@ describe("getHealthSnapshot", () => {
     expect(exceptionTelegram.probe?.error).toMatch(/network down/i);
   });
 
-  it("disables heartbeat for agents without heartbeat blocks", async () => {
+  it("disables pulsecheck for agents without pulsecheck blocks", async () => {
     testConfig = {
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "last",
           },
         },
         list: [
           { id: "main", default: true },
-          { id: "ops", heartbeat: { every: "1h", target: "whatsapp" } },
+          { id: "ops", pulsecheck: { every: "1h", target: "whatsapp" } },
         ],
       },
     };
@@ -440,9 +440,9 @@ describe("getHealthSnapshot", () => {
     const main = byAgent.get("main");
     const ops = byAgent.get("ops");
 
-    expect(main?.heartbeat.everyMs).toBeNull();
-    expect(main?.heartbeat.every).toBe("disabled");
-    expect(ops?.heartbeat.everyMs).toBeTruthy();
-    expect(ops?.heartbeat.every).toBe("1h");
+    expect(main?.pulsecheck.everyMs).toBeNull();
+    expect(main?.pulsecheck.every).toBe("disabled");
+    expect(ops?.pulsecheck.everyMs).toBeTruthy();
+    expect(ops?.pulsecheck.every).toBe("1h");
   });
 });

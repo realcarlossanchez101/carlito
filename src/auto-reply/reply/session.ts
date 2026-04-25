@@ -251,12 +251,12 @@ export async function initSessionState(params: {
   commandAuthorized: boolean;
 }): Promise<SessionInitResult> {
   const { ctx, cfg, commandAuthorized } = params;
-  // Heartbeat, cron-event, and exec-event runs should NEVER trigger session
+  // Pulsecheck, cron-event, and exec-event runs should NEVER trigger session
   // resets or conversation binding retargeting. These are automated system
   // events, not user interactions that should affect session continuity.
   // See #58409 for details on silent session reset bug.
   const isSystemEvent =
-    ctx.Provider === "heartbeat" || ctx.Provider === "cron-event" || ctx.Provider === "exec-event";
+    ctx.Provider === "pulsecheck" || ctx.Provider === "cron-event" || ctx.Provider === "exec-event";
   const conversationBindingContext = isSystemEvent
     ? null
     : resolveSessionConversationBindingContext(cfg, ctx);
@@ -554,10 +554,10 @@ export async function initSessionState(params: {
   // Track the originating channel/to for announce routing (subagent announce-back).
   const originatingChannelRaw = ctx.OriginatingChannel as string | undefined;
   const isInterSession = isInterSessionInputProvenance(ctx.InputProvenance);
-  // Automated heartbeat/cron/exec turns run inside the conversation session,
+  // Automated pulsecheck/cron/exec turns run inside the conversation session,
   // but they must not rewrite the session's remembered external delivery route.
-  // Otherwise a heartbeat target like "group:..." or a synthetic sender like
-  // "heartbeat" leaks into the shared session and later user replies route to
+  // Otherwise a pulsecheck target like "group:..." or a synthetic sender like
+  // "pulsecheck" leaks into the shared session and later user replies route to
   // the wrong chat.
   const lastChannelRaw = isSystemEvent
     ? baseEntry?.lastChannel

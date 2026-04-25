@@ -89,7 +89,7 @@ const runtimeMocks = vi.hoisted(() => ({
   normalizeRpcAttachmentsToChatAttachments: vi.fn((attachments?: unknown[]) => attachments ?? []),
   parseMessageWithAttachments: parseMessageWithAttachmentsMock,
   registerApnsRegistration: registerApnsRegistrationMock,
-  requestHeartbeatNow: vi.fn(),
+  requestPulsecheckNow: vi.fn(),
   resolveGatewayModelSupportsImages: vi.fn(
     async ({
       loadGatewayModelCatalog,
@@ -121,7 +121,7 @@ const runtimeMocks = vi.hoisted(() => ({
     }),
   ),
   sanitizeInboundSystemTags: sanitizeInboundSystemTagsMock,
-  scopedHeartbeatWakeOptions: vi.fn((sessionKey?: string, opts?: { reason: string }) => {
+  scopedPulsecheckWakeOptions: vi.fn((sessionKey?: string, opts?: { reason: string }) => {
     const wakeOptions = { reason: opts?.reason };
     return /^agent:[^:]+:.+$/i.test(sessionKey ?? "")
       ? { ...wakeOptions, sessionKey: sessionKey as string }
@@ -138,7 +138,7 @@ import type { NodeEventContext } from "./server-node-events-types.js";
 import { handleNodeEvent, resetNodeEventDeduplicationForTests } from "./server-node-events.js";
 
 const enqueueSystemEventMock = runtimeMocks.enqueueSystemEvent;
-const requestHeartbeatNowMock = runtimeMocks.requestHeartbeatNow;
+const requestPulsecheckNowMock = runtimeMocks.requestPulsecheckNow;
 const loadConfigMock = runtimeMocks.loadConfig;
 const agentCommandMock = runtimeMocks.agentCommandFromIngress;
 const updateSessionStoreMock = runtimeMocks.updateSessionStore;
@@ -174,7 +174,7 @@ describe("node exec events", () => {
     resetNodeEventDeduplicationForTests();
     enqueueSystemEventMock.mockClear();
     enqueueSystemEventMock.mockReturnValue(true);
-    requestHeartbeatNowMock.mockClear();
+    requestPulsecheckNowMock.mockClear();
     registerApnsRegistrationVi.mockClear();
     loadOrCreateDeviceIdentityMock.mockClear();
     normalizeChannelIdVi.mockClear();
@@ -197,7 +197,7 @@ describe("node exec events", () => {
       "Exec started (node=node-1 id=run-1): ls -la",
       { sessionKey: "agent:main:main", contextKey: "exec:run-1", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "exec-event",
       sessionKey: "agent:main:main",
     });
@@ -219,7 +219,7 @@ describe("node exec events", () => {
       "Exec finished (node=node-2 id=run-2, code 0)\ndone",
       { sessionKey: "node-node-2", contextKey: "exec:run-2", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({ reason: "exec-event" });
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({ reason: "exec-event" });
   });
 
   it("dedupes duplicate exec.finished events for the same runId on the same session", async () => {
@@ -242,7 +242,7 @@ describe("node exec events", () => {
     });
 
     expect(enqueueSystemEventMock).toHaveBeenCalledTimes(1);
-    expect(requestHeartbeatNowMock).toHaveBeenCalledTimes(1);
+    expect(requestPulsecheckNowMock).toHaveBeenCalledTimes(1);
     expect(enqueueSystemEventMock).toHaveBeenCalledWith(
       "Exec finished (node=node-2 id=run-dup-finished, code 0)\ndone",
       {
@@ -274,7 +274,7 @@ describe("node exec events", () => {
       "Exec finished (node=node-2 id=run-2, code 0)\ndone",
       { sessionKey: "agent:main:node-node-2", contextKey: "exec:run-2", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "exec-event",
       sessionKey: "agent:main:node-node-2",
     });
@@ -293,7 +293,7 @@ describe("node exec events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 
   it("truncates long exec.finished output in system events", async () => {
@@ -313,7 +313,7 @@ describe("node exec events", () => {
     expect(text.startsWith("Exec finished (node=node-2 id=run-long, code 0)\n")).toBe(true);
     expect(text.endsWith("…")).toBe(true);
     expect(text.length).toBeLessThan(280);
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({ reason: "exec-event" });
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({ reason: "exec-event" });
   });
 
   it("enqueues exec.denied events with reason", async () => {
@@ -332,7 +332,7 @@ describe("node exec events", () => {
       "Exec denied (node=node-3 id=run-3, allowlist-miss): rm -rf /",
       { sessionKey: "agent:demo:main", contextKey: "exec:run-3", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "exec-event",
       sessionKey: "agent:demo:main",
     });
@@ -357,7 +357,7 @@ describe("node exec events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 
   it("suppresses exec.finished when notifyOnExit is false", async () => {
@@ -380,7 +380,7 @@ describe("node exec events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 
   it("suppresses exec.denied when notifyOnExit is false", async () => {
@@ -403,7 +403,7 @@ describe("node exec events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 
   it("sanitizes remote exec event content before enqueue", async () => {
@@ -670,7 +670,7 @@ describe("voice transcript events", () => {
 describe("notifications changed events", () => {
   beforeEach(() => {
     enqueueSystemEventMock.mockClear();
-    requestHeartbeatNowMock.mockClear();
+    requestPulsecheckNowMock.mockClear();
     loadSessionEntryMock.mockClear();
     normalizeChannelIdVi.mockClear();
     normalizeChannelIdVi.mockImplementation((channel?: string | null) => channel ?? null);
@@ -695,7 +695,7 @@ describe("notifications changed events", () => {
       "Notification posted (node=node-n1 key=notif-1 package=com.example.chat): Message - Ping from Alex",
       { sessionKey: "node-node-n1", contextKey: "notification:notif-1", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "notifications-event",
       sessionKey: "node-node-n1",
     });
@@ -716,13 +716,13 @@ describe("notifications changed events", () => {
       "Notification removed (node=node-n2 key=notif-2 package=com.example.mail)",
       { sessionKey: "node-node-n2", contextKey: "notification:notif-2", trusted: false },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "notifications-event",
       sessionKey: "node-node-n2",
     });
   });
 
-  it("wakes heartbeat on payload sessionKey when provided", async () => {
+  it("wakes pulsecheck on payload sessionKey when provided", async () => {
     const ctx = buildCtx();
     await handleNodeEvent(ctx, "node-n4", {
       event: "notifications.changed",
@@ -733,7 +733,7 @@ describe("notifications changed events", () => {
       }),
     });
 
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "notifications-event",
       sessionKey: "agent:main:main",
     });
@@ -762,7 +762,7 @@ describe("notifications changed events", () => {
         trusted: false,
       },
     );
-    expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+    expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
       reason: "notifications-event",
       sessionKey: "agent:main:node-node-n5",
     });
@@ -778,7 +778,7 @@ describe("notifications changed events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 
   it("sanitizes notification text before enqueueing an untrusted system event", async () => {
@@ -799,7 +799,7 @@ describe("notifications changed events", () => {
     );
   });
 
-  it("does not wake heartbeat when notifications.changed event is deduped", async () => {
+  it("does not wake pulsecheck when notifications.changed event is deduped", async () => {
     enqueueSystemEventMock.mockReset();
     enqueueSystemEventMock.mockReturnValueOnce(true).mockReturnValueOnce(false);
     const ctx = buildCtx();
@@ -821,7 +821,7 @@ describe("notifications changed events", () => {
     });
 
     expect(enqueueSystemEventMock).toHaveBeenCalledTimes(2);
-    expect(requestHeartbeatNowMock).toHaveBeenCalledTimes(1);
+    expect(requestPulsecheckNowMock).toHaveBeenCalledTimes(1);
   });
 
   it("suppresses exec notifyOnExit events when payload opts out", async () => {
@@ -838,7 +838,7 @@ describe("notifications changed events", () => {
     });
 
     expect(enqueueSystemEventMock).not.toHaveBeenCalled();
-    expect(requestHeartbeatNowMock).not.toHaveBeenCalled();
+    expect(requestPulsecheckNowMock).not.toHaveBeenCalled();
   });
 });
 

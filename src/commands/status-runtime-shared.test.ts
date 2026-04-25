@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   resolveStatusGatewayHealth,
   resolveStatusGatewayHealthSafe,
-  resolveStatusLastHeartbeat,
+  resolveStatusLastPulsecheck,
   resolveStatusRuntimeDetails,
   resolveStatusRuntimeSnapshot,
   resolveStatusSecurityAudit,
@@ -148,9 +148,9 @@ describe("status-runtime-shared", () => {
     });
   });
 
-  it("returns null for heartbeat when the gateway is unreachable", async () => {
+  it("returns null for pulsecheck when the gateway is unreachable", async () => {
     expect(
-      await resolveStatusLastHeartbeat({
+      await resolveStatusLastPulsecheck({
         config: { gateway: {} },
         timeoutMs: 1000,
         gatewayReachable: false,
@@ -159,18 +159,18 @@ describe("status-runtime-shared", () => {
     expect(mocks.callGateway).not.toHaveBeenCalled();
   });
 
-  it("catches heartbeat gateway errors and returns null", async () => {
+  it("catches pulsecheck gateway errors and returns null", async () => {
     mocks.callGateway.mockRejectedValueOnce(new Error("boom"));
 
     expect(
-      await resolveStatusLastHeartbeat({
+      await resolveStatusLastPulsecheck({
         config: { gateway: {} },
         timeoutMs: 1000,
         gatewayReachable: true,
       }),
     ).toBeNull();
     expect(mocks.callGateway).toHaveBeenCalledWith({
-      method: "last-heartbeat",
+      method: "last-pulsecheck",
       params: {},
       timeoutMs: 1000,
       config: { gateway: {} },
@@ -196,7 +196,7 @@ describe("status-runtime-shared", () => {
     ).resolves.toEqual({
       usage: { providers: [] },
       health: { ok: true },
-      lastHeartbeat: { ok: true },
+      lastPulsecheck: { ok: true },
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });
@@ -208,7 +208,7 @@ describe("status-runtime-shared", () => {
       config: { gateway: {} },
     });
     expect(mocks.callGateway).toHaveBeenNthCalledWith(2, {
-      method: "last-heartbeat",
+      method: "last-pulsecheck",
       params: {},
       timeoutMs: 1234,
       config: { gateway: {} },
@@ -227,7 +227,7 @@ describe("status-runtime-shared", () => {
     ).resolves.toEqual({
       usage: undefined,
       health: undefined,
-      lastHeartbeat: null,
+      lastPulsecheck: null,
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });
@@ -249,7 +249,7 @@ describe("status-runtime-shared", () => {
     ).resolves.toEqual({
       usage: undefined,
       health: undefined,
-      lastHeartbeat: null,
+      lastPulsecheck: null,
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });
@@ -270,7 +270,7 @@ describe("status-runtime-shared", () => {
       securityAudit: { summary: { critical: 0 }, findings: [] },
       usage: { providers: [] },
       health: { ok: true },
-      lastHeartbeat: { ok: true },
+      lastPulsecheck: { ok: true },
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });

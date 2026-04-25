@@ -342,7 +342,7 @@ export type AppViewState = {
     debugStatus: StatusSummary | null;
     debugHealth: HealthSummary | null;
     debugModels: ModelCatalogEntry[];
-    debugHeartbeat: unknown;
+    debugPulsecheck: unknown;
     debugCallMethod: string;
     debugCallParams: string;
     debugCallResult: string | null;

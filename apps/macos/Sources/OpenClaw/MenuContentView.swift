@@ -11,7 +11,7 @@ struct MenuContent: View {
     @Bindable private var updateStatus: UpdateStatus
     private let gatewayManager = GatewayProcessManager.shared
     private let healthStore = HealthStore.shared
-    private let heartbeatStore = HeartbeatStore.shared
+    private let pulsecheckStore = PulsecheckStore.shared
     private let controlChannel = ControlChannel.shared
     private let activityStore = WorkActivityStore.shared
     @Bindable private var pairingPrompter = NodePairingApprovalPrompter.shared
@@ -63,11 +63,11 @@ struct MenuContent: View {
             .disabled(self.state.connectionMode == .unconfigured)
 
             Divider()
-            Toggle(isOn: self.heartbeatsBinding) {
+            Toggle(isOn: self.pulsechecksBinding) {
                 HStack(spacing: 8) {
-                    Label("Send Heartbeats", systemImage: "waveform.path.ecg")
+                    Label("Send Pulsechecks", systemImage: "waveform.path.ecg")
                     Spacer(minLength: 0)
-                    self.statusLine(label: self.heartbeatStatus.label, color: self.heartbeatStatus.color)
+                    self.statusLine(label: self.pulsecheckStatus.label, color: self.pulsecheckStatus.color)
                 }
             }
             Toggle(
@@ -241,9 +241,9 @@ struct MenuContent: View {
                     Label("Run Health Check Now", systemImage: "stethoscope")
                 }
                 Button {
-                    Task { _ = await DebugActions.sendTestHeartbeat() }
+                    Task { _ = await DebugActions.sendTestPulsecheck() }
                 } label: {
-                    Label("Send Test Heartbeat", systemImage: "waveform.path.ecg")
+                    Label("Send Test Pulsecheck", systemImage: "waveform.path.ecg")
                 }
                 if self.state.connectionMode == .remote {
                     Button {
@@ -382,25 +382,25 @@ struct MenuContent: View {
         }
     }
 
-    private var heartbeatStatus: (label: String, color: Color) {
+    private var pulsecheckStatus: (label: String, color: Color) {
         if case .degraded = self.controlChannel.state {
             return ("Control channel disconnected", .red)
-        } else if let evt = self.heartbeatStore.lastEvent {
+        } else if let evt = self.pulsecheckStore.lastEvent {
             let ageText = age(from: Date(timeIntervalSince1970: evt.ts / 1000))
             switch evt.status {
             case "sent":
-                return ("Last heartbeat sent · \(ageText)", .blue)
+                return ("Last pulsecheck sent · \(ageText)", .blue)
             case "ok-empty", "ok-token":
-                return ("Heartbeat ok · \(ageText)", .green)
+                return ("Pulsecheck ok · \(ageText)", .green)
             case "skipped":
-                return ("Heartbeat skipped · \(ageText)", .secondary)
+                return ("Pulsecheck skipped · \(ageText)", .secondary)
             case "failed":
-                return ("Heartbeat failed · \(ageText)", .red)
+                return ("Pulsecheck failed · \(ageText)", .red)
             default:
-                return ("Heartbeat · \(ageText)", .secondary)
+                return ("Pulsecheck · \(ageText)", .secondary)
             }
         } else {
-            return ("No heartbeat yet", .secondary)
+            return ("No pulsecheck yet", .secondary)
         }
     }
 
@@ -424,8 +424,8 @@ struct MenuContent: View {
         Binding(get: { !self.state.isPaused }, set: { self.state.isPaused = !$0 })
     }
 
-    private var heartbeatsBinding: Binding<Bool> {
-        Binding(get: { self.state.heartbeatsEnabled }, set: { self.state.heartbeatsEnabled = $0 })
+    private var pulsechecksBinding: Binding<Bool> {
+        Binding(get: { self.state.pulsechecksEnabled }, set: { self.state.pulsechecksEnabled = $0 })
     }
 
     private var voiceWakeBinding: Binding<Bool> {

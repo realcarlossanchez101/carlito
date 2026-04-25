@@ -56,7 +56,7 @@ actor GatewayConnection {
     enum Method: String {
         case agent
         case status
-        case setHeartbeats = "set-heartbeats"
+        case setPulsechecks = "set-pulsechecks"
         case systemEvent = "system-event"
         case health
         case channelsStatus = "channels.status"
@@ -471,12 +471,12 @@ extension GatewayConnection {
         }
     }
 
-    func setHeartbeatsEnabled(_ enabled: Bool) async -> Bool {
+    func setPulsechecksEnabled(_ enabled: Bool) async -> Bool {
         do {
-            try await self.requestVoid(method: .setHeartbeats, params: ["enabled": AnyCodable(enabled)])
+            try await self.requestVoid(method: .setPulsechecks, params: ["enabled": AnyCodable(enabled)])
             return true
         } catch {
-            gatewayConnectionLogger.error("setHeartbeatsEnabled failed \(error.localizedDescription, privacy: .public)")
+            gatewayConnectionLogger.error("setPulsechecksEnabled failed \(error.localizedDescription, privacy: .public)")
             return false
         }
     }

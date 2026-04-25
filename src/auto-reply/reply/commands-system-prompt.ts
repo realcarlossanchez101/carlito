@@ -160,7 +160,7 @@ export async function resolveCommandsSystemPromptBundle(
     userTimeFormat,
     contextFiles: injectedFiles,
     skillsPrompt,
-    heartbeatPrompt: undefined,
+    pulsecheckPrompt: undefined,
     ttsHint,
     acpEnabled: params.cfg?.acp?.enabled !== false,
     runtimeInfo,

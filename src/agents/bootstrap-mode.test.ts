@@ -41,7 +41,7 @@ describe("resolveBootstrapMode", () => {
     ).toBe("limited");
   });
 
-  it("returns none for cron, heartbeat, and non-primary runs", () => {
+  it("returns none for cron, pulsecheck, and non-primary runs", () => {
     expect(
       resolveBootstrapMode({
         bootstrapPending: true,
@@ -55,7 +55,7 @@ describe("resolveBootstrapMode", () => {
     expect(
       resolveBootstrapMode({
         bootstrapPending: true,
-        runKind: "heartbeat",
+        runKind: "pulsecheck",
         isInteractiveUserFacing: true,
         isPrimaryRun: true,
         isCanonicalWorkspace: true,

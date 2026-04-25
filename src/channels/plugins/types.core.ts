@@ -21,7 +21,7 @@ export type ChannelExposure = {
   docs?: boolean;
 };
 
-export type ChannelOutboundTargetMode = "explicit" | "implicit" | "heartbeat";
+export type ChannelOutboundTargetMode = "explicit" | "implicit" | "pulsecheck";
 
 /** Agent tool registered by a channel plugin. */
 export type ChannelAgentTool = AgentTool<TSchema, unknown> & {
@@ -138,7 +138,7 @@ export type ChannelAccountState =
   | "enabled"
   | "disabled";
 
-export type ChannelHeartbeatDeps = {
+export type ChannelPulsecheckDeps = {
   webAuthExists?: () => Promise<boolean>;
   hasActiveWebListener?: (accountId?: string) => boolean;
 };
@@ -522,10 +522,10 @@ export type ChannelMessagingAdapter = {
    */
   inferTargetChatType?: (params: { to: string }) => ChatType | undefined;
   /**
-   * Preserve the session thread/topic id for heartbeat replies when that thread
+   * Preserve the session thread/topic id for pulsecheck replies when that thread
    * is part of the destination identity, not a transient reply thread.
    */
-  preserveHeartbeatThreadIdForGroupRoute?: boolean;
+  preservePulsecheckThreadIdForGroupRoute?: boolean;
   buildCrossContextPresentation?: ChannelCrossContextPresentationFactory;
   transformReplyPayload?: (params: {
     payload: ReplyPayload;

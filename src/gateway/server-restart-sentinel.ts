@@ -8,11 +8,11 @@ import type { CliDeps } from "../cli/deps.types.js";
 import { resolveMainSessionKeyFromConfig } from "../config/sessions.js";
 import { parseSessionThreadInfo } from "../config/sessions/thread-info.js";
 import { formatErrorMessage } from "../infra/errors.js";
-import { requestHeartbeatNow } from "../infra/heartbeat-wake.js";
 import { deliverOutboundPayloads } from "../infra/outbound/deliver.js";
 import { ackDelivery, enqueueDelivery, failDelivery } from "../infra/outbound/delivery-queue.js";
 import { buildOutboundSessionContext } from "../infra/outbound/session-context.js";
 import { resolveOutboundTarget } from "../infra/outbound/targets.js";
+import { requestPulsecheckNow } from "../infra/pulsecheck-wake.js";
 import {
   consumeRestartSentinel,
   formatRestartSentinelMessage,
@@ -56,7 +56,7 @@ function enqueueRestartSentinelWake(
     sessionKey,
     ...(deliveryContext ? { deliveryContext } : {}),
   });
-  requestHeartbeatNow({ reason: "wake", sessionKey });
+  requestPulsecheckNow({ reason: "wake", sessionKey });
 }
 
 async function waitForOutboundRetry(delayMs: number) {
@@ -210,7 +210,7 @@ async function dispatchRestartSentinelContinuation(params: {
           }
         : {}),
     });
-    requestHeartbeatNow({ reason: "wake", sessionKey: params.sessionKey });
+    requestPulsecheckNow({ reason: "wake", sessionKey: params.sessionKey });
     return;
   }
 

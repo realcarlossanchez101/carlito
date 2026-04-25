@@ -930,11 +930,11 @@ export async function runReplyAgent(params: {
   const activeSessionStore = sessionStore;
   let activeIsNewSession = isNewSession;
 
-  const isHeartbeat = opts?.isHeartbeat === true;
+  const isPulsecheck = opts?.isPulsecheck === true;
   const typingSignals = createTypingSignaler({
     typing,
     mode: typingMode,
-    isHeartbeat,
+    isPulsecheck,
   });
 
   const shouldEmitToolResult = createShouldEmitToolResult({
@@ -980,7 +980,7 @@ export async function runReplyAgent(params: {
 
   const activeRunQueueAction = resolveActiveRunQueueAction({
     isActive,
-    isHeartbeat,
+    isPulsecheck,
     shouldFollowup,
     queueMode: resolvedQueue.mode,
   });
@@ -1111,7 +1111,7 @@ export async function runReplyAgent(params: {
       sessionKey,
       runtimePolicySessionKey,
       storePath,
-      isHeartbeat,
+      isPulsecheck,
       replyOperation,
     });
     preflightCompactionApplied =
@@ -1131,7 +1131,7 @@ export async function runReplyAgent(params: {
       sessionKey,
       runtimePolicySessionKey,
       storePath,
-      isHeartbeat,
+      isPulsecheck,
       replyOperation,
     });
 
@@ -1213,7 +1213,7 @@ export async function runReplyAgent(params: {
       pendingToolTasks,
       resetSessionAfterCompactionFailure,
       resetSessionAfterRoleOrderingConflict,
-      isHeartbeat,
+      isPulsecheck,
       sessionKey,
       runtimePolicySessionKey,
       getActiveSessionEntry: () => activeSessionEntry,
@@ -1238,7 +1238,7 @@ export async function runReplyAgent(params: {
       fallbackAttempts,
       directlySentBlockKeys,
     } = runOutcome;
-    let { didLogHeartbeatStrip, autoCompactionCount } = runOutcome;
+    let { didLogPulsecheckStrip, autoCompactionCount } = runOutcome;
 
     if (
       shouldInjectGroupIntro &&
@@ -1356,8 +1356,8 @@ export async function runReplyAgent(params: {
     const currentMessageId = sessionCtx.MessageSidFull ?? sessionCtx.MessageSid;
     const payloadResult = await buildReplyPayloads({
       payloads: payloadArray,
-      isHeartbeat,
-      didLogHeartbeatStrip,
+      isPulsecheck,
+      didLogPulsecheckStrip,
       silentExpected: followupRun.run.silentExpected,
       blockStreamingEnabled,
       blockReplyPipeline,
@@ -1379,7 +1379,7 @@ export async function runReplyAgent(params: {
       normalizeMediaPaths: replyMediaContext.normalizePayload,
     });
     const { replyPayloads } = payloadResult;
-    didLogHeartbeatStrip = payloadResult.didLogHeartbeatStrip;
+    didLogPulsecheckStrip = payloadResult.didLogPulsecheckStrip;
 
     if (replyPayloads.length === 0) {
       return finalizeWithFollowup(undefined, queueKey, runFollowupTurn);

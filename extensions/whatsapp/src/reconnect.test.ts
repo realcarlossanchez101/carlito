@@ -2,9 +2,9 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import { describe, expect, it } from "vitest";
 import {
   computeBackoff,
-  DEFAULT_HEARTBEAT_SECONDS,
+  DEFAULT_PULSECHECK_SECONDS,
   DEFAULT_RECONNECT_POLICY,
-  resolveHeartbeatSeconds,
+  resolvePulsecheckSeconds,
   resolveReconnectPolicy,
   sleepWithAbort,
 } from "./reconnect.js";
@@ -37,9 +37,9 @@ describe("web reconnect helpers", () => {
     expect(second).toBeLessThanOrEqual(policy.maxMs);
   });
 
-  it("returns heartbeat default when unset", () => {
-    expect(resolveHeartbeatSeconds(cfg)).toBe(DEFAULT_HEARTBEAT_SECONDS);
-    expect(resolveHeartbeatSeconds(cfg, 5)).toBe(5);
+  it("returns pulsecheck default when unset", () => {
+    expect(resolvePulsecheckSeconds(cfg)).toBe(DEFAULT_PULSECHECK_SECONDS);
+    expect(resolvePulsecheckSeconds(cfg, 5)).toBe(5);
   });
 
   it("sleepWithAbort rejects on abort", async () => {

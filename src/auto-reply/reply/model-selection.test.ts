@@ -255,7 +255,7 @@ describe("createModelSelectionState parent inheritance", () => {
     });
   }
 
-  async function resolveHeartbeatStoredOverrideState(hasResolvedHeartbeatModelOverride: boolean) {
+  async function resolvePulsecheckStoredOverrideState(hasResolvedPulsecheckModelOverride: boolean) {
     const cfg = {} as OpenClawConfig;
     const sessionKey = "agent:main:discord:channel:c1";
     const sessionEntry = makeEntry({
@@ -275,7 +275,7 @@ describe("createModelSelectionState parent inheritance", () => {
       provider: "anthropic",
       model: "claude-opus-4-6",
       hasModelDirective: false,
-      hasResolvedHeartbeatModelOverride,
+      hasResolvedPulsecheckModelOverride,
     });
   }
 
@@ -391,15 +391,15 @@ describe("createModelSelectionState parent inheritance", () => {
     expect(state.model).toBe(defaultModel);
   });
 
-  it("applies stored override when heartbeat override was not resolved", async () => {
-    const state = await resolveHeartbeatStoredOverrideState(false);
+  it("applies stored override when pulsecheck override was not resolved", async () => {
+    const state = await resolvePulsecheckStoredOverrideState(false);
 
     expect(state.provider).toBe("openai");
     expect(state.model).toBe("gpt-4o");
   });
 
-  it("skips stored override when heartbeat override was resolved", async () => {
-    const state = await resolveHeartbeatStoredOverrideState(true);
+  it("skips stored override when pulsecheck override was resolved", async () => {
+    const state = await resolvePulsecheckStoredOverrideState(true);
 
     expect(state.provider).toBe("anthropic");
     expect(state.model).toBe("claude-opus-4-6");

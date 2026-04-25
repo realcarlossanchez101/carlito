@@ -2800,7 +2800,7 @@ describe("persistSessionUsageUpdate", () => {
     const stored1 = JSON.parse(await fs.readFile(storePath, "utf-8"));
     expect(stored1[sessionKey].estimatedCostUsd).toBeCloseTo(0.007725, 8);
 
-    // Second persist with SAME cumulative usage (e.g., heartbeat or redundant persist)
+    // Second persist with SAME cumulative usage (e.g., pulsecheck or redundant persist)
     // Before fix: cost would accumulate to $0.0155 (2x)
     // After fix: cost stays $0.00775 (snapshotted)
     await persistSessionUsageUpdate({
@@ -3048,11 +3048,11 @@ describe("initSessionState internal channel routing preservation", () => {
 
     const result = await initSessionState({
       ctx: {
-        Body: "heartbeat tick",
+        Body: "pulsecheck tick",
         SessionKey: sessionKey,
-        Provider: "heartbeat",
-        From: "heartbeat",
-        To: "heartbeat",
+        Provider: "pulsecheck",
+        From: "pulsecheck",
+        To: "pulsecheck",
       },
       cfg,
       commandAuthorized: true,
@@ -3089,7 +3089,7 @@ describe("initSessionState internal channel routing preservation", () => {
     });
   });
 
-  it("does not synthesize heartbeat routing on a session with no external route", async () => {
+  it("does not synthesize pulsecheck routing on a session with no external route", async () => {
     const storePath = await createStorePath("system-event-no-route-");
     const sessionKey = "agent:main:main";
     await writeSessionStoreFast(storePath, {
@@ -3102,11 +3102,11 @@ describe("initSessionState internal channel routing preservation", () => {
 
     const result = await initSessionState({
       ctx: {
-        Body: "HEARTBEAT_OK",
+        Body: "PULSECHECK_OK",
         SessionKey: sessionKey,
-        Provider: "heartbeat",
-        From: "heartbeat",
-        To: "heartbeat",
+        Provider: "pulsecheck",
+        From: "pulsecheck",
+        To: "pulsecheck",
       },
       cfg,
       commandAuthorized: true,
@@ -3118,7 +3118,7 @@ describe("initSessionState internal channel routing preservation", () => {
     expect(result.sessionEntry.origin).toBeUndefined();
   });
 
-  it("preserves the existing user route when a heartbeat targets a different chat on the shared session", async () => {
+  it("preserves the existing user route when a pulsecheck targets a different chat on the shared session", async () => {
     const storePath = await createStorePath("system-event-preserve-user-route-");
     const sessionKey = "agent:main:main";
     await writeSessionStoreFast(storePath, {
@@ -3144,9 +3144,9 @@ describe("initSessionState internal channel routing preservation", () => {
 
     const result = await initSessionState({
       ctx: {
-        Body: "heartbeat tick",
+        Body: "pulsecheck tick",
         SessionKey: sessionKey,
-        Provider: "heartbeat",
+        Provider: "pulsecheck",
         From: "chat:oc_group_chat",
         To: "chat:oc_group_chat",
         OriginatingChannel: "feishu",

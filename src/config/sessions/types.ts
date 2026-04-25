@@ -112,20 +112,20 @@ export type SessionPluginDebugEntry = {
 
 export type SessionEntry = {
   /**
-   * Last delivered heartbeat payload (used to suppress duplicate heartbeat notifications).
+   * Last delivered pulsecheck payload (used to suppress duplicate pulsecheck notifications).
    * Stored on the main session entry.
    */
-  lastHeartbeatText?: string;
-  /** Timestamp (ms) when lastHeartbeatText was delivered. */
-  lastHeartbeatSentAt?: number;
+  lastPulsecheckText?: string;
+  /** Timestamp (ms) when lastPulsecheckText was delivered. */
+  lastPulsecheckSentAt?: number;
   /**
-   * Base session key for heartbeat-created isolated sessions.
-   * When present, `<base>:heartbeat` is a synthetic isolated session rather than
-   * a real user/session-scoped key that merely happens to end with `:heartbeat`.
+   * Base session key for pulsecheck-created isolated sessions.
+   * When present, `<base>:pulsecheck` is a synthetic isolated session rather than
+   * a real user/session-scoped key that merely happens to end with `:pulsecheck`.
    */
-  heartbeatIsolatedBaseSessionKey?: string;
-  /** Heartbeat task state (task name -> last run timestamp ms). */
-  heartbeatTaskState?: Record<string, number>;
+  pulsecheckIsolatedBaseSessionKey?: string;
+  /** Pulsecheck task state (task name -> last run timestamp ms). */
+  pulsecheckTaskState?: Record<string, number>;
   sessionId: string;
   updatedAt: number;
   sessionFile?: string;

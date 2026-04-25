@@ -1,5 +1,5 @@
 import { onAgentEvent } from "../infra/agent-events.js";
-import { onHeartbeatEvent } from "../infra/heartbeat-events.js";
+import { onPulsecheckEvent } from "../infra/pulsecheck-events.js";
 import { onSessionLifecycleEvent } from "../sessions/session-lifecycle-events.js";
 import { onSessionTranscriptUpdate } from "../sessions/transcript-events.js";
 import {
@@ -47,8 +47,8 @@ export function startGatewayEventSubscriptions(params: {
     }),
   );
 
-  const heartbeatUnsub = onHeartbeatEvent((evt) => {
-    params.broadcast("heartbeat", evt, { dropIfSlow: true });
+  const pulsecheckUnsub = onPulsecheckEvent((evt) => {
+    params.broadcast("pulsecheck", evt, { dropIfSlow: true });
   });
 
   const transcriptUnsub = onSessionTranscriptUpdate(
@@ -68,7 +68,7 @@ export function startGatewayEventSubscriptions(params: {
 
   return {
     agentUnsub,
-    heartbeatUnsub,
+    pulsecheckUnsub,
     transcriptUnsub,
     lifecycleUnsub,
   };

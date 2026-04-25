@@ -4,7 +4,7 @@ title: "Prompt caching"
 read_when:
   - You want to reduce prompt token costs with cache retention
   - You need per-agent cache behavior in multi-agent setups
-  - You are tuning heartbeat and cache-ttl pruning together
+  - You are tuning pulsecheck and cache-ttl pruning together
 ---
 
 Prompt caching means the model provider can reuse unchanged prompt prefixes (usually system/developer instructions and other stable context) across turns instead of re-processing them every time. OpenClaw normalizes provider usage into `cacheRead` and `cacheWrite` where the upstream API exposes those counters directly.
@@ -79,18 +79,18 @@ agents:
 
 See [Session Pruning](/concepts/session-pruning) for full behavior.
 
-### Heartbeat keep-warm
+### Pulsecheck keep-warm
 
-Heartbeat can keep cache windows warm and reduce repeated cache writes after idle gaps.
+Pulsecheck can keep cache windows warm and reduce repeated cache writes after idle gaps.
 
 ```yaml
 agents:
   defaults:
-    heartbeat:
+    pulsecheck:
       every: "55m"
 ```
 
-Per-agent heartbeat is supported at `agents.list[].heartbeat`.
+Per-agent pulsecheck is supported at `agents.list[].pulsecheck`.
 
 ## Provider behavior
 
@@ -167,14 +167,14 @@ OpenClaw splits the system prompt into a **stable prefix** and a **volatile
 suffix** separated by an internal cache-prefix boundary. Content above the
 boundary (tool definitions, skills metadata, workspace files, and other
 relatively static context) is ordered so it stays byte-identical across turns.
-Content below the boundary (for example `HEARTBEAT.md`, runtime timestamps, and
+Content below the boundary (for example `PULSECHECK.md`, runtime timestamps, and
 other per-turn metadata) is allowed to change without invalidating the cached
 prefix.
 
 Key design choices:
 
-- Stable workspace project-context files are ordered before `HEARTBEAT.md` so
-  heartbeat churn does not bust the stable prefix.
+- Stable workspace project-context files are ordered before `PULSECHECK.md` so
+  pulsecheck churn does not bust the stable prefix.
 - The boundary is applied across Anthropic-family, OpenAI-family, Google, and
   CLI transport shaping so all supported providers benefit from the same prefix
   stability.
@@ -221,7 +221,7 @@ agents:
   list:
     - id: "research"
       default: true
-      heartbeat:
+      pulsecheck:
         every: "55m"
     - id: "alerts"
       params:
@@ -232,7 +232,7 @@ agents:
 
 - Set baseline `cacheRetention: "short"`.
 - Enable `contextPruning.mode: "cache-ttl"`.
-- Keep heartbeat below your TTL only for agents that benefit from warm caches.
+- Keep pulsecheck below your TTL only for agents that benefit from warm caches.
 
 ## Cache diagnostics
 

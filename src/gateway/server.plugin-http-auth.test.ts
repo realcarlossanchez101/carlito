@@ -389,7 +389,7 @@ describe("gateway plugin HTTP auth boundary", () => {
     const handlePluginRequest = createRuntimeScopeRecorderHandler({
       pluginId: "runtime-scope-bearer-trusted-operator",
       path: "/secure-admin-hook",
-      method: "set-heartbeats",
+      method: "set-pulsechecks",
       observedRuntimeScopes,
       allowedResults: adminAllowedResults,
       gatewayRuntimeScopeSurface: "trusted-operator",

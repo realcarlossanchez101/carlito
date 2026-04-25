@@ -18,7 +18,7 @@ const UNRESOLVED_IMPORT_RE = /\[UNRESOLVED_IMPORT\]/;
 const ANSI_ESCAPE_RE = new RegExp(String.raw`\u001B\[[0-9;]*m`, "g");
 const HASHED_ROOT_JS_RE = /^(?<base>.+)-[A-Za-z0-9_-]+\.js$/u;
 const DEFAULT_CAPTURE_BYTES = 8 * 1024 * 1024;
-const DEFAULT_HEARTBEAT_MS = 30_000;
+const DEFAULT_PULSECHECK_MS = 30_000;
 const TERMINATION_GRACE_MS = 5_000;
 const TSDOWN_OUTPUT_ROOTS = ["dist", "dist-runtime"];
 
@@ -229,8 +229,8 @@ export async function runTsdownBuildInvocation(invocation, params = {}) {
   const env = params.env ?? process.env;
   const scanner = params.scanner ?? createTsdownOutputScanner();
   const timeoutMs = parsePositiveInteger(env.OPENCLAW_TSDOWN_TIMEOUT_MS);
-  const heartbeatMs =
-    parseNonNegativeInteger(env.OPENCLAW_TSDOWN_HEARTBEAT_MS) ?? DEFAULT_HEARTBEAT_MS;
+  const pulsecheckMs =
+    parseNonNegativeInteger(env.OPENCLAW_TSDOWN_PULSECHECK_MS) ?? DEFAULT_PULSECHECK_MS;
   let timedOut = false;
   let settled = false;
   let lastOutputAt = Date.now();
@@ -253,14 +253,14 @@ export async function runTsdownBuildInvocation(invocation, params = {}) {
     stderr.write(chunk);
   });
 
-  const heartbeat =
-    heartbeatMs > 0
+  const pulsecheck =
+    pulsecheckMs > 0
       ? setInterval(() => {
           if (settled) {
             return;
           }
           const silentForMs = Date.now() - lastOutputAt;
-          if (silentForMs < heartbeatMs) {
+          if (silentForMs < pulsecheckMs) {
             return;
           }
           stderr.write(
@@ -269,7 +269,7 @@ export async function runTsdownBuildInvocation(invocation, params = {}) {
             )}s\n`,
           );
           lastOutputAt = Date.now();
-        }, heartbeatMs).unref()
+        }, pulsecheckMs).unref()
       : null;
 
   const timeout =
@@ -290,7 +290,7 @@ export async function runTsdownBuildInvocation(invocation, params = {}) {
   return new Promise((resolve) => {
     child.once("error", (error) => {
       settled = true;
-      clearInterval(heartbeat);
+      clearInterval(pulsecheck);
       clearTimeout(timeout);
       stderr.write(`[tsdown-build] failed to start: ${String(error)}\n`);
       resolve({
@@ -303,7 +303,7 @@ export async function runTsdownBuildInvocation(invocation, params = {}) {
     });
     child.once("close", (status, signal) => {
       settled = true;
-      clearInterval(heartbeat);
+      clearInterval(pulsecheck);
       clearTimeout(timeout);
       resolve({
         status,

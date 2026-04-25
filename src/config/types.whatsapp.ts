@@ -9,7 +9,7 @@ import type {
 } from "./types.base.js";
 import type {
   ChannelHealthMonitorConfig,
-  ChannelHeartbeatVisibilityConfig,
+  ChannelPulsecheckVisibilityConfig,
 } from "./types.channels.js";
 import type { DmConfig } from "./types.messages.js";
 import type { GroupToolPolicyBySenderConfig, GroupToolPolicyConfig } from "./types.tools.js";
@@ -105,8 +105,8 @@ type WhatsAppSharedConfig = {
   debounceMs?: number;
   /** Reply threading mode for auto-replies (off|first|all|batched). */
   replyToMode?: ReplyToMode;
-  /** Heartbeat visibility settings. */
-  heartbeat?: ChannelHeartbeatVisibilityConfig;
+  /** Pulsecheck visibility settings. */
+  pulsecheck?: ChannelPulsecheckVisibilityConfig;
   /** Channel health monitor overrides for this channel/account. */
   healthMonitor?: ChannelHealthMonitorConfig;
 };

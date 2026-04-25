@@ -24,7 +24,7 @@ struct HealthStoreStateTests {
             ],
             channelOrder: ["whatsapp"],
             channelLabels: ["whatsapp": "WhatsApp"],
-            heartbeatSeconds: 60,
+            pulsecheckSeconds: 60,
             sessions: .init(path: "/tmp/sessions.json", count: 0, recent: []))
 
         let store = HealthStore.shared

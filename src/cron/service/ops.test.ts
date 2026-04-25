@@ -34,7 +34,7 @@ function createTimedOutIsolatedCronState(params: { storePath: string; now: numbe
     log: logger,
     nowMs: () => params.now,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: vi.fn(async () => {
       throw new Error("cron: job execution timed out");
     }),
@@ -48,7 +48,7 @@ function createOkIsolatedCronState(params: { storePath: string; now: number; sum
     log: logger,
     nowMs: () => params.now,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: vi.fn(async () => ({
       status: "ok" as const,
       ...(params.summary === undefined ? {} : { summary: params.summary }),
@@ -65,7 +65,7 @@ function createInterruptedMainJob(now: number): CronJob {
     updatedAtMs: now - 30 * 60_000,
     schedule: { kind: "cron", expr: "0 * * * *", tz: "UTC" },
     sessionTarget: "main",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "systemEvent", text: "should not replay on startup" },
     state: {
       nextRunAtMs: now - 60_000,
@@ -83,7 +83,7 @@ function createDueIsolatedJob(now: number): CronJob {
     updatedAtMs: now - 60_000,
     schedule: { kind: "every", everyMs: 60_000, anchorMs: now - 60_000 },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "do work" },
     sessionKey: "agent:main:main",
     state: { nextRunAtMs: now - 1 },
@@ -118,7 +118,7 @@ function createMissedIsolatedJob(now: number): CronJob {
     updatedAtMs: now - 30 * 60_000,
     schedule: { kind: "cron", expr: "0 * * * *", tz: "UTC" },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "should timeout" },
     sessionKey: "agent:main:main",
     state: {
@@ -132,7 +132,7 @@ describe("cron service ops seam coverage", () => {
     const { storePath } = await makeStorePath();
     const now = Date.parse("2026-03-23T12:00:00.000Z");
     const enqueueSystemEvent = vi.fn();
-    const requestHeartbeatNow = vi.fn();
+    const requestPulsecheckNow = vi.fn();
     const timeoutSpy = vi.spyOn(globalThis, "setTimeout");
 
     await writeCronStoreSnapshot({
@@ -146,7 +146,7 @@ describe("cron service ops seam coverage", () => {
       log: logger,
       nowMs: () => now,
       enqueueSystemEvent,
-      requestHeartbeatNow,
+      requestPulsecheckNow,
       runIsolatedAgentJob: vi.fn(async () => ({ status: "ok" as const })),
     });
 
@@ -158,7 +158,7 @@ describe("cron service ops seam coverage", () => {
     );
     // Interrupted recurring jobs are now replayed on first restart (#60495)
     expect(enqueueSystemEvent).toHaveBeenCalled();
-    expect(requestHeartbeatNow).toHaveBeenCalled();
+    expect(requestPulsecheckNow).toHaveBeenCalled();
     expect(state.timer).not.toBeNull();
 
     const persisted = (await loadCronStore(storePath)) as {
@@ -273,7 +273,7 @@ describe("cron service ops seam coverage", () => {
           updatedAtMs: now - 3_600_000,
           schedule: { kind: "cron", expr: "0 9 * * *", tz: "Asia/Shanghai" },
           sessionTarget: "main",
-          wakeMode: "next-heartbeat",
+          wakeMode: "next-pulsecheck",
           payload: { kind: "systemEvent", text: "daily" },
           state: { nextRunAtMs: originalNextRunAtMs },
         },
@@ -303,7 +303,7 @@ describe("cron service ops seam coverage", () => {
           updatedAtMs: now - 3_600_000,
           schedule: { kind: "cron", expr: "0 9 * * *", tz: "UTC" },
           sessionTarget: "main",
-          wakeMode: "next-heartbeat",
+          wakeMode: "next-pulsecheck",
           payload: { kind: "systemEvent", text: "test" },
           state: { nextRunAtMs: 0 },
         },

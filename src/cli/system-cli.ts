@@ -13,12 +13,12 @@ type SystemGatewayOpts = GatewayRpcOpts & { json?: boolean };
 const normalizeWakeMode = (raw: unknown) => {
   const mode = normalizeOptionalString(raw) ?? "";
   if (!mode) {
-    return "next-heartbeat" as const;
+    return "next-pulsecheck" as const;
   }
-  if (mode === "now" || mode === "next-heartbeat") {
+  if (mode === "now" || mode === "next-pulsecheck") {
     return mode;
   }
-  throw new Error("--mode must be now or next-heartbeat");
+  throw new Error("--mode must be now or next-pulsecheck");
 };
 
 async function runSystemGatewayCommand(
@@ -42,7 +42,7 @@ async function runSystemGatewayCommand(
 export function registerSystemCli(program: Command) {
   const system = program
     .command("system")
-    .description("System tools (events, heartbeat, presence)")
+    .description("System tools (events, pulsecheck, presence)")
     .addHelpText(
       "after",
       () =>
@@ -52,9 +52,9 @@ export function registerSystemCli(program: Command) {
   addGatewayClientOptions(
     system
       .command("event")
-      .description("Enqueue a system event and optionally trigger a heartbeat")
+      .description("Enqueue a system event and optionally trigger a pulsecheck")
       .requiredOption("--text <text>", "System event text")
-      .option("--mode <mode>", "Wake mode (now|next-heartbeat)", "next-heartbeat")
+      .option("--mode <mode>", "Wake mode (now|next-pulsecheck)", "next-pulsecheck")
       .option("--json", "Output JSON", false),
   ).action(async (opts: SystemEventOpts) => {
     await runSystemGatewayCommand(
@@ -71,30 +71,30 @@ export function registerSystemCli(program: Command) {
     );
   });
 
-  const heartbeat = system.command("heartbeat").description("Heartbeat controls");
+  const pulsecheck = system.command("pulsecheck").description("Pulsecheck controls");
 
   addGatewayClientOptions(
-    heartbeat
+    pulsecheck
       .command("last")
-      .description("Show the last heartbeat event")
+      .description("Show the last pulsecheck event")
       .option("--json", "Output JSON", false),
   ).action(async (opts: SystemGatewayOpts) => {
     await runSystemGatewayCommand(opts, async () => {
-      return await callGatewayFromCli("last-heartbeat", opts, undefined, {
+      return await callGatewayFromCli("last-pulsecheck", opts, undefined, {
         expectFinal: false,
       });
     });
   });
 
   addGatewayClientOptions(
-    heartbeat
+    pulsecheck
       .command("enable")
-      .description("Enable heartbeats")
+      .description("Enable pulsechecks")
       .option("--json", "Output JSON", false),
   ).action(async (opts: SystemGatewayOpts) => {
     await runSystemGatewayCommand(opts, async () => {
       return await callGatewayFromCli(
-        "set-heartbeats",
+        "set-pulsechecks",
         opts,
         { enabled: true },
         { expectFinal: false },
@@ -103,14 +103,14 @@ export function registerSystemCli(program: Command) {
   });
 
   addGatewayClientOptions(
-    heartbeat
+    pulsecheck
       .command("disable")
-      .description("Disable heartbeats")
+      .description("Disable pulsechecks")
       .option("--json", "Output JSON", false),
   ).action(async (opts: SystemGatewayOpts) => {
     await runSystemGatewayCommand(opts, async () => {
       return await callGatewayFromCli(
-        "set-heartbeats",
+        "set-pulsechecks",
         opts,
         { enabled: false },
         { expectFinal: false },

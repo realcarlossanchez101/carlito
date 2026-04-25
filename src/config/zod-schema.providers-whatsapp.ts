@@ -4,7 +4,7 @@ import { normalizeStringEntries } from "../shared/string-normalization.js";
 import { ToolPolicySchema } from "./zod-schema.agent-runtime.js";
 import {
   ChannelHealthMonitorSchema,
-  ChannelHeartbeatVisibilitySchema,
+  ChannelPulsecheckVisibilitySchema,
 } from "./zod-schema.channels.js";
 import {
   BlockStreamingCoalesceSchema,
@@ -83,7 +83,7 @@ function buildWhatsAppCommonShape(params: { useDefaults: boolean }) {
       ? z.number().int().nonnegative().optional().default(0)
       : z.number().int().nonnegative().optional(),
     replyToMode: ReplyToModeSchema.optional(),
-    heartbeat: ChannelHeartbeatVisibilitySchema,
+    pulsecheck: ChannelPulsecheckVisibilitySchema,
     healthMonitor: ChannelHealthMonitorSchema,
   };
 }

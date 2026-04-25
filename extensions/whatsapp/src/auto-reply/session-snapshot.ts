@@ -15,7 +15,7 @@ type LoadConfigFn = typeof import("./config.runtime.js").loadConfig;
 export function getSessionSnapshot(
   cfg: ReturnType<LoadConfigFn>,
   from: string,
-  _isHeartbeat = false,
+  _isPulsecheck = false,
   ctx?: {
     sessionKey?: string | null;
     isGroup?: boolean;

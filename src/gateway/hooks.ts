@@ -200,13 +200,13 @@ export function normalizeHookHeaders(req: IncomingMessage) {
 export function normalizeWakePayload(
   payload: Record<string, unknown>,
 ):
-  | { ok: true; value: { text: string; mode: "now" | "next-heartbeat" } }
+  | { ok: true; value: { text: string; mode: "now" | "next-pulsecheck" } }
   | { ok: false; error: string } {
   const normalizedText = normalizeOptionalString(payload.text) ?? "";
   if (!normalizedText) {
     return { ok: false, error: "text required" };
   }
-  const mode = payload.mode === "next-heartbeat" ? "next-heartbeat" : "now";
+  const mode = payload.mode === "next-pulsecheck" ? "next-pulsecheck" : "now";
   return { ok: true, value: { text: normalizedText, mode } };
 }
 
@@ -215,7 +215,7 @@ export type HookAgentPayload = {
   name: string;
   agentId?: string;
   idempotencyKey?: string;
-  wakeMode: "now" | "next-heartbeat";
+  wakeMode: "now" | "next-pulsecheck";
   sessionKey?: string;
   deliver: boolean;
   channel: HookMessageChannel;
@@ -411,7 +411,7 @@ export function normalizeAgentPayload(payload: Record<string, unknown>):
   const agentIdRaw = payload.agentId;
   const agentId = normalizeOptionalString(agentIdRaw);
   const idempotencyKey = resolveOptionalHookIdempotencyKey(payload.idempotencyKey);
-  const wakeMode = payload.wakeMode === "next-heartbeat" ? "next-heartbeat" : "now";
+  const wakeMode = payload.wakeMode === "next-pulsecheck" ? "next-pulsecheck" : "now";
   const sessionKeyRaw = payload.sessionKey;
   const sessionKey = normalizeOptionalString(sessionKeyRaw);
   const channel = resolveHookChannel(payload.channel);

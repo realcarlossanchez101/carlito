@@ -144,7 +144,7 @@ function getToolsInvokeHttpModule() {
 }
 
 type HookDispatchers = {
-  dispatchWakeHook: (value: { text: string; mode: "now" | "next-heartbeat" }) => void;
+  dispatchWakeHook: (value: { text: string; mode: "now" | "next-pulsecheck" }) => void;
   dispatchAgentHook: (value: HookAgentDispatchPayload) => string;
 };
 

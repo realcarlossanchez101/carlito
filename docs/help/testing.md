@@ -149,7 +149,7 @@ transport coverage matrix.
 ### Shared Telegram credentials via Convex (v1)
 
 When `--credential-source convex` (or `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`) is enabled for
-`openclaw qa telegram`, QA lab acquires an exclusive lease from a Convex-backed pool, heartbeats
+`openclaw qa telegram`, QA lab acquires an exclusive lease from a Convex-backed pool, pulsechecks
 that lease while the lane is running, and releases the lease on shutdown.
 
 Reference Convex project scaffold:
@@ -169,7 +169,7 @@ Required env vars:
 Optional env vars:
 
 - `OPENCLAW_QA_CREDENTIAL_LEASE_TTL_MS` (default `1200000`)
-- `OPENCLAW_QA_CREDENTIAL_HEARTBEAT_INTERVAL_MS` (default `30000`)
+- `OPENCLAW_QA_CREDENTIAL_PULSECHECK_INTERVAL_MS` (default `30000`)
 - `OPENCLAW_QA_CREDENTIAL_ACQUIRE_TIMEOUT_MS` (default `90000`)
 - `OPENCLAW_QA_CREDENTIAL_HTTP_TIMEOUT_MS` (default `15000`)
 - `OPENCLAW_QA_CONVEX_ENDPOINT_PREFIX` (default `/qa-credentials/v1`)
@@ -194,10 +194,10 @@ Use `--json` for machine-readable output in scripts and CI utilities.
 Default endpoint contract (`OPENCLAW_QA_CONVEX_SITE_URL` + `/qa-credentials/v1`):
 
 - `POST /acquire`
-  - Request: `{ kind, ownerId, actorRole, leaseTtlMs, heartbeatIntervalMs }`
-  - Success: `{ status: "ok", credentialId, leaseToken, payload, leaseTtlMs?, heartbeatIntervalMs? }`
+  - Request: `{ kind, ownerId, actorRole, leaseTtlMs, pulsecheckIntervalMs }`
+  - Success: `{ status: "ok", credentialId, leaseToken, payload, leaseTtlMs?, pulsecheckIntervalMs? }`
   - Exhausted/retryable: `{ status: "error", code: "POOL_EXHAUSTED" | "NO_CREDENTIAL_AVAILABLE", ... }`
-- `POST /heartbeat`
+- `POST /pulsecheck`
   - Request: `{ kind, ownerId, actorRole, credentialId, leaseToken, leaseTtlMs }`
   - Success: `{ status: "ok" }` (or empty `2xx`)
 - `POST /release`
@@ -459,11 +459,11 @@ Think of the suites as “increasing realism” (and increasing flakiness/cost):
 - Set `OPENCLAW_LIVE_USE_REAL_HOME=1` only when you intentionally need live tests to use your real home directory.
 - `pnpm test:live` now defaults to a quieter mode: it keeps `[live] ...` progress output, but suppresses the extra `~/.profile` notice and mutes gateway bootstrap logs/Bonjour chatter. Set `OPENCLAW_LIVE_TEST_QUIET=0` if you want the full startup logs back.
 - API key rotation (provider-specific): set `*_API_KEYS` with comma/semicolon format or `*_API_KEY_1`, `*_API_KEY_2` (for example `OPENAI_API_KEYS`, `ANTHROPIC_API_KEYS`, `GEMINI_API_KEYS`) or per-live override via `OPENCLAW_LIVE_*_KEY`; tests retry on rate limit responses.
-- Progress/heartbeat output:
+- Progress/pulsecheck output:
   - Live suites now emit progress lines to stderr so long provider calls are visibly active even when Vitest console capture is quiet.
   - `vitest.live.config.ts` disables Vitest console interception so provider/gateway progress lines stream immediately during live runs.
-  - Tune direct-model heartbeats with `OPENCLAW_LIVE_HEARTBEAT_MS`.
-  - Tune gateway/probe heartbeats with `OPENCLAW_LIVE_GATEWAY_HEARTBEAT_MS`.
+  - Tune direct-model pulsechecks with `OPENCLAW_LIVE_PULSECHECK_MS`.
+  - Tune gateway/probe pulsechecks with `OPENCLAW_LIVE_GATEWAY_PULSECHECK_MS`.
 
 ## Which suite should I run?
 
@@ -944,7 +944,7 @@ If you want to rely on env keys (e.g. exported in your `~/.profile`), run local 
   - Runs the shared image, music, and video live suites through one repo-native entrypoint
   - Auto-loads missing provider env vars from `~/.profile`
   - Auto-narrows each suite to providers that currently have usable auth by default
-  - Reuses `scripts/test-live.mjs`, so heartbeat and quiet-mode behavior stay consistent
+  - Reuses `scripts/test-live.mjs`, so pulsecheck and quiet-mode behavior stay consistent
 - Examples:
   - `pnpm test:live:media`
   - `pnpm test:live:media image video --providers openai,google,minimax`

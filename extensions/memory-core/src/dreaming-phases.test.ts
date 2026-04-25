@@ -173,7 +173,7 @@ async function triggerLightDreaming(
   setDreamingTestTime(offsetMinutes);
   await beforeAgentReply(
     { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-    { trigger: "heartbeat", workspaceDir },
+    { trigger: "pulsecheck", workspaceDir },
   );
 }
 
@@ -386,7 +386,7 @@ describe("memory-core dreaming phases", () => {
             "Handle this reminder internally. Do not relay it to the user unless explicitly requested.",
           ].join("\n"),
         },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
 
       const dailyContent = await fs.readFile(
@@ -469,11 +469,11 @@ describe("memory-core dreaming phases", () => {
     try {
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     } finally {
       readSpy.mockRestore();
@@ -829,7 +829,7 @@ describe("memory-core dreaming phases", () => {
     try {
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     } finally {
       vi.unstubAllEnvs();
@@ -942,7 +942,7 @@ describe("memory-core dreaming phases", () => {
     try {
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     } finally {
       vi.unstubAllEnvs();
@@ -1044,13 +1044,13 @@ describe("memory-core dreaming phases", () => {
     try {
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
 
       const readFileSpy = vi.spyOn(fs, "readFile");
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
 
       expect(
@@ -1802,7 +1802,7 @@ describe("memory-core dreaming phases", () => {
       setDreamingTestTime(10);
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_rem_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     });
 
@@ -1893,7 +1893,7 @@ describe("memory-core dreaming phases", () => {
       setDreamingTestTime(5);
       await beforeAgentReply(
         { cleanedBody: "__openclaw_memory_core_rem_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     });
 
@@ -1948,7 +1948,7 @@ describe("memory-core dreaming phases", () => {
       vi.setSystemTime(new Date(day1Ms));
       await reply1(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     });
 
@@ -1979,7 +1979,7 @@ describe("memory-core dreaming phases", () => {
       vi.setSystemTime(new Date(day2Ms));
       await reply2(
         { cleanedBody: "__openclaw_memory_core_light_sleep__" },
-        { trigger: "heartbeat", workspaceDir },
+        { trigger: "pulsecheck", workspaceDir },
       );
     });
 

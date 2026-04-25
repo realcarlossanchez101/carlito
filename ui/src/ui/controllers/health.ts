@@ -6,7 +6,7 @@ const HEALTH_FALLBACK: HealthSummary = {
   ok: false,
   ts: 0,
   durationMs: 0,
-  heartbeatSeconds: 0,
+  pulsecheckSeconds: 0,
   defaultAgentId: "",
   agents: [],
   sessions: { path: "", count: 0, recent: [] },

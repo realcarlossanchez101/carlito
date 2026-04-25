@@ -40,7 +40,7 @@ describe("model-pricing-cache", () => {
           model: { primary: "gpt", fallbacks: ["anthropic/claude-sonnet-4-6"] },
           imageModel: { primary: "google/gemini-3-pro" },
           compaction: { model: "opus" },
-          heartbeat: { model: "xai/grok-4" },
+          pulsecheck: { model: "xai/grok-4" },
           models: {
             "openai/gpt-5.4": { alias: "gpt" },
             "anthropic/claude-opus-4-6": { alias: "opus" },
@@ -51,7 +51,7 @@ describe("model-pricing-cache", () => {
             id: "router",
             model: { primary: "openrouter/anthropic/claude-opus-4-6" },
             subagents: { model: { primary: "openrouter/auto" } },
-            heartbeat: { model: "anthropic/claude-opus-4-6" },
+            pulsecheck: { model: "anthropic/claude-opus-4-6" },
           },
         ],
       },

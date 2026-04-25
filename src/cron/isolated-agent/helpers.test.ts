@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  isHeartbeatOnlyResponse,
+  isPulsecheckOnlyResponse,
   pickDeliverablePayloads,
   pickLastDeliverablePayload,
   pickLastNonEmptyTextFromPayloads,
@@ -108,51 +108,51 @@ describe("pickDeliverablePayloads", () => {
   });
 });
 
-describe("isHeartbeatOnlyResponse", () => {
+describe("isPulsecheckOnlyResponse", () => {
   const ACK_MAX = 300;
 
   it("returns true for empty payloads", () => {
-    expect(isHeartbeatOnlyResponse([], ACK_MAX)).toBe(true);
+    expect(isPulsecheckOnlyResponse([], ACK_MAX)).toBe(true);
   });
 
-  it("returns true for a single HEARTBEAT_OK payload", () => {
-    expect(isHeartbeatOnlyResponse([{ text: "HEARTBEAT_OK" }], ACK_MAX)).toBe(true);
+  it("returns true for a single PULSECHECK_OK payload", () => {
+    expect(isPulsecheckOnlyResponse([{ text: "PULSECHECK_OK" }], ACK_MAX)).toBe(true);
   });
 
-  it("returns false for a single non-heartbeat payload", () => {
-    expect(isHeartbeatOnlyResponse([{ text: "Something important happened" }], ACK_MAX)).toBe(
+  it("returns false for a single non-pulsecheck payload", () => {
+    expect(isPulsecheckOnlyResponse([{ text: "Something important happened" }], ACK_MAX)).toBe(
       false,
     );
   });
 
-  it("returns true when multiple payloads include narration followed by HEARTBEAT_OK", () => {
+  it("returns true when multiple payloads include narration followed by PULSECHECK_OK", () => {
     // Agent narrates its work then signals nothing needs attention.
     expect(
-      isHeartbeatOnlyResponse(
+      isPulsecheckOnlyResponse(
         [
           { text: "It's 12:49 AM — quiet hours. Let me run the checks quickly." },
           { text: "Emails: Just 2 calendar invites. Not urgent." },
-          { text: "HEARTBEAT_OK" },
+          { text: "PULSECHECK_OK" },
         ],
         ACK_MAX,
       ),
     ).toBe(true);
   });
 
-  it("returns false when media is present even with HEARTBEAT_OK text", () => {
+  it("returns false when media is present even with PULSECHECK_OK text", () => {
     expect(
-      isHeartbeatOnlyResponse(
-        [{ text: "HEARTBEAT_OK", mediaUrl: "https://example.com/img.png" }],
+      isPulsecheckOnlyResponse(
+        [{ text: "PULSECHECK_OK", mediaUrl: "https://example.com/img.png" }],
         ACK_MAX,
       ),
     ).toBe(false);
   });
 
-  it("returns false when media is in a different payload than HEARTBEAT_OK", () => {
+  it("returns false when media is in a different payload than PULSECHECK_OK", () => {
     expect(
-      isHeartbeatOnlyResponse(
+      isPulsecheckOnlyResponse(
         [
-          { text: "HEARTBEAT_OK" },
+          { text: "PULSECHECK_OK" },
           { text: "Here's an image", mediaUrl: "https://example.com/img.png" },
         ],
         ACK_MAX,
@@ -160,9 +160,9 @@ describe("isHeartbeatOnlyResponse", () => {
     ).toBe(false);
   });
 
-  it("returns false when no payload contains HEARTBEAT_OK", () => {
+  it("returns false when no payload contains PULSECHECK_OK", () => {
     expect(
-      isHeartbeatOnlyResponse(
+      isPulsecheckOnlyResponse(
         [{ text: "Checked emails — found 3 urgent messages from your manager." }],
         ACK_MAX,
       ),

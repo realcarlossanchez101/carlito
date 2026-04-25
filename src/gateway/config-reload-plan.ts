@@ -12,7 +12,7 @@ export type GatewayReloadPlan = {
   reloadHooks: boolean;
   restartGmailWatcher: boolean;
   restartCron: boolean;
-  restartHeartbeat: boolean;
+  restartPulsecheck: boolean;
   restartHealthMonitor: boolean;
   restartChannels: Set<ChannelKind>;
   noopPaths: string[];
@@ -28,7 +28,7 @@ type ReloadAction =
   | "reload-hooks"
   | "restart-gmail-watcher"
   | "restart-cron"
-  | "restart-heartbeat"
+  | "restart-pulsecheck"
   | "restart-health-monitor"
   | `restart-channel:${ChannelId}`;
 
@@ -55,36 +55,36 @@ const BASE_RELOAD_RULES: ReloadRule[] = [
     kind: "hot",
     actions: ["restart-health-monitor"],
   },
-  // Stuck-session warning threshold is read by the diagnostics heartbeat loop.
+  // Stuck-session warning threshold is read by the diagnostics pulsecheck loop.
   { prefix: "diagnostics.stuckSessionWarnMs", kind: "none" },
   { prefix: "hooks.gmail", kind: "hot", actions: ["restart-gmail-watcher"] },
   { prefix: "hooks", kind: "hot", actions: ["reload-hooks"] },
   {
-    prefix: "agents.defaults.heartbeat",
+    prefix: "agents.defaults.pulsecheck",
     kind: "hot",
-    actions: ["restart-heartbeat"],
+    actions: ["restart-pulsecheck"],
   },
   {
     prefix: "agents.defaults.models",
     kind: "hot",
-    actions: ["restart-heartbeat"],
+    actions: ["restart-pulsecheck"],
   },
   {
     prefix: "agents.defaults.model",
     kind: "hot",
-    actions: ["restart-heartbeat"],
+    actions: ["restart-pulsecheck"],
   },
   {
     prefix: "models",
     kind: "hot",
-    actions: ["restart-heartbeat"],
+    actions: ["restart-pulsecheck"],
   },
   {
     prefix: "agents.list",
     kind: "hot",
-    actions: ["restart-heartbeat"],
+    actions: ["restart-pulsecheck"],
   },
-  { prefix: "agent.heartbeat", kind: "hot", actions: ["restart-heartbeat"] },
+  { prefix: "agent.pulsecheck", kind: "hot", actions: ["restart-pulsecheck"] },
   { prefix: "cron", kind: "hot", actions: ["restart-cron"] },
 ];
 
@@ -259,7 +259,7 @@ export function buildGatewayReloadPlan(
     reloadHooks: false,
     restartGmailWatcher: false,
     restartCron: false,
-    restartHeartbeat: false,
+    restartPulsecheck: false,
     restartHealthMonitor: false,
     restartChannels: new Set(),
     noopPaths: [],
@@ -281,8 +281,8 @@ export function buildGatewayReloadPlan(
       case "restart-cron":
         plan.restartCron = true;
         break;
-      case "restart-heartbeat":
-        plan.restartHeartbeat = true;
+      case "restart-pulsecheck":
+        plan.restartPulsecheck = true;
         break;
       case "restart-health-monitor":
         plan.restartHealthMonitor = true;

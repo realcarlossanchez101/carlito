@@ -1,9 +1,9 @@
 import { hasOutboundReplyContent } from "openclaw/plugin-sdk/reply-payload";
-import { DEFAULT_HEARTBEAT_ACK_MAX_CHARS } from "../../auto-reply/heartbeat.js";
+import { DEFAULT_PULSECHECK_ACK_MAX_CHARS } from "../../auto-reply/pulsecheck.js";
 import type { ReplyPayload } from "../../auto-reply/reply-payload.js";
 import { normalizeOptionalString } from "../../shared/string-coerce.js";
 import { truncateUtf16Safe } from "../../utils.js";
-import { shouldSkipHeartbeatOnlyDelivery } from "../heartbeat-policy.js";
+import { shouldSkipPulsecheckOnlyDelivery } from "../pulsecheck-policy.js";
 
 type DeliveryPayload = Pick<
   ReplyPayload,
@@ -123,14 +123,14 @@ export function pickDeliverablePayloads(payloads: DeliveryPayload[]): DeliveryPa
 
 /**
  * Check if delivery should be skipped because the agent signaled no user-visible update.
- * Returns true when any payload is a heartbeat ack token and no payload contains media.
+ * Returns true when any payload is a pulsecheck ack token and no payload contains media.
  */
-export function isHeartbeatOnlyResponse(payloads: DeliveryPayload[], ackMaxChars: number) {
-  return shouldSkipHeartbeatOnlyDelivery(payloads, ackMaxChars);
+export function isPulsecheckOnlyResponse(payloads: DeliveryPayload[], ackMaxChars: number) {
+  return shouldSkipPulsecheckOnlyDelivery(payloads, ackMaxChars);
 }
 
-export function resolveHeartbeatAckMaxChars(agentCfg?: { heartbeat?: { ackMaxChars?: number } }) {
-  const raw = agentCfg?.heartbeat?.ackMaxChars ?? DEFAULT_HEARTBEAT_ACK_MAX_CHARS;
+export function resolvePulsecheckAckMaxChars(agentCfg?: { pulsecheck?: { ackMaxChars?: number } }) {
+  const raw = agentCfg?.pulsecheck?.ackMaxChars ?? DEFAULT_PULSECHECK_ACK_MAX_CHARS;
   return Math.max(0, raw);
 }
 

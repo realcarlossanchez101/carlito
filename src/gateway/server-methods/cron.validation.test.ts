@@ -66,7 +66,7 @@ function createCronJob(overrides: Partial<CronJob> = {}): CronJob {
     updatedAtMs: 1,
     schedule: { kind: "every", everyMs: 60_000 },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "hello" },
     delivery: { mode: "none" },
     state: {},
@@ -106,7 +106,7 @@ describe("cron method validation", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "hello" },
       delivery: { mode: "announce" },
     });
@@ -186,7 +186,7 @@ describe("cron method validation", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000 },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "hello" },
       delivery: {
         mode: "announce",

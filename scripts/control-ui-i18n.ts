@@ -73,7 +73,7 @@ const DEFAULT_BATCH_CHAR_BUDGET = 2_000;
 const TRANSLATE_MAX_ATTEMPTS = 2;
 const TRANSLATE_BASE_DELAY_MS = 15_000;
 const DEFAULT_PROMPT_TIMEOUT_MS = 120_000;
-const PROGRESS_HEARTBEAT_MS = 30_000;
+const PROGRESS_PULSECHECK_MS = 30_000;
 const ENV_PROVIDER = "OPENCLAW_CONTROL_UI_I18N_PROVIDER";
 const ENV_MODEL = "OPENCLAW_CONTROL_UI_I18N_MODEL";
 const ENV_THINKING = "OPENCLAW_CONTROL_UI_I18N_THINKING";
@@ -826,18 +826,18 @@ class PiRpcClient {
       const startedAt = Date.now();
 
       return await new Promise<string>((resolve, reject) => {
-        const heartbeat = setInterval(() => {
+        const pulsecheck = setInterval(() => {
           const responseState = this.pending?.responseReceived
             ? "response=received"
             : "response=pending";
           logProgress(
             `${label}: still waiting (${formatDuration(Date.now() - startedAt)} / ${formatDuration(timeoutMs)}, ${responseState})`,
           );
-        }, PROGRESS_HEARTBEAT_MS);
+        }, PROGRESS_PULSECHECK_MS);
         const timer = setTimeout(() => {
           if (this.pending?.id === id) {
             this.pending = null;
-            clearInterval(heartbeat);
+            clearInterval(pulsecheck);
             void this.close();
             const stderr = this.stderr();
             reject(
@@ -852,12 +852,12 @@ class PiRpcClient {
           id,
           reject: (reason) => {
             clearTimeout(timer);
-            clearInterval(heartbeat);
+            clearInterval(pulsecheck);
             reject(reason);
           },
           resolve: (value) => {
             clearTimeout(timer);
-            clearInterval(heartbeat);
+            clearInterval(pulsecheck);
             resolve(value);
           },
           responseReceived: false,
@@ -868,7 +868,7 @@ class PiRpcClient {
             return;
           }
           clearTimeout(timer);
-          clearInterval(heartbeat);
+          clearInterval(pulsecheck);
           if (this.pending?.id === id) {
             this.pending = null;
           }

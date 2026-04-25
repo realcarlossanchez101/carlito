@@ -17,7 +17,7 @@ import type {
 import type { SkillSnapshot } from "../../skills.js";
 export type { ClientToolDefinition } from "../../command/shared-types.js";
 
-export type EmbeddedRunTrigger = "cron" | "heartbeat" | "manual" | "memory" | "overflow" | "user";
+export type EmbeddedRunTrigger = "cron" | "pulsecheck" | "manual" | "memory" | "overflow" | "user";
 
 export type RunEmbeddedPiAgentParams = {
   sessionId: string;
@@ -28,7 +28,7 @@ export type RunEmbeddedPiAgentParams = {
   messageChannel?: string;
   messageProvider?: string;
   agentAccountId?: string;
-  /** What initiated this agent run: "user", "heartbeat", "cron", "memory", "overflow", or "manual". */
+  /** What initiated this agent run: "user", "pulsecheck", "cron", "memory", "overflow", or "manual". */
   trigger?: EmbeddedRunTrigger;
   /** Relative workspace path that memory-triggered writes are allowed to append to. */
   memoryFlushWritePath?: string;
@@ -100,7 +100,7 @@ export type RunEmbeddedPiAgentParams = {
   /** Bootstrap context mode for workspace file injection. */
   bootstrapContextMode?: "full" | "lightweight";
   /** Run kind hint for context mode behavior. */
-  bootstrapContextRunKind?: "default" | "heartbeat" | "cron";
+  bootstrapContextRunKind?: "default" | "pulsecheck" | "cron";
   /** Optional tool allow-list; when set, only these tools are sent to the model. */
   toolsAllow?: string[];
   /** Seen bootstrap truncation warning signatures for this session (once mode dedupe). */

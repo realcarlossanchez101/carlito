@@ -209,50 +209,50 @@ describe("legacy migrate x_search auth", () => {
   });
 });
 
-describe("legacy migrate heartbeat config", () => {
-  it("moves top-level heartbeat into agents.defaults.heartbeat", () => {
+describe("legacy migrate pulsecheck config", () => {
+  it("moves top-level pulsecheck into agents.defaults.pulsecheck", () => {
     const res = migrateLegacyConfigForTest({
-      heartbeat: {
+      pulsecheck: {
         model: "anthropic/claude-3-5-haiku-20241022",
         every: "30m",
       },
     });
 
-    expect(res.changes).toContain("Moved heartbeat → agents.defaults.heartbeat.");
-    expect(res.config?.agents?.defaults?.heartbeat).toEqual({
+    expect(res.changes).toContain("Moved pulsecheck → agents.defaults.pulsecheck.");
+    expect(res.config?.agents?.defaults?.pulsecheck).toEqual({
       model: "anthropic/claude-3-5-haiku-20241022",
       every: "30m",
     });
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 
-  it("moves top-level heartbeat visibility into channels.defaults.heartbeat", () => {
+  it("moves top-level pulsecheck visibility into channels.defaults.pulsecheck", () => {
     const res = migrateLegacyConfigForTest({
-      heartbeat: {
+      pulsecheck: {
         showOk: true,
         showAlerts: false,
         useIndicator: false,
       },
     });
 
-    expect(res.changes).toContain("Moved heartbeat visibility → channels.defaults.heartbeat.");
-    expect(res.config?.channels?.defaults?.heartbeat).toEqual({
+    expect(res.changes).toContain("Moved pulsecheck visibility → channels.defaults.pulsecheck.");
+    expect(res.config?.channels?.defaults?.pulsecheck).toEqual({
       showOk: true,
       showAlerts: false,
       useIndicator: false,
     });
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 
-  it("keeps explicit agents.defaults.heartbeat values when merging top-level heartbeat", () => {
+  it("keeps explicit agents.defaults.pulsecheck values when merging top-level pulsecheck", () => {
     const res = migrateLegacyConfigForTest({
-      heartbeat: {
+      pulsecheck: {
         model: "anthropic/claude-3-5-haiku-20241022",
         every: "30m",
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "1h",
             target: "telegram",
           },
@@ -261,25 +261,25 @@ describe("legacy migrate heartbeat config", () => {
     });
 
     expect(res.changes).toContain(
-      "Merged heartbeat → agents.defaults.heartbeat (filled missing fields from legacy; kept explicit agents.defaults values).",
+      "Merged pulsecheck → agents.defaults.pulsecheck (filled missing fields from legacy; kept explicit agents.defaults values).",
     );
-    expect(res.config?.agents?.defaults?.heartbeat).toEqual({
+    expect(res.config?.agents?.defaults?.pulsecheck).toEqual({
       every: "1h",
       target: "telegram",
       model: "anthropic/claude-3-5-haiku-20241022",
     });
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 
-  it("keeps explicit channels.defaults.heartbeat values when merging top-level heartbeat visibility", () => {
+  it("keeps explicit channels.defaults.pulsecheck values when merging top-level pulsecheck visibility", () => {
     const res = migrateLegacyConfigForTest({
-      heartbeat: {
+      pulsecheck: {
         showOk: true,
         showAlerts: true,
       },
       channels: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             showOk: false,
             useIndicator: false,
           },
@@ -288,65 +288,65 @@ describe("legacy migrate heartbeat config", () => {
     });
 
     expect(res.changes).toContain(
-      "Merged heartbeat visibility → channels.defaults.heartbeat (filled missing fields from legacy; kept explicit channels.defaults values).",
+      "Merged pulsecheck visibility → channels.defaults.pulsecheck (filled missing fields from legacy; kept explicit channels.defaults values).",
     );
-    expect(res.config?.channels?.defaults?.heartbeat).toEqual({
+    expect(res.config?.channels?.defaults?.pulsecheck).toEqual({
       showOk: false,
       showAlerts: true,
       useIndicator: false,
     });
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 
-  it("preserves agents.defaults.heartbeat precedence over top-level heartbeat legacy key", () => {
+  it("preserves agents.defaults.pulsecheck precedence over top-level pulsecheck legacy key", () => {
     const res = migrateLegacyConfigForTest({
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "1h",
             target: "telegram",
           },
         },
       },
-      heartbeat: {
+      pulsecheck: {
         every: "30m",
         target: "discord",
         model: "anthropic/claude-3-5-haiku-20241022",
       },
     });
 
-    expect(res.config?.agents?.defaults?.heartbeat).toEqual({
+    expect(res.config?.agents?.defaults?.pulsecheck).toEqual({
       every: "1h",
       target: "telegram",
       model: "anthropic/claude-3-5-haiku-20241022",
     });
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 
-  it("drops blocked prototype keys when migrating top-level heartbeat", () => {
+  it("drops blocked prototype keys when migrating top-level pulsecheck", () => {
     const res = migrateLegacyConfigForTest(
       JSON.parse(
-        '{"heartbeat":{"every":"30m","__proto__":{"polluted":true},"showOk":true}}',
+        '{"pulsecheck":{"every":"30m","__proto__":{"polluted":true},"showOk":true}}',
       ) as Record<string, unknown>,
     );
 
-    const heartbeat = res.config?.agents?.defaults?.heartbeat as
+    const pulsecheck = res.config?.agents?.defaults?.pulsecheck as
       | Record<string, unknown>
       | undefined;
-    expect(heartbeat?.every).toBe("30m");
-    expect((heartbeat as { polluted?: unknown } | undefined)?.polluted).toBeUndefined();
-    expect(Object.prototype.hasOwnProperty.call(heartbeat ?? {}, "__proto__")).toBe(false);
-    expect(res.config?.channels?.defaults?.heartbeat).toEqual({ showOk: true });
+    expect(pulsecheck?.every).toBe("30m");
+    expect((pulsecheck as { polluted?: unknown } | undefined)?.polluted).toBeUndefined();
+    expect(Object.prototype.hasOwnProperty.call(pulsecheck ?? {}, "__proto__")).toBe(false);
+    expect(res.config?.channels?.defaults?.pulsecheck).toEqual({ showOk: true });
   });
 
-  it("records a migration change when removing empty top-level heartbeat", () => {
+  it("records a migration change when removing empty top-level pulsecheck", () => {
     const res = migrateLegacyConfigForTest({
-      heartbeat: {},
+      pulsecheck: {},
     });
 
-    expect(res.changes).toContain("Removed empty top-level heartbeat.");
+    expect(res.changes).toContain("Removed empty top-level pulsecheck.");
     expect(res.config).not.toBeNull();
-    expect((res.config as { heartbeat?: unknown } | null)?.heartbeat).toBeUndefined();
+    expect((res.config as { pulsecheck?: unknown } | null)?.pulsecheck).toBeUndefined();
   });
 });
 

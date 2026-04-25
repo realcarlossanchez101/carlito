@@ -196,8 +196,8 @@ export interface ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    /** True when the message belongs to a heartbeat run. */
-    isHeartbeat?: boolean;
+    /** True when the message belongs to a pulsecheck run. */
+    isPulsecheck?: boolean;
   }): Promise<IngestResult>;
 
   /**
@@ -207,8 +207,8 @@ export interface ContextEngine {
     sessionId: string;
     sessionKey?: string;
     messages: AgentMessage[];
-    /** True when the batch belongs to a heartbeat run. */
-    isHeartbeat?: boolean;
+    /** True when the batch belongs to a pulsecheck run. */
+    isPulsecheck?: boolean;
   }): Promise<IngestBatchResult>;
 
   /**
@@ -225,8 +225,8 @@ export interface ContextEngine {
     prePromptMessageCount: number;
     /** Optional auto-compaction summary emitted by the runtime. */
     autoCompactionSummary?: string;
-    /** True when this turn belongs to a heartbeat run. */
-    isHeartbeat?: boolean;
+    /** True when this turn belongs to a pulsecheck run. */
+    isPulsecheck?: boolean;
     /** Optional model context token budget for proactive compaction. */
     tokenBudget?: number;
     /** Optional runtime-owned context for engines that need caller state. */

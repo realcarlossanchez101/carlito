@@ -158,7 +158,7 @@ export const AgentParamsSchema = Type.Object(
       Type.Union([Type.Literal("full"), Type.Literal("lightweight")]),
     ),
     bootstrapContextRunKind: Type.Optional(
-      Type.Union([Type.Literal("default"), Type.Literal("heartbeat"), Type.Literal("cron")]),
+      Type.Union([Type.Literal("default"), Type.Literal("pulsecheck"), Type.Literal("cron")]),
     ),
     internalEvents: Type.Optional(Type.Array(AgentInternalEventSchema)),
     inputProvenance: Type.Optional(InputProvenanceSchema),
@@ -196,7 +196,7 @@ export const AgentWaitParamsSchema = Type.Object(
 
 export const WakeParamsSchema = Type.Object(
   {
-    mode: Type.Union([Type.Literal("now"), Type.Literal("next-heartbeat")]),
+    mode: Type.Union([Type.Literal("now"), Type.Literal("next-pulsecheck")]),
     text: NonEmptyString,
   },
   { additionalProperties: true }, // external wake senders may attach opaque metadata

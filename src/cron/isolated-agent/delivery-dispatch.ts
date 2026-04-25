@@ -110,7 +110,7 @@ type DispatchCronDeliveryParams = {
   timeoutMs: number;
   resolvedDelivery: DeliveryTargetResolution;
   deliveryRequested: boolean;
-  skipHeartbeatDelivery: boolean;
+  skipPulsecheckDelivery: boolean;
   skipMessagingToolDelivery?: boolean;
   unverifiedMessagingToolDelivery?: boolean;
   deliveryBestEffort: boolean;
@@ -788,7 +788,7 @@ export async function dispatchCronDelivery(
     return await deliverViaDirectAndCleanup(delivery, { retryTransient: true });
   };
 
-  if (params.deliveryRequested && !params.skipHeartbeatDelivery && !skipMessagingToolDelivery) {
+  if (params.deliveryRequested && !params.skipPulsecheckDelivery && !skipMessagingToolDelivery) {
     if (!params.resolvedDelivery.ok) {
       if (!params.deliveryBestEffort) {
         return {

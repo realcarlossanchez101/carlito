@@ -9,7 +9,7 @@ export const WORKSPACE_TEMPLATE_PACK_PATHS = [
   "docs/reference/templates/TOOLS.md",
   "docs/reference/templates/IDENTITY.md",
   "docs/reference/templates/USER.md",
-  "docs/reference/templates/HEARTBEAT.md",
+  "docs/reference/templates/PULSECHECK.md",
   "docs/reference/templates/BOOTSTRAP.md",
 ];
 
@@ -19,7 +19,7 @@ const REQUIRED_BOOTSTRAP_WORKSPACE_FILES = [
   "TOOLS.md",
   "IDENTITY.md",
   "USER.md",
-  "HEARTBEAT.md",
+  "PULSECHECK.md",
   "BOOTSTRAP.md",
 ];
 

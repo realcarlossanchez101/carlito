@@ -31,9 +31,9 @@ export function formatStatusSummary(summary: GatewayStatusSummary) {
     }
   }
 
-  const heartbeatAgents = summary.heartbeat?.agents ?? [];
-  if (heartbeatAgents.length > 0) {
-    const heartbeatParts = heartbeatAgents.map((agent) => {
+  const pulsecheckAgents = summary.pulsecheck?.agents ?? [];
+  if (pulsecheckAgents.length > 0) {
+    const pulsecheckParts = pulsecheckAgents.map((agent) => {
       const agentId = agent.agentId ?? "unknown";
       if (!agent.enabled || !agent.everyMs) {
         return `disabled (${agentId})`;
@@ -41,7 +41,7 @@ export function formatStatusSummary(summary: GatewayStatusSummary) {
       return `${agent.every ?? "unknown"} (${agentId})`;
     });
     lines.push("");
-    lines.push(`Heartbeat: ${heartbeatParts.join(", ")}`);
+    lines.push(`Pulsecheck: ${pulsecheckParts.join(", ")}`);
   }
 
   const sessionPaths = summary.sessions?.paths ?? [];

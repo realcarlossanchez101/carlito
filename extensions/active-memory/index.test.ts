@@ -421,7 +421,7 @@ describe("active-memory plugin", () => {
       { prompt: "what wings should i order?", messages: [] },
       {
         agentId: "main",
-        trigger: "heartbeat",
+        trigger: "pulsecheck",
         sessionKey: "agent:main:main",
         messageProvider: "webchat",
       },
@@ -1540,7 +1540,7 @@ describe("active-memory plugin", () => {
 
     const result = await hooks.before_prompt_build(
       { prompt: "what wings should i order?", messages: [] },
-      { trigger: "heartbeat", sessionKey, messageProvider: "webchat" },
+      { trigger: "pulsecheck", sessionKey, messageProvider: "webchat" },
     );
 
     expect(result).toBeUndefined();

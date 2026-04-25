@@ -14,7 +14,7 @@ import {
   LIVE_CACHE_TEST_ENABLED,
   logLiveCache,
   resolveLiveDirectModel,
-  withLiveCacheHeartbeat,
+  withLiveCachePulsecheck,
 } from "./live-cache-test-support.js";
 import { runEmbeddedPiAgent } from "./pi-embedded-runner.js";
 import { compactEmbeddedPiSessionDirect } from "./pi-embedded-runner/compact.runtime.js";
@@ -304,7 +304,7 @@ async function runEmbeddedCacheProbe(params: {
 }): Promise<CacheRun> {
   const sessionPaths = buildRunnerSessionPaths(params.sessionId);
   await fs.mkdir(sessionPaths.workspaceDir, { recursive: true });
-  const result = await withLiveCacheHeartbeat(
+  const result = await withLiveCachePulsecheck(
     runEmbeddedPiAgent({
       sessionId: params.sessionId,
       sessionKey: `live-cache:${params.providerTag}:${params.sessionId}`,
@@ -348,7 +348,7 @@ async function compactLiveCacheSession(params: {
 }) {
   const sessionPaths = buildRunnerSessionPaths(params.sessionId);
   await fs.mkdir(sessionPaths.workspaceDir, { recursive: true });
-  return await withLiveCacheHeartbeat(
+  return await withLiveCachePulsecheck(
     compactEmbeddedPiSessionDirect({
       sessionId: params.sessionId,
       sessionKey: `live-cache:${params.providerTag}:${params.sessionId}`,

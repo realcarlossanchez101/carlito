@@ -4,8 +4,8 @@ import { createTestRegistry } from "../../test-utils/channel-plugins.js";
 import { buildReplyPayloads } from "./agent-runner-payloads.js";
 
 const baseParams = {
-  isHeartbeat: false,
-  didLogHeartbeatStrip: false,
+  isPulsecheck: false,
+  didLogPulsecheckStrip: false,
   blockStreamingEnabled: false,
   blockReplyPipeline: null,
   replyToMode: "off" as const,
@@ -15,7 +15,7 @@ async function expectSameTargetRepliesSuppressed(params: { provider: string; to:
   const { replyPayloads } = await buildReplyPayloads({
     ...baseParams,
     payloads: [{ text: "hello world!" }],
-    messageProvider: "heartbeat",
+    messageProvider: "pulsecheck",
     originatingChannel: "feishu",
     originatingTo: "ou_abc123",
     messagingToolSentTexts: ["different message"],
@@ -147,7 +147,7 @@ describe("buildReplyPayloads media filter integration", () => {
     const { replyPayloads } = await buildReplyPayloads({
       ...baseParams,
       payloads: [{ text: "hello world!" }],
-      messageProvider: "heartbeat",
+      messageProvider: "pulsecheck",
       originatingChannel: "telegram",
       originatingTo: "268300329",
       messagingToolSentTexts: ["different message"],
@@ -271,7 +271,7 @@ describe("buildReplyPayloads media filter integration", () => {
     const { replyPayloads } = await buildReplyPayloads({
       ...baseParams,
       payloads: [{ text: "hello world!" }],
-      messageProvider: "heartbeat",
+      messageProvider: "pulsecheck",
       originatingChannel: "telegram",
       originatingTo: "268300329",
       accountId: "personal",

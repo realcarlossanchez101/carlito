@@ -7,12 +7,12 @@ import {
   DefaultResourceLoader,
   SessionManager,
 } from "@mariozechner/pi-coding-agent";
-import { filterHeartbeatPairs } from "../../../auto-reply/heartbeat-filter.js";
+import { filterPulsecheckPairs } from "../../../auto-reply/pulsecheck-filter.js";
 import { resolveChannelCapabilities } from "../../../config/channel-capabilities.js";
 import { isEmbeddedMode } from "../../../infra/embedded-mode.js";
 import { formatErrorMessage } from "../../../infra/errors.js";
-import { resolveHeartbeatSummaryForAgent } from "../../../infra/heartbeat-summary.js";
 import { getMachineDisplayName } from "../../../infra/machine-name.js";
+import { resolvePulsecheckSummaryForAgent } from "../../../infra/pulsecheck-summary.js";
 import { MAX_IMAGE_BYTES } from "../../../media/constants.js";
 import { getGlobalHookRunner } from "../../../plugins/hook-runner-global.js";
 import { resolveToolCallArgumentsEncoding } from "../../../plugins/provider-model-compat.js";
@@ -65,7 +65,6 @@ import {
 import { DEFAULT_CONTEXT_TOKENS } from "../../defaults.js";
 import { resolveOpenClawDocsPath } from "../../docs-path.js";
 import { isTimeoutError } from "../../failover-error.js";
-import { resolveHeartbeatPromptForSystemPrompt } from "../../heartbeat-system-prompt.js";
 import { resolveImageSanitizationLimits } from "../../image-sanitization.js";
 import { buildModelAliasLines } from "../../model-alias-lines.js";
 import { resolveModelAuthMode } from "../../model-auth.js";
@@ -102,6 +101,7 @@ import { createOpenClawCodingTools, resolveToolLoopDetectionConfig } from "../..
 import { wrapStreamFnTextTransforms } from "../../plugin-text-transforms.js";
 import { describeProviderRequestRoutingSummary } from "../../provider-attribution.js";
 import { registerProviderStreamForModel } from "../../provider-stream.js";
+import { resolvePulsecheckPromptForSystemPrompt } from "../../pulsecheck-system-prompt.js";
 import { resolveSandboxContext } from "../../sandbox.js";
 import { resolveSandboxRuntimeStatus } from "../../sandbox/runtime-status.js";
 import { repairSessionFileIfNeeded } from "../../session-file-repair.js";
@@ -224,7 +224,7 @@ import {
   resolvePromptBuildHookResult,
   resolvePromptModeForSession,
   shouldWarnOnOrphanedUserRepair,
-  shouldInjectHeartbeatPrompt,
+  shouldInjectPulsecheckPrompt,
 } from "./attempt.prompt-helpers.js";
 import {
   createYieldAbortedResponse,
@@ -288,7 +288,7 @@ export {
   resolvePromptBuildHookResult,
   resolvePromptModeForSession,
   shouldWarnOnOrphanedUserRepair,
-  shouldInjectHeartbeatPrompt,
+  shouldInjectPulsecheckPrompt,
 } from "./attempt.prompt-helpers.js";
 export {
   buildSessionsYieldContextMessage,
@@ -855,14 +855,14 @@ export async function runEmbeddedAttempt(
     });
     const ttsHint = params.config ? buildTtsSystemPromptHint(params.config) : undefined;
     const ownerDisplay = resolveOwnerDisplaySetting(params.config);
-    const heartbeatPrompt = shouldInjectHeartbeatPrompt({
+    const pulsecheckPrompt = shouldInjectPulsecheckPrompt({
       config: params.config,
       agentId: sessionAgentId,
       defaultAgentId,
       isDefaultAgent,
       trigger: params.trigger,
     })
-      ? resolveHeartbeatPromptForSystemPrompt({
+      ? resolvePulsecheckPromptForSystemPrompt({
           config: params.config,
           agentId: sessionAgentId,
           defaultAgentId,
@@ -899,7 +899,7 @@ export async function runEmbeddedAttempt(
         ownerDisplay: ownerDisplay.ownerDisplay,
         ownerDisplaySecret: ownerDisplay.ownerDisplaySecret,
         reasoningTagHint,
-        heartbeatPrompt,
+        pulsecheckPrompt,
         skillsPrompt: effectiveSkillsPrompt,
         docsPath: docsPath ?? undefined,
         ttsHint,
@@ -1603,17 +1603,17 @@ export async function runEmbeddedAttempt(
           sessionId: params.sessionId,
           policy: transcriptPolicy,
         });
-        const heartbeatSummary =
+        const pulsecheckSummary =
           params.config && sessionAgentId
-            ? resolveHeartbeatSummaryForAgent(params.config, sessionAgentId)
+            ? resolvePulsecheckSummaryForAgent(params.config, sessionAgentId)
             : undefined;
-        const heartbeatFiltered = filterHeartbeatPairs(
+        const pulsecheckFiltered = filterPulsecheckPairs(
           validated,
-          heartbeatSummary?.ackMaxChars,
-          heartbeatSummary?.prompt,
+          pulsecheckSummary?.ackMaxChars,
+          pulsecheckSummary?.prompt,
         );
         const truncated = limitHistoryTurns(
-          heartbeatFiltered,
+          pulsecheckFiltered,
           getDmHistoryLimitFromSessionKey(params.sessionKey, params.config),
         );
         // Re-run tool_use/tool_result pairing repair after truncation, since
@@ -1934,7 +1934,7 @@ export async function runEmbeddedAttempt(
           params.prompt,
           bootstrapPromptWarning.lines,
           {
-            preserveExactPrompt: heartbeatPrompt,
+            preserveExactPrompt: pulsecheckPrompt,
           },
         );
         if (userPromptPrefixText) {
@@ -2082,9 +2082,9 @@ export async function runEmbeddedAttempt(
         }
         const transcriptLeafId =
           (sessionManager.getLeafEntry() as { id?: string } | null | undefined)?.id ?? null;
-        const heartbeatSummary =
+        const pulsecheckSummary =
           params.config && sessionAgentId
-            ? resolveHeartbeatSummaryForAgent(params.config, sessionAgentId)
+            ? resolvePulsecheckSummaryForAgent(params.config, sessionAgentId)
             : undefined;
 
         try {
@@ -2096,10 +2096,10 @@ export async function runEmbeddedAttempt(
             activeSession.agent.state.messages = activeSession.messages;
           }
 
-          const filteredMessages = filterHeartbeatPairs(
+          const filteredMessages = filterPulsecheckPairs(
             activeSession.messages,
-            heartbeatSummary?.ackMaxChars,
-            heartbeatSummary?.prompt,
+            pulsecheckSummary?.ackMaxChars,
+            pulsecheckSummary?.prompt,
           );
           if (filteredMessages.length < activeSession.messages.length) {
             activeSession.agent.state.messages = filteredMessages;

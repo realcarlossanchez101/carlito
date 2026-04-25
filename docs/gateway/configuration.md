@@ -47,7 +47,7 @@ See the [full reference](/gateway/configuration-reference) for every available f
   <Tab title="CLI (one-liners)">
     ```bash
     openclaw config get agents.defaults.workspace
-    openclaw config set agents.defaults.heartbeat.every "2h"
+    openclaw config set agents.defaults.pulsecheck.every "2h"
     openclaw config unset plugins.entries.brave.config.webSearch.apiKey
     ```
   </Tab>
@@ -362,12 +362,12 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
 
   </Accordion>
 
-  <Accordion title="Set up heartbeat (periodic check-ins)">
+  <Accordion title="Set up pulsecheck (periodic check-ins)">
     ```json5
     {
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
             target: "last",
           },
@@ -378,8 +378,8 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
 
     - `every`: duration string (`30m`, `2h`). Set `0m` to disable.
     - `target`: `last` | `none` | `<channel-id>` (for example `discord`, `matrix`, `telegram`, or `whatsapp`)
-    - `directPolicy`: `allow` (default) or `block` for DM-style heartbeat targets
-    - See [Heartbeat](/gateway/heartbeat) for the full guide.
+    - `directPolicy`: `allow` (default) or `block` for DM-style pulsecheck targets
+    - See [Pulsecheck](/gateway/pulsecheck) for the full guide.
 
   </Accordion>
 
@@ -535,7 +535,7 @@ Most fields hot-apply without downtime. In `hybrid` mode, restart-required chang
 | ------------------- | ----------------------------------------------------------------- | --------------- |
 | Channels            | `channels.*`, `web` (WhatsApp) — all built-in and plugin channels | No              |
 | Agent & models      | `agent`, `agents`, `models`, `routing`                            | No              |
-| Automation          | `hooks`, `cron`, `agent.heartbeat`                                | No              |
+| Automation          | `hooks`, `cron`, `agent.pulsecheck`                               | No              |
 | Sessions & messages | `session`, `messages`                                             | No              |
 | Tools & media       | `tools`, `browser`, `skills`, `audio`, `talk`                     | No              |
 | UI & misc           | `ui`, `logging`, `identity`, `bindings`                           | No              |

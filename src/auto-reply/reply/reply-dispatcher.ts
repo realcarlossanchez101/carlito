@@ -63,7 +63,7 @@ export type ReplyDispatcherOptions = {
   /** Dynamic context provider for response prefix template interpolation.
    * Called at normalization time, after model selection is complete. */
   responsePrefixContextProvider?: () => ResponsePrefixContext;
-  onHeartbeatStrip?: () => void;
+  onPulsecheckStrip?: () => void;
   onIdle?: () => void;
   onError?: ReplyDispatchErrorHandler;
   // AIDEV-NOTE: onSkip lets channels detect silent/empty drops (e.g. Telegram empty-response fallback).
@@ -93,7 +93,7 @@ type NormalizeReplyPayloadInternalOptions = Pick<
   | "responsePrefix"
   | "responsePrefixContext"
   | "responsePrefixContextProvider"
-  | "onHeartbeatStrip"
+  | "onPulsecheckStrip"
   | "transformReplyPayload"
 > & {
   onSkip?: (reason: NormalizeReplySkipReason) => void;
@@ -109,7 +109,7 @@ function normalizeReplyPayloadInternal(
   return normalizeReplyPayload(payload, {
     responsePrefix: opts.responsePrefix,
     responsePrefixContext: prefixContext,
-    onHeartbeatStrip: opts.onHeartbeatStrip,
+    onPulsecheckStrip: opts.onPulsecheckStrip,
     transformReplyPayload: opts.transformReplyPayload,
     onSkip: opts.onSkip,
   });
@@ -191,7 +191,7 @@ export function createReplyDispatcher(options: ReplyDispatcherOptions): ReplyDis
           responsePrefixContext: options.responsePrefixContext,
           responsePrefixContextProvider: options.responsePrefixContextProvider,
           transformReplyPayload: options.transformReplyPayload,
-          onHeartbeatStrip: options.onHeartbeatStrip,
+          onPulsecheckStrip: options.onPulsecheckStrip,
           onSkip: (reason) => options.onSkip?.(payload, { kind, reason }),
         });
     if (!normalized) {

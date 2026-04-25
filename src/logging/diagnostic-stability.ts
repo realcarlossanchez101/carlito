@@ -221,7 +221,7 @@ function sanitizeDiagnosticEvent(event: DiagnosticEventPayload): DiagnosticStabi
     case "run.attempt":
       record.count = event.attempt;
       break;
-    case "diagnostic.heartbeat":
+    case "diagnostic.pulsecheck":
       record.webhooks = { ...event.webhooks };
       record.active = event.active;
       record.waiting = event.waiting;

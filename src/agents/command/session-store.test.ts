@@ -586,7 +586,7 @@ describe("updateSessionStoreAfterAgentRun", () => {
       // First run: cost should be $0.25
       expect(sessionStore[sessionKey]?.estimatedCostUsd).toBeCloseTo(0.25, 4);
 
-      // Simulate a second persist with the SAME cumulative usage (e.g., from a heartbeat or
+      // Simulate a second persist with the SAME cumulative usage (e.g., from a pulsecheck or
       // redundant persist). Before the fix, this would double the cost.
       // After the fix, cost should remain the same because it's snapshotted.
       await updateSessionStoreAfterAgentRun({

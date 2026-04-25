@@ -253,7 +253,7 @@ Server-pushed WebSocket broadcast events are scope-gated so that pairing-scoped 
 
 - **Chat, agent, and tool-result frames** (including streamed `agent` events and tool call results) require at least `operator.read`. Sessions without `operator.read` skip these frames entirely.
 - **Plugin-defined `plugin.*` broadcasts** are gated to `operator.write` or `operator.admin`, depending on how the plugin registered them.
-- **Status and transport events** (`heartbeat`, `presence`, `tick`, connect/disconnect lifecycle, etc.) remain unrestricted so transport health stays observable to every authenticated session.
+- **Status and transport events** (`pulsecheck`, `presence`, `tick`, connect/disconnect lifecycle, etc.) remain unrestricted so transport health stays observable to every authenticated session.
 - **Unknown broadcast event families** are scope-gated by default (fail-closed) unless a registered handler explicitly relaxes them.
 
 Each client connection keeps its own per-client sequence number so broadcasts preserve monotonic ordering on that socket even when different clients see different scope-filtered subsets of the event stream.
@@ -274,8 +274,8 @@ enumeration of `src/gateway/server-methods/*.ts`.
     - `gateway.identity.get` returns the gateway device identity used by relay and pairing flows.
     - `system-presence` returns the current presence snapshot for connected operator/node devices.
     - `system-event` appends a system event and can update/broadcast presence context.
-    - `last-heartbeat` returns the latest persisted heartbeat event.
-    - `set-heartbeats` toggles heartbeat processing on the gateway.
+    - `last-pulsecheck` returns the latest persisted pulsecheck event.
+    - `set-pulsechecks` toggles pulsecheck processing on the gateway.
   </Accordion>
 
   <Accordion title="Models and usage">
@@ -379,7 +379,7 @@ enumeration of `src/gateway/server-methods/*.ts`.
   </Accordion>
 
   <Accordion title="Automation, skills, and tools">
-    - Automation: `wake` schedules an immediate or next-heartbeat wake text injection; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` manage scheduled work.
+    - Automation: `wake` schedules an immediate or next-pulsecheck wake text injection; `cron.list`, `cron.status`, `cron.add`, `cron.update`, `cron.remove`, `cron.run`, `cron.runs` manage scheduled work.
     - Skills and tools: `commands.list`, `skills.*`, `tools.catalog`, `tools.effective`.
   </Accordion>
 </AccordionGroup>
@@ -394,7 +394,7 @@ enumeration of `src/gateway/server-methods/*.ts`.
 - `presence`: system presence snapshot updates.
 - `tick`: periodic keepalive / liveness event.
 - `health`: gateway health snapshot update.
-- `heartbeat`: heartbeat event stream update.
+- `pulsecheck`: pulsecheck event stream update.
 - `cron`: cron run/job change event.
 - `shutdown`: gateway shutdown notification.
 - `node.pair.requested` / `node.pair.resolved`: node pairing lifecycle.

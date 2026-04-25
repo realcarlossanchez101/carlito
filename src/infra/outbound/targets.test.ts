@@ -3,7 +3,7 @@ import type { OpenClawConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions/types.js";
 import { getActivePluginRegistry, setActivePluginRegistry } from "../../plugins/runtime.js";
 import {
-  resolveHeartbeatDeliveryTarget,
+  resolvePulsecheckDeliveryTarget,
   resolveOutboundTarget,
   resolveSessionDeliveryTarget,
 } from "./targets.js";
@@ -258,17 +258,17 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.threadId).toBe(999);
   });
 
-  it("does not inherit lastThreadId in heartbeat mode", () => {
+  it("does not inherit lastThreadId in pulsecheck mode", () => {
     const resolved = resolveSessionDeliveryTarget({
       entry: {
-        sessionId: "sess-heartbeat-thread",
+        sessionId: "sess-pulsecheck-thread",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "room-one",
         lastThreadId: "thread-1",
       },
       requestedChannel: "last",
-      mode: "heartbeat",
+      mode: "pulsecheck",
     });
 
     expect(resolved.threadId).toBeUndefined();
@@ -378,17 +378,17 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.to).toBe("room:ops");
   });
 
-  const resolveHeartbeatTarget = (entry: SessionEntry, directPolicy?: "allow" | "block") =>
-    resolveHeartbeatDeliveryTarget({
+  const resolvePulsecheckTarget = (entry: SessionEntry, directPolicy?: "allow" | "block") =>
+    resolvePulsecheckDeliveryTarget({
       cfg: {},
       entry,
-      heartbeat: {
+      pulsecheck: {
         target: "last",
         ...(directPolicy ? { directPolicy } : {}),
       },
     });
 
-  const expectHeartbeatTarget = (params: {
+  const expectPulsecheckTarget = (params: {
     name: string;
     entry: SessionEntry;
     directPolicy?: "allow" | "block";
@@ -397,7 +397,7 @@ describe("resolveSessionDeliveryTarget", () => {
     expectedReason?: string;
     expectedThreadId?: string | number;
   }) => {
-    const resolved = resolveHeartbeatTarget(params.entry, params.directPolicy);
+    const resolved = resolvePulsecheckTarget(params.entry, params.directPolicy);
     expect(resolved.channel, params.name).toBe(params.expectedChannel);
     expect(resolved.to, params.name).toBe(params.expectedTo);
     expect(resolved.reason, params.name).toBe(params.expectedReason);
@@ -406,9 +406,9 @@ describe("resolveSessionDeliveryTarget", () => {
 
   it.each([
     {
-      name: "allows heartbeat delivery to direct targets by default and drops inherited thread ids",
+      name: "allows pulsecheck delivery to direct targets by default and drops inherited thread ids",
       entry: {
-        sessionId: "sess-heartbeat-alpha-direct",
+        sessionId: "sess-pulsecheck-alpha-direct",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "user:one",
@@ -418,9 +418,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedTo: "user:one",
     },
     {
-      name: "blocks heartbeat delivery to direct targets when directPolicy is block",
+      name: "blocks pulsecheck delivery to direct targets when directPolicy is block",
       entry: {
-        sessionId: "sess-heartbeat-alpha-direct-blocked",
+        sessionId: "sess-pulsecheck-alpha-direct-blocked",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "user:one",
@@ -431,9 +431,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedReason: "dm-blocked",
     },
     {
-      name: "allows heartbeat delivery to plugin-classified direct chats by default",
+      name: "allows pulsecheck delivery to plugin-classified direct chats by default",
       entry: {
-        sessionId: "sess-heartbeat-forum-direct",
+        sessionId: "sess-pulsecheck-forum-direct",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "dm:one",
@@ -442,9 +442,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedTo: "dm:one",
     },
     {
-      name: "blocks heartbeat delivery to plugin-classified direct chats when directPolicy is block",
+      name: "blocks pulsecheck delivery to plugin-classified direct chats when directPolicy is block",
       entry: {
-        sessionId: "sess-heartbeat-forum-direct-blocked",
+        sessionId: "sess-pulsecheck-forum-direct-blocked",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "dm:one",
@@ -454,9 +454,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedReason: "dm-blocked",
     },
     {
-      name: "keeps heartbeat delivery to plugin-classified groups",
+      name: "keeps pulsecheck delivery to plugin-classified groups",
       entry: {
-        sessionId: "sess-heartbeat-forum-group",
+        sessionId: "sess-pulsecheck-forum-group",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "room:ops",
@@ -465,9 +465,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedTo: "room:ops",
     },
     {
-      name: "allows heartbeat delivery to unknown-shape targets when session chatType is direct",
+      name: "allows pulsecheck delivery to unknown-shape targets when session chatType is direct",
       entry: {
-        sessionId: "sess-heartbeat-beta-direct",
+        sessionId: "sess-pulsecheck-beta-direct",
         updatedAt: 1,
         lastChannel: "beta",
         lastTo: "unknown-shape",
@@ -477,9 +477,9 @@ describe("resolveSessionDeliveryTarget", () => {
       expectedTo: "unknown-shape",
     },
     {
-      name: "keeps heartbeat delivery to generic group targets",
+      name: "keeps pulsecheck delivery to generic group targets",
       entry: {
-        sessionId: "sess-heartbeat-alpha-group",
+        sessionId: "sess-pulsecheck-alpha-group",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "group:ops",
@@ -490,7 +490,7 @@ describe("resolveSessionDeliveryTarget", () => {
     {
       name: "uses session chatType hints when target parsing cannot classify a direct chat",
       entry: {
-        sessionId: "sess-heartbeat-alpha-unknown-direct",
+        sessionId: "sess-pulsecheck-alpha-unknown-direct",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "chat-guid-unknown-shape",
@@ -502,7 +502,7 @@ describe("resolveSessionDeliveryTarget", () => {
     {
       name: "blocks session chatType direct hints when directPolicy is block",
       entry: {
-        sessionId: "sess-heartbeat-alpha-unknown-direct-blocked",
+        sessionId: "sess-pulsecheck-alpha-unknown-direct-blocked",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "chat-guid-unknown-shape",
@@ -514,13 +514,13 @@ describe("resolveSessionDeliveryTarget", () => {
     },
   ] satisfies Array<{
     name: string;
-    entry: NonNullable<Parameters<typeof resolveHeartbeatDeliveryTarget>[0]["entry"]>;
+    entry: NonNullable<Parameters<typeof resolvePulsecheckDeliveryTarget>[0]["entry"]>;
     directPolicy?: "allow" | "block";
     expectedChannel: string;
     expectedTo?: string;
     expectedReason?: string;
   }>)("$name", ({ name, entry, directPolicy, expectedChannel, expectedTo, expectedReason }) => {
-    expectHeartbeatTarget({
+    expectPulsecheckTarget({
       name,
       entry,
       directPolicy,
@@ -530,17 +530,17 @@ describe("resolveSessionDeliveryTarget", () => {
     });
   });
 
-  it("allows heartbeat delivery to core direct target prefixes by default", () => {
+  it("allows pulsecheck delivery to core direct target prefixes by default", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
       entry: {
-        sessionId: "sess-heartbeat-core-direct-prefix",
+        sessionId: "sess-pulsecheck-core-direct-prefix",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "user:12345",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
     });
@@ -549,17 +549,17 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.to).toBe("user:12345");
   });
 
-  it("keeps heartbeat delivery to core channel target prefixes", () => {
+  it("keeps pulsecheck delivery to core channel target prefixes", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
       entry: {
-        sessionId: "sess-heartbeat-core-channel-prefix",
+        sessionId: "sess-pulsecheck-core-channel-prefix",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "channel:999",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
     });
@@ -568,17 +568,17 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.to).toBe("channel:999");
   });
 
-  it("keeps explicit threadId in heartbeat mode", () => {
+  it("keeps explicit threadId in pulsecheck mode", () => {
     const resolved = resolveSessionDeliveryTarget({
       entry: {
-        sessionId: "sess-heartbeat-explicit-thread",
+        sessionId: "sess-pulsecheck-explicit-thread",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "room:ops",
         lastThreadId: 999,
       },
       requestedChannel: "last",
-      mode: "heartbeat",
+      mode: "pulsecheck",
       explicitThreadId: 42,
     });
 
@@ -588,11 +588,11 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.threadIdExplicit).toBe(true);
   });
 
-  it("parses explicit heartbeat plugin targets into threadId", () => {
+  it("parses explicit pulsecheck plugin targets into threadId", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
-      heartbeat: {
+      pulsecheck: {
         target: "forum",
         to: "room:ops:topic:1008013",
       },
@@ -603,19 +603,19 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.threadId).toBe(1008013);
   });
 
-  it("preserves route threadId for heartbeat target=last on plugin-owned group sessions", () => {
+  it("preserves route threadId for pulsecheck target=last on plugin-owned group sessions", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
       entry: {
-        sessionId: "sess-heartbeat-forum-topic",
+        sessionId: "sess-pulsecheck-forum-topic",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "room:ops",
         lastThreadId: 1122,
         chatType: "group",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
     });
@@ -627,10 +627,10 @@ describe("resolveSessionDeliveryTarget", () => {
 
   it("reuses route threadId when only deliveryContext carries it", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
       entry: {
-        sessionId: "sess-heartbeat-forum-topic-context-only",
+        sessionId: "sess-pulsecheck-forum-topic-context-only",
         updatedAt: 1,
         deliveryContext: {
           channel: "forum",
@@ -639,7 +639,7 @@ describe("resolveSessionDeliveryTarget", () => {
         },
         chatType: "group",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
     });
@@ -649,19 +649,19 @@ describe("resolveSessionDeliveryTarget", () => {
     expect(resolved.threadId).toBe(1122);
   });
 
-  it("does not inherit stale threadId for direct-chat heartbeat routes", () => {
+  it("does not inherit stale threadId for direct-chat pulsecheck routes", () => {
     const cfg: OpenClawConfig = {};
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg,
       entry: {
-        sessionId: "sess-heartbeat-forum-direct-stale-thread",
+        sessionId: "sess-pulsecheck-forum-direct-stale-thread",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "dm:one",
         lastThreadId: 1122,
         chatType: "direct",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
     });
@@ -672,15 +672,15 @@ describe("resolveSessionDeliveryTarget", () => {
   });
 
   it("prefers turn-scoped routing over mutable session routing for target=last", () => {
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg: {},
       entry: {
-        sessionId: "sess-heartbeat-turn-source",
+        sessionId: "sess-pulsecheck-turn-source",
         updatedAt: 1,
         lastChannel: "alpha",
         lastTo: "wrong-room",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
       turnSource: {
@@ -696,15 +696,15 @@ describe("resolveSessionDeliveryTarget", () => {
   });
 
   it("merges partial turn-scoped metadata with the stored session route for target=last", () => {
-    const resolved = resolveHeartbeatDeliveryTarget({
+    const resolved = resolvePulsecheckDeliveryTarget({
       cfg: {},
       entry: {
-        sessionId: "sess-heartbeat-turn-source-partial",
+        sessionId: "sess-pulsecheck-turn-source-partial",
         updatedAt: 1,
         lastChannel: "forum",
         lastTo: "room:ops",
       },
-      heartbeat: {
+      pulsecheck: {
         target: "last",
       },
       turnSource: {

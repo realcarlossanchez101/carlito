@@ -55,7 +55,7 @@ describe("status-json-runtime", () => {
       securityAudit: { summary: { critical: 1 } },
       usage: { providers: [] },
       health: { ok: true },
-      lastHeartbeat: { status: "ok" },
+      lastPulsecheck: { status: "ok" },
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });
@@ -90,7 +90,7 @@ describe("status-json-runtime", () => {
         securityAudit: { summary: { critical: 1 } },
         usage: { providers: [] },
         health: { ok: true },
-        lastHeartbeat: { status: "ok" },
+        lastPulsecheck: { status: "ok" },
         pluginCompatibility: [
           {
             pluginId: "legacy",
@@ -109,7 +109,7 @@ describe("status-json-runtime", () => {
       securityAudit: undefined,
       usage: undefined,
       health: undefined,
-      lastHeartbeat: null,
+      lastPulsecheck: null,
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });
@@ -139,7 +139,7 @@ describe("status-json-runtime", () => {
         securityAudit: undefined,
         usage: undefined,
         health: undefined,
-        lastHeartbeat: null,
+        lastPulsecheck: null,
         pluginCompatibility: undefined,
       }),
     );
@@ -150,7 +150,7 @@ describe("status-json-runtime", () => {
       securityAudit: undefined,
       usage: undefined,
       health: undefined,
-      lastHeartbeat: { status: "ok" },
+      lastPulsecheck: { status: "ok" },
       gatewayService: { label: "LaunchAgent" },
       nodeService: { label: "node" },
     });

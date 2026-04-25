@@ -1,6 +1,7 @@
 import { getApiProvider, type Api, type Model } from "@mariozechner/pi-ai";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { createAnthropicVertexStreamFnForModel } from "./anthropic-vertex-stream.js";
+import { wrapStreamFnWithCarlitoRewriter } from "./carlito-outbound-rewriter.js";
 import { ensureCustomApiRegistered } from "./custom-api-registry.js";
 import { registerProviderStreamForModel } from "./provider-stream.js";
 import {
@@ -27,14 +28,17 @@ export function prepareModelForSimpleCompletion<TApi extends Api>(params: {
   if (transportAwareModel !== model) {
     const streamFn = buildTransportAwareSimpleStreamFn(model, { cfg });
     if (streamFn) {
-      ensureCustomApiRegistered(transportAwareModel.api, streamFn);
+      ensureCustomApiRegistered(transportAwareModel.api, wrapStreamFnWithCarlitoRewriter(streamFn));
       return transportAwareModel;
     }
   }
 
   if (model.provider === "anthropic-vertex") {
     const api = resolveAnthropicVertexSimpleApi(model.baseUrl);
-    ensureCustomApiRegistered(api, createAnthropicVertexStreamFnForModel(model));
+    ensureCustomApiRegistered(
+      api,
+      wrapStreamFnWithCarlitoRewriter(createAnthropicVertexStreamFnForModel(model)),
+    );
     return { ...model, api };
   }
 

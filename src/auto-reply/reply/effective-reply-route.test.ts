@@ -151,7 +151,7 @@ describe("resolveEffectiveReplyRoute", () => {
 
 describe("isSystemEventProvider", () => {
   it("recognizes persisted-delivery event providers", () => {
-    expect(isSystemEventProvider("heartbeat")).toBe(true);
+    expect(isSystemEventProvider("pulsecheck")).toBe(true);
     expect(isSystemEventProvider("cron-event")).toBe(true);
     expect(isSystemEventProvider("exec-event")).toBe(true);
     expect(isSystemEventProvider("slack")).toBe(false);

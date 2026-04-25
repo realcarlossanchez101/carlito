@@ -3,7 +3,7 @@ import {
   describePairingConnectRequirement,
   type ConnectPairingRequiredReason,
 } from "../gateway/protocol/connect-error-details.js";
-import type { HeartbeatEventPayload } from "../infra/heartbeat-events.js";
+import type { PulsecheckEventPayload } from "../infra/pulsecheck-events.js";
 import type { Tone } from "../memory-host-sdk/status.js";
 import { normalizeLowercaseStringOrEmpty } from "../shared/string-coerce.js";
 import type { TableColumn } from "../terminal/table.js";
@@ -19,7 +19,7 @@ type AgentStatusLike = {
   agents: AgentLocalStatus[];
 };
 
-type SummaryLike = Pick<StatusSummary, "tasks" | "taskAudit" | "heartbeat" | "sessions">;
+type SummaryLike = Pick<StatusSummary, "tasks" | "taskAudit" | "pulsecheck" | "sessions">;
 type MemoryLike = MemoryStatusSnapshot | null;
 type MemoryPluginLike = MemoryPluginStatus;
 type SessionsRecentLike = SessionStatus;
@@ -98,8 +98,8 @@ export function buildStatusTasksValue(params: {
   ].join(" · ");
 }
 
-export function buildStatusHeartbeatValue(params: { summary: Pick<SummaryLike, "heartbeat"> }) {
-  const parts = params.summary.heartbeat.agents
+export function buildStatusPulsecheckValue(params: { summary: Pick<SummaryLike, "pulsecheck"> }) {
+  const parts = params.summary.pulsecheck.agents
     .map((agent) => {
       if (!agent.enabled || !agent.everyMs) {
         return `disabled (${agent.agentId})`;
@@ -110,10 +110,10 @@ export function buildStatusHeartbeatValue(params: { summary: Pick<SummaryLike, "
   return parts.length > 0 ? parts.join(", ") : "disabled";
 }
 
-export function buildStatusLastHeartbeatValue(params: {
+export function buildStatusLastPulsecheckValue(params: {
   deep?: boolean;
   gatewayReachable: boolean;
-  lastHeartbeat: HeartbeatEventPayload | null;
+  lastPulsecheck: PulsecheckEventPayload | null;
   warn: (value: string) => string;
   muted: (value: string) => string;
   formatTimeAgo: (ageMs: number) => string;
@@ -124,15 +124,15 @@ export function buildStatusLastHeartbeatValue(params: {
   if (!params.gatewayReachable) {
     return params.warn("unavailable");
   }
-  if (!params.lastHeartbeat) {
+  if (!params.lastPulsecheck) {
     return params.muted("none");
   }
-  const age = params.formatTimeAgo(Date.now() - params.lastHeartbeat.ts);
-  const channel = params.lastHeartbeat.channel ?? "unknown";
-  const accountLabel = params.lastHeartbeat.accountId
-    ? `account ${params.lastHeartbeat.accountId}`
+  const age = params.formatTimeAgo(Date.now() - params.lastPulsecheck.ts);
+  const channel = params.lastPulsecheck.channel ?? "unknown";
+  const accountLabel = params.lastPulsecheck.accountId
+    ? `account ${params.lastPulsecheck.accountId}`
     : null;
-  return [params.lastHeartbeat.status, `${age} ago`, channel, accountLabel]
+  return [params.lastPulsecheck.status, `${age} ago`, channel, accountLabel]
     .filter(Boolean)
     .join(" · ");
 }

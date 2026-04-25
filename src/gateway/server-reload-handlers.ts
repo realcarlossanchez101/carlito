@@ -8,8 +8,8 @@ import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { startGmailWatcherWithLogs } from "../hooks/gmail-watcher-lifecycle.js";
 import { stopGmailWatcher } from "../hooks/gmail-watcher.js";
 import { isTruthyEnvValue } from "../infra/env.js";
-import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
 import { resetDirectoryCache } from "../infra/outbound/target-resolver.js";
+import type { PulsecheckRunner } from "../infra/pulsecheck-runner.js";
 import {
   deferGatewayRestartUntilIdle,
   emitGatewayRestart,
@@ -47,7 +47,7 @@ import { resolveHookClientIpConfig } from "./server/hooks.js";
 type GatewayHotReloadState = {
   hooksConfig: ReturnType<typeof resolveHooksConfig>;
   hookClientIpConfig: HookClientIpConfig;
-  heartbeatRunner: HeartbeatRunner;
+  pulsecheckRunner: PulsecheckRunner;
   cronState: GatewayCronState;
   channelHealthMonitor: ChannelHealthMonitor | null;
 };
@@ -127,8 +127,8 @@ export function createGatewayReloadHandlers(params: GatewayReloadHandlerParams) 
     }
     nextState.hookClientIpConfig = resolveHookClientIpConfig(nextConfig);
 
-    if (plan.restartHeartbeat) {
-      nextState.heartbeatRunner.updateConfig(nextConfig);
+    if (plan.restartPulsecheck) {
+      nextState.pulsecheckRunner.updateConfig(nextConfig);
     }
 
     resetDirectoryCache();

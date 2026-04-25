@@ -27,11 +27,11 @@ import { assertSafeCronSessionTargetId } from "../cron/session-target.js";
 import { resolveCronStorePath } from "../cron/store.js";
 import { normalizeHttpWebhookUrl } from "../cron/webhook-url.js";
 import { formatErrorMessage } from "../infra/errors.js";
-import { runHeartbeatOnce } from "../infra/heartbeat-runner.js";
-import { requestHeartbeatNow } from "../infra/heartbeat-wake.js";
 import { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
 import { SsrFBlockedError } from "../infra/net/ssrf.js";
 import { deliverOutboundPayloads } from "../infra/outbound/deliver.js";
+import { runPulsecheckOnce } from "../infra/pulsecheck-runner.js";
+import { requestPulsecheckNow } from "../infra/pulsecheck-wake.js";
 import { enqueueSystemEvent } from "../infra/system-events.js";
 import { getChildLogger } from "../logging.js";
 import { normalizeAgentId, toAgentStoreSessionKey } from "../routing/session-key.js";
@@ -291,42 +291,42 @@ export function buildGatewayCronService(params: {
         trusted: opts?.trusted,
       });
     },
-    requestHeartbeatNow: (opts) => {
+    requestPulsecheckNow: (opts) => {
       const { agentId, sessionKey } = resolveCronWakeTarget(opts);
-      requestHeartbeatNow({
+      requestPulsecheckNow({
         reason: opts?.reason,
         agentId,
         sessionKey,
-        heartbeat: opts?.heartbeat,
+        pulsecheck: opts?.pulsecheck,
       });
     },
-    runHeartbeatOnce: async (opts) => {
+    runPulsecheckOnce: async (opts) => {
       const { runtimeConfig, agentId, sessionKey } = resolveCronWakeTarget(opts);
-      // Merge cron-supplied heartbeat overrides (e.g. target: "last") with the
-      // fully resolved agent heartbeat config so cron-triggered heartbeats
-      // respect agent-specific overrides (agents.list[].heartbeat) before
-      // falling back to agents.defaults.heartbeat.
+      // Merge cron-supplied pulsecheck overrides (e.g. target: "last") with the
+      // fully resolved agent pulsecheck config so cron-triggered pulsechecks
+      // respect agent-specific overrides (agents.list[].pulsecheck) before
+      // falling back to agents.defaults.pulsecheck.
       const agentEntry =
         Array.isArray(runtimeConfig.agents?.list) &&
         runtimeConfig.agents.list.find(
           (entry) =>
             entry && typeof entry.id === "string" && normalizeAgentId(entry.id) === agentId,
         );
-      const agentHeartbeat =
-        agentEntry && typeof agentEntry === "object" ? agentEntry.heartbeat : undefined;
-      const baseHeartbeat = {
-        ...runtimeConfig.agents?.defaults?.heartbeat,
-        ...agentHeartbeat,
+      const agentPulsecheck =
+        agentEntry && typeof agentEntry === "object" ? agentEntry.pulsecheck : undefined;
+      const basePulsecheck = {
+        ...runtimeConfig.agents?.defaults?.pulsecheck,
+        ...agentPulsecheck,
       };
-      const heartbeatOverride = opts?.heartbeat
-        ? { ...baseHeartbeat, ...opts.heartbeat }
+      const pulsecheckOverride = opts?.pulsecheck
+        ? { ...basePulsecheck, ...opts.pulsecheck }
         : undefined;
-      return await runHeartbeatOnce({
+      return await runPulsecheckOnce({
         cfg: runtimeConfig,
         reason: opts?.reason,
         agentId,
         sessionKey,
-        heartbeat: heartbeatOverride,
+        pulsecheck: pulsecheckOverride,
         deps: { ...params.deps, runtime: defaultRuntime },
       });
     },

@@ -553,11 +553,11 @@ describe("config plugin validation", () => {
     }
   });
 
-  it("accepts known plugin ids and valid channel/heartbeat enums", async () => {
+  it("accepts known plugin ids and valid channel/pulsecheck enums", async () => {
     const res = validateInSuite({
       agents: {
-        defaults: { heartbeat: { target: "last", directPolicy: "block" } },
-        list: [{ id: "pi", heartbeat: { directPolicy: "allow" } }],
+        defaults: { pulsecheck: { target: "last", directPolicy: "block" } },
+        list: [{ id: "pi", pulsecheck: { directPolicy: "allow" } }],
       },
       channels: {
         modelByChannel: {
@@ -571,41 +571,41 @@ describe("config plugin validation", () => {
     expect(res.ok).toBe(true);
   });
 
-  it("accepts plugin heartbeat targets", async () => {
+  it("accepts plugin pulsecheck targets", async () => {
     const res = validateInSuite({
-      agents: { defaults: { heartbeat: { target: "bluebubbles" } }, list: [{ id: "pi" }] },
+      agents: { defaults: { pulsecheck: { target: "bluebubbles" } }, list: [{ id: "pi" }] },
       plugins: { enabled: false, load: { paths: [bluebubblesPluginDir] } },
     });
     expect(res.ok).toBe(true);
   });
 
-  it("rejects unknown heartbeat targets", async () => {
+  it("rejects unknown pulsecheck targets", async () => {
     const res = validateInSuite({
       agents: {
-        defaults: { heartbeat: { target: "not-a-channel" } },
+        defaults: { pulsecheck: { target: "not-a-channel" } },
         list: [{ id: "pi" }],
       },
     });
     expect(res.ok).toBe(false);
     if (!res.ok) {
       expect(res.issues).toContainEqual({
-        path: "agents.defaults.heartbeat.target",
-        message: "unknown heartbeat target: not-a-channel",
+        path: "agents.defaults.pulsecheck.target",
+        message: "unknown pulsecheck target: not-a-channel",
       });
     }
   });
 
-  it("rejects invalid heartbeat directPolicy values", async () => {
+  it("rejects invalid pulsecheck directPolicy values", async () => {
     const res = validateInSuite({
       agents: {
-        defaults: { heartbeat: { directPolicy: "maybe" } },
+        defaults: { pulsecheck: { directPolicy: "maybe" } },
         list: [{ id: "pi" }],
       },
     });
     expect(res.ok).toBe(false);
     if (!res.ok) {
       expect(
-        res.issues.some((issue) => issue.path === "agents.defaults.heartbeat.directPolicy"),
+        res.issues.some((issue) => issue.path === "agents.defaults.pulsecheck.directPolicy"),
       ).toBe(true);
     }
   });

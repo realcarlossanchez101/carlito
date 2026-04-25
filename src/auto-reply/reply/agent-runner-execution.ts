@@ -51,11 +51,11 @@ import {
   resolveMessageChannel,
 } from "../../utils/message-channel.js";
 import { isInternalMessageChannel } from "../../utils/message-channel.js";
-import { stripHeartbeatToken } from "../heartbeat.js";
+import { stripPulsecheckToken } from "../pulsecheck.js";
 import type { TemplateContext } from "../templating.js";
 import type { VerboseLevel } from "../thinking.js";
 import {
-  HEARTBEAT_TOKEN,
+  PULSECHECK_TOKEN,
   isSilentReplyPrefixText,
   isSilentReplyText,
   SILENT_REPLY_TOKEN,
@@ -109,7 +109,7 @@ export type AgentRunLoopResult =
       fallbackProvider?: string;
       fallbackModel?: string;
       fallbackAttempts: RuntimeFallbackAttempt[];
-      didLogHeartbeatStrip: boolean;
+      didLogPulsecheckStrip: boolean;
       autoCompactionCount: number;
       /** Payload keys sent directly (not via pipeline) during tool flush. */
       directlySentBlockKeys?: Set<string>;
@@ -461,11 +461,11 @@ function applyOpenAIGptChatReplyGuard(params: {
   provider?: string;
   model?: string;
   commandBody: string;
-  isHeartbeat: boolean;
+  isPulsecheck: boolean;
   payloads?: ReplyPayload[];
 }): void {
   if (
-    params.isHeartbeat ||
+    params.isPulsecheck ||
     !shouldApplyOpenAIGptChatGuard({
       provider: params.provider,
       model: params.model,
@@ -587,7 +587,7 @@ export async function runAgentTurnWithFallback(params: {
   pendingToolTasks: Set<Promise<void>>;
   resetSessionAfterCompactionFailure: (reason: string) => Promise<boolean>;
   resetSessionAfterRoleOrderingConflict: (reason: string) => Promise<boolean>;
-  isHeartbeat: boolean;
+  isPulsecheck: boolean;
   sessionKey?: string;
   runtimePolicySessionKey?: string;
   getActiveSessionEntry: () => SessionEntry | undefined;
@@ -597,7 +597,7 @@ export async function runAgentTurnWithFallback(params: {
   replyMediaContext?: ReplyMediaContext;
 }): Promise<AgentRunLoopResult> {
   const TRANSIENT_HTTP_RETRY_DELAY_MS = 2_500;
-  let didLogHeartbeatStrip = false;
+  let didLogPulsecheckStrip = false;
   let autoCompactionCount = 0;
   // Track payloads sent directly (not via pipeline) during tool flush to avoid duplicates.
   const directlySentBlockKeys = new Set<string>();
@@ -671,7 +671,7 @@ export async function runAgentTurnWithFallback(params: {
     registerAgentRunContext(runId, {
       sessionKey: params.sessionKey,
       verboseLevel: params.resolvedVerboseLevel,
-      isHeartbeat: params.isHeartbeat,
+      isPulsecheck: params.isPulsecheck,
       isControlUiVisible: shouldSurfaceToControlUi,
     });
   }
@@ -785,13 +785,13 @@ export async function runAgentTurnWithFallback(params: {
         if (params.followupRun.run.silentExpected) {
           return { skip: true };
         }
-        if (!params.isHeartbeat && text?.includes("HEARTBEAT_OK")) {
-          const stripped = stripHeartbeatToken(text, {
+        if (!params.isPulsecheck && text?.includes("PULSECHECK_OK")) {
+          const stripped = stripPulsecheckToken(text, {
             mode: "message",
           });
-          if (stripped.didStrip && !didLogHeartbeatStrip) {
-            didLogHeartbeatStrip = true;
-            logVerbose("Stripped stray HEARTBEAT_OK token from reply");
+          if (stripped.didStrip && !didLogPulsecheckStrip) {
+            didLogPulsecheckStrip = true;
+            logVerbose("Stripped stray PULSECHECK_OK token from reply");
           }
           if (stripped.shouldSkip && !reply.hasMedia) {
             return { skip: true };
@@ -803,7 +803,7 @@ export async function runAgentTurnWithFallback(params: {
         }
         if (
           isSilentReplyPrefixText(text, SILENT_REPLY_TOKEN) ||
-          isSilentReplyPrefixText(text, HEARTBEAT_TOKEN)
+          isSilentReplyPrefixText(text, PULSECHECK_TOKEN)
         ) {
           return { skip: true };
         }
@@ -909,7 +909,7 @@ export async function runAgentTurnWithFallback(params: {
                   sessionId: params.followupRun.run.sessionId,
                   sessionKey: params.sessionKey,
                   agentId: params.followupRun.run.agentId,
-                  trigger: params.isHeartbeat ? "heartbeat" : "user",
+                  trigger: params.isPulsecheck ? "pulsecheck" : "user",
                   sessionFile: params.followupRun.run.sessionFile,
                   workspaceDir: params.followupRun.run.workspaceDir,
                   config: runtimeConfig,
@@ -1025,7 +1025,7 @@ export async function runAgentTurnWithFallback(params: {
               const result = await runEmbeddedPiAgent({
                 ...embeddedContext,
                 allowGatewaySubagentBinding: true,
-                trigger: params.isHeartbeat ? "heartbeat" : "user",
+                trigger: params.isPulsecheck ? "pulsecheck" : "user",
                 groupId: resolveGroupSessionKey(params.sessionCtx)?.id,
                 groupChannel:
                   normalizeOptionalString(params.sessionCtx.GroupChannel) ??
@@ -1048,7 +1048,7 @@ export async function runAgentTurnWithFallback(params: {
                 })(),
                 suppressToolErrorWarnings: params.opts?.suppressToolErrorWarnings,
                 bootstrapContextMode: params.opts?.bootstrapContextMode,
-                bootstrapContextRunKind: params.opts?.isHeartbeat ? "heartbeat" : "default",
+                bootstrapContextRunKind: params.opts?.isPulsecheck ? "pulsecheck" : "default",
                 images: params.opts?.images,
                 imageOrder: params.opts?.imageOrder,
                 abortSignal: params.replyOperation?.abortSignal ?? params.opts?.abortSignal,
@@ -1618,7 +1618,7 @@ export async function runAgentTurnWithFallback(params: {
       provider: fallbackProvider,
       model: fallbackModel,
       commandBody: params.commandBody,
-      isHeartbeat: params.isHeartbeat,
+      isPulsecheck: params.isPulsecheck,
       payloads: runResult.payloads,
     });
   }
@@ -1630,7 +1630,7 @@ export async function runAgentTurnWithFallback(params: {
     fallbackProvider,
     fallbackModel,
     fallbackAttempts,
-    didLogHeartbeatStrip,
+    didLogPulsecheckStrip,
     autoCompactionCount,
     directlySentBlockKeys: directlySentBlockKeys.size > 0 ? directlySentBlockKeys : undefined,
   };

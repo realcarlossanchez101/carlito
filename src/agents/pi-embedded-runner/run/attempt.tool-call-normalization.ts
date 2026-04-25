@@ -2,6 +2,7 @@ import type { AgentMessage, StreamFn } from "@mariozechner/pi-agent-core";
 import { streamSimple } from "@mariozechner/pi-ai";
 import { visitObjectContentBlocks } from "../../../shared/message-content-blocks.js";
 import { normalizeLowercaseStringOrEmpty } from "../../../shared/string-coerce.js";
+import { canonicalFromAlias } from "../../carlito-toolname-mask.js";
 import { validateAnthropicTurns, validateGeminiTurns } from "../../pi-embedded-helpers.js";
 import { sanitizeToolUseResultPairing } from "../../session-transcript-repair.js";
 import {
@@ -199,6 +200,10 @@ function normalizeToolCallNameForDispatch(
   const trimmed = rawName.trim();
   if (!trimmed) {
     return inferToolNameFromToolCallId(rawToolCallId, allowedToolNames) ?? rawName;
+  }
+  const canonicalForAlias = canonicalFromAlias(trimmed);
+  if (canonicalForAlias && (!allowedToolNames || allowedToolNames.has(canonicalForAlias))) {
+    return canonicalForAlias;
   }
   if (!allowedToolNames || allowedToolNames.size === 0) {
     return trimmed;

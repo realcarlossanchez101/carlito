@@ -2,7 +2,7 @@
  * Tests for outbound.ts module
  *
  * Tests cover:
- * - resolveTarget with various modes (explicit, implicit, heartbeat)
+ * - resolveTarget with various modes (explicit, implicit, pulsecheck)
  * - sendText with markdown stripping
  * - sendMedia delegation to sendText
  * - Error handling for missing accounts/channels
@@ -153,7 +153,7 @@ describe("outbound", () => {
     it("should accept any target when allowlist is empty", () => {
       const result = resolveTarget({
         to: "#anychannel",
-        mode: "heartbeat",
+        mode: "pulsecheck",
         allowFrom: [],
       });
 

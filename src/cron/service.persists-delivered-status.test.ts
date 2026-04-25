@@ -20,7 +20,7 @@ function buildIsolatedAgentTurnJob(name: string): CronAddInput {
     enabled: true,
     schedule: { kind: "every", everyMs: 60_000 },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "test" },
     delivery: { mode: "none" },
   };
@@ -39,7 +39,7 @@ function buildMainSessionSystemEventJob(name: string): CronAddInput {
     enabled: true,
     schedule: { kind: "every", everyMs: 60_000 },
     sessionTarget: "main",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "systemEvent", text: "tick" },
   };
 }
@@ -56,7 +56,7 @@ function createIsolatedCronWithFinishedBarrier(params: {
     cronEnabled: true,
     log: noopLogger,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: vi.fn(async () => ({
       status: "ok" as const,
       summary: "done",

@@ -6,29 +6,29 @@ describe("resolveActiveRunQueueAction", () => {
     expect(
       resolveActiveRunQueueAction({
         isActive: false,
-        isHeartbeat: false,
+        isPulsecheck: false,
         shouldFollowup: true,
         queueMode: "collect",
       }),
     ).toBe("run-now");
   });
 
-  it("drops heartbeat runs while another run is active", () => {
+  it("drops pulsecheck runs while another run is active", () => {
     expect(
       resolveActiveRunQueueAction({
         isActive: true,
-        isHeartbeat: true,
+        isPulsecheck: true,
         shouldFollowup: true,
         queueMode: "collect",
       }),
     ).toBe("drop");
   });
 
-  it("enqueues followups for non-heartbeat active runs", () => {
+  it("enqueues followups for non-pulsecheck active runs", () => {
     expect(
       resolveActiveRunQueueAction({
         isActive: true,
-        isHeartbeat: false,
+        isPulsecheck: false,
         shouldFollowup: true,
         queueMode: "collect",
       }),
@@ -39,7 +39,7 @@ describe("resolveActiveRunQueueAction", () => {
     expect(
       resolveActiveRunQueueAction({
         isActive: true,
-        isHeartbeat: false,
+        isPulsecheck: false,
         shouldFollowup: false,
         queueMode: "steer",
       }),

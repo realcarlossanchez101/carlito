@@ -76,7 +76,7 @@ describe("markdownToSlackMrkdwn", () => {
 
 describe("escapeSlackMrkdwn", () => {
   it("returns plain text unchanged", () => {
-    expect(escapeSlackMrkdwn("heartbeat status ok")).toBe("heartbeat status ok");
+    expect(escapeSlackMrkdwn("pulsecheck status ok")).toBe("pulsecheck status ok");
   });
 
   it("escapes slack and mrkdwn control characters", () => {

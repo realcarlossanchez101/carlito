@@ -17,9 +17,9 @@ import type {
 } from "../types.js";
 import { resolveCronChannelOutputPolicy } from "./channel-output-policy.js";
 import {
-  isHeartbeatOnlyResponse,
+  isPulsecheckOnlyResponse,
   resolveCronPayloadOutcome,
-  resolveHeartbeatAckMaxChars,
+  resolvePulsecheckAckMaxChars,
 } from "./helpers.js";
 import { resolveCronModelSelection } from "./model-selection.js";
 import { buildCronAgentDefaultsConfig } from "./run-config.js";
@@ -837,9 +837,9 @@ async function finalizeCronRun(params: {
       ...telemetry,
     });
 
-  const skipHeartbeatDelivery =
+  const skipPulsecheckDelivery =
     prepared.deliveryRequested &&
-    isHeartbeatOnlyResponse(payloads, resolveHeartbeatAckMaxChars(prepared.agentCfg));
+    isPulsecheckOnlyResponse(payloads, resolvePulsecheckAckMaxChars(prepared.agentCfg));
   const {
     dispatchCronDelivery,
     matchesMessagingToolDeliveryTarget,
@@ -874,7 +874,7 @@ async function finalizeCronRun(params: {
     timeoutMs: prepared.timeoutMs,
     resolvedDelivery: prepared.resolvedDelivery,
     deliveryRequested: prepared.deliveryRequested,
-    skipHeartbeatDelivery,
+    skipPulsecheckDelivery,
     skipMessagingToolDelivery,
     unverifiedMessagingToolDelivery: didSendViaMessagingTool && !prepared.resolvedDelivery.ok,
     deliveryBestEffort: resolveCronDeliveryBestEffort(prepared.input.job),

@@ -32,7 +32,7 @@ export type WebChannelStatus = {
 
 export type WebMonitorTuning = {
   reconnect?: Partial<ReconnectPolicy>;
-  heartbeatSeconds?: number;
+  pulsecheckSeconds?: number;
   messageTimeoutMs?: number;
   watchdogCheckMs?: number;
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;

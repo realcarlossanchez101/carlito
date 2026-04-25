@@ -349,7 +349,7 @@ describe("typing controller", () => {
 });
 
 describe("resolveTypingMode", () => {
-  it("resolves defaults, configured overrides, and heartbeat suppression", () => {
+  it("resolves defaults, configured overrides, and pulsecheck suppression", () => {
     const cases = [
       {
         name: "default direct chat",
@@ -357,7 +357,7 @@ describe("resolveTypingMode", () => {
           configured: undefined,
           isGroupChat: false,
           wasMentioned: false,
-          isHeartbeat: false,
+          isPulsecheck: false,
         },
         expected: "instant",
       },
@@ -367,7 +367,7 @@ describe("resolveTypingMode", () => {
           configured: undefined,
           isGroupChat: true,
           wasMentioned: false,
-          isHeartbeat: false,
+          isPulsecheck: false,
         },
         expected: "message",
       },
@@ -377,7 +377,7 @@ describe("resolveTypingMode", () => {
           configured: undefined,
           isGroupChat: true,
           wasMentioned: true,
-          isHeartbeat: false,
+          isPulsecheck: false,
         },
         expected: "instant",
       },
@@ -387,7 +387,7 @@ describe("resolveTypingMode", () => {
           configured: "thinking" as const,
           isGroupChat: false,
           wasMentioned: false,
-          isHeartbeat: false,
+          isPulsecheck: false,
         },
         expected: "thinking",
       },
@@ -397,17 +397,17 @@ describe("resolveTypingMode", () => {
           configured: "message" as const,
           isGroupChat: true,
           wasMentioned: true,
-          isHeartbeat: false,
+          isPulsecheck: false,
         },
         expected: "message",
       },
       {
-        name: "heartbeat forces never",
+        name: "pulsecheck forces never",
         input: {
           configured: "instant" as const,
           isGroupChat: false,
           wasMentioned: false,
-          isHeartbeat: true,
+          isPulsecheck: true,
         },
         expected: "never",
       },
@@ -417,7 +417,7 @@ describe("resolveTypingMode", () => {
           configured: "instant" as const,
           isGroupChat: false,
           wasMentioned: false,
-          isHeartbeat: false,
+          isPulsecheck: false,
           suppressTyping: true,
         },
         expected: "never",
@@ -428,7 +428,7 @@ describe("resolveTypingMode", () => {
           configured: "instant" as const,
           isGroupChat: false,
           wasMentioned: false,
-          isHeartbeat: false,
+          isPulsecheck: false,
           typingPolicy: "system_event" as const,
         },
         expected: "never",
@@ -589,7 +589,7 @@ describe("createTypingSignaler", () => {
       const signaler = createTypingSignaler({
         typing,
         mode: testCase.mode,
-        isHeartbeat: false,
+        isPulsecheck: false,
       });
 
       await signaler.signalRunStart();
@@ -604,7 +604,7 @@ describe("createTypingSignaler", () => {
     const signaler = createTypingSignaler({
       typing,
       mode: "message",
-      isHeartbeat: false,
+      isPulsecheck: false,
     });
 
     await signaler.signalMessageStart();
@@ -620,7 +620,7 @@ describe("createTypingSignaler", () => {
     const signaler = createTypingSignaler({
       typing,
       mode: "thinking",
-      isHeartbeat: false,
+      isPulsecheck: false,
     });
 
     await signaler.signalReasoningDelta();
@@ -636,7 +636,7 @@ describe("createTypingSignaler", () => {
     const signaler = createTypingSignaler({
       typing,
       mode: "message",
-      isHeartbeat: false,
+      isPulsecheck: false,
     });
 
     await signaler.signalTextDelta(undefined);
@@ -650,7 +650,7 @@ describe("createTypingSignaler", () => {
     const signaler = createTypingSignaler({
       typing,
       mode: "message",
-      isHeartbeat: false,
+      isPulsecheck: false,
     });
 
     await signaler.signalToolStart();
@@ -672,7 +672,7 @@ describe("createTypingSignaler", () => {
     const signaler = createTypingSignaler({
       typing,
       mode: "instant",
-      isHeartbeat: true,
+      isPulsecheck: true,
     });
 
     await signaler.signalRunStart();

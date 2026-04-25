@@ -29,7 +29,7 @@ export class LegacyContextEngine implements ContextEngine {
     sessionId: string;
     sessionKey?: string;
     message: AgentMessage;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
   }): Promise<IngestResult> {
     // No-op: SessionManager handles message persistence in the legacy flow
     return { ingested: false };
@@ -60,7 +60,7 @@ export class LegacyContextEngine implements ContextEngine {
     messages: AgentMessage[];
     prePromptMessageCount: number;
     autoCompactionSummary?: string;
-    isHeartbeat?: boolean;
+    isPulsecheck?: boolean;
     tokenBudget?: number;
     runtimeContext?: ContextEngineRuntimeContext;
   }): Promise<void> {

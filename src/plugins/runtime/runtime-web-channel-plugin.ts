@@ -94,13 +94,13 @@ type WebChannelHeavyRuntimeModule = {
   ) => Promise<AgentToolResult<unknown>>;
   monitorWebChannel: (...args: unknown[]) => Promise<unknown>;
   monitorWebInbox: (...args: unknown[]) => Promise<unknown>;
-  runWebHeartbeatOnce: (...args: unknown[]) => Promise<unknown>;
+  runWebPulsecheckOnce: (...args: unknown[]) => Promise<unknown>;
   startWebLoginWithQr: (...args: unknown[]) => Promise<unknown>;
   waitForWaConnection: (sock: unknown) => Promise<void>;
   waitForWebLogin: (...args: unknown[]) => Promise<unknown>;
   extractMediaPlaceholder: (...args: unknown[]) => unknown;
   extractText: (...args: unknown[]) => unknown;
-  resolveHeartbeatRecipients: (...args: unknown[]) => unknown;
+  resolvePulsecheckRecipients: (...args: unknown[]) => unknown;
 };
 
 let cachedHeavyModulePath: string | null = null;
@@ -323,10 +323,10 @@ export async function optimizeImageToJpeg(
   return await optimizeImageToJpegImpl(...args);
 }
 
-export async function runWebHeartbeatOnce(
-  ...args: Parameters<WebChannelHeavyRuntimeModule["runWebHeartbeatOnce"]>
-): ReturnType<WebChannelHeavyRuntimeModule["runWebHeartbeatOnce"]> {
-  return (await getHeavyExport("runWebHeartbeatOnce"))(...args);
+export async function runWebPulsecheckOnce(
+  ...args: Parameters<WebChannelHeavyRuntimeModule["runWebPulsecheckOnce"]>
+): ReturnType<WebChannelHeavyRuntimeModule["runWebPulsecheckOnce"]> {
+  return (await getHeavyExport("runWebPulsecheckOnce"))(...args);
 }
 
 export async function startWebLoginWithQr(
@@ -360,8 +360,8 @@ export function getDefaultLocalRoots(
   return getDefaultLocalRootsImpl(...args);
 }
 
-export function resolveHeartbeatRecipients(
-  ...args: Parameters<WebChannelHeavyRuntimeModule["resolveHeartbeatRecipients"]>
-): ReturnType<WebChannelHeavyRuntimeModule["resolveHeartbeatRecipients"]> {
-  return loadCurrentHeavyModuleSync().resolveHeartbeatRecipients(...args);
+export function resolvePulsecheckRecipients(
+  ...args: Parameters<WebChannelHeavyRuntimeModule["resolvePulsecheckRecipients"]>
+): ReturnType<WebChannelHeavyRuntimeModule["resolvePulsecheckRecipients"]> {
+  return loadCurrentHeavyModuleSync().resolvePulsecheckRecipients(...args);
 }

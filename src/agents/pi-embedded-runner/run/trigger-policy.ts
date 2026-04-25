@@ -1,22 +1,22 @@
 import type { EmbeddedRunTrigger } from "./params.js";
 
 type EmbeddedRunTriggerPolicy = {
-  injectHeartbeatPrompt: boolean;
+  injectPulsecheckPrompt: boolean;
 };
 
 const DEFAULT_EMBEDDED_RUN_TRIGGER_POLICY: EmbeddedRunTriggerPolicy = {
-  injectHeartbeatPrompt: true,
+  injectPulsecheckPrompt: true,
 };
 
 const EMBEDDED_RUN_TRIGGER_POLICY: Partial<Record<EmbeddedRunTrigger, EmbeddedRunTriggerPolicy>> = {
   cron: {
-    injectHeartbeatPrompt: false,
+    injectPulsecheckPrompt: false,
   },
 };
 
-export function shouldInjectHeartbeatPromptForTrigger(trigger?: EmbeddedRunTrigger): boolean {
+export function shouldInjectPulsecheckPromptForTrigger(trigger?: EmbeddedRunTrigger): boolean {
   return (
-    (trigger ? EMBEDDED_RUN_TRIGGER_POLICY[trigger] : undefined)?.injectHeartbeatPrompt ??
-    DEFAULT_EMBEDDED_RUN_TRIGGER_POLICY.injectHeartbeatPrompt
+    (trigger ? EMBEDDED_RUN_TRIGGER_POLICY[trigger] : undefined)?.injectPulsecheckPrompt ??
+    DEFAULT_EMBEDDED_RUN_TRIGGER_POLICY.injectPulsecheckPrompt
   );
 }

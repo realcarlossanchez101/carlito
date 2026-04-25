@@ -187,10 +187,10 @@ function createMinimalRun(params?: {
   };
 }
 
-describe("runReplyAgent heartbeat followup guard", () => {
-  it("drops heartbeat runs when another run is active", async () => {
+describe("runReplyAgent pulsecheck followup guard", () => {
+  it("drops pulsecheck runs when another run is active", async () => {
     const { run, typing } = createMinimalRun({
-      opts: { isHeartbeat: true },
+      opts: { isPulsecheck: true },
       isActive: true,
       shouldFollowup: true,
       resolvedQueueMode: "collect",
@@ -204,9 +204,9 @@ describe("runReplyAgent heartbeat followup guard", () => {
     expect(typing.cleanup).toHaveBeenCalledTimes(1);
   });
 
-  it("still enqueues non-heartbeat runs when another run is active", async () => {
+  it("still enqueues non-pulsecheck runs when another run is active", async () => {
     const { run } = createMinimalRun({
-      opts: { isHeartbeat: false },
+      opts: { isPulsecheck: false },
       isActive: true,
       shouldFollowup: true,
       resolvedQueueMode: "collect",
@@ -221,7 +221,7 @@ describe("runReplyAgent heartbeat followup guard", () => {
 
   it("starts draining immediately when the active snapshot is already stale", async () => {
     const { run } = createMinimalRun({
-      opts: { isHeartbeat: false },
+      opts: { isPulsecheck: false },
       isActive: true,
       isRunActive: () => false,
       shouldFollowup: true,
@@ -256,7 +256,7 @@ describe("runReplyAgent heartbeat followup guard", () => {
   });
 });
 
-describe("runReplyAgent typing (heartbeat)", () => {
+describe("runReplyAgent typing (pulsecheck)", () => {
   it("signals typing for normal runs", async () => {
     const onPartialReply = vi.fn();
     state.runEmbeddedPiAgentMock.mockImplementationOnce(async (params: AgentRunParams) => {
@@ -265,7 +265,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
     });
 
     const { run, typing } = createMinimalRun({
-      opts: { isHeartbeat: false, onPartialReply },
+      opts: { isPulsecheck: false, onPartialReply },
     });
     await run();
 
@@ -274,7 +274,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
     expect(typing.startTypingLoop).toHaveBeenCalled();
   });
 
-  it("never signals typing for heartbeat runs", async () => {
+  it("never signals typing for pulsecheck runs", async () => {
     const onPartialReply = vi.fn();
     state.runEmbeddedPiAgentMock.mockImplementationOnce(async (params: AgentRunParams) => {
       await params.onPartialReply?.({ text: "hi" });
@@ -282,7 +282,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
     });
 
     const { run, typing } = createMinimalRun({
-      opts: { isHeartbeat: true, onPartialReply },
+      opts: { isPulsecheck: true, onPartialReply },
     });
     await run();
 
@@ -329,7 +329,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
       });
 
       const { run, typing } = createMinimalRun({
-        opts: { isHeartbeat: false, onPartialReply },
+        opts: { isPulsecheck: false, onPartialReply },
         typingMode: "message",
       });
       await run();
@@ -368,7 +368,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
     });
 
     const { run } = createMinimalRun({
-      opts: { isHeartbeat: false, onPartialReply, onBlockReply, onReasoningStream },
+      opts: { isPulsecheck: false, onPartialReply, onBlockReply, onReasoningStream },
       blockStreamingEnabled: true,
       runOverrides: { silentExpected: true },
     });
@@ -393,7 +393,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
     });
 
     const { run } = createMinimalRun({
-      opts: { isHeartbeat: false, onPartialReply, onBlockReply, onReasoningStream },
+      opts: { isPulsecheck: false, onPartialReply, onBlockReply, onReasoningStream },
       blockStreamingEnabled: true,
       runOverrides: { silentExpected: true },
     });

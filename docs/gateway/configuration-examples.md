@@ -265,13 +265,13 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
       mediaMaxMb: 5,
       typingIntervalSeconds: 5,
       maxConcurrent: 3,
-      heartbeat: {
+      pulsecheck: {
         every: "30m",
         model: "anthropic/claude-sonnet-4-6",
         target: "last",
         directPolicy: "allow", // allow (default) | block
         to: "+15555550123",
-        prompt: "HEARTBEAT",
+        prompt: "PULSECHECK",
         ackMaxChars: 300,
       },
       memorySearch: {

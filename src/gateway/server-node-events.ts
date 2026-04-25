@@ -25,13 +25,13 @@ import {
   normalizeRpcAttachmentsToChatAttachments,
   parseMessageWithAttachments,
   registerApnsRegistration,
-  requestHeartbeatNow,
+  requestPulsecheckNow,
   resolveGatewayModelSupportsImages,
   resolveOutboundTarget,
   resolveSessionAgentId,
   resolveSessionModelRef,
   sanitizeInboundSystemTags,
-  scopedHeartbeatWakeOptions,
+  scopedPulsecheckWakeOptions,
   updateSessionStore,
 } from "./server-node-events.runtime.js";
 
@@ -590,7 +590,7 @@ export const handleNodeEvent = async (ctx: NodeEventContext, nodeId: string, evt
         trusted: false,
       });
       if (queued) {
-        requestHeartbeatNow({ reason: "notifications-event", sessionKey });
+        requestPulsecheckNow({ reason: "notifications-event", sessionKey });
       }
       return;
     }
@@ -691,10 +691,10 @@ export const handleNodeEvent = async (ctx: NodeEventContext, nodeId: string, evt
       });
       if (queued) {
         // Scope wakes only for canonical agent sessions. Synthetic node-* fallback
-        // keys should keep legacy unscoped behavior so enabled non-main heartbeat
+        // keys should keep legacy unscoped behavior so enabled non-main pulsecheck
         // agents still run when no explicit agent session is provided.
-        requestHeartbeatNow(
-          scopedHeartbeatWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
+        requestPulsecheckNow(
+          scopedPulsecheckWakeOptions(sessionKey, { reason: "exec-event", coalesceMs: 0 }),
         );
       }
       return;

@@ -14,7 +14,7 @@ import {
 } from "../../run-config.js";
 import {
   acquireQaCredentialLease,
-  startQaCredentialLeaseHeartbeat,
+  startQaCredentialLeasePulsecheck,
   type QaCredentialRole,
 } from "../shared/credential-lease.runtime.js";
 import { startQaLiveLaneGateway } from "../shared/live-gateway.runtime.js";
@@ -1000,9 +1000,9 @@ export async function runTelegramQaLive(params: {
     resolveEnvPayload: () => resolveTelegramQaRuntimeEnv(),
     parsePayload: parseTelegramQaCredentialPayload,
   });
-  const leaseHeartbeat = startQaCredentialLeaseHeartbeat(credentialLease);
+  const leasePulsecheck = startQaCredentialLeasePulsecheck(credentialLease);
   const assertLeaseHealthy = () => {
-    leaseHeartbeat.throwIfFailed();
+    leasePulsecheck.throwIfFailed();
   };
   writeTelegramQaProgress(
     progressEnabled,
@@ -1211,7 +1211,7 @@ export async function runTelegramQaLive(params: {
       }
     }
   } finally {
-    await leaseHeartbeat.stop();
+    await leasePulsecheck.stop();
     try {
       await credentialLease.release();
     } catch (error) {

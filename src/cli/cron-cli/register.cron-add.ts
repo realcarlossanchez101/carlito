@@ -77,7 +77,7 @@ export function registerCronAddCommand(cron: Command) {
       .option("--agent <id>", "Agent id for this job")
       .option("--session <target>", "Session target (main|isolated)")
       .option("--session-key <key>", "Session key for job routing (e.g. agent:my-agent:my-session)")
-      .option("--wake <mode>", "Wake mode (now|next-heartbeat)", "now")
+      .option("--wake <mode>", "Wake mode (now|next-pulsecheck)", "now")
       .option(
         "--at <when>",
         "Run once at time (ISO with offset, or +duration). Use --tz for offset-less datetimes",
@@ -120,8 +120,8 @@ export function registerCronAddCommand(cron: Command) {
           });
 
           const wakeMode = normalizeOptionalString(opts.wake) ?? "now";
-          if (wakeMode !== "now" && wakeMode !== "next-heartbeat") {
-            throw new Error("--wake must be now or next-heartbeat");
+          if (wakeMode !== "now" && wakeMode !== "next-pulsecheck") {
+            throw new Error("--wake must be now or next-pulsecheck");
           }
 
           const rawAgentId = normalizeOptionalString(opts.agent);

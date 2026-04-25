@@ -70,7 +70,7 @@ extension CronSettings {
             updatedAtMs: 1_700_000_100_000,
             schedule: .cron(expr: "0 8 * * *", tz: "UTC"),
             sessionTarget: .isolated,
-            wakeMode: .nextHeartbeat,
+            wakeMode: .nextPulsecheck,
             payload: .agentTurn(
                 message: "Summarize",
                 thinking: "low",

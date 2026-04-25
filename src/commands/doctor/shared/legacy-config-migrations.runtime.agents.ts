@@ -8,7 +8,7 @@ import {
 } from "../../../config/legacy.shared.js";
 import { isBlockedObjectKey } from "../../../config/prototype-keys.js";
 
-const AGENT_HEARTBEAT_KEYS = new Set([
+const AGENT_PULSECHECK_KEYS = new Set([
   "every",
   "activeHours",
   "model",
@@ -25,7 +25,7 @@ const AGENT_HEARTBEAT_KEYS = new Set([
   "isolatedSession",
 ]);
 
-const CHANNEL_HEARTBEAT_KEYS = new Set(["showOk", "showAlerts", "useIndicator"]);
+const CHANNEL_PULSECHECK_KEYS = new Set(["showOk", "showAlerts", "useIndicator"]);
 
 const MEMORY_SEARCH_RULE: LegacyConfigRule = {
   path: ["memorySearch"],
@@ -33,10 +33,10 @@ const MEMORY_SEARCH_RULE: LegacyConfigRule = {
     'top-level memorySearch was moved; use agents.defaults.memorySearch instead. Run "openclaw doctor --fix".',
 };
 
-const HEARTBEAT_RULE: LegacyConfigRule = {
-  path: ["heartbeat"],
+const PULSECHECK_RULE: LegacyConfigRule = {
+  path: ["pulsecheck"],
   message:
-    "top-level heartbeat is not a valid config path; use agents.defaults.heartbeat (cadence/target/model settings) or channels.defaults.heartbeat (showOk/showAlerts/useIndicator).",
+    "top-level pulsecheck is not a valid config path; use agents.defaults.pulsecheck (cadence/target/model settings) or channels.defaults.pulsecheck (showOk/showAlerts/useIndicator).",
 };
 
 const LEGACY_SANDBOX_SCOPE_RULES: LegacyConfigRule[] = [
@@ -58,31 +58,31 @@ function sandboxScopeFromPerSession(perSession: boolean): "session" | "shared" {
   return perSession ? "session" : "shared";
 }
 
-function splitLegacyHeartbeat(legacyHeartbeat: Record<string, unknown>): {
-  agentHeartbeat: Record<string, unknown> | null;
-  channelHeartbeat: Record<string, unknown> | null;
+function splitLegacyPulsecheck(legacyPulsecheck: Record<string, unknown>): {
+  agentPulsecheck: Record<string, unknown> | null;
+  channelPulsecheck: Record<string, unknown> | null;
 } {
-  const agentHeartbeat: Record<string, unknown> = {};
-  const channelHeartbeat: Record<string, unknown> = {};
+  const agentPulsecheck: Record<string, unknown> = {};
+  const channelPulsecheck: Record<string, unknown> = {};
 
-  for (const [key, value] of Object.entries(legacyHeartbeat)) {
+  for (const [key, value] of Object.entries(legacyPulsecheck)) {
     if (isBlockedObjectKey(key)) {
       continue;
     }
-    if (CHANNEL_HEARTBEAT_KEYS.has(key)) {
-      channelHeartbeat[key] = value;
+    if (CHANNEL_PULSECHECK_KEYS.has(key)) {
+      channelPulsecheck[key] = value;
       continue;
     }
-    if (AGENT_HEARTBEAT_KEYS.has(key)) {
-      agentHeartbeat[key] = value;
+    if (AGENT_PULSECHECK_KEYS.has(key)) {
+      agentPulsecheck[key] = value;
       continue;
     }
-    agentHeartbeat[key] = value;
+    agentPulsecheck[key] = value;
   }
 
   return {
-    agentHeartbeat: Object.keys(agentHeartbeat).length > 0 ? agentHeartbeat : null,
-    channelHeartbeat: Object.keys(channelHeartbeat).length > 0 ? channelHeartbeat : null,
+    agentPulsecheck: Object.keys(agentPulsecheck).length > 0 ? agentPulsecheck : null,
+    channelPulsecheck: Object.keys(channelPulsecheck).length > 0 ? channelPulsecheck : null,
   };
 }
 
@@ -194,47 +194,48 @@ export const LEGACY_CONFIG_MIGRATIONS_RUNTIME_AGENTS: LegacyConfigMigrationSpec[
     },
   }),
   defineLegacyConfigMigration({
-    id: "heartbeat->agents.defaults.heartbeat",
-    describe: "Move top-level heartbeat to agents.defaults.heartbeat/channels.defaults.heartbeat",
-    legacyRules: [HEARTBEAT_RULE],
+    id: "pulsecheck->agents.defaults.pulsecheck",
+    describe:
+      "Move top-level pulsecheck to agents.defaults.pulsecheck/channels.defaults.pulsecheck",
+    legacyRules: [PULSECHECK_RULE],
     apply: (raw, changes) => {
-      const legacyHeartbeat = getRecord(raw.heartbeat);
-      if (!legacyHeartbeat) {
+      const legacyPulsecheck = getRecord(raw.pulsecheck);
+      if (!legacyPulsecheck) {
         return;
       }
 
-      const { agentHeartbeat, channelHeartbeat } = splitLegacyHeartbeat(legacyHeartbeat);
+      const { agentPulsecheck, channelPulsecheck } = splitLegacyPulsecheck(legacyPulsecheck);
 
-      if (agentHeartbeat) {
+      if (agentPulsecheck) {
         mergeLegacyIntoDefaults({
           raw,
           rootKey: "agents",
-          fieldKey: "heartbeat",
-          legacyValue: agentHeartbeat,
+          fieldKey: "pulsecheck",
+          legacyValue: agentPulsecheck,
           changes,
-          movedMessage: "Moved heartbeat → agents.defaults.heartbeat.",
+          movedMessage: "Moved pulsecheck → agents.defaults.pulsecheck.",
           mergedMessage:
-            "Merged heartbeat → agents.defaults.heartbeat (filled missing fields from legacy; kept explicit agents.defaults values).",
+            "Merged pulsecheck → agents.defaults.pulsecheck (filled missing fields from legacy; kept explicit agents.defaults values).",
         });
       }
 
-      if (channelHeartbeat) {
+      if (channelPulsecheck) {
         mergeLegacyIntoDefaults({
           raw,
           rootKey: "channels",
-          fieldKey: "heartbeat",
-          legacyValue: channelHeartbeat,
+          fieldKey: "pulsecheck",
+          legacyValue: channelPulsecheck,
           changes,
-          movedMessage: "Moved heartbeat visibility → channels.defaults.heartbeat.",
+          movedMessage: "Moved pulsecheck visibility → channels.defaults.pulsecheck.",
           mergedMessage:
-            "Merged heartbeat visibility → channels.defaults.heartbeat (filled missing fields from legacy; kept explicit channels.defaults values).",
+            "Merged pulsecheck visibility → channels.defaults.pulsecheck (filled missing fields from legacy; kept explicit channels.defaults values).",
         });
       }
 
-      if (!agentHeartbeat && !channelHeartbeat) {
-        changes.push("Removed empty top-level heartbeat.");
+      if (!agentPulsecheck && !channelPulsecheck) {
+        changes.push("Removed empty top-level pulsecheck.");
       }
-      delete raw.heartbeat;
+      delete raw.pulsecheck;
     },
   }),
 ];

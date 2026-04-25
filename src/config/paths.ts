@@ -17,9 +17,10 @@ export function resolveIsNixMode(env: NodeJS.ProcessEnv = process.env): boolean 
 
 export const isNixMode = resolveIsNixMode();
 
-// Support the remaining legacy pre-rebrand state dir.
-const LEGACY_STATE_DIRNAMES = [".clawdbot"] as const;
-const NEW_STATE_DIRNAME = ".openclaw";
+// Support the remaining legacy pre-rebrand state dirs. Order matters:
+// `.openclaw` is the most recent legacy name and takes precedence over older ones.
+const LEGACY_STATE_DIRNAMES = [".openclaw", ".clawdbot"] as const;
+const NEW_STATE_DIRNAME = ".carlito";
 const CONFIG_FILENAME = "openclaw.json";
 const LEGACY_CONFIG_FILENAMES = ["clawdbot.json"] as const;
 

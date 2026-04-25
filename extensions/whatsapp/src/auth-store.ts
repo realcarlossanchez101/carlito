@@ -381,7 +381,7 @@ export async function readWebSelfIdentityForDecision(
 
 /**
  * Return the age (in milliseconds) of the cached WhatsApp web auth state, or null when missing.
- * Helpful for heartbeats/observability to spot stale credentials.
+ * Helpful for pulsechecks/observability to spot stale credentials.
  */
 export function getWebAuthAgeMs(authDir: string = resolveDefaultWebAuthDir()): number | null {
   try {

@@ -78,10 +78,13 @@ describe("resolveTsdownBuildInvocation", () => {
     await fsPromises.writeFile(path.join(distDir, "entry.js"), "entry\n");
     await fsPromises.writeFile(path.join(distDir, "control-ui", "index.html"), "asset\n");
     await fsPromises.writeFile(
-      path.join(distRuntimeDir, "heartbeat-runner.runtime-fspOEj_1.js"),
+      path.join(distRuntimeDir, "pulsecheck-runner.runtime-fspOEj_1.js"),
       "old runtime\n",
     );
-    await fsPromises.writeFile(path.join(distRuntimeDir, "heartbeat-runner.runtime.js"), "alias\n");
+    await fsPromises.writeFile(
+      path.join(distRuntimeDir, "pulsecheck-runner.runtime.js"),
+      "alias\n",
+    );
 
     pruneStaleRootChunkFiles({ cwd: rootDir });
 
@@ -95,14 +98,14 @@ describe("resolveTsdownBuildInvocation", () => {
       fsPromises.readFile(path.join(distDir, "control-ui", "index.html"), "utf8"),
     ).resolves.toBe("asset\n");
     await expect(
-      fsPromises.readFile(path.join(distRuntimeDir, "heartbeat-runner.runtime.js"), "utf8"),
+      fsPromises.readFile(path.join(distRuntimeDir, "pulsecheck-runner.runtime.js"), "utf8"),
     ).resolves.toBe("alias\n");
     await expect(fsPromises.stat(path.join(distDir, "delegate-BPjCe4gC.js"))).rejects.toThrow();
     await expect(
       fsPromises.stat(path.join(distDir, "compact.runtime-2DiEmVcA.js")),
     ).rejects.toThrow();
     await expect(
-      fsPromises.stat(path.join(distRuntimeDir, "heartbeat-runner.runtime-fspOEj_1.js")),
+      fsPromises.stat(path.join(distRuntimeDir, "pulsecheck-runner.runtime-fspOEj_1.js")),
     ).rejects.toThrow();
   });
 
@@ -183,7 +186,7 @@ describe("runTsdownBuildInvocation", () => {
       {
         stdout: output.sink,
         stderr: output.sink,
-        env: { ...process.env, OPENCLAW_TSDOWN_HEARTBEAT_MS: "0" },
+        env: { ...process.env, OPENCLAW_TSDOWN_PULSECHECK_MS: "0" },
       },
     );
 
@@ -209,7 +212,7 @@ describe("runTsdownBuildInvocation", () => {
         stderr: output.sink,
         env: {
           ...process.env,
-          OPENCLAW_TSDOWN_HEARTBEAT_MS: "0",
+          OPENCLAW_TSDOWN_PULSECHECK_MS: "0",
           OPENCLAW_TSDOWN_TIMEOUT_MS: "50",
         },
       },

@@ -10,7 +10,7 @@ describe("config schema", () => {
   let pluginUiHintInput: SchemaInput;
   let tokenHintInput: SchemaInput;
   let mergedSchemaInput: SchemaInput;
-  let heartbeatChannelInput: SchemaInput;
+  let pulsecheckChannelInput: SchemaInput;
   let cachedMergeInput: SchemaInput;
 
   beforeAll(() => {
@@ -64,7 +64,7 @@ describe("config schema", () => {
         },
       ],
     };
-    heartbeatChannelInput = {
+    pulsecheckChannelInput = {
       channels: [
         {
           id: "bluebubbles",
@@ -203,11 +203,11 @@ describe("config schema", () => {
     });
   });
 
-  it("adds heartbeat target hints with dynamic channels", () => {
-    const res = buildConfigSchema(heartbeatChannelInput);
+  it("adds pulsecheck target hints with dynamic channels", () => {
+    const res = buildConfigSchema(pulsecheckChannelInput);
 
-    const defaultsHint = res.uiHints["agents.defaults.heartbeat.target"];
-    const listHint = res.uiHints["agents.list.*.heartbeat.target"];
+    const defaultsHint = res.uiHints["agents.defaults.pulsecheck.target"];
+    const listHint = res.uiHints["agents.list.*.pulsecheck.target"];
     expect(defaultsHint?.help).toContain("bluebubbles");
     expect(defaultsHint?.help).toContain("last");
     expect(listHint?.help).toContain("bluebubbles");

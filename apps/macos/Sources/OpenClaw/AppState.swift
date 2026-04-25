@@ -187,11 +187,11 @@ final class AppState {
     var earBoostActive: Bool = false
     var blinkTick: Int = 0
     var sendCelebrationTick: Int = 0
-    var heartbeatsEnabled: Bool {
+    var pulsechecksEnabled: Bool {
         didSet {
             self.ifNotPreview {
-                UserDefaults.standard.set(self.heartbeatsEnabled, forKey: heartbeatsEnabledKey)
-                Task { _ = await GatewayConnection.shared.setHeartbeatsEnabled(self.heartbeatsEnabled) }
+                UserDefaults.standard.set(self.pulsechecksEnabled, forKey: pulsechecksEnabledKey)
+                Task { _ = await GatewayConnection.shared.setPulsechecksEnabled(self.pulsechecksEnabled) }
             }
         }
     }
@@ -310,11 +310,11 @@ final class AppState {
             .object(forKey: voiceWakeTriggersTalkModeKey) as? Bool ?? false
         self.talkEnabled = UserDefaults.standard.bool(forKey: talkEnabledKey)
         self.seamColorHex = nil
-        if let storedHeartbeats = UserDefaults.standard.object(forKey: heartbeatsEnabledKey) as? Bool {
-            self.heartbeatsEnabled = storedHeartbeats
+        if let storedPulsechecks = UserDefaults.standard.object(forKey: pulsechecksEnabledKey) as? Bool {
+            self.pulsechecksEnabled = storedPulsechecks
         } else {
-            self.heartbeatsEnabled = true
-            UserDefaults.standard.set(true, forKey: heartbeatsEnabledKey)
+            self.pulsechecksEnabled = true
+            UserDefaults.standard.set(true, forKey: pulsechecksEnabledKey)
         }
         if let storedOverride = UserDefaults.standard.string(forKey: iconOverrideKey),
            let selection = IconOverrideSelection(rawValue: storedOverride)
@@ -779,7 +779,7 @@ extension AppState {
         state.voicePushToTalkEnabled = false
         state.talkEnabled = false
         state.iconOverride = .system
-        state.heartbeatsEnabled = true
+        state.pulsechecksEnabled = true
         state.connectionMode = .local
         state.remoteTransport = .ssh
         state.canvasEnabled = true

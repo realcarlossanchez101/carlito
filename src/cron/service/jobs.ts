@@ -338,7 +338,7 @@ export function recordScheduleComputeError(params: {
       sessionKey: job.sessionKey,
       contextKey: `cron:${job.id}:auto-disabled`,
     });
-    state.deps.requestHeartbeatNow({
+    state.deps.requestPulsecheckNow({
       reason: `cron:${job.id}:auto-disabled`,
       agentId: job.agentId,
       sessionKey: job.sessionKey,

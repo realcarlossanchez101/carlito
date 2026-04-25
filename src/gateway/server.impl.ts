@@ -27,7 +27,7 @@ import { isTruthyEnvValue, isVitestRuntimeEnv, logAcceptedEnvOption } from "../i
 import { ensureOpenClawCliOnPath } from "../infra/path-env.js";
 import { setGatewaySigusr1RestartPolicy, setPreRestartDeferralCheck } from "../infra/restart.js";
 import { enqueueSystemEvent } from "../infra/system-events.js";
-import { startDiagnosticHeartbeat, stopDiagnosticHeartbeat } from "../logging/diagnostic.js";
+import { startDiagnosticPulsecheck, stopDiagnosticPulsecheck } from "../logging/diagnostic.js";
 import { createSubsystemLogger, runtimeForLogger } from "../logging/subsystem.js";
 import { runGlobalGatewayStopSafely } from "../plugins/hook-runner-global.js";
 import { createPluginRuntime } from "../plugins/runtime/index.js";
@@ -308,7 +308,7 @@ export async function startGatewayServer(
   const diagnosticsEnabled = isDiagnosticsEnabled(cfgAtStart);
   setDiagnosticsEnabledForProcess(diagnosticsEnabled);
   if (diagnosticsEnabled) {
-    startDiagnosticHeartbeat(undefined, { getConfig: getRuntimeConfig });
+    startDiagnosticPulsecheck(undefined, { getConfig: getRuntimeConfig });
   }
   setGatewaySigusr1RestartPolicy({ allowExternal: isRestartEnabled(cfgAtStart) });
   setPreRestartDeferralCheck(
@@ -563,7 +563,7 @@ export async function startGatewayServer(
 
   const runClosePrelude = async () =>
     await runGatewayClosePrelude({
-      ...(diagnosticsEnabled ? { stopDiagnostics: stopDiagnosticHeartbeat } : {}),
+      ...(diagnosticsEnabled ? { stopDiagnostics: stopDiagnosticPulsecheck } : {}),
       clearSkillsRefreshTimer: () => {
         if (!runtimeState?.skillsRefreshTimer) {
           return;
@@ -591,7 +591,7 @@ export async function startGatewayServer(
       stopChannel,
       pluginServices: runtimeState.pluginServices,
       cron: runtimeState.cronState.cron,
-      heartbeatRunner: runtimeState.heartbeatRunner,
+      pulsecheckRunner: runtimeState.pulsecheckRunner,
       updateCheckStop: runtimeState.stopGatewayUpdateCheck,
       stopTaskRegistryMaintenance,
       nodePresenceTimers,
@@ -601,7 +601,7 @@ export async function startGatewayServer(
       dedupeCleanup: runtimeState.dedupeCleanup,
       mediaCleanup: runtimeState.mediaCleanup,
       agentUnsub: runtimeState.agentUnsub,
-      heartbeatUnsub: runtimeState.heartbeatUnsub,
+      pulsecheckUnsub: runtimeState.pulsecheckUnsub,
       transcriptUnsub: runtimeState.transcriptUnsub,
       lifecycleUnsub: runtimeState.lifecycleUnsub,
       chatRunState,
@@ -854,7 +854,7 @@ export async function startGatewayServer(
       logCron,
       log,
     });
-    runtimeState.heartbeatRunner = activated.heartbeatRunner;
+    runtimeState.pulsecheckRunner = activated.pulsecheckRunner;
 
     runtimeState.configReloader = startManagedGatewayConfigReloader({
       minimalTestGateway,
@@ -871,14 +871,14 @@ export async function startGatewayServer(
       getState: () => ({
         hooksConfig: runtimeState.hooksConfig,
         hookClientIpConfig: runtimeState.hookClientIpConfig,
-        heartbeatRunner: runtimeState.heartbeatRunner,
+        pulsecheckRunner: runtimeState.pulsecheckRunner,
         cronState: runtimeState.cronState,
         channelHealthMonitor: runtimeState.channelHealthMonitor,
       }),
       setState: (nextState) => {
         runtimeState.hooksConfig = nextState.hooksConfig;
         runtimeState.hookClientIpConfig = nextState.hookClientIpConfig;
-        runtimeState.heartbeatRunner = nextState.heartbeatRunner;
+        runtimeState.pulsecheckRunner = nextState.pulsecheckRunner;
         runtimeState.cronState = nextState.cronState;
         deps.cron = runtimeState.cronState.cron;
         runtimeState.channelHealthMonitor = nextState.channelHealthMonitor;

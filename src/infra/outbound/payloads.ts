@@ -180,7 +180,7 @@ export function createOutboundPayloadPlan(
 ): OutboundPayloadPlan[] {
   // Intentionally scoped to channel-agnostic normalization and projection inputs.
   // Transport concerns (queueing, hooks, retries), channel transforms, and
-  // heartbeat-specific token semantics remain outside this plan boundary.
+  // pulsecheck-specific token semantics remain outside this plan boundary.
   const resolvedSilentReplySettings = resolveSilentReplySettings({
     cfg: context.cfg,
     sessionKey: context.sessionKey,

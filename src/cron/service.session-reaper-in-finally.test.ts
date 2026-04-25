@@ -26,7 +26,7 @@ function createDueIsolatedJob(params: { id: string; nowMs: number }): CronJob {
     updatedAtMs: params.nowMs,
     schedule: { kind: "every", everyMs: 60_000 },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: "test" },
     delivery: { mode: "none" },
     state: { nextRunAtMs: params.nowMs },
@@ -70,7 +70,7 @@ describe("CronService - session reaper runs in finally block (#31946)", () => {
       log: noopLogger,
       nowMs: () => now,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       // This will throw, simulating a failure during job execution.
       runIsolatedAgentJob: vi.fn().mockRejectedValue(new Error("gateway down")),
       sessionStorePath,
@@ -109,7 +109,7 @@ describe("CronService - session reaper runs in finally block (#31946)", () => {
       log: noopLogger,
       nowMs: () => now,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn().mockResolvedValue({ status: "ok", summary: "done" }),
       resolveSessionStorePath: (agentId) => {
         const p = path.join(path.dirname(store.storePath), `${agentId}-sessions`, "sessions.json");
@@ -156,7 +156,7 @@ describe("CronService - session reaper runs in finally block (#31946)", () => {
       log: noopLogger,
       nowMs: () => now,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn(),
       sessionStorePath,
     });

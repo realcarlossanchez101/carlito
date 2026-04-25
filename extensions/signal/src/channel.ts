@@ -279,7 +279,7 @@ export const signalPlugin: ChannelPlugin<ResolvedSignalAccount, SignalProbe> =
           hint: "<E.164|uuid:ID|group:ID|signal:group:ID|signal:+E.164>",
         },
       },
-      heartbeat: {
+      pulsecheck: {
         sendTyping: async ({ cfg, to, accountId }) => {
           await (
             await loadSignalSendRuntime()

@@ -285,7 +285,7 @@ System-level utilities.
 
 ```typescript
 await api.runtime.system.enqueueSystemEvent(event);
-api.runtime.system.requestHeartbeatNow();
+api.runtime.system.requestPulsecheckNow();
 const output = await api.runtime.system.runCommandWithTimeout(cmd, args, opts);
 const hint = api.runtime.system.formatNativeDependencyHint(pkg);
 ```

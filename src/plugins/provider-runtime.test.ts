@@ -644,7 +644,7 @@ describe("provider-runtime", () => {
           ...config,
           agents: {
             defaults: {
-              heartbeat: { every: "1h" },
+              pulsecheck: { every: "1h" },
             },
           },
         }),
@@ -663,7 +663,7 @@ describe("provider-runtime", () => {
     ).toMatchObject({
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "1h",
           },
         },

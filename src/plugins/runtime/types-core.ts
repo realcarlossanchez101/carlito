@@ -2,7 +2,7 @@ import type {
   RunEmbeddedAgentFn,
   RunEmbeddedPiAgentFn,
 } from "../../agents/pi-embedded-runtime.types.js";
-import type { HeartbeatRunResult } from "../../infra/heartbeat-wake.js";
+import type { PulsecheckRunResult } from "../../infra/pulsecheck-wake.js";
 import type { LogLevel } from "../../logging/levels.js";
 import type { MediaUnderstandingRuntime } from "../../media-understanding/runtime-types.js";
 import type {
@@ -12,7 +12,7 @@ import type {
 } from "../../plugin-sdk/tts-runtime.types.js";
 import type { PluginRuntimeTaskFlows, PluginRuntimeTaskRuns } from "./runtime-tasks.types.js";
 
-export type { HeartbeatRunResult };
+export type { PulsecheckRunResult };
 
 type RuntimeWriteConfigOptions = {
   envSnapshotForRestore?: Record<string, string | undefined>;
@@ -28,12 +28,12 @@ export type RuntimeLogger = {
   error: (message: string, meta?: Record<string, unknown>) => void;
 };
 
-export type RunHeartbeatOnceOptions = {
+export type RunPulsecheckOnceOptions = {
   reason?: string;
   agentId?: string;
   sessionKey?: string;
-  /** Override heartbeat config (e.g. `{ target: "last" }` to deliver to the last active channel). */
-  heartbeat?: { target?: string };
+  /** Override pulsecheck config (e.g. `{ target: "last" }` to deliver to the last active channel). */
+  pulsecheck?: { target?: string };
 };
 
 /** Core runtime helpers exposed to trusted native plugins. */
@@ -73,14 +73,14 @@ export type PluginRuntimeCore = {
   };
   system: {
     enqueueSystemEvent: typeof import("../../infra/system-events.js").enqueueSystemEvent;
-    requestHeartbeatNow: typeof import("../../infra/heartbeat-wake.js").requestHeartbeatNow;
+    requestPulsecheckNow: typeof import("../../infra/pulsecheck-wake.js").requestPulsecheckNow;
     /**
-     * Run a single heartbeat cycle immediately (bypassing the coalesce timer).
-     * Accepts an optional `heartbeat` config override so callers can force
+     * Run a single pulsecheck cycle immediately (bypassing the coalesce timer).
+     * Accepts an optional `pulsecheck` config override so callers can force
      * delivery to the last active channel — the same pattern the cron service
      * uses to avoid the default `target: "none"` suppression.
      */
-    runHeartbeatOnce: (opts?: RunHeartbeatOnceOptions) => Promise<HeartbeatRunResult>;
+    runPulsecheckOnce: (opts?: RunPulsecheckOnceOptions) => Promise<PulsecheckRunResult>;
     runCommandWithTimeout: typeof import("../../process/exec.js").runCommandWithTimeout;
     formatNativeDependencyHint: typeof import("./native-deps.js").formatNativeDependencyHint;
   };

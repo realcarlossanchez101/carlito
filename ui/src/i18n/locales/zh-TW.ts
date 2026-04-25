@@ -768,7 +768,7 @@ export const zh_TW: TranslationMap = {
       sessionHelp: "主要會發佈系統事件。獨立則會執行專用的 Agent 回合。",
       wakeMode: "喚醒模式",
       now: "現在",
-      nextHeartbeat: "下一次心跳",
+      nextPulsecheck: "下一次心跳",
       wakeModeHelp: "現在會立即觸發。下一次心跳會等待到下一個週期。",
       payloadKind: "要執行什麼？",
       systemEvent: "將訊息發佈到主要時間軸",

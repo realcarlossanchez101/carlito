@@ -1,5 +1,5 @@
 import type { OpenClawConfig } from "../config/types.openclaw.js";
-import type { HeartbeatRunner } from "../infra/heartbeat-runner.js";
+import type { PulsecheckRunner } from "../infra/pulsecheck-runner.js";
 import type { ChannelHealthMonitor } from "./channel-health-monitor.js";
 
 export type GatewayConfigReloaderHandle = {
@@ -12,7 +12,7 @@ export type GatewayServerMutableState = {
   healthInterval: ReturnType<typeof setInterval>;
   dedupeCleanup: ReturnType<typeof setInterval>;
   mediaCleanup: ReturnType<typeof setInterval> | null;
-  heartbeatRunner: HeartbeatRunner;
+  pulsecheckRunner: PulsecheckRunner;
   stopGatewayUpdateCheck: () => void;
   tailscaleCleanup: (() => Promise<void>) | null;
   skillsRefreshTimer: ReturnType<typeof setTimeout> | null;
@@ -23,7 +23,7 @@ export type GatewayServerMutableState = {
   mcpServer: { port: number; close: () => Promise<void> } | undefined;
   configReloader: GatewayConfigReloaderHandle;
   agentUnsub: (() => void) | null;
-  heartbeatUnsub: (() => void) | null;
+  pulsecheckUnsub: (() => void) | null;
   transcriptUnsub: (() => void) | null;
   lifecycleUnsub: (() => void) | null;
 };
@@ -40,10 +40,10 @@ export function createGatewayServerMutableState(): GatewayServerMutableState {
     healthInterval: noopInterval(),
     dedupeCleanup: noopInterval(),
     mediaCleanup: null as ReturnType<typeof setInterval> | null,
-    heartbeatRunner: {
+    pulsecheckRunner: {
       stop: () => {},
       updateConfig: (_cfg: OpenClawConfig) => {},
-    } satisfies HeartbeatRunner,
+    } satisfies PulsecheckRunner,
     stopGatewayUpdateCheck: () => {},
     tailscaleCleanup: null as (() => Promise<void>) | null,
     skillsRefreshTimer: null as ReturnType<typeof setTimeout> | null,
@@ -54,7 +54,7 @@ export function createGatewayServerMutableState(): GatewayServerMutableState {
     mcpServer: undefined as { port: number; close: () => Promise<void> } | undefined,
     configReloader: { stop: async () => {} } satisfies GatewayConfigReloaderHandle,
     agentUnsub: null as (() => void) | null,
-    heartbeatUnsub: null as (() => void) | null,
+    pulsecheckUnsub: null as (() => void) | null,
     transcriptUnsub: null as (() => void) | null,
     lifecycleUnsub: null as (() => void) | null,
   };

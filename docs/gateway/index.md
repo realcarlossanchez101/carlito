@@ -301,7 +301,7 @@ Defaults include isolated state/config and base gateway port `19001`.
 - Requests: `req(method, params)` → `res(ok/payload|error)`.
 - Common events include `connect.challenge`, `agent`, `chat`,
   `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
-  `health`, `heartbeat`, pairing/approval lifecycle events, and `shutdown`.
+  `health`, `pulsecheck`, pairing/approval lifecycle events, and `shutdown`.
 
 Agent runs are two-stage:
 

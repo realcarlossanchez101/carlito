@@ -952,18 +952,18 @@ function validateConfigObjectWithPluginsBase(
     }
   }
 
-  const heartbeatChannelIds = new Set<string>();
+  const pulsecheckChannelIds = new Set<string>();
   for (const channelId of CHANNEL_IDS) {
-    heartbeatChannelIds.add(normalizeLowercaseStringOrEmpty(channelId));
+    pulsecheckChannelIds.add(normalizeLowercaseStringOrEmpty(channelId));
   }
 
-  const validateHeartbeatTarget = (target: string | undefined, path: string) => {
+  const validatePulsecheckTarget = (target: string | undefined, path: string) => {
     if (typeof target !== "string") {
       return;
     }
     const trimmed = target.trim();
     if (!trimmed) {
-      issues.push({ path, message: "heartbeat target must not be empty" });
+      issues.push({ path, message: "pulsecheck target must not be empty" });
       return;
     }
     const normalized = normalizeLowercaseStringOrEmpty(trimmed);
@@ -973,30 +973,30 @@ function validateConfigObjectWithPluginsBase(
     if (normalizeChatChannelId(trimmed)) {
       return;
     }
-    if (!heartbeatChannelIds.has(normalized)) {
+    if (!pulsecheckChannelIds.has(normalized)) {
       const { registry } = ensureRegistry();
       for (const record of registry.plugins) {
         for (const channelId of record.channels) {
           const pluginChannel = channelId.trim();
           if (pluginChannel) {
-            heartbeatChannelIds.add(normalizeLowercaseStringOrEmpty(pluginChannel));
+            pulsecheckChannelIds.add(normalizeLowercaseStringOrEmpty(pluginChannel));
           }
         }
       }
     }
-    if (heartbeatChannelIds.has(normalized)) {
+    if (pulsecheckChannelIds.has(normalized)) {
       return;
     }
-    issues.push({ path, message: `unknown heartbeat target: ${target}` });
+    issues.push({ path, message: `unknown pulsecheck target: ${target}` });
   };
 
-  validateHeartbeatTarget(
-    config.agents?.defaults?.heartbeat?.target,
-    "agents.defaults.heartbeat.target",
+  validatePulsecheckTarget(
+    config.agents?.defaults?.pulsecheck?.target,
+    "agents.defaults.pulsecheck.target",
   );
   if (Array.isArray(config.agents?.list)) {
     for (const [index, entry] of config.agents.list.entries()) {
-      validateHeartbeatTarget(entry?.heartbeat?.target, `agents.list.${index}.heartbeat.target`);
+      validatePulsecheckTarget(entry?.pulsecheck?.target, `agents.list.${index}.pulsecheck.target`);
     }
   }
 

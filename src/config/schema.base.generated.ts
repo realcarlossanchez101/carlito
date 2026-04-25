@@ -5046,7 +5046,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                   },
                 ],
               },
-              heartbeat: {
+              pulsecheck: {
                 type: "object",
                 properties: {
                   every: {
@@ -5090,9 +5090,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                         const: "block",
                       },
                     ],
-                    title: "Heartbeat Direct Policy",
+                    title: "Pulsecheck Direct Policy",
                     description:
-                      'Controls whether heartbeat delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
+                      'Controls whether pulsecheck delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
                   },
                   to: {
                     type: "string",
@@ -5105,9 +5105,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                   },
                   includeSystemPromptSection: {
                     type: "boolean",
-                    title: "Heartbeat Include System Prompt Section",
+                    title: "Pulsecheck Include System Prompt Section",
                     description:
-                      "Includes the default agent's ## Heartbeats system prompt section when true. Turn this off to keep heartbeat runtime behavior while omitting the heartbeat prompt instructions from the agent system prompt.",
+                      "Includes the default agent's ## Pulsechecks system prompt section when true. Turn this off to keep pulsecheck runtime behavior while omitting the pulsecheck prompt instructions from the agent system prompt.",
                   },
                   ackMaxChars: {
                     type: "integer",
@@ -5116,16 +5116,16 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                   },
                   suppressToolErrorWarnings: {
                     type: "boolean",
-                    title: "Heartbeat Suppress Tool Error Warnings",
-                    description: "Suppress tool error warning payloads during heartbeat runs.",
+                    title: "Pulsecheck Suppress Tool Error Warnings",
+                    description: "Suppress tool error warning payloads during pulsecheck runs.",
                   },
                   timeoutSeconds: {
                     type: "integer",
                     exclusiveMinimum: 0,
                     maximum: 9007199254740991,
-                    title: "Heartbeat Timeout (Seconds)",
+                    title: "Pulsecheck Timeout (Seconds)",
                     description:
-                      "Maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
+                      "Maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
                   },
                   lightContext: {
                     type: "boolean",
@@ -6370,7 +6370,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                   description:
                     "Optional per-agent overrides for the focused context budget knobs. Omitted fields inherit agents.defaults.contextLimits.",
                 },
-                heartbeat: {
+                pulsecheck: {
                   type: "object",
                   properties: {
                     every: {
@@ -6414,9 +6414,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                           const: "block",
                         },
                       ],
-                      title: "Heartbeat Direct Policy",
+                      title: "Pulsecheck Direct Policy",
                       description:
-                        'Per-agent override for heartbeat direct/DM delivery policy; use "block" for agents that should only send heartbeat alerts to non-DM destinations.',
+                        'Per-agent override for pulsecheck direct/DM delivery policy; use "block" for agents that should only send pulsecheck alerts to non-DM destinations.',
                     },
                     to: {
                       type: "string",
@@ -6429,9 +6429,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                     },
                     includeSystemPromptSection: {
                       type: "boolean",
-                      title: "Heartbeat Include System Prompt Section",
+                      title: "Pulsecheck Include System Prompt Section",
                       description:
-                        "Per-agent override for whether the default agent's ## Heartbeats system prompt section is injected. Use false to keep heartbeat runtime behavior but omit the heartbeat prompt instructions from that agent's system prompt.",
+                        "Per-agent override for whether the default agent's ## Pulsechecks system prompt section is injected. Use false to keep pulsecheck runtime behavior but omit the pulsecheck prompt instructions from that agent's system prompt.",
                     },
                     ackMaxChars: {
                       type: "integer",
@@ -6440,16 +6440,16 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                     },
                     suppressToolErrorWarnings: {
                       type: "boolean",
-                      title: "Heartbeat Suppress Tool Error Warnings",
-                      description: "Suppress tool error warning payloads during heartbeat runs.",
+                      title: "Pulsecheck Suppress Tool Error Warnings",
+                      description: "Suppress tool error warning payloads during pulsecheck runs.",
                     },
                     timeoutSeconds: {
                       type: "integer",
                       exclusiveMinimum: 0,
                       maximum: 9007199254740991,
-                      title: "Heartbeat Timeout (Seconds)",
+                      title: "Pulsecheck Timeout (Seconds)",
                       description:
-                        "Per-agent maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to inherit the merged heartbeat/default agent timeout.",
+                        "Per-agent maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to inherit the merged pulsecheck/default agent timeout.",
                     },
                     lightContext: {
                       type: "boolean",
@@ -17558,7 +17558,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                 type: "boolean",
                 title: "Exec Notify On Exit",
                 description:
-                  "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a heartbeat.",
+                  "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a pulsecheck.",
               },
               notifyOnExitEmptySuccess: {
                 type: "boolean",
@@ -20168,7 +20168,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                   ],
                   title: "Hook Mapping Action",
                   description:
-                    'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when heartbeat-driven processing is preferred.',
+                    'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when pulsecheck-driven processing is preferred.',
                 },
                 wakeMode: {
                   anyOf: [
@@ -20178,12 +20178,12 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
                     },
                     {
                       type: "string",
-                      const: "next-heartbeat",
+                      const: "next-pulsecheck",
                     },
                   ],
                   title: "Hook Mapping Wake Mode",
                   description:
-                    'Wake scheduling mode: "now" wakes immediately, while "next-heartbeat" defers until the next heartbeat cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
+                    'Wake scheduling mode: "now" wakes immediately, while "next-pulsecheck" defers until the next pulsecheck cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
                 },
                 name: {
                   type: "string",
@@ -20648,13 +20648,13 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
             description:
               "Enables the web channel runtime and related websocket lifecycle behavior. Keep disabled when web chat is unused to reduce active connection management overhead.",
           },
-          heartbeatSeconds: {
+          pulsecheckSeconds: {
             type: "integer",
             exclusiveMinimum: 0,
             maximum: 9007199254740991,
-            title: "Web Channel Heartbeat Interval (sec)",
+            title: "Web Channel Pulsecheck Interval (sec)",
             description:
-              "Heartbeat interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
+              "Pulsecheck interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
           },
           reconnect: {
             type: "object",
@@ -20706,12 +20706,12 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
         additionalProperties: false,
         title: "Web Channel",
         description:
-          "Web channel runtime settings for heartbeat and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
+          "Web channel runtime settings for pulsecheck and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
       },
       channels: {
         title: "Channels",
         description:
-          "Channel provider configurations plus shared defaults that control access policies, heartbeat visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
+          "Channel provider configurations plus shared defaults that control access policies, pulsecheck visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
         properties: {},
         required: [],
         additionalProperties: true,
@@ -23139,7 +23139,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       label: "Channels",
       group: "Messaging Channels",
       order: 150,
-      help: "Channel provider configurations plus shared defaults that control access policies, heartbeat visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
+      help: "Channel provider configurations plus shared defaults that control access policies, pulsecheck visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
       tags: ["advanced"],
     },
     skills: {
@@ -24235,7 +24235,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
     },
     "tools.exec.notifyOnExit": {
       label: "Exec Notify On Exit",
-      help: "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a heartbeat.",
+      help: "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a pulsecheck.",
       tags: ["tools"],
     },
     "tools.exec.notifyOnExitEmptySuccess": {
@@ -26054,14 +26054,14 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       help: 'Embedded Pi execution contract: "default" keeps the standard runner behavior, while "strict-agentic" keeps OpenAI/OpenAI Codex GPT-5-family runs acting until they hit a real blocker instead of stopping at plans or filler.',
       tags: ["advanced"],
     },
-    "agents.defaults.heartbeat.includeSystemPromptSection": {
-      label: "Heartbeat Include System Prompt Section",
-      help: "Includes the default agent's ## Heartbeats system prompt section when true. Turn this off to keep heartbeat runtime behavior while omitting the heartbeat prompt instructions from the agent system prompt.",
+    "agents.defaults.pulsecheck.includeSystemPromptSection": {
+      label: "Pulsecheck Include System Prompt Section",
+      help: "Includes the default agent's ## Pulsechecks system prompt section when true. Turn this off to keep pulsecheck runtime behavior while omitting the pulsecheck prompt instructions from the agent system prompt.",
       tags: ["automation"],
     },
-    "agents.list.*.heartbeat.includeSystemPromptSection": {
-      label: "Heartbeat Include System Prompt Section",
-      help: "Per-agent override for whether the default agent's ## Heartbeats system prompt section is injected. Use false to keep heartbeat runtime behavior but omit the heartbeat prompt instructions from that agent's system prompt.",
+    "agents.list.*.pulsecheck.includeSystemPromptSection": {
+      label: "Pulsecheck Include System Prompt Section",
+      help: "Per-agent override for whether the default agent's ## Pulsechecks system prompt section is injected. Use false to keep pulsecheck runtime behavior but omit the pulsecheck prompt instructions from that agent's system prompt.",
       tags: ["automation"],
     },
     "agents.list[].embeddedPi": {
@@ -26074,32 +26074,32 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       help: 'Optional per-agent embedded Pi execution contract override. Set "strict-agentic" to keep that agent acting through plan-only turns on OpenAI/OpenAI Codex GPT-5-family runs, or "default" to inherit the standard runner behavior.',
       tags: ["advanced"],
     },
-    "agents.defaults.heartbeat.directPolicy": {
-      label: "Heartbeat Direct Policy",
-      help: 'Controls whether heartbeat delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
+    "agents.defaults.pulsecheck.directPolicy": {
+      label: "Pulsecheck Direct Policy",
+      help: 'Controls whether pulsecheck delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
       tags: ["access", "storage", "automation"],
     },
-    "agents.list.*.heartbeat.directPolicy": {
-      label: "Heartbeat Direct Policy",
-      help: 'Per-agent override for heartbeat direct/DM delivery policy; use "block" for agents that should only send heartbeat alerts to non-DM destinations.',
+    "agents.list.*.pulsecheck.directPolicy": {
+      label: "Pulsecheck Direct Policy",
+      help: 'Per-agent override for pulsecheck direct/DM delivery policy; use "block" for agents that should only send pulsecheck alerts to non-DM destinations.',
       tags: ["access", "storage", "automation"],
     },
-    "agents.defaults.heartbeat.suppressToolErrorWarnings": {
-      label: "Heartbeat Suppress Tool Error Warnings",
-      help: "Suppress tool error warning payloads during heartbeat runs.",
+    "agents.defaults.pulsecheck.suppressToolErrorWarnings": {
+      label: "Pulsecheck Suppress Tool Error Warnings",
+      help: "Suppress tool error warning payloads during pulsecheck runs.",
       tags: ["automation"],
     },
-    "agents.list.*.heartbeat.suppressToolErrorWarnings": {
-      label: "Heartbeat Suppress Tool Error Warnings",
+    "agents.list.*.pulsecheck.suppressToolErrorWarnings": {
+      label: "Pulsecheck Suppress Tool Error Warnings",
       tags: ["automation"],
     },
-    "agents.defaults.heartbeat.timeoutSeconds": {
-      label: "Heartbeat Timeout (Seconds)",
-      help: "Maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
+    "agents.defaults.pulsecheck.timeoutSeconds": {
+      label: "Pulsecheck Timeout (Seconds)",
+      help: "Maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
       tags: ["performance", "automation"],
     },
-    "agents.list.*.heartbeat.timeoutSeconds": {
-      label: "Heartbeat Timeout (Seconds)",
+    "agents.list.*.pulsecheck.timeoutSeconds": {
+      label: "Pulsecheck Timeout (Seconds)",
       tags: ["performance", "automation"],
     },
     "agents.defaults.sandbox.browser.network": {
@@ -26637,12 +26637,12 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
     },
     "hooks.mappings[].action": {
       label: "Hook Mapping Action",
-      help: 'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when heartbeat-driven processing is preferred.',
+      help: 'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when pulsecheck-driven processing is preferred.',
       tags: ["advanced"],
     },
     "hooks.mappings[].wakeMode": {
       label: "Hook Mapping Wake Mode",
-      help: 'Wake scheduling mode: "now" wakes immediately, while "next-heartbeat" defers until the next heartbeat cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
+      help: 'Wake scheduling mode: "now" wakes immediately, while "next-pulsecheck" defers until the next pulsecheck cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
       tags: ["advanced"],
     },
     "hooks.mappings[].name": {
@@ -26859,7 +26859,7 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
     },
     web: {
       label: "Web Channel",
-      help: "Web channel runtime settings for heartbeat and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
+      help: "Web channel runtime settings for pulsecheck and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
       tags: ["advanced"],
     },
     "web.enabled": {
@@ -26867,9 +26867,9 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       help: "Enables the web channel runtime and related websocket lifecycle behavior. Keep disabled when web chat is unused to reduce active connection management overhead.",
       tags: ["advanced"],
     },
-    "web.heartbeatSeconds": {
-      label: "Web Channel Heartbeat Interval (sec)",
-      help: "Heartbeat interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
+    "web.pulsecheckSeconds": {
+      label: "Web Channel Pulsecheck Interval (sec)",
+      help: "Pulsecheck interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
       tags: ["automation"],
     },
     "web.reconnect": {
@@ -27129,24 +27129,24 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       help: 'Default supplemental context visibility for fetched quote/thread/history content: "all" (keep all context), "allowlist" (only allowlisted senders), or "allowlist_quote" (allowlist + keep explicit quotes).',
       tags: ["network", "channels"],
     },
-    "channels.defaults.heartbeat": {
-      label: "Default Heartbeat Visibility",
-      help: "Default heartbeat visibility settings for status messages emitted by providers/channels. Tune this globally to reduce noisy healthy-state updates while keeping alerts visible.",
+    "channels.defaults.pulsecheck": {
+      label: "Default Pulsecheck Visibility",
+      help: "Default pulsecheck visibility settings for status messages emitted by providers/channels. Tune this globally to reduce noisy healthy-state updates while keeping alerts visible.",
       tags: ["network", "automation", "channels"],
     },
-    "channels.defaults.heartbeat.showOk": {
-      label: "Heartbeat Show OK",
-      help: "Shows healthy/OK heartbeat status entries when true in channel status outputs. Keep false in noisy environments and enable only when operators need explicit healthy confirmations.",
+    "channels.defaults.pulsecheck.showOk": {
+      label: "Pulsecheck Show OK",
+      help: "Shows healthy/OK pulsecheck status entries when true in channel status outputs. Keep false in noisy environments and enable only when operators need explicit healthy confirmations.",
       tags: ["network", "automation", "channels"],
     },
-    "channels.defaults.heartbeat.showAlerts": {
-      label: "Heartbeat Show Alerts",
-      help: "Shows degraded/error heartbeat alerts when true so operator channels surface problems promptly. Keep enabled in production so broken channel states are visible.",
+    "channels.defaults.pulsecheck.showAlerts": {
+      label: "Pulsecheck Show Alerts",
+      help: "Shows degraded/error pulsecheck alerts when true so operator channels surface problems promptly. Keep enabled in production so broken channel states are visible.",
       tags: ["network", "automation", "channels"],
     },
-    "channels.defaults.heartbeat.useIndicator": {
-      label: "Heartbeat Use Indicator",
-      help: "Enables concise indicator-style heartbeat rendering instead of verbose status text where supported. Use indicator mode for dense dashboards with many active channels.",
+    "channels.defaults.pulsecheck.useIndicator": {
+      label: "Pulsecheck Use Indicator",
+      help: "Enables concise indicator-style pulsecheck rendering instead of verbose status text where supported. Use indicator mode for dense dashboards with many active channels.",
       tags: ["network", "automation", "channels"],
     },
     "channels.modelByChannel": {
@@ -27165,14 +27165,14 @@ export const GENERATED_BASE_CONFIG_SCHEMA: BaseConfigSchemaResponse = {
       placeholder: "avatars/openclaw.png",
       tags: ["advanced"],
     },
-    "agents.list[].heartbeat.suppressToolErrorWarnings": {
-      label: "Agent Heartbeat Suppress Tool Error Warnings",
-      help: "Suppress tool error warning payloads during heartbeat runs.",
+    "agents.list[].pulsecheck.suppressToolErrorWarnings": {
+      label: "Agent Pulsecheck Suppress Tool Error Warnings",
+      help: "Suppress tool error warning payloads during pulsecheck runs.",
       tags: ["automation"],
     },
-    "agents.list[].heartbeat.timeoutSeconds": {
-      label: "Agent Heartbeat Timeout (Seconds)",
-      help: "Per-agent maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to inherit the merged heartbeat/default agent timeout.",
+    "agents.list[].pulsecheck.timeoutSeconds": {
+      label: "Agent Pulsecheck Timeout (Seconds)",
+      help: "Per-agent maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to inherit the merged pulsecheck/default agent timeout.",
       tags: ["performance", "automation"],
     },
     "agents.list[].sandbox.browser.network": {

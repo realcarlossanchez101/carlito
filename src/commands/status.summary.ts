@@ -5,13 +5,13 @@ import { readSessionStoreReadOnly } from "../config/sessions/store-read.js";
 import { resolveSessionTotalTokens, type SessionEntry } from "../config/sessions/types.js";
 import type { OpenClawConfig } from "../config/types.js";
 import { listGatewayAgentsBasic } from "../gateway/agent-list.js";
-import { resolveHeartbeatSummaryForAgent } from "../infra/heartbeat-summary.js";
+import { resolvePulsecheckSummaryForAgent } from "../infra/pulsecheck-summary.js";
 import { peekSystemEvents } from "../infra/system-events.js";
 import { hasConfiguredChannelsForReadOnlyScope } from "../plugins/channel-plugin-ids.js";
 import { parseAgentSessionKey } from "../routing/session-key.js";
 import { createLazyRuntimeSurface } from "../shared/lazy-runtime.js";
 import { resolveRuntimeServiceVersion } from "../version.js";
-import type { HeartbeatStatus, SessionStatus, StatusSummary } from "./status.types.js";
+import type { PulsecheckStatus, SessionStatus, StatusSummary } from "./status.types.js";
 
 let channelSummaryModulePromise: Promise<typeof import("../infra/channel-summary.js")> | undefined;
 let linkChannelModulePromise: Promise<typeof import("./status.link-channel.js")> | undefined;
@@ -130,14 +130,14 @@ export async function getStatusSummary(
       )
     : null;
   const agentList = listGatewayAgentsBasic(cfg);
-  const heartbeatAgents: HeartbeatStatus[] = agentList.agents.map((agent) => {
-    const summary = resolveHeartbeatSummaryForAgent(cfg, agent.id);
+  const pulsecheckAgents: PulsecheckStatus[] = agentList.agents.map((agent) => {
+    const summary = resolvePulsecheckSummaryForAgent(cfg, agent.id);
     return {
       agentId: agent.id,
       enabled: summary.enabled,
       every: summary.every,
       everyMs: summary.everyMs,
-    } satisfies HeartbeatStatus;
+    } satisfies PulsecheckStatus;
   });
   const channelSummary = needsChannelPlugins
     ? await loadChannelSummaryModule().then(({ buildChannelSummary }) =>
@@ -275,9 +275,9 @@ export async function getStatusSummary(
           authAgeMs: linkContext.authAgeMs,
         }
       : undefined,
-    heartbeat: {
+    pulsecheck: {
       defaultAgentId: agentList.defaultId,
-      agents: heartbeatAgents,
+      agents: pulsecheckAgents,
     },
     channelSummary,
     queuedSystemEvents,

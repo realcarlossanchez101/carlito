@@ -12,8 +12,8 @@ vi.mock("../config/config.js", () => ({
   loadConfig: vi.fn(() => ({})),
 }));
 
-vi.mock("../infra/heartbeat-visibility.js", () => ({
-  resolveHeartbeatVisibility: vi.fn(() => ({
+vi.mock("../infra/pulsecheck-visibility.js", () => ({
+  resolvePulsecheckVisibility: vi.fn(() => ({
     showOk: false,
     showAlerts: true,
     useIndicator: true,
@@ -25,7 +25,7 @@ vi.mock("./server-chat.load-gateway-session-row.runtime.js", () => ({
 }));
 
 import { loadConfig } from "../config/config.js";
-import { resolveHeartbeatVisibility } from "../infra/heartbeat-visibility.js";
+import { resolvePulsecheckVisibility } from "../infra/pulsecheck-visibility.js";
 import {
   createAgentEventHandler,
   createChatRunState,
@@ -37,7 +37,7 @@ import { loadGatewaySessionRow } from "./server-chat.load-gateway-session-row.ru
 describe("agent event handler", () => {
   beforeEach(() => {
     vi.mocked(loadConfig).mockReturnValue({});
-    vi.mocked(resolveHeartbeatVisibility).mockReturnValue({
+    vi.mocked(resolvePulsecheckVisibility).mockReturnValue({
       showOk: false,
       showAlerts: true,
       useIndicator: true,
@@ -1398,67 +1398,67 @@ describe("agent event handler", () => {
     resetAgentRunContextForTest();
   });
 
-  it("suppresses heartbeat ack-like chat output when showOk is false", () => {
+  it("suppresses pulsecheck ack-like chat output when showOk is false", () => {
     const { broadcast, nodeSendToSession, chatRunState, handler } = createHarness({
       now: 2_000,
     });
-    chatRunState.registry.add("run-heartbeat", {
-      sessionKey: "session-heartbeat",
-      clientRunId: "client-heartbeat",
+    chatRunState.registry.add("run-pulsecheck", {
+      sessionKey: "session-pulsecheck",
+      clientRunId: "client-pulsecheck",
     });
-    registerAgentRunContext("run-heartbeat", {
-      sessionKey: "session-heartbeat",
-      isHeartbeat: true,
+    registerAgentRunContext("run-pulsecheck", {
+      sessionKey: "session-pulsecheck",
+      isPulsecheck: true,
       verboseLevel: "off",
     });
 
     handler({
-      runId: "run-heartbeat",
+      runId: "run-pulsecheck",
       seq: 1,
       stream: "assistant",
       ts: Date.now(),
       data: {
-        text: "HEARTBEAT_OK Read HEARTBEAT.md if it exists (workspace context). Follow it strictly.",
+        text: "PULSECHECK_OK Read PULSECHECK.md if it exists (workspace context). Follow it strictly.",
       },
     });
 
     expect(chatBroadcastCalls(broadcast)).toHaveLength(0);
     expect(sessionChatCalls(nodeSendToSession)).toHaveLength(0);
 
-    emitLifecycleEnd(handler, "run-heartbeat");
+    emitLifecycleEnd(handler, "run-pulsecheck");
 
     const finalPayload = expectSingleFinalChatPayload(broadcast) as { message?: unknown };
     expect(finalPayload.message).toBeUndefined();
     expect(sessionChatCalls(nodeSendToSession)).toHaveLength(1);
   });
 
-  it("keeps heartbeat alert text in final chat output when remainder exceeds ackMaxChars", () => {
+  it("keeps pulsecheck alert text in final chat output when remainder exceeds ackMaxChars", () => {
     vi.mocked(loadConfig).mockReturnValue({
-      agents: { defaults: { heartbeat: { ackMaxChars: 10 } } },
+      agents: { defaults: { pulsecheck: { ackMaxChars: 10 } } },
     });
 
     const { broadcast, chatRunState, handler } = createHarness({ now: 3_000 });
-    chatRunState.registry.add("run-heartbeat-alert", {
-      sessionKey: "session-heartbeat-alert",
-      clientRunId: "client-heartbeat-alert",
+    chatRunState.registry.add("run-pulsecheck-alert", {
+      sessionKey: "session-pulsecheck-alert",
+      clientRunId: "client-pulsecheck-alert",
     });
-    registerAgentRunContext("run-heartbeat-alert", {
-      sessionKey: "session-heartbeat-alert",
-      isHeartbeat: true,
+    registerAgentRunContext("run-pulsecheck-alert", {
+      sessionKey: "session-pulsecheck-alert",
+      isPulsecheck: true,
       verboseLevel: "off",
     });
 
     handler({
-      runId: "run-heartbeat-alert",
+      runId: "run-pulsecheck-alert",
       seq: 1,
       stream: "assistant",
       ts: Date.now(),
       data: {
-        text: "HEARTBEAT_OK Disk usage crossed 95 percent on /data and needs cleanup now.",
+        text: "PULSECHECK_OK Disk usage crossed 95 percent on /data and needs cleanup now.",
       },
     });
 
-    emitLifecycleEnd(handler, "run-heartbeat-alert");
+    emitLifecycleEnd(handler, "run-pulsecheck-alert");
 
     const payload = expectSingleFinalChatPayload(broadcast) as {
       message?: { content?: Array<{ text?: string }> };

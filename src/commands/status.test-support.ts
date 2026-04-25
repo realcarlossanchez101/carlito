@@ -1,4 +1,4 @@
-import type { HeartbeatEventPayload } from "../infra/heartbeat-events.js";
+import type { PulsecheckEventPayload } from "../infra/pulsecheck-events.js";
 import type { Tone } from "../memory-host-sdk/status.js";
 import type { PluginCompatibilityNotice } from "../plugins/status.js";
 import type { buildStatusCommandOverviewRows } from "./status-overview-rows.ts";
@@ -83,7 +83,7 @@ export const baseStatusOverviewSurface = {
 export const baseStatusSummary = {
   tasks: { total: 3, active: 1, failures: 0, byStatus: { queued: 1, running: 1 } },
   taskAudit: { errors: 1, warnings: 0 },
-  heartbeat: {
+  pulsecheck: {
     defaultAgentId: "main",
     agents: [{ agentId: "main", enabled: true, everyMs: 60_000, every: "1m" }],
   },
@@ -137,7 +137,7 @@ export const baseStatusPluginCompatibility = [
   { pluginId: "a", severity: "warn", message: "legacy" },
 ] as PluginCompatibilityNotice[];
 
-export function createStatusLastHeartbeat(): HeartbeatEventPayload {
+export function createStatusLastPulsecheck(): PulsecheckEventPayload {
   return {
     ts: Date.now() - 30_000,
     status: "ok-token",
@@ -154,7 +154,7 @@ export function createStatusHealth() {
     channels: {},
     channelOrder: [],
     channelLabels: {},
-    heartbeatSeconds: 60,
+    pulsecheckSeconds: 60,
     defaultAgentId: "main",
     agents: [],
     sessions: {
@@ -206,7 +206,7 @@ export function createStatusCommandOverviewRowsParams(
     osLabel: "macOS",
     summary: baseStatusSummary,
     health: createStatusHealth(),
-    lastHeartbeat: createStatusLastHeartbeat(),
+    lastPulsecheck: createStatusLastPulsecheck(),
     agentStatus: baseStatusAgentStatus,
     memory: baseStatusMemory,
     memoryPlugin: baseStatusMemoryPlugin,
@@ -241,7 +241,7 @@ export function createStatusCommandReportDataParams(
     },
     health: createStatusHealth(),
     usageLines: ["usage line"],
-    lastHeartbeat: createStatusLastHeartbeat(),
+    lastPulsecheck: createStatusLastPulsecheck(),
     agentStatus: baseStatusAgentStatus,
     channels: {
       rows: [{ id: "quietchat", label: "QuietChat", enabled: true, state: "ok", detail: "ready" }],

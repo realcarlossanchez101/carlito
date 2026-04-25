@@ -43,7 +43,7 @@ struct SettingsViewSmokeTests {
             updatedAtMs: 1_700_000_100_000,
             schedule: .every(everyMs: 30000, anchorMs: nil),
             sessionTarget: .isolated,
-            wakeMode: .nextHeartbeat,
+            wakeMode: .nextPulsecheck,
             payload: .agentTurn(
                 message: "hello",
                 thinking: "low",

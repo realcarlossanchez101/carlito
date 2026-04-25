@@ -29,7 +29,7 @@ import {
 
 export type OutboundChannel = DeliverableMessageChannel;
 
-export type HeartbeatTarget = OutboundChannel;
+export type PulsecheckTarget = OutboundChannel;
 
 export type OutboundTarget = {
   channel: OutboundChannel;
@@ -41,7 +41,7 @@ export type OutboundTarget = {
   lastAccountId?: string;
 };
 
-export type HeartbeatSenderContext = {
+export type PulsecheckSenderContext = {
   sender: string;
   provider?: DeliverableMessageChannel;
   allowFrom: string[];
@@ -81,16 +81,16 @@ export function resolveOutboundTarget(params: {
   );
 }
 
-export function resolveHeartbeatDeliveryTarget(params: {
+export function resolvePulsecheckDeliveryTarget(params: {
   cfg: OpenClawConfig;
   entry?: SessionEntry;
-  heartbeat?: AgentDefaultsConfig["heartbeat"];
+  pulsecheck?: AgentDefaultsConfig["pulsecheck"];
   turnSource?: DeliveryContext;
 }): OutboundTarget {
   const { cfg, entry } = params;
-  const heartbeat = params.heartbeat ?? cfg.agents?.defaults?.heartbeat;
-  const rawTarget = heartbeat?.target;
-  let target: HeartbeatTarget = "none";
+  const pulsecheck = params.pulsecheck ?? cfg.agents?.defaults?.pulsecheck;
+  const rawTarget = pulsecheck?.target;
+  let target: PulsecheckTarget = "none";
   if (rawTarget === "none" || rawTarget === "last") {
     target = rawTarget;
   } else if (typeof rawTarget === "string") {
@@ -102,7 +102,7 @@ export function resolveHeartbeatDeliveryTarget(params: {
 
   if (target === "none") {
     const base = resolveSessionDeliveryTarget({ entry });
-    return buildNoHeartbeatDeliveryTarget({
+    return buildNoPulsecheckDeliveryTarget({
       reason: "target-none",
       lastChannel: base.lastChannel,
       lastAccountId: base.lastAccountId,
@@ -117,8 +117,8 @@ export function resolveHeartbeatDeliveryTarget(params: {
   const resolvedTarget = resolveSessionDeliveryTarget({
     entry,
     requestedChannel: target === "last" ? "last" : target,
-    explicitTo: heartbeat?.to,
-    mode: "heartbeat",
+    explicitTo: pulsecheck?.to,
+    mode: "pulsecheck",
     turnSourceChannel:
       resolvedTurnSource?.channel && isDeliverableMessageChannel(resolvedTurnSource.channel)
         ? resolvedTurnSource.channel
@@ -127,17 +127,17 @@ export function resolveHeartbeatDeliveryTarget(params: {
     turnSourceAccountId: resolvedTurnSource?.accountId,
     // Only pass threadId from an explicit turn source (e.g., restart sentinel's
     // delivery context). Do NOT fall back to session-stored threadId here —
-    // heartbeat mode intentionally drops inherited thread IDs to avoid replying
+    // pulsecheck mode intentionally drops inherited thread IDs to avoid replying
     // in stale threads (e.g., Slack thread_ts). The sentinel's delivery context
     // carries the correct topic/thread ID when present.
     turnSourceThreadId: params.turnSource?.threadId,
   });
 
-  const heartbeatAccountId = heartbeat?.accountId?.trim();
-  // Use explicit accountId from heartbeat config if provided, otherwise fall back to session
-  let effectiveAccountId = heartbeatAccountId || resolvedTarget.accountId;
+  const pulsecheckAccountId = pulsecheck?.accountId?.trim();
+  // Use explicit accountId from pulsecheck config if provided, otherwise fall back to session
+  let effectiveAccountId = pulsecheckAccountId || resolvedTarget.accountId;
 
-  if (heartbeatAccountId && resolvedTarget.channel) {
+  if (pulsecheckAccountId && resolvedTarget.channel) {
     const plugin = resolveOutboundChannelPlugin({
       channel: resolvedTarget.channel,
       cfg,
@@ -145,12 +145,12 @@ export function resolveHeartbeatDeliveryTarget(params: {
     const listAccountIds = plugin?.config.listAccountIds;
     const accountIds = listAccountIds ? listAccountIds(cfg) : [];
     if (accountIds.length > 0) {
-      const normalizedAccountId = normalizeAccountId(heartbeatAccountId);
+      const normalizedAccountId = normalizeAccountId(pulsecheckAccountId);
       const normalizedAccountIds = new Set(
         accountIds.map((accountId) => normalizeAccountId(accountId)),
       );
       if (!normalizedAccountIds.has(normalizedAccountId)) {
-        return buildNoHeartbeatDeliveryTarget({
+        return buildNoPulsecheckDeliveryTarget({
           reason: "unknown-account",
           accountId: normalizedAccountId,
           lastChannel: resolvedTarget.lastChannel,
@@ -162,7 +162,7 @@ export function resolveHeartbeatDeliveryTarget(params: {
   }
 
   if (!resolvedTarget.channel || !resolvedTarget.to) {
-    return buildNoHeartbeatDeliveryTarget({
+    return buildNoPulsecheckDeliveryTarget({
       reason: "no-target",
       accountId: effectiveAccountId,
       lastChannel: resolvedTarget.lastChannel,
@@ -175,10 +175,10 @@ export function resolveHeartbeatDeliveryTarget(params: {
     to: resolvedTarget.to,
     cfg,
     accountId: effectiveAccountId,
-    mode: "heartbeat",
+    mode: "pulsecheck",
   });
   if (!resolved.ok) {
-    return buildNoHeartbeatDeliveryTarget({
+    return buildNoPulsecheckDeliveryTarget({
       reason: "no-target",
       accountId: effectiveAccountId,
       lastChannel: resolvedTarget.lastChannel,
@@ -187,14 +187,14 @@ export function resolveHeartbeatDeliveryTarget(params: {
   }
 
   const sessionChatTypeHint =
-    target === "last" && !heartbeat?.to ? normalizeChatType(entry?.chatType) : undefined;
-  const deliveryChatType = resolveHeartbeatDeliveryChatType({
+    target === "last" && !pulsecheck?.to ? normalizeChatType(entry?.chatType) : undefined;
+  const deliveryChatType = resolvePulsecheckDeliveryChatType({
     channel: resolvedTarget.channel,
     to: resolved.to,
     sessionChatType: sessionChatTypeHint,
   });
-  if (deliveryChatType === "direct" && heartbeat?.directPolicy === "block") {
-    return buildNoHeartbeatDeliveryTarget({
+  if (deliveryChatType === "direct" && pulsecheck?.directPolicy === "block") {
+    return buildNoPulsecheckDeliveryTarget({
       reason: "dm-blocked",
       accountId: effectiveAccountId,
       lastChannel: resolvedTarget.lastChannel,
@@ -220,10 +220,10 @@ export function resolveHeartbeatDeliveryTarget(params: {
     }
   }
 
-  const inheritedHeartbeatThreadId = shouldReuseHeartbeatRouteThreadId({
+  const inheritedPulsecheckThreadId = shouldReusePulsecheckRouteThreadId({
     cfg,
     target,
-    heartbeat,
+    pulsecheck,
     turnSource: params.turnSource,
     entry,
     resolvedTarget,
@@ -236,15 +236,15 @@ export function resolveHeartbeatDeliveryTarget(params: {
     to: resolved.to,
     reason,
     accountId: effectiveAccountId,
-    // Heartbeats normally avoid inheriting session reply-thread IDs, but some
+    // Pulsechecks normally avoid inheriting session reply-thread IDs, but some
     // plugins encode thread/topic ids as part of the destination identity.
-    threadId: resolvedTarget.threadId ?? inheritedHeartbeatThreadId,
+    threadId: resolvedTarget.threadId ?? inheritedPulsecheckThreadId,
     lastChannel: resolvedTarget.lastChannel,
     lastAccountId: resolvedTarget.lastAccountId,
   };
 }
 
-function buildNoHeartbeatDeliveryTarget(params: {
+function buildNoPulsecheckDeliveryTarget(params: {
   reason: string;
   accountId?: string;
   lastChannel?: DeliverableMessageChannel;
@@ -284,7 +284,7 @@ function inferChatTypeFromTarget(params: {
   );
 }
 
-function resolveHeartbeatDeliveryChatType(params: {
+function resolvePulsecheckDeliveryChatType(params: {
   channel: DeliverableMessageChannel;
   to: string;
   sessionChatType?: ChatType;
@@ -298,10 +298,10 @@ function resolveHeartbeatDeliveryChatType(params: {
   });
 }
 
-function shouldReuseHeartbeatRouteThreadId(params: {
+function shouldReusePulsecheckRouteThreadId(params: {
   cfg: OpenClawConfig;
-  target: HeartbeatTarget;
-  heartbeat?: AgentDefaultsConfig["heartbeat"];
+  target: PulsecheckTarget;
+  pulsecheck?: AgentDefaultsConfig["pulsecheck"];
   turnSource?: DeliveryContext;
   entry?: SessionEntry;
   resolvedTarget: SessionDeliveryTarget;
@@ -310,10 +310,10 @@ function shouldReuseHeartbeatRouteThreadId(params: {
   const messaging =
     channel && resolveOutboundChannelPlugin({ channel, cfg: params.cfg })?.messaging;
   return (
-    messaging?.preserveHeartbeatThreadIdForGroupRoute === true &&
+    messaging?.preservePulsecheckThreadIdForGroupRoute === true &&
     params.resolvedTarget.threadId == null &&
     params.target === "last" &&
-    !params.heartbeat?.to &&
+    !params.pulsecheck?.to &&
     params.turnSource?.threadId == null &&
     params.resolvedTarget.channel === params.resolvedTarget.lastChannel &&
     Boolean(params.resolvedTarget.to) &&
@@ -323,7 +323,7 @@ function shouldReuseHeartbeatRouteThreadId(params: {
   );
 }
 
-function resolveHeartbeatSenderId(params: {
+function resolvePulsecheckSenderId(params: {
   allowFrom: Array<string | number>;
   deliveryTo?: string;
   lastTo?: string;
@@ -339,7 +339,7 @@ function resolveHeartbeatSenderId(params: {
 
   const allowList = mapAllowFromEntries(allowFrom).filter((entry) => entry && entry !== "*");
   if (allowFrom.includes("*")) {
-    return candidates[0] ?? "heartbeat";
+    return candidates[0] ?? "pulsecheck";
   }
   if (candidates.length > 0 && allowList.length > 0) {
     const matched = candidates.find((candidate) => allowList.includes(candidate));
@@ -353,14 +353,14 @@ function resolveHeartbeatSenderId(params: {
   if (allowList.length > 0) {
     return allowList[0];
   }
-  return candidates[0] ?? "heartbeat";
+  return candidates[0] ?? "pulsecheck";
 }
 
-export function resolveHeartbeatSenderContext(params: {
+export function resolvePulsecheckSenderContext(params: {
   cfg: OpenClawConfig;
   entry?: SessionEntry;
   delivery: OutboundTarget;
-}): HeartbeatSenderContext {
+}): PulsecheckSenderContext {
   const provider =
     params.delivery.channel !== "none" ? params.delivery.channel : params.delivery.lastChannel;
   const accountId =
@@ -377,7 +377,7 @@ export function resolveHeartbeatSenderContext(params: {
     : [];
   const allowFrom = mapAllowFromEntries(allowFromRaw);
 
-  const sender = resolveHeartbeatSenderId({
+  const sender = resolvePulsecheckSenderId({
     allowFrom,
     deliveryTo: params.delivery.to,
     lastTo: params.entry?.lastTo,

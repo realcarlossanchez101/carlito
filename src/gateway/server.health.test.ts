@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { emitAgentEvent } from "../infra/agent-events.js";
-import { emitHeartbeatEvent } from "../infra/heartbeat-events.js";
+import { emitPulsecheckEvent } from "../infra/pulsecheck-events.js";
 import { GATEWAY_CLIENT_MODES, GATEWAY_CLIENT_NAMES } from "../utils/message-channel.js";
 import { startGatewayServerHarness, type GatewayServerHarness } from "./server.e2e-ws-harness.js";
 import { installGatewayTestHooks, onceMessage } from "./test-helpers.js";
@@ -52,8 +52,8 @@ describe("gateway server health/presence", () => {
     },
   );
 
-  test("broadcasts heartbeat events and serves last-heartbeat", async () => {
-    type HeartbeatPayload = {
+  test("broadcasts pulsecheck events and serves last-pulsecheck", async () => {
+    type PulsecheckPayload = {
       ts: number;
       status: string;
       to?: string;
@@ -65,17 +65,17 @@ describe("gateway server health/presence", () => {
     type EventFrame = {
       type: "event";
       event: string;
-      payload?: HeartbeatPayload | null;
+      payload?: PulsecheckPayload | null;
     };
 
     const { ws } = await harness.openClient();
 
-    const waitHeartbeat = onceMessage<EventFrame>(
+    const waitPulsecheck = onceMessage<EventFrame>(
       ws,
-      (o) => o.type === "event" && o.event === "heartbeat",
+      (o) => o.type === "event" && o.event === "pulsecheck",
     );
-    emitHeartbeatEvent({ status: "sent", to: "+123", preview: "ping" });
-    const evt = await waitHeartbeat;
+    emitPulsecheckEvent({ status: "sent", to: "+123", preview: "ping" });
+    const evt = await waitPulsecheck;
     expect(evt.payload?.status).toBe("sent");
     expect(typeof evt.payload?.ts).toBe("number");
 
@@ -83,12 +83,12 @@ describe("gateway server health/presence", () => {
       JSON.stringify({
         type: "req",
         id: "hb-last",
-        method: "last-heartbeat",
+        method: "last-pulsecheck",
       }),
     );
     const last = await onceMessage(ws, (o) => o.type === "res" && o.id === "hb-last");
     expect(last.ok).toBe(true);
-    const lastPayload = last.payload as HeartbeatPayload | null | undefined;
+    const lastPayload = last.payload as PulsecheckPayload | null | undefined;
     expect(lastPayload?.status).toBe("sent");
     expect(lastPayload?.ts).toBe(evt.payload?.ts);
 
@@ -96,7 +96,7 @@ describe("gateway server health/presence", () => {
       JSON.stringify({
         type: "req",
         id: "hb-toggle-off",
-        method: "set-heartbeats",
+        method: "set-pulsechecks",
         params: { enabled: false },
       }),
     );

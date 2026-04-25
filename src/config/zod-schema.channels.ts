@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ChannelHeartbeatVisibilitySchema = z
+export const ChannelPulsecheckVisibilitySchema = z
   .object({
     showOk: z.boolean().optional(),
     showAlerts: z.boolean().optional(),

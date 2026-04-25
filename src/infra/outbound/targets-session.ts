@@ -149,7 +149,7 @@ export function resolveSessionDeliveryTarget(params: {
   const accountId = channel && channel === lastChannel ? lastAccountId : undefined;
   const threadId =
     channel && channel === lastChannel
-      ? mode === "heartbeat"
+      ? mode === "pulsecheck"
         ? hasTurnSourceThreadId
           ? params.turnSourceThreadId
           : undefined

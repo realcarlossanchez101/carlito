@@ -78,7 +78,7 @@ export type GatewayStatusSummary = {
     linked?: boolean;
     authAgeMs?: number | null;
   };
-  heartbeat?: {
+  pulsecheck?: {
     defaultAgentId?: string;
     agents?: Array<{
       agentId?: string;

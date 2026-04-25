@@ -2,8 +2,8 @@
 // module keeps responsibilities small and testable.
 import { resolveWebChannelAuthDir } from "./plugins/runtime/runtime-web-channel-plugin.js";
 
-export { HEARTBEAT_PROMPT } from "./auto-reply/heartbeat.js";
-export { HEARTBEAT_TOKEN } from "./auto-reply/tokens.js";
+export { PULSECHECK_PROMPT } from "./auto-reply/pulsecheck.js";
+export { PULSECHECK_TOKEN } from "./auto-reply/tokens.js";
 export { loadWebMedia, optimizeImageToJpeg } from "./media/web-media.js";
 export {
   createWebChannelSocket as createWaSocket,
@@ -17,8 +17,8 @@ export {
   monitorWebChannel,
   monitorWebInbox,
   pickWebChannel,
-  resolveHeartbeatRecipients,
-  runWebHeartbeatOnce,
+  resolvePulsecheckRecipients,
+  runWebPulsecheckOnce,
   sendWebChannelMessage as sendMessageWhatsApp,
   sendWebChannelReaction as sendReactionWhatsApp,
   waitForWebChannelConnection as waitForWaConnection,

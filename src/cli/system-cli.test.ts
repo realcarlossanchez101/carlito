@@ -47,7 +47,7 @@ describe("system-cli", () => {
     expect(callGatewayFromCli).toHaveBeenCalledWith(
       "wake",
       expect.objectContaining({ text: "  hello world  " }),
-      { mode: "next-heartbeat", text: "hello world" },
+      { mode: "next-pulsecheck", text: "hello world" },
       { expectFinal: false },
     );
     expect(runtimeLogs).toEqual(["ok"]);
@@ -65,19 +65,19 @@ describe("system-cli", () => {
     await runCli(["system", "event", "--text", "hello", "--mode", "later"]);
 
     expect(callGatewayFromCli).not.toHaveBeenCalled();
-    expect(runtimeErrors[0]).toContain("--mode must be now or next-heartbeat");
+    expect(runtimeErrors[0]).toContain("--mode must be now or next-pulsecheck");
   });
 
   it.each([
-    { args: ["system", "heartbeat", "last"], method: "last-heartbeat", params: undefined },
+    { args: ["system", "pulsecheck", "last"], method: "last-pulsecheck", params: undefined },
     {
-      args: ["system", "heartbeat", "enable"],
-      method: "set-heartbeats",
+      args: ["system", "pulsecheck", "enable"],
+      method: "set-pulsechecks",
       params: { enabled: true },
     },
     {
-      args: ["system", "heartbeat", "disable"],
-      method: "set-heartbeats",
+      args: ["system", "pulsecheck", "disable"],
+      method: "set-pulsechecks",
       params: { enabled: false },
     },
     { args: ["system", "presence"], method: "system-presence", params: undefined },

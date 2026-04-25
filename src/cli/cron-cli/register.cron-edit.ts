@@ -47,7 +47,7 @@ export function registerCronEditCommand(cron: Command) {
       .option("--clear-agent", "Unset agent and use default", false)
       .option("--session-key <key>", "Set session key for job routing")
       .option("--clear-session-key", "Unset session key", false)
-      .option("--wake <mode>", "Wake mode (now|next-heartbeat)")
+      .option("--wake <mode>", "Wake mode (now|next-pulsecheck)")
       .option("--at <when>", "Set one-shot time (ISO) or duration like 20m")
       .option("--every <duration>", "Set interval duration like 10m")
       .option("--cron <expr>", "Set cron expression")

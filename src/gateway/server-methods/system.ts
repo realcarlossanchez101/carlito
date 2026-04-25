@@ -3,8 +3,8 @@ import {
   loadOrCreateDeviceIdentity,
   publicKeyRawBase64UrlFromPem,
 } from "../../infra/device-identity.js";
-import { getLastHeartbeatEvent } from "../../infra/heartbeat-events.js";
-import { setHeartbeatsEnabled } from "../../infra/heartbeat-runner.js";
+import { getLastPulsecheckEvent } from "../../infra/pulsecheck-events.js";
+import { setPulsechecksEnabled } from "../../infra/pulsecheck-runner.js";
 import { enqueueSystemEvent, isSystemEventContextChanged } from "../../infra/system-events.js";
 import { listSystemPresence, updateSystemPresence } from "../../infra/system-presence.js";
 import {
@@ -28,10 +28,10 @@ export const systemHandlers: GatewayRequestHandlers = {
       undefined,
     );
   },
-  "last-heartbeat": ({ respond }) => {
-    respond(true, getLastHeartbeatEvent(), undefined);
+  "last-pulsecheck": ({ respond }) => {
+    respond(true, getLastPulsecheckEvent(), undefined);
   },
-  "set-heartbeats": ({ params, respond }) => {
+  "set-pulsechecks": ({ params, respond }) => {
     const enabled = params.enabled;
     if (typeof enabled !== "boolean") {
       respond(
@@ -39,12 +39,12 @@ export const systemHandlers: GatewayRequestHandlers = {
         undefined,
         errorShape(
           ErrorCodes.INVALID_REQUEST,
-          "invalid set-heartbeats params: enabled (boolean) required",
+          "invalid set-pulsechecks params: enabled (boolean) required",
         ),
       );
       return;
     }
-    setHeartbeatsEnabled(enabled);
+    setPulsechecksEnabled(enabled);
     respond(true, { ok: true, enabled }, undefined);
   },
   "system-presence": ({ respond }) => {
@@ -108,7 +108,7 @@ export const systemHandlers: GatewayRequestHandlers = {
       const reasonValue = next.reason ?? reason;
       const normalizedReason = normalizeLowercaseStringOrEmpty(reasonValue);
       const ignoreReason =
-        normalizedReason.startsWith("periodic") || normalizedReason === "heartbeat";
+        normalizedReason.startsWith("periodic") || normalizedReason === "pulsecheck";
       const hostChanged = changed.has("host");
       const ipChanged = changed.has("ip");
       const versionChanged = changed.has("version");

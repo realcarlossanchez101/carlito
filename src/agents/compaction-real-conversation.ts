@@ -1,5 +1,5 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
-import { stripHeartbeatToken } from "../auto-reply/heartbeat.js";
+import { stripPulsecheckToken } from "../auto-reply/pulsecheck.js";
 import { isSilentReplyText } from "../auto-reply/tokens.js";
 
 export const TOOL_RESULT_REAL_CONVERSATION_LOOKBACK = 20;
@@ -19,9 +19,9 @@ function hasMeaningfulText(text: string): boolean {
   if (isSilentReplyText(trimmed)) {
     return false;
   }
-  const heartbeat = stripHeartbeatToken(trimmed, { mode: "message" });
-  if (heartbeat.didStrip) {
-    return heartbeat.text.trim().length > 0;
+  const pulsecheck = stripPulsecheckToken(trimmed, { mode: "message" });
+  if (pulsecheck.didStrip) {
+    return pulsecheck.text.trim().length > 0;
   }
   return true;
 }
@@ -42,7 +42,7 @@ export function hasMeaningfulConversationContent(message: AgentMessage): boolean
     const type = (block as { type?: unknown }).type;
     if (type !== "text") {
       // Tool-call metadata and internal reasoning blocks do not make a
-      // heartbeat-only transcript count as real conversation.
+      // pulsecheck-only transcript count as real conversation.
       if (typeof type === "string" && NON_CONVERSATION_BLOCK_TYPES.has(type)) {
         continue;
       }

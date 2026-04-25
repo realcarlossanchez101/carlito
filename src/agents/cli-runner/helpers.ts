@@ -69,7 +69,7 @@ export function buildSystemPrompt(params: {
   defaultThinkLevel?: ThinkLevel;
   extraSystemPrompt?: string;
   ownerNumbers?: string[];
-  heartbeatPrompt?: string;
+  pulsecheckPrompt?: string;
   docsPath?: string;
   tools: AgentTool[];
   contextFiles?: EmbeddedContextFile[];
@@ -107,7 +107,7 @@ export function buildSystemPrompt(params: {
     ownerDisplay: ownerDisplay.ownerDisplay,
     ownerDisplaySecret: ownerDisplay.ownerDisplaySecret,
     reasoningTagHint: false,
-    heartbeatPrompt: params.heartbeatPrompt,
+    pulsecheckPrompt: params.pulsecheckPrompt,
     docsPath: params.docsPath,
     acpEnabled: params.config?.acp?.enabled !== false,
     runtimeInfo,

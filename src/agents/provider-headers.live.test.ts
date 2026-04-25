@@ -3,7 +3,7 @@ import {
   LIVE_CACHE_TEST_ENABLED,
   logLiveCache,
   resolveLiveDirectModel,
-  withLiveCacheHeartbeat,
+  withLiveCachePulsecheck,
 } from "./live-cache-test-support.js";
 
 const describeLive = LIVE_CACHE_TEST_ENABLED ? describe : describe.skip;
@@ -22,7 +22,7 @@ describeLive("provider response headers (live)", () => {
     }, 120_000);
 
     it("returns request-id style headers from Responses", async () => {
-      const response = await withLiveCacheHeartbeat(
+      const response = await withLiveCachePulsecheck(
         fetch("https://api.openai.com/v1/responses", {
           method: "POST",
           headers: {
@@ -66,7 +66,7 @@ describeLive("provider response headers (live)", () => {
     }, 120_000);
 
     it("returns request-id from Messages", async () => {
-      const response = await withLiveCacheHeartbeat(
+      const response = await withLiveCachePulsecheck(
         fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: {

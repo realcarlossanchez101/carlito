@@ -19,7 +19,7 @@ import { registerGroupIntroPromptCases } from "./reply.triggers.group-intro-prom
 import { registerTriggerHandlingUsageSummaryCases } from "./reply.triggers.trigger-handling.filters-usage-summary-current-model-provider.cases.js";
 import { enqueueFollowupRun, getFollowupQueueDepth, type FollowupRun } from "./reply/queue.js";
 import type { MsgContext } from "./templating.js";
-import { HEARTBEAT_TOKEN } from "./tokens.js";
+import { PULSECHECK_TOKEN } from "./tokens.js";
 
 type GetReplyFromConfig = typeof import("./reply.js").getReplyFromConfig;
 
@@ -60,13 +60,13 @@ vi.mock("./reply/agent-runner.runtime.js", () => ({
       const trimmed = message.replace(/\.\s*$/, "");
       return `⚠️ Agent failed before reply: ${trimmed}.\nLogs: openclaw logs --follow`;
     };
-    const stripHeartbeat = (text?: string) => {
+    const stripPulsecheck = (text?: string) => {
       const trimmed = text?.trim();
-      if (!trimmed || trimmed === HEARTBEAT_TOKEN) {
+      if (!trimmed || trimmed === PULSECHECK_TOKEN) {
         return undefined;
       }
-      return trimmed.startsWith(`${HEARTBEAT_TOKEN} `)
-        ? trimmed.slice(HEARTBEAT_TOKEN.length).trimStart()
+      return trimmed.startsWith(`${PULSECHECK_TOKEN} `)
+        ? trimmed.slice(PULSECHECK_TOKEN.length).trimStart()
         : trimmed;
     };
 
@@ -84,7 +84,7 @@ vi.mock("./reply/agent-runner.runtime.js", () => ({
         config: params.followupRun.run.config,
         extraSystemPrompt: params.followupRun.run.extraSystemPrompt,
       });
-      return { text: stripHeartbeat(result?.payloads?.[0]?.text) };
+      return { text: stripPulsecheck(result?.payloads?.[0]?.text) };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return { text: normalizeErrorText(message) };
@@ -351,12 +351,12 @@ describe("trigger handling", () => {
     });
   }
 
-  it("strips heartbeat-only replies and preserves normal text", async () => {
+  it("strips pulsecheck-only replies and preserves normal text", async () => {
     await withTempHome(async (home) => {
       const runEmbeddedPiAgentMock = getRunEmbeddedPiAgentMock();
       const tokenCases = [
-        { text: HEARTBEAT_TOKEN, expected: undefined },
-        { text: `${HEARTBEAT_TOKEN} hello`, expected: "hello" },
+        { text: PULSECHECK_TOKEN, expected: undefined },
+        { text: `${PULSECHECK_TOKEN} hello`, expected: "hello" },
       ] as const;
 
       for (const testCase of tokenCases) {
@@ -445,13 +445,13 @@ describe("trigger handling", () => {
           assertPrompt: true,
         },
         {
-          label: "heartbeat",
+          label: "pulsecheck",
           request: {
-            Body: "HEARTBEAT /think:high",
+            Body: "PULSECHECK /think:high",
             From: "+1003",
             To: "+1003",
           },
-          options: { isHeartbeat: true },
+          options: { isPulsecheck: true },
           assertPrompt: false,
         },
       ] as const;
@@ -475,17 +475,17 @@ describe("trigger handling", () => {
     });
   });
 
-  it("resolves heartbeat model selection from overrides", async () => {
+  it("resolves pulsecheck model selection from overrides", async () => {
     await withTempHome(async (home) => {
       const modelCases = [
         {
-          label: "heartbeat-override",
+          label: "pulsecheck-override",
           setup: (cfg: ReturnType<typeof makeCfg>) => {
             cfg.agents = {
               ...cfg.agents,
               defaults: {
                 ...cfg.agents?.defaults,
-                heartbeat: { model: "anthropic/claude-haiku-4-5-20251001" },
+                pulsecheck: { model: "anthropic/claude-haiku-4-5-20251001" },
               },
             };
           },
@@ -506,7 +506,7 @@ describe("trigger handling", () => {
         cfg.session = { ...cfg.session, store: join(home, `${testCase.label}.sessions.json`) };
         await writeStoredModelOverride(cfg);
         testCase.setup(cfg);
-        await getReplyFromConfig(BASE_MESSAGE, { isHeartbeat: true }, cfg);
+        await getReplyFromConfig(BASE_MESSAGE, { isPulsecheck: true }, cfg);
 
         const call = runEmbeddedPiAgentMock.mock.calls[0]?.[0];
         expect(call?.provider).toBe(testCase.expected.provider);

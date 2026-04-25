@@ -51,9 +51,9 @@ const CONTEXT_FILE_ORDER = new Map<string, number>([
   ["memory.md", 70],
 ]);
 
-const DYNAMIC_CONTEXT_FILE_BASENAMES = new Set(["heartbeat.md"]);
-const DEFAULT_HEARTBEAT_PROMPT_CONTEXT_BLOCK =
-  "Default heartbeat prompt:\n`Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`";
+const DYNAMIC_CONTEXT_FILE_BASENAMES = new Set(["pulsecheck.md"]);
+const DEFAULT_PULSECHECK_PROMPT_CONTEXT_BLOCK =
+  "Default pulsecheck prompt:\n`Read PULSECHECK.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply PULSECHECK_OK.`";
 function normalizeContextFilePath(pathValue: string): string {
   return pathValue.trim().replace(/\\/g, "/");
 }
@@ -69,9 +69,9 @@ function isDynamicContextFile(pathValue: string): boolean {
 
 function sanitizeContextFileContentForPrompt(content: string): string {
   // Claude Code subscription mode rejects this exact prompt-policy quote when it
-  // appears in system context. The live heartbeat user turn still carries the
-  // actual instruction, and the generated heartbeat section below covers behavior.
-  return content.replaceAll(DEFAULT_HEARTBEAT_PROMPT_CONTEXT_BLOCK, "").replace(/\n{3,}/g, "\n\n");
+  // appears in system context. The live pulsecheck user turn still carries the
+  // actual instruction, and the generated pulsecheck section below covers behavior.
+  return content.replaceAll(DEFAULT_PULSECHECK_PROMPT_CONTEXT_BLOCK, "").replace(/\n{3,}/g, "\n\n");
 }
 
 function sortContextFilesForPrompt(contextFiles: EmbeddedContextFile[]): EmbeddedContextFile[] {
@@ -124,15 +124,15 @@ function buildProjectContextSection(params: {
   return lines;
 }
 
-function buildHeartbeatSection(params: { isMinimal: boolean; heartbeatPrompt?: string }) {
-  if (params.isMinimal || !params.heartbeatPrompt) {
+function buildPulsecheckSection(params: { isMinimal: boolean; pulsecheckPrompt?: string }) {
+  if (params.isMinimal || !params.pulsecheckPrompt) {
     return [];
   }
   return [
-    "## Heartbeats",
-    "If the current user message is a heartbeat poll and nothing needs attention, reply exactly:",
-    "HEARTBEAT_OK",
-    'If something needs attention, do NOT include "HEARTBEAT_OK"; reply with the alert text instead.',
+    "## Pulsechecks",
+    "If the current user message is a pulsecheck poll and nothing needs attention, reply exactly:",
+    "PULSECHECK_OK",
+    'If something needs attention, do NOT include "PULSECHECK_OK"; reply with the alert text instead.',
     "",
   ];
 }
@@ -439,7 +439,7 @@ export function buildAgentSystemPrompt(params: {
   userTimeFormat?: ResolvedTimeFormat;
   contextFiles?: EmbeddedContextFile[];
   skillsPrompt?: string;
-  heartbeatPrompt?: string;
+  pulsecheckPrompt?: string;
   docsPath?: string;
   workspaceNotes?: string[];
   ttsHint?: string;
@@ -615,7 +615,7 @@ export function buildAgentSystemPrompt(params: {
   const reasoningLevel = params.reasoningLevel ?? "off";
   const userTimezone = params.userTimezone?.trim();
   const skillsPrompt = params.skillsPrompt?.trim();
-  const heartbeatPrompt = params.heartbeatPrompt?.trim();
+  const pulsecheckPrompt = params.pulsecheckPrompt?.trim();
   const runtimeInfo = params.runtimeInfo;
   const runtimeChannel = normalizeOptionalLowercaseString(runtimeInfo?.channel);
   const runtimeCapabilities = runtimeInfo?.capabilities ?? [];
@@ -961,7 +961,7 @@ export function buildAgentSystemPrompt(params: {
     lines.push(providerDynamicSuffix, "");
   }
 
-  lines.push(...buildHeartbeatSection({ isMinimal, heartbeatPrompt }));
+  lines.push(...buildPulsecheckSection({ isMinimal, pulsecheckPrompt }));
 
   lines.push(
     "## Runtime",

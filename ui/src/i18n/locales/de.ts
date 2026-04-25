@@ -790,9 +790,9 @@ export const de: TranslationMap = {
         "Main sendet ein Systemereignis. Isoliert führt einen dedizierten Agentenzug aus.",
       wakeMode: "Aufweckmodus",
       now: "Jetzt",
-      nextHeartbeat: "Nächster Heartbeat",
+      nextPulsecheck: "Nächster Pulsecheck",
       wakeModeHelp:
-        "Jetzt wird sofort ausgelöst. Nächster Heartbeat wartet auf den nächsten Zyklus.",
+        "Jetzt wird sofort ausgelöst. Nächster Pulsecheck wartet auf den nächsten Zyklus.",
       payloadKind: "Was soll ausgeführt werden?",
       systemEvent: "Nachricht in der Main-Zeitachse posten",
       agentTurn: "Assistentenaufgabe ausführen (isoliert)",

@@ -1,5 +1,5 @@
 /**
- * GatewayConnection — WebSocket lifecycle, heartbeat, reconnect, and session persistence.
+ * GatewayConnection — WebSocket lifecycle, pulsecheck, reconnect, and session persistence.
  *
  * Encapsulates all connection state as class fields (replaces 11 closure variables).
  * Event handling and message processing are delegated to injected handlers.
@@ -53,7 +53,7 @@ export class GatewayConnection {
   // ---- Connection state ----
   private isAborted = false;
   private currentWs: WebSocket | null = null;
-  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
+  private pulsecheckInterval: ReturnType<typeof setInterval> | null = null;
   private sessionId: string | null = null;
   private lastSeq: number | null = null;
   private isConnecting = false;
@@ -130,9 +130,9 @@ export class GatewayConnection {
   }
 
   private cleanup(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
+    if (this.pulsecheckInterval) {
+      clearInterval(this.pulsecheckInterval);
+      this.pulsecheckInterval = null;
     }
     if (
       this.currentWs &&
@@ -258,7 +258,7 @@ export class GatewayConnection {
               break;
             }
 
-            case GatewayOp.HEARTBEAT_ACK:
+            case GatewayOp.PULSECHECK_ACK:
               break;
 
             case GatewayOp.RECONNECT:
@@ -336,12 +336,12 @@ export class GatewayConnection {
     }
 
     const interval = (d as { heartbeat_interval: number }).heartbeat_interval;
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
+    if (this.pulsecheckInterval) {
+      clearInterval(this.pulsecheckInterval);
     }
-    this.heartbeatInterval = setInterval(() => {
+    this.pulsecheckInterval = setInterval(() => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ op: GatewayOp.HEARTBEAT, d: this.lastSeq }));
+        ws.send(JSON.stringify({ op: GatewayOp.PULSECHECK, d: this.lastSeq }));
       }
     }, interval);
   }

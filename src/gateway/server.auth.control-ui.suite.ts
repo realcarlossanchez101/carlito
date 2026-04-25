@@ -99,7 +99,7 @@ export function registerControlUiAndPairingSuite(): void {
   };
 
   const expectAdminRpcOk = async (ws: WebSocket) => {
-    const admin = await rpcReq(ws, "set-heartbeats", { enabled: false });
+    const admin = await rpcReq(ws, "set-pulsechecks", { enabled: false });
     expect(admin.ok).toBe(true);
   };
 

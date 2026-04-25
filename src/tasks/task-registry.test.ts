@@ -8,9 +8,9 @@ import {
   resetAgentRunContextForTest,
 } from "../infra/agent-events.js";
 import {
-  hasPendingHeartbeatWake,
-  resetHeartbeatWakeStateForTests,
-} from "../infra/heartbeat-wake.js";
+  hasPendingPulsecheckWake,
+  resetPulsecheckWakeStateForTests,
+} from "../infra/pulsecheck-wake.js";
 import { peekSystemEvents, resetSystemEventsForTest } from "../infra/system-events.js";
 import type { ParsedAgentSessionKey } from "../routing/session-key.js";
 import { withTempDir } from "../test-helpers/temp-dir.js";
@@ -228,7 +228,7 @@ describe("task-registry", () => {
       process.env.OPENCLAW_STATE_DIR = ORIGINAL_STATE_DIR;
     }
     resetSystemEventsForTest();
-    resetHeartbeatWakeStateForTests();
+    resetPulsecheckWakeStateForTests();
     resetAgentRunContextForTest();
     resetCronActiveJobsForTests();
     resetTaskRegistryControlRuntimeForTests();
@@ -676,7 +676,7 @@ describe("task-registry", () => {
         "Background task blocked: ACP background task (run run-deli). Writable session or apply_patch authorization required.",
         "Task needs follow-up: ACP background task (run run-deli). Writable session or apply_patch authorization required.",
       ]);
-      expect(hasPendingHeartbeatWake()).toBe(true);
+      expect(hasPendingPulsecheckWake()).toBe(true);
     });
   });
 
@@ -747,7 +747,7 @@ describe("task-registry", () => {
         "Background task blocked: ACP background task (run run-sess). Writable session or apply_patch authorization required.",
         "Task needs follow-up: ACP background task (run run-sess). Writable session or apply_patch authorization required.",
       ]);
-      expect(hasPendingHeartbeatWake()).toBe(true);
+      expect(hasPendingPulsecheckWake()).toBe(true);
       expect(hoisted.sendMessageMock).not.toHaveBeenCalled();
     });
   });
@@ -842,7 +842,7 @@ describe("task-registry", () => {
       expect(peekSystemEvents("agent:main:main")).toEqual([
         "Task needs follow-up: ACP background task (run run-bloc). Writable session or apply_patch authorization required.",
       ]);
-      expect(hasPendingHeartbeatWake()).toBe(true);
+      expect(hasPendingPulsecheckWake()).toBe(true);
     });
   });
 
@@ -882,7 +882,7 @@ describe("task-registry", () => {
         ),
       );
       expect(peekSystemEvents("agent:main:main")).toEqual([]);
-      expect(hasPendingHeartbeatWake()).toBe(false);
+      expect(hasPendingPulsecheckWake()).toBe(false);
     });
   });
 

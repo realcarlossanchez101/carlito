@@ -85,7 +85,7 @@ export function createRunningCronServiceState(params: {
     log: params.log,
     nowMs: params.nowMs,
     enqueueSystemEvent: vi.fn(),
-    requestHeartbeatNow: vi.fn(),
+    requestPulsecheckNow: vi.fn(),
     runIsolatedAgentJob: vi.fn().mockResolvedValue({ status: "ok", summary: "ok" }),
   });
   state.running = true;
@@ -116,7 +116,7 @@ export function createDueIsolatedJob(params: {
     updatedAtMs: params.nowMs,
     schedule: { kind: "at", at: new Date(params.nextRunAtMs).toISOString() },
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: { kind: "agentTurn", message: params.id },
     delivery: { mode: "none" },
     state: { nextRunAtMs: params.nextRunAtMs },
@@ -172,7 +172,7 @@ export function createIsolatedRegressionJob(params: {
     updatedAtMs: params.scheduledAt - 86_400_000,
     schedule: params.schedule,
     sessionTarget: "isolated",
-    wakeMode: "next-heartbeat",
+    wakeMode: "next-pulsecheck",
     payload: params.payload,
     delivery: { mode: "announce" },
     state: params.state ?? {},

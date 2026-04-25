@@ -19,7 +19,7 @@ import {
   logSessionStateChange,
   resetDiagnosticStateForTest,
   resolveStuckSessionWarnMs,
-  startDiagnosticHeartbeat,
+  startDiagnosticPulsecheck,
 } from "./diagnostic.js";
 
 function createEmitMemorySampleMock() {
@@ -120,7 +120,7 @@ describe("stuck session diagnostics threshold", () => {
       events.push({ type: event.type });
     });
     try {
-      startDiagnosticHeartbeat({
+      startDiagnosticPulsecheck({
         diagnostics: {
           enabled: true,
           stuckSessionWarnMs: 30_000,
@@ -135,8 +135,8 @@ describe("stuck session diagnostics threshold", () => {
     expect(events.filter((event) => event.type === "session.stuck")).toHaveLength(1);
   });
 
-  it("starts and stops the stability recorder with the heartbeat lifecycle", () => {
-    startDiagnosticHeartbeat({
+  it("starts and stops the stability recorder with the pulsecheck lifecycle", () => {
+    startDiagnosticPulsecheck({
       diagnostics: {
         enabled: true,
       },
@@ -176,7 +176,7 @@ describe("stuck session diagnostics threshold", () => {
   it("checks memory pressure every tick without recording idle samples", () => {
     const emitMemorySample = createEmitMemorySampleMock();
 
-    startDiagnosticHeartbeat(
+    startDiagnosticPulsecheck(
       {
         diagnostics: {
           enabled: true,
@@ -194,10 +194,10 @@ describe("stuck session diagnostics threshold", () => {
     expect(emitMemorySample).toHaveBeenLastCalledWith({ emitSample: true });
   });
 
-  it("does not start the heartbeat when diagnostics are disabled by config", () => {
+  it("does not start the pulsecheck when diagnostics are disabled by config", () => {
     const emitMemorySample = createEmitMemorySampleMock();
 
-    startDiagnosticHeartbeat(
+    startDiagnosticPulsecheck(
       {
         diagnostics: {
           enabled: false,
@@ -216,7 +216,7 @@ describe("stuck session diagnostics threshold", () => {
       events.push({ type: event.type });
     });
     try {
-      startDiagnosticHeartbeat();
+      startDiagnosticPulsecheck();
       logSessionStateChange({ sessionId: "s2", sessionKey: "main", state: "processing" });
       vi.advanceTimersByTime(31_000);
     } finally {

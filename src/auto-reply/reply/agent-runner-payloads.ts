@@ -2,7 +2,7 @@ import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-pay
 import type { MessagingToolSend } from "../../agents/pi-embedded-messaging.types.js";
 import type { ReplyToMode } from "../../config/types.js";
 import { logVerbose } from "../../globals.js";
-import { stripHeartbeatToken } from "../heartbeat.js";
+import { stripPulsecheckToken } from "../pulsecheck.js";
 import type { OriginatingChannelType } from "../templating.js";
 import { SILENT_REPLY_TOKEN } from "../tokens.js";
 import type { ReplyPayload, ReplyThreadingPolicy } from "../types.js";
@@ -89,8 +89,8 @@ async function normalizeSentMediaUrlsForDedupe(params: {
 
 export async function buildReplyPayloads(params: {
   payloads: ReplyPayload[];
-  isHeartbeat: boolean;
-  didLogHeartbeatStrip: boolean;
+  isPulsecheck: boolean;
+  didLogPulsecheckStrip: boolean;
   silentExpected?: boolean;
   blockStreamingEnabled: boolean;
   blockReplyPipeline: BlockReplyPipeline | null;
@@ -108,9 +108,9 @@ export async function buildReplyPayloads(params: {
   originatingTo?: string;
   accountId?: string;
   normalizeMediaPaths?: (payload: ReplyPayload) => Promise<ReplyPayload>;
-}): Promise<{ replyPayloads: ReplyPayload[]; didLogHeartbeatStrip: boolean }> {
-  let didLogHeartbeatStrip = params.didLogHeartbeatStrip;
-  const sanitizedPayloads = params.isHeartbeat
+}): Promise<{ replyPayloads: ReplyPayload[]; didLogPulsecheckStrip: boolean }> {
+  let didLogPulsecheckStrip = params.didLogPulsecheckStrip;
+  const sanitizedPayloads = params.isPulsecheck
     ? params.payloads
     : params.payloads.flatMap((payload) => {
         let text = payload.text;
@@ -119,13 +119,13 @@ export async function buildReplyPayloads(params: {
           text = formatBunFetchSocketError(text);
         }
 
-        if (!text || !text.includes("HEARTBEAT_OK")) {
+        if (!text || !text.includes("PULSECHECK_OK")) {
           return [{ ...payload, text }];
         }
-        const stripped = stripHeartbeatToken(text, { mode: "message" });
-        if (stripped.didStrip && !didLogHeartbeatStrip) {
-          didLogHeartbeatStrip = true;
-          logVerbose("Stripped stray HEARTBEAT_OK token from reply");
+        const stripped = stripPulsecheckToken(text, { mode: "message" });
+        if (stripped.didStrip && !didLogPulsecheckStrip) {
+          didLogPulsecheckStrip = true;
+          logVerbose("Stripped stray PULSECHECK_OK token from reply");
         }
         const hasMedia = resolveSendableOutboundReplyParts(payload).hasMedia;
         if (stripped.shouldSkip && !hasMedia) {
@@ -229,6 +229,6 @@ export async function buildReplyPayloads(params: {
 
   return {
     replyPayloads,
-    didLogHeartbeatStrip,
+    didLogPulsecheckStrip,
   };
 }

@@ -7,7 +7,7 @@ import type {
 } from "./types.base.js";
 import type {
   ChannelHealthMonitorConfig,
-  ChannelHeartbeatVisibilityConfig,
+  ChannelPulsecheckVisibilityConfig,
 } from "./types.channels.js";
 import type { DmConfig } from "./types.messages.js";
 import type { GroupToolPolicyBySenderConfig, GroupToolPolicyConfig } from "./types.tools.js";
@@ -81,8 +81,8 @@ export type IMessageAccountConfig = {
       toolsBySender?: GroupToolPolicyBySenderConfig;
     }
   >;
-  /** Heartbeat visibility settings for this channel. */
-  heartbeat?: ChannelHeartbeatVisibilityConfig;
+  /** Pulsecheck visibility settings for this channel. */
+  pulsecheck?: ChannelPulsecheckVisibilityConfig;
   /** Channel health monitor overrides for this channel/account. */
   healthMonitor?: ChannelHealthMonitorConfig;
   /** Outbound response prefix override for this channel/account. */

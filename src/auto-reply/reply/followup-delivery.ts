@@ -1,6 +1,6 @@
 import type { MessagingToolSend } from "../../agents/pi-embedded-messaging.types.js";
 import type { OpenClawConfig } from "../../config/types.openclaw.js";
-import { stripHeartbeatToken } from "../heartbeat.js";
+import { stripPulsecheckToken } from "../pulsecheck.js";
 import type { OriginatingChannelType } from "../templating.js";
 import type { ReplyPayload } from "../types.js";
 import {
@@ -47,10 +47,10 @@ export function resolveFollowupDeliveryPayloads(params: {
   );
   const sanitizedPayloads = params.payloads.flatMap((payload) => {
     const text = payload.text;
-    if (!text || !text.includes("HEARTBEAT_OK")) {
+    if (!text || !text.includes("PULSECHECK_OK")) {
       return [payload];
     }
-    const stripped = stripHeartbeatToken(text, { mode: "message" });
+    const stripped = stripPulsecheckToken(text, { mode: "message" });
     const hasMedia = hasReplyPayloadMedia(payload);
     if (stripped.shouldSkip && !hasMedia) {
       return [];

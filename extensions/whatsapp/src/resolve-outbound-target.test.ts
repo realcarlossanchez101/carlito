@@ -115,7 +115,7 @@ describe("resolveWhatsAppOutboundTarget", () => {
       );
     });
 
-    it("returns success for group JID in heartbeat mode", () => {
+    it("returns success for group JID in pulsecheck mode", () => {
       vi.mocked(normalize.normalizeWhatsAppTarget).mockReturnValueOnce("120363999888777@g.us");
       vi.mocked(normalize.isWhatsAppGroupJid).mockReturnValueOnce(true);
 
@@ -123,14 +123,14 @@ describe("resolveWhatsAppOutboundTarget", () => {
         {
           to: "120363999888777@g.us",
           allowFrom: undefined,
-          mode: "heartbeat",
+          mode: "pulsecheck",
         },
         "120363999888777@g.us",
       );
     });
   });
 
-  describe("implicit/heartbeat mode with allowList", () => {
+  describe("implicit/pulsecheck mode with allowList", () => {
     it("allows message when wildcard is present", () => {
       mockNormalizedDirectMessage(PRIMARY_TARGET, PRIMARY_TARGET);
       expectAllowedForTarget({ allowFrom: ["*"], mode: "implicit" });
@@ -201,15 +201,15 @@ describe("resolveWhatsAppOutboundTarget", () => {
     });
   });
 
-  describe("heartbeat mode", () => {
-    it("allows message when target is in allowList in heartbeat mode", () => {
+  describe("pulsecheck mode", () => {
+    it("allows message when target is in allowList in pulsecheck mode", () => {
       mockNormalizedDirectMessage(PRIMARY_TARGET, PRIMARY_TARGET);
-      expectAllowedForTarget({ allowFrom: [PRIMARY_TARGET], mode: "heartbeat" });
+      expectAllowedForTarget({ allowFrom: [PRIMARY_TARGET], mode: "pulsecheck" });
     });
 
-    it("denies message when target is not in allowList in heartbeat mode", () => {
+    it("denies message when target is not in allowList in pulsecheck mode", () => {
       mockNormalizedDirectMessage(PRIMARY_TARGET, SECONDARY_TARGET);
-      expectDeniedForTarget({ allowFrom: [SECONDARY_TARGET], mode: "heartbeat" });
+      expectDeniedForTarget({ allowFrom: [SECONDARY_TARGET], mode: "pulsecheck" });
     });
   });
 

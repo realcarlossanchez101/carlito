@@ -618,12 +618,12 @@ function extractToolErrorForNamedCall(params: {
   return undefined;
 }
 
-function isHeartbeatPrompt(text: string) {
+function isPulsecheckPrompt(text: string) {
   const trimmed = text.trim();
   if (!trimmed || /remember this fact/i.test(trimmed)) {
     return false;
   }
-  return /(?:^|\n)Read HEARTBEAT\.md if it exists\b/i.test(trimmed);
+  return /(?:^|\n)Read PULSECHECK\.md if it exists\b/i.test(trimmed);
 }
 
 function buildAssistantText(
@@ -675,8 +675,8 @@ function buildAssistantText(
   if (/memory unavailable check/i.test(prompt)) {
     return "Protocol note: I checked the available runtime context but could not confirm the hidden memory-only fact, so I will not guess.";
   }
-  if (isHeartbeatPrompt(prompt)) {
-    return "HEARTBEAT_OK";
+  if (isPulsecheckPrompt(prompt)) {
+    return "PULSECHECK_OK";
   }
   if (/\bmarker\b/i.test(prompt) && exactReplyDirective) {
     return exactReplyDirective;
@@ -1131,8 +1131,8 @@ async function buildResponsesPayload(
   if (/remember this fact/i.test(prompt)) {
     return buildAssistantEvents(buildAssistantText(input, body, scenarioState));
   }
-  if (isHeartbeatPrompt(prompt)) {
-    return buildAssistantEvents("HEARTBEAT_OK");
+  if (isPulsecheckPrompt(prompt)) {
+    return buildAssistantEvents("PULSECHECK_OK");
   }
   if (QA_REASONING_ONLY_RECOVERY_PROMPT_RE.test(allInputText)) {
     if (!toolOutput) {

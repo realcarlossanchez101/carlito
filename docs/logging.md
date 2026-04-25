@@ -214,7 +214,7 @@ Queue + session:
 - `session.state`: session state transition + reason.
 - `session.stuck`: session stuck warning + age.
 - `run.attempt`: run retry/attempt metadata.
-- `diagnostic.heartbeat`: aggregate counters (webhooks/queue/session).
+- `diagnostic.pulsecheck`: aggregate counters (webhooks/queue/session).
 
 ### Enable diagnostics (no exporter)
 
@@ -330,7 +330,7 @@ Queues + sessions:
 - `openclaw.queue.lane.enqueue` (counter, attrs: `openclaw.lane`)
 - `openclaw.queue.lane.dequeue` (counter, attrs: `openclaw.lane`)
 - `openclaw.queue.depth` (histogram, attrs: `openclaw.lane` or
-  `openclaw.channel=heartbeat`)
+  `openclaw.channel=pulsecheck`)
 - `openclaw.queue.wait_ms` (histogram, attrs: `openclaw.lane`)
 - `openclaw.session.state` (counter, attrs: `openclaw.state`, `openclaw.reason`)
 - `openclaw.session.stuck` (counter, attrs: `openclaw.state`)

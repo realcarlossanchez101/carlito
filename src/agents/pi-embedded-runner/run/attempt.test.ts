@@ -298,7 +298,7 @@ describe("shouldWarnOnOrphanedUserRepair", () => {
   });
 
   it("does not warn for background triggers", () => {
-    expect(shouldWarnOnOrphanedUserRepair("heartbeat")).toBe(false);
+    expect(shouldWarnOnOrphanedUserRepair("pulsecheck")).toBe(false);
     expect(shouldWarnOnOrphanedUserRepair("cron")).toBe(false);
     expect(shouldWarnOnOrphanedUserRepair("memory")).toBe(false);
     expect(shouldWarnOnOrphanedUserRepair("overflow")).toBe(false);
@@ -341,15 +341,15 @@ describe("mergeOrphanedTrailingUserPrompt", () => {
   it("skips orphan prompt merging for non-user triggers", () => {
     expect(
       mergeOrphanedTrailingUserPrompt({
-        prompt: "HEARTBEAT_OK",
-        trigger: "heartbeat",
+        prompt: "PULSECHECK_OK",
+        trigger: "pulsecheck",
         leafMessage: {
           content: "older active-turn message",
         } as never,
       }),
     ).toEqual({
       merged: false,
-      prompt: "HEARTBEAT_OK",
+      prompt: "PULSECHECK_OK",
     });
   });
 });

@@ -645,10 +645,10 @@ describe("config strict validation", () => {
     });
   });
 
-  it("accepts top-level heartbeat agent settings via auto-migration and reports legacyIssues", async () => {
+  it("accepts top-level pulsecheck agent settings via auto-migration and reports legacyIssues", async () => {
     await withTempHome(async (home) => {
       await writeOpenClawConfig(home, {
-        heartbeat: {
+        pulsecheck: {
           every: "30m",
           model: "anthropic/claude-3-5-haiku-20241022",
         },
@@ -657,19 +657,19 @@ describe("config strict validation", () => {
       const snap = await readConfigFileSnapshot();
 
       expect(snap.valid).toBe(true);
-      expect(snap.legacyIssues.some((issue) => issue.path === "heartbeat")).toBe(true);
-      expect(snap.sourceConfig.agents?.defaults?.heartbeat).toMatchObject({
+      expect(snap.legacyIssues.some((issue) => issue.path === "pulsecheck")).toBe(true);
+      expect(snap.sourceConfig.agents?.defaults?.pulsecheck).toMatchObject({
         every: "30m",
         model: "anthropic/claude-3-5-haiku-20241022",
       });
-      expect((snap.sourceConfig as { heartbeat?: unknown }).heartbeat).toBeUndefined();
+      expect((snap.sourceConfig as { pulsecheck?: unknown }).pulsecheck).toBeUndefined();
     });
   });
 
-  it("accepts top-level heartbeat visibility via auto-migration and reports legacyIssues", async () => {
+  it("accepts top-level pulsecheck visibility via auto-migration and reports legacyIssues", async () => {
     await withTempHome(async (home) => {
       await writeOpenClawConfig(home, {
-        heartbeat: {
+        pulsecheck: {
           showOk: true,
           showAlerts: false,
           useIndicator: true,
@@ -679,13 +679,13 @@ describe("config strict validation", () => {
       const snap = await readConfigFileSnapshot();
 
       expect(snap.valid).toBe(true);
-      expect(snap.legacyIssues.some((issue) => issue.path === "heartbeat")).toBe(true);
-      expect(snap.sourceConfig.channels?.defaults?.heartbeat).toMatchObject({
+      expect(snap.legacyIssues.some((issue) => issue.path === "pulsecheck")).toBe(true);
+      expect(snap.sourceConfig.channels?.defaults?.pulsecheck).toMatchObject({
         showOk: true,
         showAlerts: false,
         useIndicator: true,
       });
-      expect((snap.sourceConfig as { heartbeat?: unknown }).heartbeat).toBeUndefined();
+      expect((snap.sourceConfig as { pulsecheck?: unknown }).pulsecheck).toBeUndefined();
     });
   });
 

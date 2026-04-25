@@ -328,11 +328,11 @@ export type AgentDefaultsConfig = {
   typingIntervalSeconds?: number;
   /** Typing indicator start mode (never|instant|thinking|message). */
   typingMode?: TypingMode;
-  /** Periodic background heartbeat runs. */
-  heartbeat?: {
-    /** Heartbeat interval (duration string, default unit: minutes; default: 30m). */
+  /** Periodic background pulsecheck runs. */
+  pulsecheck?: {
+    /** Pulsecheck interval (duration string, default unit: minutes; default: 30m). */
     every?: string;
-    /** Optional active-hours window (local time); heartbeats run only inside this window. */
+    /** Optional active-hours window (local time); pulsechecks run only inside this window. */
     activeHours?: {
       /** Start time (24h, HH:MM). Inclusive. */
       start?: string;
@@ -341,9 +341,9 @@ export type AgentDefaultsConfig = {
       /** Timezone for the window ("user", "local", or IANA TZ id). Default: "user". */
       timezone?: string;
     };
-    /** Heartbeat model override (provider/model). */
+    /** Pulsecheck model override (provider/model). */
     model?: string;
-    /** Session key for heartbeat runs ("main" or explicit session key). */
+    /** Session key for pulsecheck runs ("main" or explicit session key). */
     session?: string;
     /** Delivery target ("last", "none", or a channel id). */
     target?: string;
@@ -353,33 +353,33 @@ export type AgentDefaultsConfig = {
     to?: string;
     /** Optional account id for multi-account channels. */
     accountId?: string;
-    /** Override the heartbeat prompt body (default: "Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK."). */
+    /** Override the pulsecheck prompt body (default: "Read PULSECHECK.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply PULSECHECK_OK."). */
     prompt?: string;
-    /** Include the ## Heartbeats system prompt section for the default agent (default: true). */
+    /** Include the ## Pulsechecks system prompt section for the default agent (default: true). */
     includeSystemPromptSection?: boolean;
-    /** Max chars allowed after HEARTBEAT_OK before delivery (default: 30). */
+    /** Max chars allowed after PULSECHECK_OK before delivery (default: 30). */
     ackMaxChars?: number;
-    /** Suppress tool error warning payloads during heartbeat runs. */
+    /** Suppress tool error warning payloads during pulsecheck runs. */
     suppressToolErrorWarnings?: boolean;
-    /** Run timeout in seconds for heartbeat agent turns. */
+    /** Run timeout in seconds for pulsecheck agent turns. */
     timeoutSeconds?: number;
     /**
-     * If true, run heartbeat turns with lightweight bootstrap context.
-     * Lightweight mode keeps only HEARTBEAT.md from workspace bootstrap files.
+     * If true, run pulsecheck turns with lightweight bootstrap context.
+     * Lightweight mode keeps only PULSECHECK.md from workspace bootstrap files.
      */
     lightContext?: boolean;
     /**
-     * If true, run heartbeat turns in an isolated session with no prior
-     * conversation history. The heartbeat only sees its bootstrap context
-     * (HEARTBEAT.md when lightContext is also enabled). Dramatically reduces
-     * per-heartbeat token cost by avoiding the full session transcript.
+     * If true, run pulsecheck turns in an isolated session with no prior
+     * conversation history. The pulsecheck only sees its bootstrap context
+     * (PULSECHECK.md when lightContext is also enabled). Dramatically reduces
+     * per-pulsecheck token cost by avoiding the full session transcript.
      */
     isolatedSession?: boolean;
     /**
-     * When enabled, deliver the model's reasoning payload for heartbeat runs (when available)
+     * When enabled, deliver the model's reasoning payload for pulsecheck runs (when available)
      * as a separate message prefixed with `Reasoning:` (same as `/reasoning on`).
      *
-     * Default: false (only the final heartbeat payload is delivered).
+     * Default: false (only the final pulsecheck payload is delivered).
      */
     includeReasoning?: boolean;
   };

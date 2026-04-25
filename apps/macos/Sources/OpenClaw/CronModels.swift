@@ -38,7 +38,7 @@ enum CronCustomSessionTarget: Codable, Equatable {
 
 enum CronWakeMode: String, CaseIterable, Identifiable, Codable {
     case now
-    case nextHeartbeat = "next-heartbeat"
+    case nextPulsecheck = "next-pulsecheck"
 
     var id: String {
         self.rawValue

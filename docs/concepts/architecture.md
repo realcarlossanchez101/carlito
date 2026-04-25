@@ -27,7 +27,7 @@ title: "Gateway architecture"
 - Maintains provider connections.
 - Exposes a typed WS API (requests, responses, server‑push events).
 - Validates inbound frames against JSON Schema.
-- Emits events like `agent`, `chat`, `presence`, `health`, `heartbeat`, `cron`.
+- Emits events like `agent`, `chat`, `presence`, `health`, `pulsecheck`, `cron`.
 
 ### Clients (mac app / CLI / web admin)
 

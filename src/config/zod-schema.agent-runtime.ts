@@ -16,7 +16,7 @@ import {
 } from "./zod-schema.core.js";
 import { sensitive } from "./zod-schema.sensitive.js";
 
-export const HeartbeatSchema = z
+export const PulsecheckSchema = z
   .object({
     every: z.string().optional(),
     activeHours: z
@@ -829,7 +829,7 @@ export const AgentEntrySchema = z
     humanDelay: HumanDelaySchema.optional(),
     skillsLimits: AgentSkillsLimitsSchema,
     contextLimits: AgentContextLimitsSchema,
-    heartbeat: HeartbeatSchema,
+    pulsecheck: PulsecheckSchema,
     identity: IdentitySchema,
     groupChat: GroupChatSchema,
     subagents: z

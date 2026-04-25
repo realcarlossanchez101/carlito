@@ -8,16 +8,16 @@ import { mergeMockedModule } from "../test-utils/vitest-module-mocks.js";
 
 const {
   enqueueSystemEventMock,
-  requestHeartbeatNowMock,
-  runHeartbeatOnceMock,
+  requestPulsecheckNowMock,
+  runPulsecheckOnceMock,
   loadConfigMock,
   fetchWithSsrFGuardMock,
   runCronIsolatedAgentTurnMock,
   cleanupBrowserSessionsForLifecycleEndMock,
 } = vi.hoisted(() => ({
   enqueueSystemEventMock: vi.fn(),
-  requestHeartbeatNowMock: vi.fn(),
-  runHeartbeatOnceMock: vi.fn<
+  requestPulsecheckNowMock: vi.fn(),
+  runPulsecheckOnceMock: vi.fn<
     (...args: unknown[]) => Promise<{ status: "ran"; durationMs: number }>
   >(async () => ({ status: "ran", durationMs: 1 })),
   loadConfigMock: vi.fn(),
@@ -30,31 +30,31 @@ function enqueueSystemEvent(...args: unknown[]) {
   return enqueueSystemEventMock(...args);
 }
 
-function requestHeartbeatNow(...args: unknown[]) {
-  return requestHeartbeatNowMock(...args);
+function requestPulsecheckNow(...args: unknown[]) {
+  return requestPulsecheckNowMock(...args);
 }
 
-function runHeartbeatOnce(...args: unknown[]) {
-  return runHeartbeatOnceMock(...args);
+function runPulsecheckOnce(...args: unknown[]) {
+  return runPulsecheckOnceMock(...args);
 }
 
 vi.mock("../infra/system-events.js", () => ({
   enqueueSystemEvent,
 }));
 
-vi.mock("../infra/heartbeat-wake.js", async () => {
+vi.mock("../infra/pulsecheck-wake.js", async () => {
   return await mergeMockedModule(
-    await vi.importActual<typeof import("../infra/heartbeat-wake.js")>(
-      "../infra/heartbeat-wake.js",
+    await vi.importActual<typeof import("../infra/pulsecheck-wake.js")>(
+      "../infra/pulsecheck-wake.js",
     ),
     () => ({
-      requestHeartbeatNow,
+      requestPulsecheckNow,
     }),
   );
 });
 
-vi.mock("../infra/heartbeat-runner.js", () => ({
-  runHeartbeatOnce,
+vi.mock("../infra/pulsecheck-runner.js", () => ({
+  runPulsecheckOnce,
 }));
 
 vi.mock("../config/config.js", async () => {
@@ -94,8 +94,8 @@ function createCronConfig(name: string): OpenClawConfig {
 describe("buildGatewayCronService", () => {
   beforeEach(() => {
     enqueueSystemEventMock.mockClear();
-    requestHeartbeatNowMock.mockClear();
-    runHeartbeatOnceMock.mockClear();
+    requestPulsecheckNowMock.mockClear();
+    runPulsecheckOnceMock.mockClear();
     loadConfigMock.mockClear();
     fetchWithSsrFGuardMock.mockClear();
     runCronIsolatedAgentTurnMock.mockClear();
@@ -117,7 +117,7 @@ describe("buildGatewayCronService", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(1).toISOString() },
         sessionTarget: "main",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         sessionKey: "discord:channel:ops",
         payload: { kind: "systemEvent", text: "hello" },
       });
@@ -130,7 +130,7 @@ describe("buildGatewayCronService", () => {
           sessionKey: "agent:main:discord:channel:ops",
         }),
       );
-      expect(requestHeartbeatNowMock).toHaveBeenCalledWith(
+      expect(requestPulsecheckNowMock).toHaveBeenCalledWith(
         expect.objectContaining({
           sessionKey: "agent:main:discord:channel:ops",
         }),
@@ -140,8 +140,8 @@ describe("buildGatewayCronService", () => {
     }
   });
 
-  it("forwards heartbeat overrides through the cron wake adapter", () => {
-    const cfg = createCronConfig("server-cron-heartbeat-override");
+  it("forwards pulsecheck overrides through the cron wake adapter", () => {
+    const cfg = createCronConfig("server-cron-pulsecheck-override");
     loadConfigMock.mockReturnValue(cfg);
 
     const state = buildGatewayCronService({
@@ -154,28 +154,28 @@ describe("buildGatewayCronService", () => {
         state.cron as unknown as {
           state?: {
             deps?: {
-              requestHeartbeatNow?: (opts?: {
+              requestPulsecheckNow?: (opts?: {
                 agentId?: string;
                 sessionKey?: string | null;
                 reason?: string;
-                heartbeat?: { target?: string };
+                pulsecheck?: { target?: string };
               }) => void;
             };
           };
         }
       ).state?.deps;
 
-      cronDeps?.requestHeartbeatNow?.({
+      cronDeps?.requestPulsecheckNow?.({
         reason: "cron:test",
         sessionKey: "discord:channel:ops",
-        heartbeat: { target: "last" },
+        pulsecheck: { target: "last" },
       });
 
-      expect(requestHeartbeatNowMock).toHaveBeenCalledWith({
+      expect(requestPulsecheckNowMock).toHaveBeenCalledWith({
         reason: "cron:test",
         agentId: "main",
         sessionKey: "agent:main:discord:channel:ops",
-        heartbeat: { target: "last" },
+        pulsecheck: { target: "last" },
       });
     } finally {
       state.cron.stop();
@@ -244,7 +244,7 @@ describe("buildGatewayCronService", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(1).toISOString() },
         sessionTarget: "main",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "systemEvent", text: "hello" },
         delivery: {
           mode: "webhook",
@@ -294,7 +294,7 @@ describe("buildGatewayCronService", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(1).toISOString() },
         sessionTarget: "session:project-alpha-monitor",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "agentTurn", message: "hello" },
       });
 
@@ -330,7 +330,7 @@ describe("buildGatewayCronService", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(1).toISOString() },
         sessionTarget: "isolated",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: {
           kind: "agentTurn",
           message: "run report",
@@ -406,7 +406,7 @@ describe("buildGatewayCronService", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(1).toISOString() },
         sessionTarget: "isolated",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         agentId: "yinze",
         payload: { kind: "agentTurn", message: "read SOW.md" },
       });
@@ -433,8 +433,8 @@ describe("buildGatewayCronService", () => {
     }
   });
 
-  it("preserves agent heartbeat overrides when runtime reload config is stale", async () => {
-    const tmpDir = path.join(os.tmpdir(), `server-cron-agent-heartbeat-${Date.now()}`);
+  it("preserves agent pulsecheck overrides when runtime reload config is stale", async () => {
+    const tmpDir = path.join(os.tmpdir(), `server-cron-agent-pulsecheck-${Date.now()}`);
     const startupCfg = {
       session: {
         mainKey: "main",
@@ -445,7 +445,7 @@ describe("buildGatewayCronService", () => {
       agents: {
         defaults: {
           workspace: path.join(tmpDir, "workspace"),
-          heartbeat: {
+          pulsecheck: {
             target: "main",
             deliveryFormat: "text",
           },
@@ -455,7 +455,7 @@ describe("buildGatewayCronService", () => {
           {
             id: "yinze",
             workspace: path.join(tmpDir, "workspace-yinze"),
-            heartbeat: {
+            pulsecheck: {
               target: "last",
               deliveryFormat: "markdown",
             },
@@ -473,7 +473,7 @@ describe("buildGatewayCronService", () => {
       agents: {
         defaults: {
           workspace: path.join(tmpDir, "workspace"),
-          heartbeat: {
+          pulsecheck: {
             target: "main",
             deliveryFormat: "text",
           },
@@ -493,22 +493,22 @@ describe("buildGatewayCronService", () => {
         state.cron as unknown as {
           state?: {
             deps?: {
-              runHeartbeatOnce?: (opts?: {
+              runPulsecheckOnce?: (opts?: {
                 agentId?: string;
                 sessionKey?: string | null;
-                heartbeat?: Record<string, unknown>;
+                pulsecheck?: Record<string, unknown>;
               }) => Promise<unknown>;
             };
           };
         }
       ).state?.deps;
-      await cronDeps?.runHeartbeatOnce?.({
+      await cronDeps?.runPulsecheckOnce?.({
         agentId: "yinze",
         sessionKey: "agent:yinze:main",
-        heartbeat: {},
+        pulsecheck: {},
       });
 
-      expect(runHeartbeatOnceMock).toHaveBeenCalledWith(
+      expect(runPulsecheckOnceMock).toHaveBeenCalledWith(
         expect.objectContaining({
           agentId: "yinze",
           cfg: expect.objectContaining({
@@ -516,7 +516,7 @@ describe("buildGatewayCronService", () => {
               list: expect.arrayContaining([
                 expect.objectContaining({
                   id: "yinze",
-                  heartbeat: expect.objectContaining({
+                  pulsecheck: expect.objectContaining({
                     target: "last",
                     deliveryFormat: "markdown",
                   }),
@@ -524,7 +524,7 @@ describe("buildGatewayCronService", () => {
               ]),
             }),
           }),
-          heartbeat: expect.objectContaining({
+          pulsecheck: expect.objectContaining({
             target: "last",
             deliveryFormat: "markdown",
           }),

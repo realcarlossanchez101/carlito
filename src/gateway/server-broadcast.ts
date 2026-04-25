@@ -27,7 +27,7 @@ const EVENT_SCOPE_GUARDS: Record<string, string[]> = {
   health: [],
   "exec.approval.requested": [APPROVALS_SCOPE],
   "exec.approval.resolved": [APPROVALS_SCOPE],
-  heartbeat: [],
+  pulsecheck: [],
   "plugin.approval.requested": [APPROVALS_SCOPE],
   "plugin.approval.resolved": [APPROVALS_SCOPE],
   presence: [],

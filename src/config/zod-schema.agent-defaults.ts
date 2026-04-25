@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DEFAULT_LLM_IDLE_TIMEOUT_SECONDS } from "./agent-timeout-defaults.js";
 import { isValidNonNegativeByteSizeString } from "./byte-size.js";
 import {
-  HeartbeatSchema,
+  PulsecheckSchema,
   AgentSandboxSchema,
   AgentContextLimitsSchema,
   AgentEmbeddedHarnessSchema,
@@ -248,7 +248,7 @@ export const AgentDefaultsSchema = z
     imageMaxDimensionPx: z.number().int().positive().optional(),
     typingIntervalSeconds: z.number().int().positive().optional(),
     typingMode: TypingModeSchema.optional(),
-    heartbeat: HeartbeatSchema,
+    pulsecheck: PulsecheckSchema,
     maxConcurrent: z.number().int().positive().optional(),
     subagents: z
       .object({

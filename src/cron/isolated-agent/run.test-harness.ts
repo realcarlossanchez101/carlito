@@ -64,8 +64,8 @@ export const resolveCronPayloadOutcomeMock = createMock();
 export const resolveCronDeliveryPlanMock = createMock();
 export const resolveDeliveryTargetMock = createMock();
 export const dispatchCronDeliveryMock = createMock();
-export const isHeartbeatOnlyResponseMock = createMock();
-export const resolveHeartbeatAckMaxCharsMock = createMock();
+export const isPulsecheckOnlyResponseMock = createMock();
+export const resolvePulsecheckAckMaxCharsMock = createMock();
 export const resolveSessionAuthProfileOverrideMock = createMock();
 export const resolveFastModeStateMock = createMock();
 export const getChannelPluginMock = createMock();
@@ -221,13 +221,13 @@ vi.mock("./run-delivery.runtime.js", async () => {
 });
 
 vi.mock("./helpers.js", () => ({
-  isHeartbeatOnlyResponse: isHeartbeatOnlyResponseMock,
+  isPulsecheckOnlyResponse: isPulsecheckOnlyResponseMock,
   pickLastDeliverablePayload: vi.fn().mockReturnValue(undefined),
   pickLastNonEmptyTextFromPayloads: pickLastNonEmptyTextFromPayloadsMock,
   pickSummaryFromOutput: vi.fn().mockReturnValue("summary"),
   pickSummaryFromPayloads: vi.fn().mockReturnValue("summary"),
   resolveCronPayloadOutcome: resolveCronPayloadOutcomeMock,
-  resolveHeartbeatAckMaxChars: resolveHeartbeatAckMaxCharsMock,
+  resolvePulsecheckAckMaxChars: resolvePulsecheckAckMaxCharsMock,
 }));
 
 vi.mock("../../channels/plugins/index.js", () => ({
@@ -400,7 +400,7 @@ function resetRunOutcomeMocks(): void {
       outputText,
       synthesizedText,
       deliveryRequested,
-      skipHeartbeatDelivery,
+      skipPulsecheckDelivery,
       skipMessagingToolDelivery,
       resolvedDelivery,
     }) => ({
@@ -408,14 +408,14 @@ function resetRunOutcomeMocks(): void {
       delivered: Boolean(
         skipMessagingToolDelivery ||
         (deliveryRequested &&
-          !skipHeartbeatDelivery &&
+          !skipPulsecheckDelivery &&
           !skipMessagingToolDelivery &&
           resolvedDelivery.ok),
       ),
       deliveryAttempted: Boolean(
         skipMessagingToolDelivery ||
         (deliveryRequested &&
-          !skipHeartbeatDelivery &&
+          !skipPulsecheckDelivery &&
           !skipMessagingToolDelivery &&
           resolvedDelivery.ok),
       ),
@@ -425,10 +425,10 @@ function resetRunOutcomeMocks(): void {
       deliveryPayloads,
     }),
   );
-  isHeartbeatOnlyResponseMock.mockReset();
-  isHeartbeatOnlyResponseMock.mockReturnValue(false);
-  resolveHeartbeatAckMaxCharsMock.mockReset();
-  resolveHeartbeatAckMaxCharsMock.mockReturnValue(100);
+  isPulsecheckOnlyResponseMock.mockReset();
+  isPulsecheckOnlyResponseMock.mockReturnValue(false);
+  resolvePulsecheckAckMaxCharsMock.mockReset();
+  resolvePulsecheckAckMaxCharsMock.mockReturnValue(100);
   resolveSessionAuthProfileOverrideMock.mockReset();
   resolveSessionAuthProfileOverrideMock.mockResolvedValue(undefined);
 }

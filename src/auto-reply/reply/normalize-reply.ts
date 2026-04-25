@@ -1,9 +1,9 @@
 import { sanitizeUserFacingText } from "../../agents/pi-embedded-helpers/sanitize-user-facing-text.js";
 import { hasReplyPayloadContent } from "../../interactive/payload.js";
 import { normalizeOptionalString } from "../../shared/string-coerce.js";
-import { stripHeartbeatToken } from "../heartbeat.js";
+import { stripPulsecheckToken } from "../pulsecheck.js";
 import {
-  HEARTBEAT_TOKEN,
+  PULSECHECK_TOKEN,
   isSilentReplyPayloadText,
   isSilentReplyText,
   SILENT_REPLY_TOKEN,
@@ -17,15 +17,15 @@ import {
   type ResponsePrefixContext,
 } from "./response-prefix-template.js";
 
-export type NormalizeReplySkipReason = "empty" | "silent" | "heartbeat";
+export type NormalizeReplySkipReason = "empty" | "silent" | "pulsecheck";
 
 export type NormalizeReplyOptions = {
   responsePrefix?: string;
   applyChannelTransforms?: boolean;
   /** Context for template variable interpolation in responsePrefix */
   responsePrefixContext?: ResponsePrefixContext;
-  onHeartbeatStrip?: () => void;
-  stripHeartbeat?: boolean;
+  onPulsecheckStrip?: () => void;
+  stripPulsecheck?: boolean;
   silentToken?: string;
   transformReplyPayload?: (payload: ReplyPayload) => ReplyPayload | null;
   onSkip?: (reason: NormalizeReplySkipReason) => void;
@@ -82,14 +82,14 @@ export function normalizeReplyPayload(
     text = "";
   }
 
-  const shouldStripHeartbeat = opts.stripHeartbeat ?? true;
-  if (shouldStripHeartbeat && text?.includes(HEARTBEAT_TOKEN)) {
-    const stripped = stripHeartbeatToken(text, { mode: "message" });
+  const shouldStripPulsecheck = opts.stripPulsecheck ?? true;
+  if (shouldStripPulsecheck && text?.includes(PULSECHECK_TOKEN)) {
+    const stripped = stripPulsecheckToken(text, { mode: "message" });
     if (stripped.didStrip) {
-      opts.onHeartbeatStrip?.();
+      opts.onPulsecheckStrip?.();
     }
     if (stripped.shouldSkip && !hasContent(stripped.text)) {
-      opts.onSkip?.("heartbeat");
+      opts.onSkip?.("pulsecheck");
       return null;
     }
     text = stripped.text;
@@ -117,7 +117,7 @@ export function normalizeReplyPayload(
   if (
     effectivePrefix &&
     text &&
-    text.trim() !== HEARTBEAT_TOKEN &&
+    text.trim() !== PULSECHECK_TOKEN &&
     !text.startsWith(effectivePrefix)
   ) {
     text = `${effectivePrefix} ${text}`;

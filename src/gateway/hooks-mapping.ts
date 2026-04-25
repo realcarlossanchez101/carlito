@@ -11,7 +11,7 @@ export type HookMappingResolved = {
   matchPath?: string;
   matchSource?: string;
   action: "wake" | "agent";
-  wakeMode?: "now" | "next-heartbeat";
+  wakeMode?: "now" | "next-pulsecheck";
   name?: string;
   agentId?: string;
   sessionKey?: string;
@@ -43,14 +43,14 @@ export type HookAction =
   | {
       kind: "wake";
       text: string;
-      mode: "now" | "next-heartbeat";
+      mode: "now" | "next-pulsecheck";
     }
   | {
       kind: "agent";
       message: string;
       name?: string;
       agentId?: string;
-      wakeMode: "now" | "next-heartbeat";
+      wakeMode: "now" | "next-pulsecheck";
       sessionKey?: string;
       sessionKeySource?: "static" | "templated";
       deliver?: boolean;
@@ -89,10 +89,10 @@ const transformCache = new Map<string, HookTransformFn>();
 type HookTransformResult = Partial<{
   kind: HookAction["kind"];
   text: string;
-  mode: "now" | "next-heartbeat";
+  mode: "now" | "next-pulsecheck";
   message: string;
   agentId: string;
-  wakeMode: "now" | "next-heartbeat";
+  wakeMode: "now" | "next-pulsecheck";
   name: string;
   sessionKey: string;
   sessionKeySource: HookSessionKeyTemplateSource;
@@ -291,14 +291,15 @@ function mergeAction(
   if (kind === "wake") {
     const baseWake = base.kind === "wake" ? base : undefined;
     const text = typeof override.text === "string" ? override.text : (baseWake?.text ?? "");
-    const mode = override.mode === "next-heartbeat" ? "next-heartbeat" : (baseWake?.mode ?? "now");
+    const mode =
+      override.mode === "next-pulsecheck" ? "next-pulsecheck" : (baseWake?.mode ?? "now");
     return validateAction({ kind: "wake", text, mode });
   }
   const baseAgent = base.kind === "agent" ? base : undefined;
   const message =
     typeof override.message === "string" ? override.message : (baseAgent?.message ?? "");
   const wakeMode =
-    override.wakeMode === "next-heartbeat" ? "next-heartbeat" : (baseAgent?.wakeMode ?? "now");
+    override.wakeMode === "next-pulsecheck" ? "next-pulsecheck" : (baseAgent?.wakeMode ?? "now");
   return validateAction({
     kind: "agent",
     message,

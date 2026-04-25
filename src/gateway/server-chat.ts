@@ -1,4 +1,7 @@
-import { DEFAULT_HEARTBEAT_ACK_MAX_CHARS, stripHeartbeatToken } from "../auto-reply/heartbeat.js";
+import {
+  DEFAULT_PULSECHECK_ACK_MAX_CHARS,
+  stripPulsecheckToken,
+} from "../auto-reply/pulsecheck.js";
 import { normalizeVerboseLevel } from "../auto-reply/thinking.js";
 import {
   SILENT_REPLY_TOKEN,
@@ -8,7 +11,7 @@ import {
 import { loadConfig } from "../config/config.js";
 import { type AgentEventPayload, getAgentRunContext } from "../infra/agent-events.js";
 import { detectErrorKind, type ErrorKind } from "../infra/errors.js";
-import { resolveHeartbeatVisibility } from "../infra/heartbeat-visibility.js";
+import { resolvePulsecheckVisibility } from "../infra/pulsecheck-visibility.js";
 import { stripInlineDirectiveTagsForDisplay } from "../utils/directive-tags.js";
 import {
   isSuppressedControlReplyLeadFragment,
@@ -20,26 +23,26 @@ import { deriveGatewaySessionLifecycleSnapshot } from "./session-lifecycle-state
 import { loadSessionEntry } from "./session-utils.js";
 import { formatForLog } from "./ws-log.js";
 
-function resolveHeartbeatAckMaxChars(): number {
+function resolvePulsecheckAckMaxChars(): number {
   try {
     const cfg = loadConfig();
     return Math.max(
       0,
-      cfg.agents?.defaults?.heartbeat?.ackMaxChars ?? DEFAULT_HEARTBEAT_ACK_MAX_CHARS,
+      cfg.agents?.defaults?.pulsecheck?.ackMaxChars ?? DEFAULT_PULSECHECK_ACK_MAX_CHARS,
     );
   } catch {
-    return DEFAULT_HEARTBEAT_ACK_MAX_CHARS;
+    return DEFAULT_PULSECHECK_ACK_MAX_CHARS;
   }
 }
 
-function resolveHeartbeatContext(runId: string, sourceRunId?: string) {
+function resolvePulsecheckContext(runId: string, sourceRunId?: string) {
   const primary = getAgentRunContext(runId);
-  if (primary?.isHeartbeat) {
+  if (primary?.isPulsecheck) {
     return primary;
   }
   if (sourceRunId && sourceRunId !== runId) {
     const source = getAgentRunContext(sourceRunId);
-    if (source?.isHeartbeat) {
+    if (source?.isPulsecheck) {
       return source;
     }
   }
@@ -47,17 +50,17 @@ function resolveHeartbeatContext(runId: string, sourceRunId?: string) {
 }
 
 /**
- * Check if heartbeat ACK/noise should be hidden from interactive chat surfaces.
+ * Check if pulsecheck ACK/noise should be hidden from interactive chat surfaces.
  */
-function shouldHideHeartbeatChatOutput(runId: string, sourceRunId?: string): boolean {
-  const runContext = resolveHeartbeatContext(runId, sourceRunId);
-  if (!runContext?.isHeartbeat) {
+function shouldHidePulsecheckChatOutput(runId: string, sourceRunId?: string): boolean {
+  const runContext = resolvePulsecheckContext(runId, sourceRunId);
+  if (!runContext?.isPulsecheck) {
     return false;
   }
 
   try {
     const cfg = loadConfig();
-    const visibility = resolveHeartbeatVisibility({ cfg, channel: "webchat" });
+    const visibility = resolvePulsecheckVisibility({ cfg, channel: "webchat" });
     return !visibility.showOk;
   } catch {
     // Default to suppressing if we can't load config
@@ -65,18 +68,18 @@ function shouldHideHeartbeatChatOutput(runId: string, sourceRunId?: string): boo
   }
 }
 
-function normalizeHeartbeatChatFinalText(params: {
+function normalizePulsecheckChatFinalText(params: {
   runId: string;
   sourceRunId?: string;
   text: string;
 }): { suppress: boolean; text: string } {
-  if (!shouldHideHeartbeatChatOutput(params.runId, params.sourceRunId)) {
+  if (!shouldHidePulsecheckChatOutput(params.runId, params.sourceRunId)) {
     return { suppress: false, text: params.text };
   }
 
-  const stripped = stripHeartbeatToken(params.text, {
-    mode: "heartbeat",
-    maxAckChars: resolveHeartbeatAckMaxChars(),
+  const stripped = stripPulsecheckToken(params.text, {
+    mode: "pulsecheck",
+    maxAckChars: resolvePulsecheckAckMaxChars(),
   });
   if (!stripped.didStrip) {
     return { suppress: false, text: params.text };
@@ -719,7 +722,7 @@ export function createAgentEventHandler({
     if (isSuppressedControlReplyLeadFragment(mergedText)) {
       return;
     }
-    if (shouldHideHeartbeatChatOutput(clientRunId, sourceRunId)) {
+    if (shouldHidePulsecheckChatOutput(clientRunId, sourceRunId)) {
       return;
     }
     const now = Date.now();
@@ -748,14 +751,14 @@ export function createAgentEventHandler({
     const bufferedText = stripInlineDirectiveTagsForDisplay(
       chatRunState.buffers.get(clientRunId) ?? "",
     ).text.trim();
-    const normalizedHeartbeatText = normalizeHeartbeatChatFinalText({
+    const normalizedPulsecheckText = normalizePulsecheckChatFinalText({
       runId: clientRunId,
       sourceRunId,
       text: bufferedText,
     });
-    const text = normalizedHeartbeatText.text.trim();
+    const text = normalizedPulsecheckText.text.trim();
     const shouldSuppressSilent =
-      normalizedHeartbeatText.suppress || isSuppressedControlReplyText(text);
+      normalizedPulsecheckText.suppress || isSuppressedControlReplyText(text);
     return { text, shouldSuppressSilent };
   };
 
@@ -767,7 +770,7 @@ export function createAgentEventHandler({
   ) => {
     const { text, shouldSuppressSilent } = resolveBufferedChatTextState(clientRunId, sourceRunId);
     const shouldSuppressSilentLeadFragment = isSuppressedControlReplyLeadFragment(text);
-    const shouldSuppressHeartbeatStreaming = shouldHideHeartbeatChatOutput(
+    const shouldSuppressPulsecheckStreaming = shouldHidePulsecheckChatOutput(
       clientRunId,
       sourceRunId,
     );
@@ -775,7 +778,7 @@ export function createAgentEventHandler({
       !text ||
       shouldSuppressSilent ||
       shouldSuppressSilentLeadFragment ||
-      shouldSuppressHeartbeatStreaming
+      shouldSuppressPulsecheckStreaming
     ) {
       return;
     }

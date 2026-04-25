@@ -466,7 +466,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: false,
       schedule: { kind: "cron", expr: "0 9 * * *" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: {
         kind: "systemEvent",
         text: "stale-text",
@@ -485,7 +485,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 8 * * *" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "hello" },
       createdAtMs: 3,
     };
@@ -532,7 +532,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 7 * * *" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "report" },
       createdAtMs: 11,
     };
@@ -578,7 +578,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 */6 * * *" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "__openclaw_memory_core_light_sleep__" },
       createdAtMs: 8,
     };
@@ -589,7 +589,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 5 * * 0" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "__openclaw_memory_core_rem_sleep__" },
       createdAtMs: 9,
     };
@@ -627,7 +627,7 @@ describe("short-term dreaming cron reconciliation", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 */6 * * *" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "__openclaw_memory_core_light_sleep__" },
       createdAtMs: 8,
     };
@@ -834,7 +834,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: "." },
+        { trigger: "pulsecheck", workspaceDir: "." },
       );
 
       expect(harness.addCalls).toHaveLength(1);
@@ -920,7 +920,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: "." },
+        { trigger: "pulsecheck", workspaceDir: "." },
       );
 
       expect(startupHarness.updateCalls).toHaveLength(0);
@@ -982,7 +982,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: "." },
+        { trigger: "pulsecheck", workspaceDir: "." },
       );
 
       expect(harness.addCalls).toHaveLength(2);
@@ -996,7 +996,7 @@ describe("gateway startup reconciliation", () => {
     }
   });
 
-  it("does not reconcile managed cron on non-heartbeat runtime replies", async () => {
+  it("does not reconcile managed cron on non-pulsecheck runtime replies", async () => {
     clearInternalHooks();
     const logger = createLogger();
     const harness = createCronHarness();
@@ -1045,7 +1045,7 @@ describe("gateway startup reconciliation", () => {
     }
   });
 
-  it("does not reconcile managed cron on every repeated runtime heartbeat", async () => {
+  it("does not reconcile managed cron on every repeated runtime pulsecheck", async () => {
     clearInternalHooks();
     const logger = createLogger();
     const harness = createCronHarness();
@@ -1086,11 +1086,11 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: "." },
+        { trigger: "pulsecheck", workspaceDir: "." },
       );
       await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: "." },
+        { trigger: "pulsecheck", workspaceDir: "." },
       );
 
       expect(harness.listCalls).toBe(2);
@@ -1141,7 +1141,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       const first = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey },
       );
 
       expect(first).toEqual({
@@ -1153,7 +1153,7 @@ describe("gateway startup reconciliation", () => {
 
       const second = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey },
       );
 
       expect(second).toBeUndefined();
@@ -1162,7 +1162,7 @@ describe("gateway startup reconciliation", () => {
     }
   });
 
-  it("resolves queued managed dreaming cron events from the base session for isolated heartbeats", async () => {
+  it("resolves queued managed dreaming cron events from the base session for isolated pulsechecks", async () => {
     clearInternalHooks();
     const logger = createLogger();
     const harness = createCronHarness();
@@ -1202,7 +1202,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       const result = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey: "agent:main:main:heartbeat" },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey: "agent:main:main:pulsecheck" },
       );
 
       expect(result).toEqual({
@@ -1294,12 +1294,12 @@ describe("gateway startup reconciliation", () => {
       });
       expect(logger.warn).not.toHaveBeenCalled();
 
-      // Now a runtime heartbeat reconciliation happens and cron is still missing
+      // Now a runtime pulsecheck reconciliation happens and cron is still missing
       // (e.g. the cron service genuinely failed to initialize). The warning must fire.
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       await beforeAgentReply(
         { cleanedBody: "" },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey: "agent:main:main:heartbeat" },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey: "agent:main:main:pulsecheck" },
       );
 
       expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("cron service unavailable"));
@@ -1308,7 +1308,7 @@ describe("gateway startup reconciliation", () => {
     }
   });
 
-  it("uses live runtime config for heartbeat dreaming reconciliation", async () => {
+  it("uses live runtime config for pulsecheck dreaming reconciliation", async () => {
     clearInternalHooks();
     const logger = createLogger();
     const harness = createCronHarness();
@@ -1371,7 +1371,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       const result = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey },
       );
 
       expect(runtimeLoadConfig).toHaveBeenCalled();
@@ -1384,7 +1384,7 @@ describe("gateway startup reconciliation", () => {
     }
   });
 
-  it("uses live runtime config for the heartbeat dreaming run payload", async () => {
+  it("uses live runtime config for the pulsecheck dreaming run payload", async () => {
     clearInternalHooks();
     const logger = createLogger();
     const harness = createCronHarness();
@@ -1455,7 +1455,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       const result = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", sessionKey },
+        { trigger: "pulsecheck", sessionKey },
       );
 
       expect(result).toEqual({
@@ -1526,7 +1526,7 @@ describe("gateway startup reconciliation", () => {
       const beforeAgentReply = getBeforeAgentReplyHandler(onMock);
       const result = await beforeAgentReply(
         { cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT },
-        { trigger: "heartbeat", workspaceDir: ".", sessionKey },
+        { trigger: "pulsecheck", workspaceDir: ".", sessionKey },
       );
 
       expect(runtimeLoadConfig).toHaveBeenCalled();
@@ -1541,7 +1541,7 @@ describe("gateway startup reconciliation", () => {
 });
 
 describe("short-term dreaming trigger", () => {
-  it("applies promotions when the managed dreaming heartbeat event fires", async () => {
+  it("applies promotions when the managed dreaming pulsecheck event fires", async () => {
     const logger = createLogger();
     const workspaceDir = await createTempWorkspace("memory-dreaming-");
     await writeDailyMemoryNote(workspaceDir, "2026-04-02", ["Move backups to S3 Glacier."]);
@@ -1563,7 +1563,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1615,7 +1615,7 @@ describe("short-term dreaming trigger", () => {
         "",
         "Handle this reminder internally. Do not relay it to the user unless explicitly requested.",
       ].join("\n"),
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1660,7 +1660,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1687,7 +1687,7 @@ describe("short-term dreaming trigger", () => {
     expect(memoryText).toBe("");
   });
 
-  it("ignores non-heartbeat triggers", async () => {
+  it("ignores non-pulsecheck triggers", async () => {
     const logger = createLogger();
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
@@ -1714,7 +1714,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1783,7 +1783,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1843,7 +1843,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir,
       config: {
         enabled: true,
@@ -1909,7 +1909,7 @@ describe("short-term dreaming trigger", () => {
 
     const result = await runShortTermDreamingPromotionIfTriggered({
       cleanedBody: constants.DREAMING_SYSTEM_EVENT_TEXT,
-      trigger: "heartbeat",
+      trigger: "pulsecheck",
       workspaceDir: alphaWorkspace,
       cfg: {
         agents: {

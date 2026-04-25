@@ -43,8 +43,8 @@ export const QUICK_DISCONNECT_THRESHOLD = 5000;
 export const GatewayOp = {
   /** Server → Client: Dispatch event (type + data). */
   DISPATCH: 0,
-  /** Client → Server: Heartbeat. */
-  HEARTBEAT: 1,
+  /** Client → Server: Pulsecheck. */
+  PULSECHECK: 1,
   /** Client → Server: Identify (initial auth). */
   IDENTIFY: 2,
   /** Client → Server: Resume a dropped session. */
@@ -53,10 +53,10 @@ export const GatewayOp = {
   RECONNECT: 7,
   /** Server → Client: Invalid session. */
   INVALID_SESSION: 9,
-  /** Server → Client: Hello (heartbeat interval). */
+  /** Server → Client: Hello (pulsecheck interval). */
   HELLO: 10,
-  /** Server → Client: Heartbeat ACK. */
-  HEARTBEAT_ACK: 11,
+  /** Server → Client: Pulsecheck ACK. */
+  PULSECHECK_ACK: 11,
 } as const;
 
 // ============ Close Codes ============

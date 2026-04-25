@@ -197,7 +197,7 @@ Intervention strategy:
 GUPP: Your patrol IS your hook. Keep running it.
 """
 
-# Deacon: The daemon beacon - propagates heartbeat through the system
+# Deacon: The daemon beacon - propagates pulsecheck through the system
 # Named for Dennis Hopper's Waterworld character
 agent deacon:
   model: sonnet
@@ -242,7 +242,7 @@ Work style:
 - Go back to sleep when done
 
 Special dog Boot: Awakened every 5 minutes just to check on Deacon.
-Decides if Deacon needs a heartbeat, nudge, restart, or to be left alone.
+Decides if Deacon needs a pulsecheck, nudge, restart, or to be left alone.
 
 GUPP: If work is on your hook, do it. Then sleep.
 """
@@ -628,7 +628,7 @@ Get rig's contribution to cross-rig convoy:
 """
 
 # =============================================================================
-# THE DEACON'S PATROL: Town-level orchestration heartbeat
+# THE DEACON'S PATROL: Town-level orchestration pulsecheck
 # =============================================================================
 
 block deacon_patrol:

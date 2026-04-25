@@ -346,7 +346,7 @@ export const agentHandlers: GatewayRequestHandlers = {
       lane?: string;
       extraSystemPrompt?: string;
       bootstrapContextMode?: "full" | "lightweight";
-      bootstrapContextRunKind?: "default" | "heartbeat" | "cron";
+      bootstrapContextRunKind?: "default" | "pulsecheck" | "cron";
       internalEvents?: AgentInternalEvent[];
       idempotencyKey: string;
       timeout?: number;

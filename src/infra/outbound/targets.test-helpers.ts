@@ -105,7 +105,7 @@ export const forumMessagingForTest: ChannelMessagingAdapter = {
   targetResolver: {
     hint: "<room|dm target>",
   },
-  preserveHeartbeatThreadIdForGroupRoute: true,
+  preservePulsecheckThreadIdForGroupRoute: true,
 };
 
 export function createTestChannelPlugin(params: {

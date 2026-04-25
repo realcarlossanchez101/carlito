@@ -198,7 +198,7 @@ describe("memory-core /dreaming command", () => {
     expect(runtime.config.writeConfigFile).not.toHaveBeenCalled();
   });
 
-  it("shows a blocked line directly after enabled when main heartbeat is disabled", async () => {
+  it("shows a blocked line directly after enabled when main pulsecheck is disabled", async () => {
     const { command } = createHarness({
       plugins: {
         entries: {
@@ -213,7 +213,7 @@ describe("memory-core /dreaming command", () => {
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "0m",
           },
         },
@@ -225,7 +225,7 @@ describe("memory-core /dreaming command", () => {
     const text = result.text ?? "";
 
     expect(text).toContain(
-      '- blocked: dreaming is enabled but will not run because heartbeat is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
     );
 
     const lines = text.split("\n");
@@ -235,11 +235,11 @@ describe("memory-core /dreaming command", () => {
     expect(blockedIdx).toBe(enabledIdx + 1);
   });
 
-  it("surfaces the blocked line on /dreaming on when main heartbeat is disabled", async () => {
+  it("surfaces the blocked line on /dreaming on when main pulsecheck is disabled", async () => {
     const { command } = createHarness({
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "0m",
           },
         },
@@ -256,11 +256,11 @@ describe("memory-core /dreaming command", () => {
 
     expect(text).toContain("Dreaming enabled.");
     expect(text).toContain(
-      '- blocked: dreaming is enabled but will not run because heartbeat is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
     );
   });
 
-  it("omits the blocked line when dreaming is enabled and main heartbeat is healthy", async () => {
+  it("omits the blocked line when dreaming is enabled and main pulsecheck is healthy", async () => {
     const { command } = createHarness({
       plugins: {
         entries: {
@@ -275,7 +275,7 @@ describe("memory-core /dreaming command", () => {
       },
       agents: {
         defaults: {
-          heartbeat: {
+          pulsecheck: {
             every: "30m",
           },
         },

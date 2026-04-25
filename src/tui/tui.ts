@@ -507,7 +507,7 @@ export async function runTui(opts: TuiOptions) {
       : null
     : null;
   if (isLocalMode) {
-    setConsoleSubsystemFilter(["__openclaw_tui_quiet__"]);
+    setConsoleSubsystemFilter(["__carlito_tui_quiet__"]);
   }
 
   const tui = new TUI(new ProcessTerminal());
@@ -761,7 +761,7 @@ export async function runTui(opts: TuiOptions) {
       return await work();
     } finally {
       if (isLocalMode) {
-        setConsoleSubsystemFilter(["__openclaw_tui_quiet__"]);
+        setConsoleSubsystemFilter(["__carlito_tui_quiet__"]);
       }
       tui.start();
       tui.setFocus(editor);

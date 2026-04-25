@@ -28,7 +28,7 @@ export interface TimestampInjectionOptions {
  * tokens) and format consistent across all agent contexts.
  *
  * Used by the gateway `agent` and `chat.send` handlers to give TUI, web,
- * spawned subagents, `sessions_send`, and heartbeat wake events date/time
+ * spawned subagents, `sessions_send`, and pulsecheck wake events date/time
  * awareness — without modifying the system prompt (which is cached).
  *
  * Channel messages (Discord, Telegram, etc.) already have timestamps via

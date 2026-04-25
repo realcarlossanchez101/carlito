@@ -20,7 +20,7 @@ const ONE_HOUR_MS = 60 * 60_000;
 /**
  * How long a connected channel can go without proven transport activity before
  * the health monitor treats it as a "stale socket" and triggers a restart.
- * Providers should only publish that timestamp from transport/heartbeat/poll
+ * Providers should only publish that timestamp from transport/pulsecheck/poll
  * signals, not from ordinary app messages.
  */
 export type ChannelHealthTimingPolicy = {

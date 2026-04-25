@@ -42,8 +42,8 @@ describe("isSilentReplyText", () => {
   });
 
   it("works with custom token", () => {
-    expect(isSilentReplyText("HEARTBEAT_OK", "HEARTBEAT_OK")).toBe(true);
-    expect(isSilentReplyText("Checked inbox. HEARTBEAT_OK", "HEARTBEAT_OK")).toBe(false);
+    expect(isSilentReplyText("PULSECHECK_OK", "PULSECHECK_OK")).toBe(true);
+    expect(isSilentReplyText("Checked inbox. PULSECHECK_OK", "PULSECHECK_OK")).toBe(false);
   });
 });
 
@@ -80,7 +80,7 @@ describe("stripSilentToken", () => {
   });
 
   it("works with custom token", () => {
-    expect(stripSilentToken("done HEARTBEAT_OK", "HEARTBEAT_OK")).toBe("done");
+    expect(stripSilentToken("done PULSECHECK_OK", "PULSECHECK_OK")).toBe("done");
   });
 });
 
@@ -112,7 +112,7 @@ describe("isSilentReplyPrefixText", () => {
     expect(isSilentReplyPrefixText("NO_")).toBe(true);
     expect(isSilentReplyPrefixText("NO_RE")).toBe(true);
     expect(isSilentReplyPrefixText("NO_REPLY")).toBe(true);
-    expect(isSilentReplyPrefixText("  HEARTBEAT_", "HEARTBEAT_OK")).toBe(true);
+    expect(isSilentReplyPrefixText("  PULSECHECK_", "PULSECHECK_OK")).toBe(true);
   });
 
   it("rejects ambiguous natural-language prefixes", () => {
@@ -123,10 +123,10 @@ describe("isSilentReplyPrefixText", () => {
   });
 
   it("keeps underscore guard for non-NO_REPLY tokens", () => {
-    expect(isSilentReplyPrefixText("HE", "HEARTBEAT_OK")).toBe(false);
-    expect(isSilentReplyPrefixText("HEART", "HEARTBEAT_OK")).toBe(false);
-    expect(isSilentReplyPrefixText("HEARTBEAT", "HEARTBEAT_OK")).toBe(false);
-    expect(isSilentReplyPrefixText("HEARTBEAT_", "HEARTBEAT_OK")).toBe(true);
+    expect(isSilentReplyPrefixText("HE", "PULSECHECK_OK")).toBe(false);
+    expect(isSilentReplyPrefixText("HEART", "PULSECHECK_OK")).toBe(false);
+    expect(isSilentReplyPrefixText("PULSECHECK", "PULSECHECK_OK")).toBe(false);
+    expect(isSilentReplyPrefixText("PULSECHECK_", "PULSECHECK_OK")).toBe(true);
   });
 
   it("rejects non-prefixes and mixed characters", () => {

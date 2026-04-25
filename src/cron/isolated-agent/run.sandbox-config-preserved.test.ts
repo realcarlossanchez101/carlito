@@ -74,7 +74,7 @@ describe("runCronIsolatedAgentTurn sandbox config preserved", () => {
       name: "worker",
       workspace: "/tmp/custom-workspace",
       sandbox: undefined,
-      heartbeat: undefined,
+      pulsecheck: undefined,
       tools: undefined,
     });
     expectDefaultSandboxPreserved(runCfg);

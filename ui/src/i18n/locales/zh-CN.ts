@@ -767,7 +767,7 @@ export const zh_CN: TranslationMap = {
       sessionHelp: "主会话发布系统事件。隔离会话运行独立的代理轮次。",
       wakeMode: "唤醒模式",
       now: "立即",
-      nextHeartbeat: "下次心跳",
+      nextPulsecheck: "下次心跳",
       wakeModeHelp: "立即模式立即触发。下次心跳等待下一个周期。",
       payloadKind: "执行内容",
       systemEvent: "发布消息到主时间线",

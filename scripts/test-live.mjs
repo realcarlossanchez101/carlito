@@ -32,7 +32,7 @@ function parsePositiveInt(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-const heartbeatMs = parsePositiveInt(process.env.OPENCLAW_LIVE_WRAPPER_HEARTBEAT_MS, 20_000);
+const pulsecheckMs = parsePositiveInt(process.env.OPENCLAW_LIVE_WRAPPER_PULSECHECK_MS, 20_000);
 const startedAt = Date.now();
 let lastOutputAt = startedAt;
 
@@ -63,9 +63,9 @@ child.stderr?.on("data", (chunk) => {
   process.stderr.write(chunk);
 });
 
-const heartbeat = setInterval(() => {
+const pulsecheck = setInterval(() => {
   const now = Date.now();
-  if (now - lastOutputAt < heartbeatMs) {
+  if (now - lastOutputAt < pulsecheckMs) {
     return;
   }
   const elapsedSec = Math.max(1, Math.round((now - startedAt) / 1_000));
@@ -74,11 +74,11 @@ const heartbeat = setInterval(() => {
     `[test:live] still running (${elapsedSec}s elapsed, ${quietSec}s since last output)\n`,
   );
   lastOutputAt = now;
-}, heartbeatMs);
-heartbeat.unref?.();
+}, pulsecheckMs);
+pulsecheck.unref?.();
 
 child.on("exit", (code, signal) => {
-  clearInterval(heartbeat);
+  clearInterval(pulsecheck);
   if (signal) {
     process.kill(process.pid, signal);
     return;
@@ -87,7 +87,7 @@ child.on("exit", (code, signal) => {
 });
 
 child.on("error", (error) => {
-  clearInterval(heartbeat);
+  clearInterval(pulsecheck);
   console.error(error);
   process.exit(1);
 });

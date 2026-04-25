@@ -137,14 +137,14 @@ export function shouldUseReplyFastTestRuntime(params: {
 export function shouldUseReplyFastDirectiveExecution(params: {
   isFastTestBootstrap: boolean;
   isGroup: boolean;
-  isHeartbeat: boolean;
+  isPulsecheck: boolean;
   resetTriggered: boolean;
   triggerBodyNormalized: string;
 }): boolean {
   if (
     !params.isFastTestBootstrap ||
     params.isGroup ||
-    params.isHeartbeat ||
+    params.isPulsecheck ||
     params.resetTriggered
   ) {
     return false;

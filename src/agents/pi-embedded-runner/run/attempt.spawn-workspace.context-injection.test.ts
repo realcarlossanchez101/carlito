@@ -1,7 +1,7 @@
 import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { filterHeartbeatPairs } from "../../../auto-reply/heartbeat-filter.js";
-import { HEARTBEAT_PROMPT } from "../../../auto-reply/heartbeat.js";
+import { filterPulsecheckPairs } from "../../../auto-reply/pulsecheck-filter.js";
+import { PULSECHECK_PROMPT } from "../../../auto-reply/pulsecheck.js";
 import { limitHistoryTurns } from "../history.js";
 import { buildEmbeddedMessageActionDiscoveryInput } from "../message-action-discovery-input.js";
 import {
@@ -126,12 +126,12 @@ describe("embedded attempt context injection", () => {
     });
   });
 
-  it("never skips heartbeat bootstrap filtering", async () => {
+  it("never skips pulsecheck bootstrap filtering", async () => {
     const { result, hasCompletedBootstrapTurn, resolveBootstrapContextForRun } =
       await resolveBootstrapContext({
         contextInjectionMode: "continuation-skip",
         bootstrapContextMode: "lightweight",
-        bootstrapContextRunKind: "heartbeat",
+        bootstrapContextRunKind: "pulsecheck",
         completed: true,
       });
 
@@ -141,7 +141,7 @@ describe("embedded attempt context injection", () => {
     expect(resolveBootstrapContextForRun).toHaveBeenCalledTimes(1);
   });
 
-  it("runs full bootstrap injection after a successful non-heartbeat turn", async () => {
+  it("runs full bootstrap injection after a successful non-pulsecheck turn", async () => {
     const resolver = vi.fn(async () => ({
       bootstrapFiles: [{ name: "AGENTS.md", content: "bootstrap context" }],
       contextFiles: [{ path: "AGENTS.md", content: "bootstrap context" }],
@@ -158,10 +158,10 @@ describe("embedded attempt context injection", () => {
     expect(result.bootstrapFiles).toEqual([{ name: "AGENTS.md", content: "bootstrap context" }]);
   });
 
-  it("does not record full bootstrap completion for heartbeat runs", async () => {
+  it("does not record full bootstrap completion for pulsecheck runs", async () => {
     const { result } = await resolveBootstrapContext({
       bootstrapContextMode: "lightweight",
-      bootstrapContextRunKind: "heartbeat",
+      bootstrapContextRunKind: "pulsecheck",
       bootstrapMode: "none",
     });
 
@@ -182,7 +182,7 @@ describe("embedded attempt context injection", () => {
     expect(result.shouldRecordCompletedBootstrapTurn).toBe(false);
   });
 
-  it("filters no-op heartbeat pairs before history limiting and context-engine assembly", async () => {
+  it("filters no-op pulsecheck pairs before history limiting and context-engine assembly", async () => {
     const assemble = vi.fn(async ({ messages }: { messages: AgentMessage[] }) => ({
       messages,
       estimatedTokens: 1,
@@ -190,12 +190,12 @@ describe("embedded attempt context injection", () => {
     const sessionMessages: AgentMessage[] = [
       { role: "user", content: "real question", timestamp: 1 } as AgentMessage,
       { role: "assistant", content: "real answer", timestamp: 2 } as unknown as AgentMessage,
-      { role: "user", content: HEARTBEAT_PROMPT, timestamp: 3 } as AgentMessage,
-      { role: "assistant", content: "HEARTBEAT_OK", timestamp: 4 } as unknown as AgentMessage,
+      { role: "user", content: PULSECHECK_PROMPT, timestamp: 3 } as AgentMessage,
+      { role: "assistant", content: "PULSECHECK_OK", timestamp: 4 } as unknown as AgentMessage,
     ];
 
-    const heartbeatFiltered = filterHeartbeatPairs(sessionMessages, undefined, HEARTBEAT_PROMPT);
-    const limited = limitHistoryTurns(heartbeatFiltered, 1);
+    const pulsecheckFiltered = filterPulsecheckPairs(sessionMessages, undefined, PULSECHECK_PROMPT);
+    const limited = limitHistoryTurns(pulsecheckFiltered, 1);
     await assembleAttemptContextEngine({
       contextEngine: {
         info: { id: "test", name: "Test", version: "0.0.1" },

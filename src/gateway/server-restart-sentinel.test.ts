@@ -61,7 +61,7 @@ const mocks = vi.hoisted(() => ({
   ackDelivery: vi.fn(async () => {}),
   failDelivery: vi.fn(async () => {}),
   enqueueSystemEvent: vi.fn(),
-  requestHeartbeatNow: vi.fn(),
+  requestPulsecheckNow: vi.fn(),
   injectTimestamp: vi.fn((message: string) => `stamped:${message}`),
   timestampOptsFromConfig: vi.fn(() => ({})),
   recordInboundSessionAndDispatchReply: vi.fn(
@@ -137,13 +137,13 @@ vi.mock("../plugin-sdk/inbound-reply-dispatch.js", () => ({
   recordInboundSessionAndDispatchReply: mocks.recordInboundSessionAndDispatchReply,
 }));
 
-vi.mock("../infra/heartbeat-wake.js", async () => {
+vi.mock("../infra/pulsecheck-wake.js", async () => {
   return await mergeMockedModule(
-    await vi.importActual<typeof import("../infra/heartbeat-wake.js")>(
-      "../infra/heartbeat-wake.js",
+    await vi.importActual<typeof import("../infra/pulsecheck-wake.js")>(
+      "../infra/pulsecheck-wake.js",
     ),
     () => ({
-      requestHeartbeatNow: mocks.requestHeartbeatNow,
+      requestPulsecheckNow: mocks.requestPulsecheckNow,
     }),
   );
 });
@@ -206,7 +206,7 @@ describe("scheduleRestartSentinelWake", () => {
     mocks.ackDelivery.mockClear();
     mocks.failDelivery.mockClear();
     mocks.enqueueSystemEvent.mockClear();
-    mocks.requestHeartbeatNow.mockClear();
+    mocks.requestPulsecheckNow.mockClear();
     mocks.injectTimestamp.mockClear();
     mocks.timestampOptsFromConfig.mockClear();
     mocks.recordInboundSessionAndDispatchReply.mockReset();
@@ -245,7 +245,7 @@ describe("scheduleRestartSentinelWake", () => {
         sessionKey: "agent:main:main",
       }),
     );
-    expect(mocks.requestHeartbeatNow).toHaveBeenCalledWith({
+    expect(mocks.requestPulsecheckNow).toHaveBeenCalledWith({
       reason: "wake",
       sessionKey: "agent:main:main",
     });
@@ -282,7 +282,7 @@ describe("scheduleRestartSentinelWake", () => {
     expect(mocks.ackDelivery).toHaveBeenCalledWith("queue-1");
     expect(mocks.failDelivery).not.toHaveBeenCalled();
     expect(mocks.enqueueSystemEvent).toHaveBeenCalledTimes(1);
-    expect(mocks.requestHeartbeatNow).toHaveBeenCalledTimes(1);
+    expect(mocks.requestPulsecheckNow).toHaveBeenCalledTimes(1);
     expect(mocks.logWarn).toHaveBeenCalledWith(
       expect.stringContaining("retrying in 1000ms"),
       expect.objectContaining({
@@ -685,11 +685,11 @@ describe("scheduleRestartSentinelWake", () => {
         }),
       }),
     );
-    expect(mocks.requestHeartbeatNow).toHaveBeenNthCalledWith(1, {
+    expect(mocks.requestPulsecheckNow).toHaveBeenNthCalledWith(1, {
       reason: "wake",
       sessionKey: "agent:main:main",
     });
-    expect(mocks.requestHeartbeatNow).toHaveBeenNthCalledWith(2, {
+    expect(mocks.requestPulsecheckNow).toHaveBeenNthCalledWith(2, {
       reason: "wake",
       sessionKey: "agent:main:main",
     });
@@ -864,7 +864,7 @@ describe("scheduleRestartSentinelWake", () => {
     expect(mocks.enqueueSystemEvent).toHaveBeenCalledWith("restart message", {
       sessionKey: "agent:main:main",
     });
-    expect(mocks.requestHeartbeatNow).not.toHaveBeenCalled();
+    expect(mocks.requestPulsecheckNow).not.toHaveBeenCalled();
     expect(mocks.deliverOutboundPayloads).not.toHaveBeenCalled();
   });
 
@@ -918,7 +918,7 @@ describe("scheduleRestartSentinelWake", () => {
     expect(mocks.resolveOutboundTarget).not.toHaveBeenCalled();
   });
 
-  it("resolves session routing before queueing the heartbeat wake", async () => {
+  it("resolves session routing before queueing the pulsecheck wake", async () => {
     mocks.consumeRestartSentinel.mockResolvedValue({
       payload: {
         sessionKey: "agent:main:qa-channel:channel:qa-room",
@@ -932,10 +932,10 @@ describe("scheduleRestartSentinelWake", () => {
       channel: "qa-channel",
       to: "channel:qa-room",
     });
-    mocks.requestHeartbeatNow.mockImplementation(() => {
+    mocks.requestPulsecheckNow.mockImplementation(() => {
       mocks.deliveryContextFromSession.mockReturnValue({
         channel: "qa-channel",
-        to: "heartbeat",
+        to: "pulsecheck",
       });
     });
     mocks.resolveOutboundTarget.mockImplementation((params?: { to?: string }) => ({
@@ -945,7 +945,7 @@ describe("scheduleRestartSentinelWake", () => {
 
     await scheduleRestartSentinelWake({ deps: {} as never });
 
-    expect(mocks.requestHeartbeatNow).toHaveBeenCalledTimes(1);
+    expect(mocks.requestPulsecheckNow).toHaveBeenCalledTimes(1);
     expect(mocks.resolveOutboundTarget).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "qa-channel",

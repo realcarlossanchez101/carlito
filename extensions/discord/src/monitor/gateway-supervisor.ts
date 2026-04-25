@@ -98,7 +98,7 @@ export function classifyDiscordGatewayEvent(params: {
     params.err instanceof TypeError ||
     message.includes("Fatal Gateway error") ||
     message.includes("Fatal gateway close code") ||
-    message.includes("Gateway HELLO missing heartbeat") ||
+    message.includes("Gateway HELLO missing pulsecheck") ||
     message.includes("Invalid gateway payload") ||
     message.includes("Gateway socket emitted an unknown error")
   ) {

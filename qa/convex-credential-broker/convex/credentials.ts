@@ -6,14 +6,14 @@ import { internalMutation, internalQuery } from "./_generated/server";
 const LEASE_EVENT_RETENTION_MS = 2 * 24 * 60 * 60 * 1_000;
 const ADMIN_EVENT_RETENTION_MS = 30 * 24 * 60 * 60 * 1_000;
 const EVENT_RETENTION_BATCH_SIZE = 256;
-const MAX_HEARTBEAT_INTERVAL_MS = 5 * 60 * 1_000;
+const MAX_PULSECHECK_INTERVAL_MS = 5 * 60 * 1_000;
 const MAX_LEASE_TTL_MS = 2 * 60 * 60 * 1_000;
-const MIN_HEARTBEAT_INTERVAL_MS = 5_000;
+const MIN_PULSECHECK_INTERVAL_MS = 5_000;
 const MIN_LEASE_TTL_MS = 30_000;
 const MAX_LIST_LIMIT = 500;
 const MIN_LIST_LIMIT = 1;
 
-const DEFAULT_HEARTBEAT_INTERVAL_MS = 30_000;
+const DEFAULT_PULSECHECK_INTERVAL_MS = 30_000;
 const DEFAULT_LEASE_TTL_MS = 20 * 60 * 1_000;
 const DEFAULT_LIST_LIMIT = 100;
 const POOL_EXHAUSTED_RETRY_AFTER_MS = 2_000;
@@ -44,7 +44,7 @@ type CredentialLease = {
   actorRole: ActorRole;
   leaseToken: string;
   acquiredAtMs: number;
-  heartbeatAtMs: number;
+  pulsecheckAtMs: number;
   expiresAtMs: number;
 };
 
@@ -126,7 +126,7 @@ function toCredentialSummary(row: CredentialSetRecord, includePayload: boolean) 
             ownerId: row.lease.ownerId,
             actorRole: row.lease.actorRole,
             acquiredAtMs: row.lease.acquiredAtMs,
-            heartbeatAtMs: row.lease.heartbeatAtMs,
+            pulsecheckAtMs: row.lease.pulsecheckAtMs,
             expiresAtMs: row.lease.expiresAtMs,
           },
         }
@@ -225,7 +225,7 @@ export const acquireLease = internalMutation({
     ownerId: v.string(),
     actorRole,
     leaseTtlMs: v.optional(v.number()),
-    heartbeatIntervalMs: v.optional(v.number()),
+    pulsecheckIntervalMs: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const nowMs = Date.now();
@@ -241,16 +241,16 @@ export const acquireLease = internalMutation({
         `leaseTtlMs must be between ${MIN_LEASE_TTL_MS} and ${MAX_LEASE_TTL_MS}.`,
       );
     }
-    const heartbeatIntervalMs = normalizeIntervalMs({
-      value: args.heartbeatIntervalMs,
-      fallback: DEFAULT_HEARTBEAT_INTERVAL_MS,
-      min: MIN_HEARTBEAT_INTERVAL_MS,
-      max: MAX_HEARTBEAT_INTERVAL_MS,
+    const pulsecheckIntervalMs = normalizeIntervalMs({
+      value: args.pulsecheckIntervalMs,
+      fallback: DEFAULT_PULSECHECK_INTERVAL_MS,
+      min: MIN_PULSECHECK_INTERVAL_MS,
+      max: MAX_PULSECHECK_INTERVAL_MS,
     });
-    if (!heartbeatIntervalMs) {
+    if (!pulsecheckIntervalMs) {
       return brokerError(
-        "INVALID_HEARTBEAT_INTERVAL",
-        `heartbeatIntervalMs must be between ${MIN_HEARTBEAT_INTERVAL_MS} and ${MAX_HEARTBEAT_INTERVAL_MS}.`,
+        "INVALID_PULSECHECK_INTERVAL",
+        `pulsecheckIntervalMs must be between ${MIN_PULSECHECK_INTERVAL_MS} and ${MAX_PULSECHECK_INTERVAL_MS}.`,
       );
     }
 
@@ -289,7 +289,7 @@ export const acquireLease = internalMutation({
         actorRole: args.actorRole,
         leaseToken,
         acquiredAtMs: nowMs,
-        heartbeatAtMs: nowMs,
+        pulsecheckAtMs: nowMs,
         expiresAtMs: nowMs + leaseTtlMs,
       },
       lastLeasedAtMs: nowMs,
@@ -312,12 +312,12 @@ export const acquireLease = internalMutation({
       leaseToken,
       payload: selected.payload,
       leaseTtlMs,
-      heartbeatIntervalMs,
+      pulsecheckIntervalMs,
     };
   },
 });
 
-export const heartbeatLease = internalMutation({
+export const pulsecheckLease = internalMutation({
   args: {
     kind: v.string(),
     ownerId: v.string(),
@@ -346,12 +346,12 @@ export const heartbeatLease = internalMutation({
       return brokerError("CREDENTIAL_NOT_FOUND", "Credential record does not exist.");
     }
     if (row.kind !== args.kind) {
-      return brokerError("KIND_MISMATCH", "Credential kind did not match this lease heartbeat.");
+      return brokerError("KIND_MISMATCH", "Credential kind did not match this lease pulsecheck.");
     }
     if (row.status !== "active") {
       return brokerError(
         "CREDENTIAL_DISABLED",
-        "Credential is disabled and cannot be heartbeated.",
+        "Credential is disabled and cannot be pulsechecked.",
       );
     }
     if (!row.lease) {
@@ -367,7 +367,7 @@ export const heartbeatLease = internalMutation({
     await ctx.db.patch(args.credentialId, {
       lease: {
         ...row.lease,
-        heartbeatAtMs: nowMs,
+        pulsecheckAtMs: nowMs,
         expiresAtMs: nowMs + leaseTtlMs,
       },
       updatedAtMs: nowMs,

@@ -273,7 +273,7 @@ export function startWebAutoReplyMonitor(params: {
   listenerFactory: unknown;
   sleep: UnknownMock | AsyncUnknownMock;
   signal?: AbortSignal;
-  heartbeatSeconds?: number;
+  pulsecheckSeconds?: number;
   messageTimeoutMs?: number;
   watchdogCheckMs?: number;
   reconnect?: { initialMs: number; maxMs: number; maxAttempts: number; factor: number };
@@ -288,7 +288,7 @@ export function startWebAutoReplyMonitor(params: {
     runtime as never,
     params.signal ?? controller.signal,
     {
-      heartbeatSeconds: params.heartbeatSeconds ?? 1,
+      pulsecheckSeconds: params.pulsecheckSeconds ?? 1,
       messageTimeoutMs: params.messageTimeoutMs,
       watchdogCheckMs: params.watchdogCheckMs,
       reconnect: params.reconnect ?? { initialMs: 10, maxMs: 10, maxAttempts: 3, factor: 1.1 },

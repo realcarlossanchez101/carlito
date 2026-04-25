@@ -1,9 +1,9 @@
 import type { ContextVisibilityMode, GroupPolicy } from "./types.base.js";
 
-export type ChannelHeartbeatVisibilityConfig = {
-  /** Show HEARTBEAT_OK acknowledgments in chat (default: false). */
+export type ChannelPulsecheckVisibilityConfig = {
+  /** Show PULSECHECK_OK acknowledgments in chat (default: false). */
   showOk?: boolean;
-  /** Show heartbeat alerts with actual content (default: true). */
+  /** Show pulsecheck alerts with actual content (default: true). */
   showAlerts?: boolean;
   /** Emit indicator events for UI status display (default: true). */
   useIndicator?: boolean;
@@ -20,8 +20,8 @@ export type ChannelHealthMonitorConfig = {
 export type ChannelDefaultsConfig = {
   groupPolicy?: GroupPolicy;
   contextVisibility?: ContextVisibilityMode;
-  /** Default heartbeat visibility for all channels. */
-  heartbeat?: ChannelHeartbeatVisibilityConfig;
+  /** Default pulsecheck visibility for all channels. */
+  pulsecheck?: ChannelPulsecheckVisibilityConfig;
 };
 
 export type ChannelModelByChannelConfig = Record<string, Record<string, string>>;

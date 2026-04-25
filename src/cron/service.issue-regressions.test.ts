@@ -26,7 +26,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 * * * *", tz: "UTC" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "tick" },
     });
     const offsetMs = topOfHourOffsetMs(created.id);
@@ -43,7 +43,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000, anchorMs: Date.now() },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "hi" },
     });
 
@@ -82,7 +82,7 @@ describe("Cron issue regressions", () => {
       storePath: store.storePath,
       log: noopLogger,
       enqueueSystemEvent: vi.fn(),
-      requestHeartbeatNow: vi.fn(),
+      requestPulsecheckNow: vi.fn(),
       runIsolatedAgentJob: vi.fn().mockResolvedValue({ status: "ok", summary: "ok" }),
     });
     await cron.start();
@@ -113,7 +113,7 @@ describe("Cron issue regressions", () => {
         enabled: true,
         schedule: { kind: "at", at: new Date(scheduledAt).toISOString() },
         sessionTarget: "main",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "systemEvent", text: "stable" },
         state: { nextRunAtMs: scheduledAt },
       },
@@ -139,7 +139,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 * * * *", tz: "UTC" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "tick" },
     });
     const updated = await cron.update(created.id, {
@@ -165,7 +165,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000, anchorMs: now },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "due-preserved" },
     });
     const otherJob = await cron.add({
@@ -173,7 +173,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "cron", expr: "0 * * * *", tz: "UTC" },
       sessionTarget: "main",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "systemEvent", text: "other" },
     });
 
@@ -204,7 +204,7 @@ describe("Cron issue regressions", () => {
         updatedAtMs: now - 60_000,
         schedule: { kind: "cron", expr: "0 */2 * * *", tz: "UTC" },
         sessionTarget: "main",
-        wakeMode: "next-heartbeat",
+        wakeMode: "next-pulsecheck",
         payload: { kind: "systemEvent", text: "legacy" },
         state: {},
       },
@@ -285,7 +285,7 @@ describe("Cron issue regressions", () => {
       enabled: true,
       schedule: { kind: "every", everyMs: 60_000, anchorMs: Date.now() },
       sessionTarget: "isolated",
-      wakeMode: "next-heartbeat",
+      wakeMode: "next-pulsecheck",
       payload: { kind: "agentTurn", message: "test" },
       delivery: {
         mode: "announce",
@@ -335,7 +335,7 @@ describe("Cron issue regressions", () => {
           nextRunAtMs: pastAt,
           lastStatus: "error",
           lastRunAtMs: pastAt,
-          lastError: "heartbeat failed",
+          lastError: "pulsecheck failed",
         },
       },
     ];

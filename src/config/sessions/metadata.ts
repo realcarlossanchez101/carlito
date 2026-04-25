@@ -56,7 +56,7 @@ export function deriveSessionOrigin(
   opts?: { skipSystemEventOrigin?: boolean },
 ): SessionOrigin | undefined {
   const isSystemEventProvider =
-    ctx.Provider === "heartbeat" || ctx.Provider === "cron-event" || ctx.Provider === "exec-event";
+    ctx.Provider === "pulsecheck" || ctx.Provider === "cron-event" || ctx.Provider === "exec-event";
   if (opts?.skipSystemEventOrigin && isSystemEventProvider) {
     return undefined;
   }

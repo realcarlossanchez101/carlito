@@ -21,9 +21,9 @@ OpenClaw assembles its own system prompt on every run. It includes:
   with optional per-agent override at
   `agents.list[].skillsLimits.maxSkillsPromptChars`.
 - Self-update instructions
-- Workspace + bootstrap files (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` when new, plus `MEMORY.md` when present). Lowercase root `memory.md` is not injected; it is legacy repair input for `openclaw doctor --fix` when paired with `MEMORY.md`. Large files are truncated by `agents.defaults.bootstrapMaxChars` (default: 12000), and total bootstrap injection is capped by `agents.defaults.bootstrapTotalMaxChars` (default: 60000). `memory/*.md` daily files are not part of the normal bootstrap prompt; they remain on-demand via memory tools on ordinary turns, but bare `/new` and `/reset` can prepend a one-shot startup-context block with recent daily memory for that first turn. That startup prelude is controlled by `agents.defaults.startupContext`.
+- Workspace + bootstrap files (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `PULSECHECK.md`, `BOOTSTRAP.md` when new, plus `MEMORY.md` when present). Lowercase root `memory.md` is not injected; it is legacy repair input for `openclaw doctor --fix` when paired with `MEMORY.md`. Large files are truncated by `agents.defaults.bootstrapMaxChars` (default: 12000), and total bootstrap injection is capped by `agents.defaults.bootstrapTotalMaxChars` (default: 60000). `memory/*.md` daily files are not part of the normal bootstrap prompt; they remain on-demand via memory tools on ordinary turns, but bare `/new` and `/reset` can prepend a one-shot startup-context block with recent daily memory for that first turn. That startup prelude is controlled by `agents.defaults.startupContext`.
 - Time (UTC + user timezone)
-- Reply tags + heartbeat behavior
+- Reply tags + pulsecheck behavior
 - Runtime metadata (host/OS/model/thinking)
 
 See the full breakdown in [System Prompt](/concepts/system-prompt).
@@ -124,8 +124,8 @@ write costs lower when a session goes idle past the TTL.
 Configure it in [Gateway configuration](/gateway/configuration) and see the
 behavior details in [Session pruning](/concepts/session-pruning).
 
-Heartbeat can keep the cache **warm** across idle gaps. If your model cache TTL
-is `1h`, setting the heartbeat interval just under that (e.g., `55m`) can avoid
+Pulsecheck can keep the cache **warm** across idle gaps. If your model cache TTL
+is `1h`, setting the pulsecheck interval just under that (e.g., `55m`) can avoid
 re-caching the full prompt, reducing cache write costs.
 
 In multi-agent setups, you can keep one shared model config and tune cache behavior
@@ -138,7 +138,7 @@ tokens, while cache writes are billed at a higher multiplier. See Anthropic’s
 prompt caching pricing for the latest rates and TTL multipliers:
 [https://docs.anthropic.com/docs/build-with-claude/prompt-caching](https://docs.anthropic.com/docs/build-with-claude/prompt-caching)
 
-### Example: keep 1h cache warm with heartbeat
+### Example: keep 1h cache warm with pulsecheck
 
 ```yaml
 agents:
@@ -149,7 +149,7 @@ agents:
       "anthropic/claude-opus-4-6":
         params:
           cacheRetention: "long"
-    heartbeat:
+    pulsecheck:
       every: "55m"
 ```
 
@@ -167,7 +167,7 @@ agents:
   list:
     - id: "research"
       default: true
-      heartbeat:
+      pulsecheck:
         every: "55m" # keep long cache warm for deep sessions
     - id: "alerts"
       params:

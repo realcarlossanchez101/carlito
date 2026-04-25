@@ -244,14 +244,14 @@ export const FIELD_HELP: Record<string, string> = {
     "Optional default working directory for this agent's ACP sessions.",
   "agents.list[].identity.avatar":
     "Avatar image path (relative to the agent workspace only) or a remote URL/data URL.",
-  "agents.defaults.heartbeat.suppressToolErrorWarnings":
-    "Suppress tool error warning payloads during heartbeat runs.",
-  "agents.list[].heartbeat.suppressToolErrorWarnings":
-    "Suppress tool error warning payloads during heartbeat runs.",
-  "agents.defaults.heartbeat.timeoutSeconds":
-    "Maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
-  "agents.list[].heartbeat.timeoutSeconds":
-    "Per-agent maximum time in seconds allowed for a heartbeat agent turn before it is aborted. Leave unset to inherit the merged heartbeat/default agent timeout.",
+  "agents.defaults.pulsecheck.suppressToolErrorWarnings":
+    "Suppress tool error warning payloads during pulsecheck runs.",
+  "agents.list[].pulsecheck.suppressToolErrorWarnings":
+    "Suppress tool error warning payloads during pulsecheck runs.",
+  "agents.defaults.pulsecheck.timeoutSeconds":
+    "Maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to use agents.defaults.timeoutSeconds.",
+  "agents.list[].pulsecheck.timeoutSeconds":
+    "Per-agent maximum time in seconds allowed for a pulsecheck agent turn before it is aborted. Leave unset to inherit the merged pulsecheck/default agent timeout.",
   browser:
     "Browser runtime controls for local or remote CDP attachment, profile routing, and screenshot/snapshot behavior. Keep defaults unless your automation workflow requires custom browser transport settings.",
   "browser.enabled":
@@ -358,11 +358,11 @@ export const FIELD_HELP: Record<string, string> = {
     "Tool policy wrapper for sandboxed agent executions so sandbox runs can have distinct capability boundaries. Use this to enforce stronger safety in sandbox contexts.",
   "tools.sandbox.tools":
     "Allow/deny tool policy applied when agents run in sandboxed execution environments. Keep policies minimal so sandbox tasks cannot escalate into unnecessary external actions.",
-  web: "Web channel runtime settings for heartbeat and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
+  web: "Web channel runtime settings for pulsecheck and reconnect behavior when operating web-based chat surfaces. Use reconnect values tuned to your network reliability profile and expected uptime needs.",
   "web.enabled":
     "Enables the web channel runtime and related websocket lifecycle behavior. Keep disabled when web chat is unused to reduce active connection management overhead.",
-  "web.heartbeatSeconds":
-    "Heartbeat interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
+  "web.pulsecheckSeconds":
+    "Pulsecheck interval in seconds for web channel connectivity and liveness maintenance. Use shorter intervals for faster detection, or longer intervals to reduce keepalive chatter.",
   "web.reconnect":
     "Reconnect backoff policy for web channel reconnect attempts after transport failure. Keep bounded retries and jitter tuned to avoid thundering-herd reconnect behavior.",
   "web.reconnect.initialMs":
@@ -579,7 +579,7 @@ export const FIELD_HELP: Record<string, string> = {
     "Enable known poll tool no-progress loop detection (default: true).",
   "tools.loopDetection.detectors.pingPong": "Enable ping-pong loop detection (default: true).",
   "tools.exec.notifyOnExit":
-    "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a heartbeat.",
+    "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a pulsecheck.",
   "tools.exec.notifyOnExitEmptySuccess":
     "When true, successful backgrounded exec exits with empty output still enqueue a completion system event (default: false).",
   "tools.exec.pathPrepend": "Directories to prepend to PATH for exec runs (gateway/sandbox).",
@@ -1433,9 +1433,9 @@ export const FIELD_HELP: Record<string, string> = {
   "hooks.mappings[].match.source":
     "Source match condition for a hook mapping, typically set by trusted upstream metadata or adapter logic. Use stable source identifiers so routing remains deterministic across retries.",
   "hooks.mappings[].action":
-    'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when heartbeat-driven processing is preferred.',
+    'Mapping action type: "wake" triggers agent wake flow, while "agent" sends directly to agent handling. Use "agent" for immediate execution and "wake" when pulsecheck-driven processing is preferred.',
   "hooks.mappings[].wakeMode":
-    'Wake scheduling mode: "now" wakes immediately, while "next-heartbeat" defers until the next heartbeat cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
+    'Wake scheduling mode: "now" wakes immediately, while "next-pulsecheck" defers until the next pulsecheck cycle. Use deferred mode for lower-priority automations that can tolerate slight delay.',
   "hooks.mappings[].name":
     "Human-readable mapping display name used in diagnostics and operator-facing config UIs. Keep names concise and descriptive so routing intent is obvious during incident review.",
   "hooks.mappings[].agentId":
@@ -1561,7 +1561,7 @@ export const FIELD_HELP: Record<string, string> = {
   "messages.tts.providers.*.apiKey":
     "Provider API key used by that speech provider when its plugin requires authenticated TTS access.", // pragma: allowlist secret
   channels:
-    "Channel provider configurations plus shared defaults that control access policies, heartbeat visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
+    "Channel provider configurations plus shared defaults that control access policies, pulsecheck visibility, and per-surface behavior. Keep defaults centralized and override per provider only where required.",
   "channels.mattermost":
     "Mattermost channel provider configuration for bot credentials, base URL, and message trigger modes. Keep mention/trigger rules strict in high-volume team channels.",
   "channels.defaults":
@@ -1570,22 +1570,22 @@ export const FIELD_HELP: Record<string, string> = {
     'Default group policy across channels: "open", "disabled", or "allowlist". Keep "allowlist" for safer production setups unless broad group participation is intentional.',
   "channels.defaults.contextVisibility":
     'Default supplemental context visibility for fetched quote/thread/history content: "all" (keep all context), "allowlist" (only allowlisted senders), or "allowlist_quote" (allowlist + keep explicit quotes).',
-  "channels.defaults.heartbeat":
-    "Default heartbeat visibility settings for status messages emitted by providers/channels. Tune this globally to reduce noisy healthy-state updates while keeping alerts visible.",
-  "channels.defaults.heartbeat.showOk":
-    "Shows healthy/OK heartbeat status entries when true in channel status outputs. Keep false in noisy environments and enable only when operators need explicit healthy confirmations.",
-  "channels.defaults.heartbeat.showAlerts":
-    "Shows degraded/error heartbeat alerts when true so operator channels surface problems promptly. Keep enabled in production so broken channel states are visible.",
-  "channels.defaults.heartbeat.useIndicator":
-    "Enables concise indicator-style heartbeat rendering instead of verbose status text where supported. Use indicator mode for dense dashboards with many active channels.",
-  "agents.defaults.heartbeat.includeSystemPromptSection":
-    "Includes the default agent's ## Heartbeats system prompt section when true. Turn this off to keep heartbeat runtime behavior while omitting the heartbeat prompt instructions from the agent system prompt.",
-  "agents.list.*.heartbeat.includeSystemPromptSection":
-    "Per-agent override for whether the default agent's ## Heartbeats system prompt section is injected. Use false to keep heartbeat runtime behavior but omit the heartbeat prompt instructions from that agent's system prompt.",
-  "agents.defaults.heartbeat.directPolicy":
-    'Controls whether heartbeat delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
-  "agents.list.*.heartbeat.directPolicy":
-    'Per-agent override for heartbeat direct/DM delivery policy; use "block" for agents that should only send heartbeat alerts to non-DM destinations.',
+  "channels.defaults.pulsecheck":
+    "Default pulsecheck visibility settings for status messages emitted by providers/channels. Tune this globally to reduce noisy healthy-state updates while keeping alerts visible.",
+  "channels.defaults.pulsecheck.showOk":
+    "Shows healthy/OK pulsecheck status entries when true in channel status outputs. Keep false in noisy environments and enable only when operators need explicit healthy confirmations.",
+  "channels.defaults.pulsecheck.showAlerts":
+    "Shows degraded/error pulsecheck alerts when true so operator channels surface problems promptly. Keep enabled in production so broken channel states are visible.",
+  "channels.defaults.pulsecheck.useIndicator":
+    "Enables concise indicator-style pulsecheck rendering instead of verbose status text where supported. Use indicator mode for dense dashboards with many active channels.",
+  "agents.defaults.pulsecheck.includeSystemPromptSection":
+    "Includes the default agent's ## Pulsechecks system prompt section when true. Turn this off to keep pulsecheck runtime behavior while omitting the pulsecheck prompt instructions from the agent system prompt.",
+  "agents.list.*.pulsecheck.includeSystemPromptSection":
+    "Per-agent override for whether the default agent's ## Pulsechecks system prompt section is injected. Use false to keep pulsecheck runtime behavior but omit the pulsecheck prompt instructions from that agent's system prompt.",
+  "agents.defaults.pulsecheck.directPolicy":
+    'Controls whether pulsecheck delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.',
+  "agents.list.*.pulsecheck.directPolicy":
+    'Per-agent override for pulsecheck direct/DM delivery policy; use "block" for agents that should only send pulsecheck alerts to non-DM destinations.',
   "channels.mattermost.configWrites":
     "Allow Mattermost to write config in response to channel events/commands (default: true).",
   "channels.modelByChannel":

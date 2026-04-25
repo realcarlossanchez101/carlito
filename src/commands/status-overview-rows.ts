@@ -1,5 +1,5 @@
 import { formatCliCommand } from "../cli/command-format.js";
-import type { HeartbeatEventPayload } from "../infra/heartbeat-events.js";
+import type { PulsecheckEventPayload } from "../infra/pulsecheck-events.js";
 import type { PluginCompatibilityNotice } from "../plugins/status.js";
 import { VERSION } from "../version.js";
 import type { HealthSummary } from "./health.js";
@@ -18,8 +18,8 @@ import {
 import type { AgentLocalStatus } from "./status.agent-local.js";
 import {
   buildStatusAgentsValue,
-  buildStatusHeartbeatValue,
-  buildStatusLastHeartbeatValue,
+  buildStatusPulsecheckValue,
+  buildStatusLastPulsecheckValue,
   buildStatusMemoryValue,
   buildStatusTasksValue,
   type StatusMemoryStateResolvers,
@@ -36,7 +36,7 @@ export function buildStatusCommandOverviewRows(
     osLabel: string;
     summary: StatusSummary;
     health?: HealthSummary;
-    lastHeartbeat: HeartbeatEventPayload | null;
+    lastPulsecheck: PulsecheckEventPayload | null;
     agentStatus: {
       defaultId?: string | null;
       bootstrapPendingCount: number;
@@ -71,11 +71,11 @@ export function buildStatusCommandOverviewRows(
     ok: params.ok,
     muted: params.muted,
   });
-  const heartbeatValue = buildStatusHeartbeatValue({ summary: params.summary });
-  const lastHeartbeatValue = buildStatusLastHeartbeatValue({
+  const pulsecheckValue = buildStatusPulsecheckValue({ summary: params.summary });
+  const lastPulsecheckValue = buildStatusLastPulsecheckValue({
     deep: params.opts.deep,
     gatewayReachable: params.surface.gatewayReachable,
-    lastHeartbeat: params.lastHeartbeat,
+    lastPulsecheck: params.lastPulsecheck,
     warn: params.warn,
     muted: params.muted,
     formatTimeAgo: params.formatTimeAgo,
@@ -111,8 +111,8 @@ export function buildStatusCommandOverviewRows(
       { Item: "Probes", Value: probesValue },
       { Item: "Events", Value: eventsValue },
       { Item: "Tasks", Value: tasksValue },
-      { Item: "Heartbeat", Value: heartbeatValue },
-      ...(lastHeartbeatValue ? [{ Item: "Last heartbeat", Value: lastHeartbeatValue }] : []),
+      { Item: "Pulsecheck", Value: pulsecheckValue },
+      ...(lastPulsecheckValue ? [{ Item: "Last pulsecheck", Value: lastPulsecheckValue }] : []),
       {
         Item: "Sessions",
         Value: buildStatusSessionsOverviewValue({

@@ -60,7 +60,7 @@ export async function resolveStatusJsonOutput(params: {
   suppressHealthErrors?: boolean;
 }) {
   const { scan, opts } = params;
-  const { securityAudit, usage, health, lastHeartbeat, gatewayService, nodeService } =
+  const { securityAudit, usage, health, lastPulsecheck, gatewayService, nodeService } =
     await resolveStatusRuntimeSnapshot({
       config: scan.cfg,
       sourceConfig: scan.sourceConfig,
@@ -87,7 +87,7 @@ export async function resolveStatusJsonOutput(params: {
     securityAudit,
     health,
     usage,
-    lastHeartbeat,
+    lastPulsecheck,
     pluginCompatibility: params.includePluginCompatibility ? scan.pluginCompatibility : undefined,
   });
 }

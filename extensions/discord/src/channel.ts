@@ -541,7 +541,7 @@ export const discordPlugin: ChannelPlugin<ResolvedDiscordAccount, DiscordProbe> 
             maxAgeMs,
           }).map(toConversationLifecycleBinding),
       },
-      heartbeat: {
+      pulsecheck: {
         sendTyping: async ({ cfg, to, accountId, threadId }) => {
           const resolvedTo = resolveDiscordAttachedOutboundTarget({ to, threadId });
           const target = parseDiscordTarget(resolvedTo, { defaultKind: "channel" });

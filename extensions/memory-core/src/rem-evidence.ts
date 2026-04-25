@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const REM_BLOCKED_SECTION_RE =
-  /\b(morning reminders|tasks? for today|to-?do|pickups?|action items?|next steps?|open questions?|stats|setup tasks?|priority contacts|visitors?|top priority candidates|timeline coverage|action items for morning review|test .* skill|heartbeat checks?|date semantics guardrail|still broken|last message (?:&|and) status|plugin \/ service warning|email triage cron)\b/i;
+  /\b(morning reminders|tasks? for today|to-?do|pickups?|action items?|next steps?|open questions?|stats|setup tasks?|priority contacts|visitors?|top priority candidates|timeline coverage|action items for morning review|test .* skill|pulsecheck checks?|date semantics guardrail|still broken|last message (?:&|and) status|plugin \/ service warning|email triage cron)\b/i;
 const REM_GENERIC_SECTION_RE =
   /^(setup|session notes?|notes|summary|major accomplishments?|infrastructure|process improvements?)$/i;
 const REM_MEMORY_SIGNAL_RE =
@@ -49,7 +49,7 @@ const REM_STABLE_PERSON_SIGNAL_RE =
 const REM_EXPLICIT_PREFERENCE_SIGNAL_RE =
   /\b(explicitly|wants?|does not want|don't want|default .* should|should default to|likes?|dislikes?|treat .* as|prefers?)\b/i;
 const REM_MONITORING_SIGNAL_RE =
-  /\b(heartbeat|ariston|collect-temps|low pressure|exit code|invalid[_-]?grant|token expired|token revoked|warning\/error|warning|alert(?:ing)?|checkpoint at|daily note file already existed|header creation|local time verified|calendar access failed|gmail .* failed|no proactive .* sent|silent log only|gateway restarted successfully|still no response|no reply yet|blocked\b|passkey|credential|password in bws|working correctly|catchup completed)\b/i;
+  /\b(pulsecheck|ariston|collect-temps|low pressure|exit code|invalid[_-]?grant|token expired|token revoked|warning\/error|warning|alert(?:ing)?|checkpoint at|daily note file already existed|header creation|local time verified|calendar access failed|gmail .* failed|no proactive .* sent|silent log only|gateway restarted successfully|still no response|no reply yet|blocked\b|passkey|credential|password in bws|working correctly|catchup completed)\b/i;
 const REM_SPECIFICITY_BURDEN_RE =
   /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b|€|\$\d|→|\b\d{1,2}:\d{2}\b|\+\d{6,}/i;
 const REM_TIME_PREFIX_RE = /^\d{1,2}:\d{2}\s*-\s*/;

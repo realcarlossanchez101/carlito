@@ -19,7 +19,7 @@ import type {
   ChannelElevatedAdapter,
   ChannelGatewayAdapter,
   ChannelGroupAdapter,
-  ChannelHeartbeatAdapter,
+  ChannelPulsecheckAdapter,
   ChannelLifecycleAdapter,
   ChannelOutboundAdapter,
   ChannelPairingAdapter,
@@ -90,7 +90,7 @@ export type ChannelPlugin<ResolvedAccount = any, Probe = unknown, Audit = unknow
   directory?: ChannelDirectoryAdapter;
   resolver?: ChannelResolverAdapter;
   actions?: ChannelMessageActionAdapter;
-  heartbeat?: ChannelHeartbeatAdapter;
+  pulsecheck?: ChannelPulsecheckAdapter;
   // Channel-owned agent tools (login flows, etc.).
   agentTools?: ChannelAgentToolFactory | ChannelAgentTool[];
 };

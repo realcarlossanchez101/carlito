@@ -8,7 +8,7 @@ export type DebugState = {
   debugStatus: StatusSummary | null;
   debugHealth: HealthSnapshot | null;
   debugModels: unknown[];
-  debugHeartbeat: unknown;
+  debugPulsecheck: unknown;
   debugCallMethod: string;
   debugCallParams: string;
   debugCallResult: string | null;
@@ -24,17 +24,17 @@ export async function loadDebug(state: DebugState) {
   }
   state.debugLoading = true;
   try {
-    const [status, health, models, heartbeat] = await Promise.all([
+    const [status, health, models, pulsecheck] = await Promise.all([
       state.client.request("status", {}),
       state.client.request("health", {}),
       state.client.request("models.list", {}),
-      state.client.request("last-heartbeat", {}),
+      state.client.request("last-pulsecheck", {}),
     ]);
     state.debugStatus = status as StatusSummary;
     state.debugHealth = health as HealthSnapshot;
     const modelPayload = models as { models?: unknown[] } | undefined;
     state.debugModels = Array.isArray(modelPayload?.models) ? modelPayload?.models : [];
-    state.debugHeartbeat = heartbeat;
+    state.debugPulsecheck = pulsecheck;
   } catch (err) {
     state.debugCallError = String(err);
   } finally {

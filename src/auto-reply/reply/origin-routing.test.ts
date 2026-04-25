@@ -9,7 +9,7 @@ describe("origin-routing helpers", () => {
   it("prefers originating channel over provider for message provider", () => {
     const provider = resolveOriginMessageProvider({
       originatingChannel: "QuietChat",
-      provider: "heartbeat",
+      provider: "pulsecheck",
     });
 
     expect(provider).toBe("quietchat");

@@ -207,7 +207,7 @@ export function buildQaRuntimeEnv(params: {
     OPENCLAW_TEST_FAST: "1",
     OPENCLAW_QA_ALLOW_LOCAL_IMAGE_PROVIDER: "1",
     // QA uses the fast runtime envelope for speed, but it still exercises
-    // normal config-driven heartbeats and runtime config writes.
+    // normal config-driven pulsechecks and runtime config writes.
     OPENCLAW_ALLOW_SLOW_REPLY_TESTS: "1",
     XDG_CONFIG_HOME: params.xdgConfigHome,
     XDG_DATA_HOME: params.xdgDataHome,

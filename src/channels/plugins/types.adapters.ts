@@ -29,7 +29,7 @@ import type {
   ChannelAccountState,
   ChannelDirectoryEntry,
   ChannelGroupContext,
-  ChannelHeartbeatDeps,
+  ChannelPulsecheckDeps,
   ChannelLegacyStateMigrationPlan,
   ChannelLogSink,
   ChannelSecurityContext,
@@ -362,25 +362,25 @@ export type ChannelAuthAdapter = {
   }) => Promise<void>;
 };
 
-export type ChannelHeartbeatAdapter = {
+export type ChannelPulsecheckAdapter = {
   checkReady?: (params: {
     cfg: OpenClawConfig;
     accountId?: string | null;
-    deps?: ChannelHeartbeatDeps;
+    deps?: ChannelPulsecheckDeps;
   }) => Promise<{ ok: boolean; reason: string }>;
   sendTyping?: (params: {
     cfg: OpenClawConfig;
     to: string;
     accountId?: string | null;
     threadId?: string | number | null;
-    deps?: ChannelHeartbeatDeps;
+    deps?: ChannelPulsecheckDeps;
   }) => Promise<void> | void;
   clearTyping?: (params: {
     cfg: OpenClawConfig;
     to: string;
     accountId?: string | null;
     threadId?: string | number | null;
-    deps?: ChannelHeartbeatDeps;
+    deps?: ChannelPulsecheckDeps;
   }) => Promise<void> | void;
   resolveRecipients?: (params: {
     cfg: OpenClawConfig;

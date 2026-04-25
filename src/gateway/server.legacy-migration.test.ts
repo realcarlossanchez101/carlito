@@ -8,12 +8,12 @@ import {
 
 installGatewayTestHooks({ scope: "suite" });
 
-async function expectHeartbeatValidationError(legacyParsed: Record<string, unknown>) {
+async function expectPulsecheckValidationError(legacyParsed: Record<string, unknown>) {
   testState.legacyIssues = [
     {
-      path: "heartbeat",
+      path: "pulsecheck",
       message:
-        "top-level heartbeat is not a valid config path; use agents.defaults.heartbeat (cadence/target/model settings) or channels.defaults.heartbeat (showOk/showAlerts/useIndicator).",
+        "top-level pulsecheck is not a valid config path; use agents.defaults.pulsecheck (cadence/target/model settings) or channels.defaults.pulsecheck (showOk/showAlerts/useIndicator).",
     },
   ];
   testState.legacyParsed = legacyParsed;
@@ -36,23 +36,23 @@ async function expectHeartbeatValidationError(legacyParsed: Record<string, unkno
   const message = (thrown as Error).message;
   expect(message).toContain("Invalid config at");
   expect(message).toContain(
-    "heartbeat: top-level heartbeat is not a valid config path; use agents.defaults.heartbeat (cadence/target/model settings) or channels.defaults.heartbeat (showOk/showAlerts/useIndicator).",
+    "pulsecheck: top-level pulsecheck is not a valid config path; use agents.defaults.pulsecheck (cadence/target/model settings) or channels.defaults.pulsecheck (showOk/showAlerts/useIndicator).",
   );
   expect(message).not.toContain("Legacy config entries detected but auto-migration failed.");
 }
 
 describe("gateway startup legacy migration fallback", () => {
   test("surfaces detailed validation errors when legacy entries have no migration output", async () => {
-    await expectHeartbeatValidationError({
-      heartbeat: { model: "anthropic/claude-3-5-haiku-20241022", every: "30m" },
+    await expectPulsecheckValidationError({
+      pulsecheck: { model: "anthropic/claude-3-5-haiku-20241022", every: "30m" },
     });
   });
 
-  test("keeps detailed validation errors when heartbeat comes from include-resolved config", async () => {
+  test("keeps detailed validation errors when pulsecheck comes from include-resolved config", async () => {
     // Simulate a parsed source that only contains include directives, while
-    // legacy heartbeat is surfaced from the resolved config.
-    await expectHeartbeatValidationError({
-      $include: ["heartbeat.defaults.json"],
+    // legacy pulsecheck is surfaced from the resolved config.
+    await expectPulsecheckValidationError({
+      $include: ["pulsecheck.defaults.json"],
     });
   });
 });

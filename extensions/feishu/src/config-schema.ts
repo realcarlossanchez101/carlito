@@ -61,7 +61,7 @@ const BlockStreamingCoalesceSchema = z
   .strict()
   .optional();
 
-const ChannelHeartbeatVisibilitySchema = z
+const ChannelPulsecheckVisibilitySchema = z
   .object({
     visibility: z.enum(["visible", "hidden"]).optional(),
     intervalMs: z.number().int().positive().optional(),
@@ -173,7 +173,7 @@ const FeishuSharedConfigShape = {
   blockStreamingCoalesce: BlockStreamingCoalesceSchema,
   mediaMaxMb: z.number().positive().optional(),
   httpTimeoutMs: z.number().int().positive().max(300_000).optional(),
-  heartbeat: ChannelHeartbeatVisibilitySchema,
+  pulsecheck: ChannelPulsecheckVisibilitySchema,
   renderMode: RenderModeSchema,
   streaming: StreamingModeSchema,
   tools: FeishuToolsConfigSchema,

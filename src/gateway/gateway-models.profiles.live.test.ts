@@ -68,9 +68,9 @@ const GATEWAY_LIVE_PROBE_TIMEOUT_MS = Math.max(
   toInt(process.env.OPENCLAW_LIVE_GATEWAY_STEP_TIMEOUT_MS, 90_000),
 );
 const GATEWAY_LIVE_MODEL_TIMEOUT_MS = resolveGatewayLiveModelTimeoutMs();
-const GATEWAY_LIVE_HEARTBEAT_MS = Math.max(
+const GATEWAY_LIVE_PULSECHECK_MS = Math.max(
   1_000,
-  toInt(process.env.OPENCLAW_LIVE_GATEWAY_HEARTBEAT_MS, 30_000),
+  toInt(process.env.OPENCLAW_LIVE_GATEWAY_PULSECHECK_MS, 30_000),
 );
 const GATEWAY_LIVE_STRIP_SCAFFOLDING_MODEL_KEYS = new Set([
   "google/gemini-3-flash-preview",
@@ -184,14 +184,14 @@ async function withGatewayLiveTimeout<T>(params: {
 }): Promise<T> {
   let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
   const startedAt = Date.now();
-  let heartbeatCount = 0;
-  const heartbeat = setInterval(() => {
-    heartbeatCount += 1;
+  let pulsecheckCount = 0;
+  const pulsecheck = setInterval(() => {
+    pulsecheckCount += 1;
     logProgress(
       `${params.context}: still running (${Math.max(1, Math.round((Date.now() - startedAt) / 1_000))}s)`,
     );
-  }, GATEWAY_LIVE_HEARTBEAT_MS);
-  heartbeat.unref?.();
+  }, GATEWAY_LIVE_PULSECHECK_MS);
+  pulsecheck.unref?.();
   try {
     return await Promise.race([
       params.operation,
@@ -206,11 +206,11 @@ async function withGatewayLiveTimeout<T>(params: {
       }),
     ]);
   } finally {
-    clearInterval(heartbeat);
+    clearInterval(pulsecheck);
     if (timeoutHandle) {
       clearTimeout(timeoutHandle);
     }
-    if (heartbeatCount > 0) {
+    if (pulsecheckCount > 0) {
       logProgress(
         `${params.context}: completed after ${Math.max(1, Math.round((Date.now() - startedAt) / 1_000))}s`,
       );
@@ -1140,7 +1140,7 @@ async function waitForSessionAssistantText(params: {
   modelKey?: string;
 }) {
   const startedAt = Date.now();
-  let lastHeartbeatAt = startedAt;
+  let lastPulsecheckAt = startedAt;
   let delayMs = 50;
   while (Date.now() - startedAt < GATEWAY_LIVE_PROBE_TIMEOUT_MS) {
     const assistantTexts = readSessionAssistantTexts(params.sessionKey, params.modelKey);
@@ -1153,8 +1153,8 @@ async function waitForSessionAssistantText(params: {
         return freshText;
       }
     }
-    if (Date.now() - lastHeartbeatAt >= GATEWAY_LIVE_HEARTBEAT_MS) {
-      lastHeartbeatAt = Date.now();
+    if (Date.now() - lastPulsecheckAt >= GATEWAY_LIVE_PULSECHECK_MS) {
+      lastPulsecheckAt = Date.now();
       logProgress(
         `${params.context}: waiting for transcript (${Math.max(1, Math.round((Date.now() - startedAt) / 1_000))}s)`,
       );
@@ -1470,7 +1470,7 @@ async function runGatewayModelSuite(params: GatewayModelSuiteParams) {
       `[${params.label}] running ${params.candidates.length} models (thinking=${params.thinkingLevel})`,
     );
     logProgress(
-      `[${params.label}] heartbeat=${Math.max(1, Math.round(GATEWAY_LIVE_HEARTBEAT_MS / 1_000))}s probe-timeout=${Math.max(1, Math.round(GATEWAY_LIVE_PROBE_TIMEOUT_MS / 1_000))}s model-timeout=${Math.max(1, Math.round(GATEWAY_LIVE_MODEL_TIMEOUT_MS / 1_000))}s`,
+      `[${params.label}] pulsecheck=${Math.max(1, Math.round(GATEWAY_LIVE_PULSECHECK_MS / 1_000))}s probe-timeout=${Math.max(1, Math.round(GATEWAY_LIVE_PROBE_TIMEOUT_MS / 1_000))}s model-timeout=${Math.max(1, Math.round(GATEWAY_LIVE_MODEL_TIMEOUT_MS / 1_000))}s`,
     );
     const anthropicKeys = collectAnthropicApiKeys();
     if (anthropicKeys.length > 0) {

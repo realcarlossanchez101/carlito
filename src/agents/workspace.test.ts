@@ -6,7 +6,7 @@ import { makeTempWorkspace, writeWorkspaceFile } from "../test-helpers/workspace
 import {
   DEFAULT_AGENTS_FILENAME,
   DEFAULT_BOOTSTRAP_FILENAME,
-  DEFAULT_HEARTBEAT_FILENAME,
+  DEFAULT_PULSECHECK_FILENAME,
   DEFAULT_IDENTITY_FILENAME,
   DEFAULT_MEMORY_FILENAME,
   DEFAULT_TOOLS_FILENAME,
@@ -27,7 +27,7 @@ describe("resolveDefaultAgentWorkspaceDir", () => {
       HOME: "/home/other",
     } as NodeJS.ProcessEnv);
 
-    expect(dir).toBe(path.join(path.resolve("/srv/openclaw-home"), ".openclaw", "workspace"));
+    expect(dir).toBe(path.join(path.resolve("/srv/openclaw-home"), ".carlito", "workspace"));
   });
 });
 
@@ -68,7 +68,7 @@ function expectSubagentAllowedBootstrapNames(files: WorkspaceBootstrapFile[]) {
   expect(names).toContain("SOUL.md");
   expect(names).toContain("IDENTITY.md");
   expect(names).toContain("USER.md");
-  expect(names).not.toContain("HEARTBEAT.md");
+  expect(names).not.toContain("PULSECHECK.md");
   expect(names).not.toContain("BOOTSTRAP.md");
   expect(names).not.toContain("MEMORY.md");
 }
@@ -195,17 +195,17 @@ describe("ensureAgentWorkspace", () => {
     await expect(isWorkspaceBootstrapPending(tempDir)).resolves.toBe(false);
   });
 
-  it("writes the current fenced HEARTBEAT template body into new workspaces", async () => {
+  it("writes the current fenced PULSECHECK template body into new workspaces", async () => {
     const tempDir = await makeTempWorkspace("openclaw-workspace-");
 
     await ensureAgentWorkspace({ dir: tempDir, ensureBootstrapFiles: true });
 
-    const heartbeat = await fs.readFile(path.join(tempDir, DEFAULT_HEARTBEAT_FILENAME), "utf-8");
-    expect(heartbeat).toContain("```markdown");
-    expect(heartbeat).toContain(
-      "# Keep this file empty (or with only comments) to skip heartbeat API calls.",
+    const pulsecheck = await fs.readFile(path.join(tempDir, DEFAULT_PULSECHECK_FILENAME), "utf-8");
+    expect(pulsecheck).toContain("```markdown");
+    expect(pulsecheck).toContain(
+      "# Keep this file empty (or with only comments) to skip pulsecheck API calls.",
     );
-    expect(heartbeat).toContain(
+    expect(pulsecheck).toContain(
       "# Add tasks below when you want the agent to check something periodically.",
     );
   });
@@ -287,7 +287,7 @@ describe("filterBootstrapFilesForSession", () => {
     { name: "TOOLS.md", path: "/w/TOOLS.md", content: "", missing: false },
     { name: "IDENTITY.md", path: "/w/IDENTITY.md", content: "", missing: false },
     { name: "USER.md", path: "/w/USER.md", content: "", missing: false },
-    { name: "HEARTBEAT.md", path: "/w/HEARTBEAT.md", content: "", missing: false },
+    { name: "PULSECHECK.md", path: "/w/PULSECHECK.md", content: "", missing: false },
     { name: "BOOTSTRAP.md", path: "/w/BOOTSTRAP.md", content: "", missing: false },
     { name: "MEMORY.md", path: "/w/MEMORY.md", content: "", missing: false },
   ];

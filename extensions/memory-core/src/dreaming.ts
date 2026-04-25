@@ -1,8 +1,8 @@
 import { resolveDefaultAgentId } from "openclaw/plugin-sdk/config-runtime";
 import {
-  isHeartbeatEnabledForAgent,
+  isPulsecheckEnabledForAgent,
   peekSystemEventEntries,
-  resolveHeartbeatIntervalMs,
+  resolvePulsecheckIntervalMs,
 } from "openclaw/plugin-sdk/infra-runtime";
 import type { OpenClawConfig, OpenClawPluginApi } from "openclaw/plugin-sdk/memory-core";
 import {
@@ -42,7 +42,7 @@ const LEGACY_REM_SLEEP_CRON_NAME = "Memory REM Dreaming";
 const LEGACY_REM_SLEEP_CRON_TAG = "[managed-by=memory-core.dreaming.rem]";
 const LEGACY_REM_SLEEP_EVENT_TEXT = "__openclaw_memory_core_rem_sleep__";
 const RUNTIME_CRON_RECONCILE_INTERVAL_MS = 60_000;
-const HEARTBEAT_ISOLATED_SESSION_SUFFIX = ":heartbeat";
+const PULSECHECK_ISOLATED_SESSION_SUFFIX = ":pulsecheck";
 
 type Logger = Pick<OpenClawPluginApi["logger"], "info" | "warn" | "error">;
 
@@ -316,10 +316,10 @@ function resolveDreamingTriggerSessionKeys(sessionKey?: string): string[] {
   }
 
   const keys = [normalized];
-  // Isolated heartbeat runs execute in a sibling `:heartbeat` session while cron
+  // Isolated pulsecheck runs execute in a sibling `:pulsecheck` session while cron
   // system events stay queued on the base main session.
-  if (normalized.endsWith(HEARTBEAT_ISOLATED_SESSION_SUFFIX)) {
-    const baseSessionKey = normalized.slice(0, -HEARTBEAT_ISOLATED_SESSION_SUFFIX.length).trim();
+  if (normalized.endsWith(PULSECHECK_ISOLATED_SESSION_SUFFIX)) {
+    const baseSessionKey = normalized.slice(0, -PULSECHECK_ISOLATED_SESSION_SUFFIX.length).trim();
     if (baseSessionKey) {
       keys.push(baseSessionKey);
     }
@@ -367,16 +367,16 @@ export function resolveDreamingBlockedReason(cfg: OpenClawConfig): string | null
 
   const defaultAgentId = resolveDefaultAgentId(cfg);
   // Mirror the managed dreaming wake path in server-cron: the job carries no
-  // agentId/sessionKey, so the wake uses defaults-only heartbeat. Not using
-  // resolveHeartbeatSummaryForAgent since it would apply the per-agent override
+  // agentId/sessionKey, so the wake uses defaults-only pulsecheck. Not using
+  // resolvePulsecheckSummaryForAgent since it would apply the per-agent override
   // and diverge from actual runtime behavior.
-  const enabledForDefault = isHeartbeatEnabledForAgent(cfg, defaultAgentId);
-  const intervalMs = resolveHeartbeatIntervalMs(cfg, undefined, cfg.agents?.defaults?.heartbeat);
+  const enabledForDefault = isPulsecheckEnabledForAgent(cfg, defaultAgentId);
+  const intervalMs = resolvePulsecheckIntervalMs(cfg, undefined, cfg.agents?.defaults?.pulsecheck);
   if (enabledForDefault && intervalMs != null) {
     return null;
   }
 
-  return `dreaming is enabled but will not run because heartbeat is disabled for "${defaultAgentId}". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting`;
+  return `dreaming is enabled but will not run because pulsecheck is disabled for "${defaultAgentId}". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting`;
 }
 
 export async function reconcileShortTermDreamingCronJob(params: {
@@ -473,7 +473,7 @@ export async function runShortTermDreamingPromotionIfTriggered(params: {
   logger: Logger;
   subagent?: Parameters<typeof generateAndAppendDreamNarrative>[0]["subagent"];
 }): Promise<{ handled: true; reason: string } | undefined> {
-  if (params.trigger !== "heartbeat") {
+  if (params.trigger !== "pulsecheck") {
     return undefined;
   }
   if (!includesSystemEventToken(params.cleanedBody, DREAMING_SYSTEM_EVENT_TEXT)) {
@@ -681,7 +681,7 @@ export function registerShortTermPromotionDreaming(api: OpenClawPluginApi): void
     const configKey = runtimeConfigKey(config);
     if (!cron && config.enabled && !unavailableCronWarningEmitted) {
       // Avoid a noisy startup-path warning when the gateway has not exposed cron yet.
-      // The runtime reconciliation path (heartbeat-driven) will still warn if the
+      // The runtime reconciliation path (pulsecheck-driven) will still warn if the
       // cron service remains unavailable after boot.
       if (params.reason === "startup") {
         api.logger.debug?.(
@@ -736,7 +736,7 @@ export function registerShortTermPromotionDreaming(api: OpenClawPluginApi): void
 
   api.on("before_agent_reply", async (event, ctx) => {
     try {
-      if (ctx.trigger !== "heartbeat") {
+      if (ctx.trigger !== "pulsecheck") {
         return undefined;
       }
       const currentConfig = resolveCurrentConfig();

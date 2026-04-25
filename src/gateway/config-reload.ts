@@ -65,7 +65,7 @@ function isNoopReloadPlan(plan: GatewayReloadPlan): boolean {
     !plan.reloadHooks &&
     !plan.restartGmailWatcher &&
     !plan.restartCron &&
-    !plan.restartHeartbeat &&
+    !plan.restartPulsecheck &&
     !plan.restartHealthMonitor &&
     plan.restartChannels.size === 0
   );

@@ -5,20 +5,20 @@ import { resolveFollowupDeliveryPayloads } from "./followup-delivery.js";
 const baseConfig = {} as OpenClawConfig;
 
 describe("resolveFollowupDeliveryPayloads", () => {
-  it("drops heartbeat ack payloads without media", () => {
+  it("drops pulsecheck ack payloads without media", () => {
     expect(
       resolveFollowupDeliveryPayloads({
         cfg: baseConfig,
-        payloads: [{ text: "HEARTBEAT_OK" }],
+        payloads: [{ text: "PULSECHECK_OK" }],
       }),
     ).toEqual([]);
   });
 
-  it("keeps media payloads when stripping heartbeat ack text", () => {
+  it("keeps media payloads when stripping pulsecheck ack text", () => {
     expect(
       resolveFollowupDeliveryPayloads({
         cfg: baseConfig,
-        payloads: [{ text: "HEARTBEAT_OK", mediaUrl: "/tmp/image.png" }],
+        payloads: [{ text: "PULSECHECK_OK", mediaUrl: "/tmp/image.png" }],
       }),
     ).toEqual([{ text: "", mediaUrl: "/tmp/image.png" }]);
   });
@@ -60,7 +60,7 @@ describe("resolveFollowupDeliveryPayloads", () => {
       resolveFollowupDeliveryPayloads({
         cfg: baseConfig,
         payloads: [{ text: "hello world!" }],
-        messageProvider: "heartbeat",
+        messageProvider: "pulsecheck",
         originatingChannel: "telegram",
         originatingTo: "268300329",
         sentTargets: [{ tool: "telegram", provider: "telegram", to: "268300329" }],

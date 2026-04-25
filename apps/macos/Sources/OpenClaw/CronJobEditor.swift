@@ -128,7 +128,7 @@ struct CronJobEditor: View {
                                 self.gridLabel("Wake mode")
                                 Picker("", selection: self.$wakeMode) {
                                     Text("now").tag(CronWakeMode.now)
-                                    Text("next-heartbeat").tag(CronWakeMode.nextHeartbeat)
+                                    Text("next-pulsecheck").tag(CronWakeMode.nextPulsecheck)
                                 }
                                 .labelsHidden()
                                 .pickerStyle(.segmented)

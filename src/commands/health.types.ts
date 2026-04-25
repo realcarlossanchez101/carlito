@@ -16,7 +16,7 @@ export type AgentHealthSummary = {
   agentId: string;
   name?: string;
   isDefault: boolean;
-  heartbeat: import("../infra/heartbeat-summary.js").HeartbeatSummary;
+  pulsecheck: import("../infra/pulsecheck-summary.js").PulsecheckSummary;
   sessions: HealthSummary["sessions"];
 };
 
@@ -27,7 +27,7 @@ export type HealthSummary = {
   channels: Record<string, ChannelHealthSummary>;
   channelOrder: string[];
   channelLabels: Record<string, string>;
-  heartbeatSeconds: number;
+  pulsecheckSeconds: number;
   defaultAgentId: string;
   agents: AgentHealthSummary[];
   sessions: {

@@ -1,6 +1,6 @@
 import { resolveReadOnlyChannelPluginsForConfig } from "../channels/plugins/read-only.js";
 import type { OpenClawConfig } from "../config/types.js";
-import type { HeartbeatEventPayload } from "../infra/heartbeat-events.js";
+import type { PulsecheckEventPayload } from "../infra/pulsecheck-events.js";
 import type { HealthSummary } from "./health.js";
 import { getDaemonStatusSummary, getNodeDaemonStatusSummary } from "./status.daemon.js";
 
@@ -89,7 +89,7 @@ export async function resolveStatusGatewayHealthSafe(params: {
   }).catch((err) => ({ error: String(err) }));
 }
 
-export async function resolveStatusLastHeartbeat(params: {
+export async function resolveStatusLastPulsecheck(params: {
   config: OpenClawConfig;
   timeoutMs?: number;
   gatewayReachable: boolean;
@@ -98,8 +98,8 @@ export async function resolveStatusLastHeartbeat(params: {
     return null;
   }
   const { callGateway } = await loadGatewayCallModule();
-  return await callGateway<HeartbeatEventPayload | null>({
-    method: "last-heartbeat",
+  return await callGateway<PulsecheckEventPayload | null>({
+    method: "last-pulsecheck",
     params: {},
     timeoutMs: params.timeoutMs,
     config: params.config,
@@ -112,7 +112,7 @@ export async function resolveStatusServiceSummaries() {
 
 type StatusUsageSummary = Awaited<ReturnType<typeof resolveStatusUsageSummary>>;
 type StatusGatewayHealth = Awaited<ReturnType<typeof resolveStatusGatewayHealth>>;
-type StatusLastHeartbeat = Awaited<ReturnType<typeof resolveStatusLastHeartbeat>>;
+type StatusLastPulsecheck = Awaited<ReturnType<typeof resolveStatusLastPulsecheck>>;
 type StatusGatewayServiceSummary = Awaited<ReturnType<typeof getDaemonStatusSummary>>;
 type StatusNodeServiceSummary = Awaited<ReturnType<typeof getNodeDaemonStatusSummary>>;
 type StatusSecurityAudit = Awaited<ReturnType<typeof resolveStatusSecurityAudit>>;
@@ -144,8 +144,8 @@ export async function resolveStatusRuntimeDetails(params: {
           timeoutMs: params.timeoutMs,
         })
     : undefined;
-  const lastHeartbeat = params.deep
-    ? await resolveStatusLastHeartbeat({
+  const lastPulsecheck = params.deep
+    ? await resolveStatusLastPulsecheck({
         config: params.config,
         timeoutMs: params.timeoutMs,
         gatewayReachable: params.gatewayReachable,
@@ -155,14 +155,14 @@ export async function resolveStatusRuntimeDetails(params: {
   const result = {
     usage,
     health,
-    lastHeartbeat,
+    lastPulsecheck,
     gatewayService,
     nodeService,
   };
   return result satisfies {
     usage?: StatusUsageSummary;
     health?: StatusGatewayHealth;
-    lastHeartbeat: StatusLastHeartbeat;
+    lastPulsecheck: StatusLastPulsecheck;
     gatewayService: StatusGatewayServiceSummary;
     nodeService: StatusNodeServiceSummary;
   };
@@ -210,7 +210,7 @@ export async function resolveStatusRuntimeSnapshot(params: {
     securityAudit?: StatusSecurityAudit;
     usage?: StatusUsageSummary;
     health?: StatusGatewayHealth;
-    lastHeartbeat: StatusLastHeartbeat;
+    lastPulsecheck: StatusLastPulsecheck;
     gatewayService: StatusGatewayServiceSummary;
     nodeService: StatusNodeServiceSummary;
   };

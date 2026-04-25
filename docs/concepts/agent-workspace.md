@@ -85,8 +85,8 @@ These are the standard files OpenClaw expects inside the workspace:
   - Notes about your local tools and conventions.
   - Does not control tool availability; it is only guidance.
 
-- `HEARTBEAT.md`
-  - Optional tiny checklist for heartbeat runs.
+- `PULSECHECK.md`
+  - Optional tiny checklist for pulsecheck runs.
   - Keep it short to avoid token burn.
 
 - `BOOT.md`
@@ -152,7 +152,7 @@ workspace is not already a repo, run:
 ```bash
 cd ~/.openclaw/workspace
 git init
-git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md HEARTBEAT.md memory/
+git add AGENTS.md SOUL.md TOOLS.md IDENTITY.md USER.md PULSECHECK.md memory/
 git commit -m "Add agent workspace"
 ```
 
@@ -239,6 +239,6 @@ Suggested `.gitignore` starter:
 ## Related
 
 - [Standing Orders](/automation/standing-orders) — persistent instructions in workspace files
-- [Heartbeat](/gateway/heartbeat) — HEARTBEAT.md workspace file
+- [Pulsecheck](/gateway/pulsecheck) — PULSECHECK.md workspace file
 - [Session](/concepts/session) — session storage paths
 - [Sandboxing](/gateway/sandboxing) — workspace access in sandboxed environments
