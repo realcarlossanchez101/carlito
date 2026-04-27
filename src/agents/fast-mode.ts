@@ -1,6 +1,6 @@
 import { normalizeFastMode } from "../auto-reply/thinking.shared.js";
 import type { SessionEntry } from "../config/sessions.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveAgentConfig } from "./agent-scope.js";
 
 export type FastModeState = {
@@ -9,7 +9,7 @@ export type FastModeState = {
 };
 
 function resolveConfiguredFastModeRaw(params: {
-  cfg: OpenClawConfig | undefined;
+  cfg: CarlitoConfig | undefined;
   provider: string;
   model: string;
 }): unknown {
@@ -19,7 +19,7 @@ function resolveConfiguredFastModeRaw(params: {
 }
 
 export function resolveFastModeState(params: {
-  cfg: OpenClawConfig | undefined;
+  cfg: CarlitoConfig | undefined;
   provider: string;
   model: string;
   agentId?: string;

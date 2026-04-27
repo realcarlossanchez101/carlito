@@ -1,24 +1,24 @@
 {
-  "name": "@openclaw/mattermost",
+  "name": "@realcarlossanchez101/mattermost",
   "version": "2026.4.20",
-  "description": "OpenClaw Mattermost channel plugin",
+  "description": "Carlito Mattermost channel plugin",
   "type": "module",
   "dependencies": {
     "ws": "^8.20.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],
@@ -33,7 +33,7 @@
       "order": 65
     },
     "install": {
-      "npmSpec": "@openclaw/mattermost",
+      "npmSpec": "@realcarlossanchez101/mattermost",
       "defaultChoice": "npm",
       "minHostVersion": ">=2026.4.10"
     }

@@ -1,13 +1,13 @@
 {
-  "name": "@openclaw/fal-provider",
+  "name": "@realcarlossanchez101/fal-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw fal provider plugin",
+  "description": "Carlito fal provider plugin",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

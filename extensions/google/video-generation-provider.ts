@@ -1,18 +1,18 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import path from "node:path";
-import { resolveApiKeyForProvider } from "openclaw/plugin-sdk/provider-auth-runtime";
+import { resolveApiKeyForProvider } from "carlito/plugin-sdk/provider-auth-runtime";
 import {
   createProviderOperationDeadline,
   resolveProviderOperationTimeoutMs,
   waitProviderOperationPollInterval,
-} from "openclaw/plugin-sdk/provider-http";
-import { resolvePreferredOpenClawTmpDir } from "openclaw/plugin-sdk/temp-path";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/provider-http";
+import { resolvePreferredCarlitoTmpDir } from "carlito/plugin-sdk/temp-path";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import type {
   GeneratedVideoAsset,
   VideoGenerationProvider,
   VideoGenerationRequest,
-} from "openclaw/plugin-sdk/video-generation";
+} from "carlito/plugin-sdk/video-generation";
 import { normalizeGoogleApiBaseUrl } from "./api.js";
 import {
   createGoogleVideoGenerationProviderMetadata,
@@ -131,7 +131,7 @@ async function downloadGeneratedVideo(params: {
   index: number;
 }): Promise<GeneratedVideoAsset> {
   const tempDir = await mkdtemp(
-    path.join(resolvePreferredOpenClawTmpDir(), "openclaw-google-video-"),
+    path.join(resolvePreferredCarlitoTmpDir(), "carlito-google-video-"),
   );
   const downloadPath = path.join(tempDir, `video-${params.index + 1}.mp4`);
   try {

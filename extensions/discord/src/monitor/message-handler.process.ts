@@ -3,47 +3,47 @@ import {
   EmbeddedBlockChunker,
   resolveAckReaction,
   resolveHumanDelayConfig,
-} from "openclaw/plugin-sdk/agent-runtime";
+} from "carlito/plugin-sdk/agent-runtime";
 import {
   createStatusReactionController,
   DEFAULT_TIMING,
   logAckFailure,
   logTypingFailure,
   shouldAckReaction as shouldAckReactionGate,
-} from "openclaw/plugin-sdk/channel-feedback";
+} from "carlito/plugin-sdk/channel-feedback";
 import {
   formatInboundEnvelope,
   resolveEnvelopeFormatOptions,
-} from "openclaw/plugin-sdk/channel-inbound";
-import { deliverFinalizableDraftPreview } from "openclaw/plugin-sdk/channel-lifecycle";
-import { createChannelReplyPipeline } from "openclaw/plugin-sdk/channel-reply-pipeline";
+} from "carlito/plugin-sdk/channel-inbound";
+import { deliverFinalizableDraftPreview } from "carlito/plugin-sdk/channel-lifecycle";
+import { createChannelReplyPipeline } from "carlito/plugin-sdk/channel-reply-pipeline";
 import {
   resolveChannelStreamingBlockEnabled,
   resolveChannelStreamingPreviewToolProgress,
-} from "openclaw/plugin-sdk/channel-streaming";
-import { resolveChannelContextVisibilityMode } from "openclaw/plugin-sdk/context-visibility-runtime";
-import { recordInboundSession } from "openclaw/plugin-sdk/conversation-runtime";
-import { isDangerousNameMatchingEnabled } from "openclaw/plugin-sdk/dangerous-name-runtime";
-import { resolveMarkdownTableMode } from "openclaw/plugin-sdk/markdown-table-runtime";
-import { getAgentScopedMediaLocalRoots } from "openclaw/plugin-sdk/media-runtime";
-import { resolveChunkMode } from "openclaw/plugin-sdk/reply-chunking";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-dispatch-runtime";
-import { finalizeInboundContext } from "openclaw/plugin-sdk/reply-dispatch-runtime";
+} from "carlito/plugin-sdk/channel-streaming";
+import { resolveChannelContextVisibilityMode } from "carlito/plugin-sdk/context-visibility-runtime";
+import { recordInboundSession } from "carlito/plugin-sdk/conversation-runtime";
+import { isDangerousNameMatchingEnabled } from "carlito/plugin-sdk/dangerous-name-runtime";
+import { resolveMarkdownTableMode } from "carlito/plugin-sdk/markdown-table-runtime";
+import { getAgentScopedMediaLocalRoots } from "carlito/plugin-sdk/media-runtime";
+import { resolveChunkMode } from "carlito/plugin-sdk/reply-chunking";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-dispatch-runtime";
+import { finalizeInboundContext } from "carlito/plugin-sdk/reply-dispatch-runtime";
 import {
   buildPendingHistoryContextFromMap,
   clearHistoryEntriesIfEnabled,
-} from "openclaw/plugin-sdk/reply-history";
-import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
-import { buildAgentSessionKey, resolveThreadSessionKeys } from "openclaw/plugin-sdk/routing";
-import { danger, logVerbose, shouldLogVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { evaluateSupplementalContextVisibility } from "openclaw/plugin-sdk/security-runtime";
-import { readSessionUpdatedAt, resolveStorePath } from "openclaw/plugin-sdk/session-store-runtime";
+} from "carlito/plugin-sdk/reply-history";
+import { resolveSendableOutboundReplyParts } from "carlito/plugin-sdk/reply-payload";
+import { buildAgentSessionKey, resolveThreadSessionKeys } from "carlito/plugin-sdk/routing";
+import { danger, logVerbose, shouldLogVerbose } from "carlito/plugin-sdk/runtime-env";
+import { evaluateSupplementalContextVisibility } from "carlito/plugin-sdk/security-runtime";
+import { readSessionUpdatedAt, resolveStorePath } from "carlito/plugin-sdk/session-store-runtime";
 import {
   convertMarkdownTables,
   stripInlineDirectiveTagsForDelivery,
   stripReasoningTagsFromText,
   truncateUtf16Safe,
-} from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/text-runtime";
 import { resolveDiscordMaxLinesPerMessage } from "../accounts.js";
 import { chunkDiscordTextWithMode } from "../chunk.js";
 import { createDiscordRestClient } from "../client.js";
@@ -87,10 +87,10 @@ function sleep(ms: number): Promise<void> {
 }
 
 const DISCORD_TYPING_MAX_DURATION_MS = 20 * 60_000;
-let replyRuntimePromise: Promise<typeof import("openclaw/plugin-sdk/reply-runtime")> | undefined;
+let replyRuntimePromise: Promise<typeof import("carlito/plugin-sdk/reply-runtime")> | undefined;
 
 async function loadReplyRuntime() {
-  replyRuntimePromise ??= import("openclaw/plugin-sdk/reply-runtime");
+  replyRuntimePromise ??= import("carlito/plugin-sdk/reply-runtime");
   return await replyRuntimePromise;
 }
 

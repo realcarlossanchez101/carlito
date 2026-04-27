@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import type { PluginConfigUiHint } from "../plugins/types.js";
 import { getPath, setPathCreateStrict } from "../secrets/path-utils.js";
 import type { JsonSchemaObject } from "../shared/json-schema.types.js";
@@ -52,10 +52,7 @@ function resolveJsonSchemaProperty(
   return cursor && typeof cursor === "object" ? (cursor as JsonSchemaProperty) : undefined;
 }
 
-function getExistingPluginConfig(
-  config: OpenClawConfig,
-  pluginId: string,
-): Record<string, unknown> {
+function getExistingPluginConfig(config: CarlitoConfig, pluginId: string): Record<string, unknown> {
   return (config.plugins?.entries?.[pluginId]?.config as Record<string, unknown>) ?? {};
 }
 
@@ -129,7 +126,7 @@ export function discoverUnconfiguredPlugins(params: {
     configSchema?: Record<string, unknown>;
     enabled?: boolean;
   }>;
-  config: OpenClawConfig;
+  config: CarlitoConfig;
 }): ConfigurablePlugin[] {
   const all = discoverConfigurablePlugins(params);
   return all.filter((plugin) => {
@@ -147,11 +144,11 @@ export function discoverUnconfiguredPlugins(params: {
  */
 async function promptPluginFields(params: {
   plugin: ConfigurablePlugin;
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   prompter: WizardPrompter;
   /** When true, show all fields including already-configured ones (for configure flow). */
   showConfigured?: boolean;
-}): Promise<OpenClawConfig> {
+}): Promise<CarlitoConfig> {
   const { plugin, config, prompter } = params;
   const existing = getExistingPluginConfig(config, plugin.id);
   const updatedConfig = structuredClone(existing);
@@ -172,10 +169,10 @@ async function promptPluginFields(params: {
     const helpSuffix = hint.help ? ` — ${hint.help}` : "";
 
     // Skip sensitive fields — WizardPrompter has no masked input;
-    // direct users to openclaw config set or the Web UI instead.
+    // direct users to carlito config set or the Web UI instead.
     if (hint.sensitive) {
       await prompter.note(
-        `"${label}" is sensitive. Set it via:\n  openclaw config set plugins.entries.${plugin.id}.config.${key} <value>\nor use the Web UI Settings page.`,
+        `"${label}" is sensitive. Set it via:\n  carlito config set plugins.entries.${plugin.id}.config.${key} <value>\nor use the Web UI Settings page.`,
         "Sensitive field",
       );
       continue;
@@ -295,10 +292,10 @@ async function promptPluginFields(params: {
  * Shows unconfigured plugin fields and prompts the user.
  */
 export async function setupPluginConfig(params: {
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   prompter: WizardPrompter;
   workspaceDir?: string;
-}): Promise<OpenClawConfig> {
+}): Promise<CarlitoConfig> {
   const { loadPluginManifestRegistry } = await loadManifestRegistryModule();
   const registry = loadPluginManifestRegistry({
     config: params.config,
@@ -357,10 +354,10 @@ export async function setupPluginConfig(params: {
  * Shows all configurable plugins and all their non-advanced fields.
  */
 export async function configurePluginConfig(params: {
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   prompter: WizardPrompter;
   workspaceDir?: string;
-}): Promise<OpenClawConfig> {
+}): Promise<CarlitoConfig> {
   const { loadPluginManifestRegistry } = await loadManifestRegistryModule();
   const registry = loadPluginManifestRegistry({
     config: params.config,

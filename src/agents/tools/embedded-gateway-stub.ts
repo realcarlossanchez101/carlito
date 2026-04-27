@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import type { CallGatewayOptions } from "../../gateway/call.js";
 import type { SessionsListParams, SessionsResolveParams } from "../../gateway/protocol/index.js";
 import type { SessionsListResult } from "../../gateway/session-utils.types.js";
@@ -7,8 +7,8 @@ import type { SessionsResolveResult } from "../../gateway/sessions-resolve.js";
 type EmbeddedCallGateway = <T = Record<string, unknown>>(opts: CallGatewayOptions) => Promise<T>;
 
 interface EmbeddedGatewayRuntime {
-  resolveSessionAgentId: (opts: { sessionKey: string; config: OpenClawConfig }) => string;
-  loadConfig: () => OpenClawConfig;
+  resolveSessionAgentId: (opts: { sessionKey: string; config: CarlitoConfig }) => string;
+  loadConfig: () => CarlitoConfig;
   stripEnvelopeFromMessages: (msgs: unknown[]) => unknown[];
   augmentChatHistoryWithCliSessionImports: (opts: {
     entry: unknown;
@@ -25,31 +25,31 @@ interface EmbeddedGatewayRuntime {
     messages: unknown[];
     maxSingleMessageBytes: number;
   }) => { messages: unknown[] };
-  resolveEffectiveChatHistoryMaxChars: (cfg: OpenClawConfig) => number;
+  resolveEffectiveChatHistoryMaxChars: (cfg: CarlitoConfig) => number;
   sanitizeChatHistoryMessages: (msgs: unknown[], maxChars: number) => unknown[];
   capArrayByJsonBytes: (items: unknown[], maxBytes: number) => { items: unknown[] };
   listSessionsFromStore: (opts: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     storePath: string;
     store: unknown;
     opts: SessionsListParams;
   }) => SessionsListResult;
-  loadCombinedSessionStoreForGateway: (cfg: OpenClawConfig) => {
+  loadCombinedSessionStoreForGateway: (cfg: CarlitoConfig) => {
     storePath: string;
     store: unknown;
   };
   resolveSessionKeyFromResolveParams: (opts: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     p: SessionsResolveParams;
   }) => Promise<SessionsResolveResult>;
   loadSessionEntry: (sessionKey: string) => {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     storePath: string | undefined;
     entry: Record<string, unknown> | undefined;
   };
   readSessionMessages: (sessionId: string, storePath: string, sessionFile?: string) => unknown[];
   resolveSessionModelRef: (
-    cfg: OpenClawConfig,
+    cfg: CarlitoConfig,
     entry: unknown,
     sessionAgentId: string,
   ) => { provider: string | undefined };

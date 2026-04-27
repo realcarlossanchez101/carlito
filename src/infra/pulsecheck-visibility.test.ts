@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { resolvePulsecheckVisibility } from "./pulsecheck-visibility.js";
 
 describe("resolvePulsecheckVisibility", () => {
@@ -7,17 +7,17 @@ describe("resolvePulsecheckVisibility", () => {
     showOk?: boolean;
     showAlerts?: boolean;
     useIndicator?: boolean;
-  }): OpenClawConfig {
+  }): CarlitoConfig {
     return {
       channels: {
         defaults: {
           pulsecheck,
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
   }
 
-  function createTelegramAccountPulsecheckConfig(): OpenClawConfig {
+  function createTelegramAccountPulsecheckConfig(): CarlitoConfig {
     return {
       channels: {
         telegram: {
@@ -33,11 +33,11 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
   }
 
   it("returns default values when no config is provided", () => {
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
     const result = resolvePulsecheckVisibility({ cfg, channel: "telegram" });
 
     expect(result).toEqual({
@@ -79,7 +79,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({ cfg, channel: "telegram" });
 
@@ -115,7 +115,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({
       cfg,
@@ -147,7 +147,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({
       cfg,
@@ -190,7 +190,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({ cfg, channel: "whatsapp" });
 
@@ -210,7 +210,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({ cfg, channel: "discord" });
 
@@ -232,7 +232,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({ cfg, channel: "slack" });
 
@@ -260,7 +260,7 @@ describe("resolvePulsecheckVisibility", () => {
   });
 
   it("webchat returns defaults when no channel defaults configured", () => {
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({ cfg, channel: "webchat" });
 
@@ -280,7 +280,7 @@ describe("resolvePulsecheckVisibility", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const result = resolvePulsecheckVisibility({
       cfg,

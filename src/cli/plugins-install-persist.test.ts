@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import {
   enablePluginInConfig,
   recordPluginInstall,
@@ -18,7 +18,7 @@ describe("persistPluginInstall", () => {
       plugins: {
         allow: ["memory-core"],
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const enabledConfig = {
       plugins: {
         allow: ["alpha", "memory-core"],
@@ -26,7 +26,7 @@ describe("persistPluginInstall", () => {
           alpha: { enabled: true },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const persistedConfig = {
       plugins: {
         ...enabledConfig.plugins,
@@ -38,10 +38,10 @@ describe("persistPluginInstall", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     enablePluginInConfig.mockImplementation((...args: unknown[]) => {
-      const [cfg, pluginId] = args as [OpenClawConfig, string];
+      const [cfg, pluginId] = args as [CarlitoConfig, string];
       expect(pluginId).toBe("alpha");
       expect(cfg.plugins?.allow).toEqual(["alpha", "memory-core"]);
       return { config: enabledConfig };

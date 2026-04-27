@@ -8,7 +8,7 @@ read_when:
 ---
 
 Dreaming is the background memory consolidation system in `memory-core`.
-It helps OpenClaw move strong short-term signals into durable memory while
+It helps Carlito move strong short-term signals into durable memory while
 keeping the process explainable and reviewable.
 
 Dreaming is **opt-in** and disabled by default.
@@ -177,10 +177,10 @@ Enable dreaming with a custom sweep cadence:
 Use CLI promotion for preview or manual apply:
 
 ```bash
-openclaw memory promote
-openclaw memory promote --apply
-openclaw memory promote --limit 5
-openclaw memory status --deep
+carlito memory promote
+carlito memory promote --apply
+carlito memory promote --limit 5
+carlito memory status --deep
 ```
 
 Manual `memory promote` uses deep-phase thresholds by default unless overridden
@@ -189,16 +189,16 @@ with CLI flags.
 Explain why a specific candidate would or would not promote:
 
 ```bash
-openclaw memory promote-explain "router vlan"
-openclaw memory promote-explain "router vlan" --json
+carlito memory promote-explain "router vlan"
+carlito memory promote-explain "router vlan" --json
 ```
 
 Preview REM reflections, candidate truths, and deep promotion output without
 writing anything:
 
 ```bash
-openclaw memory rem-harness
-openclaw memory rem-harness --json
+carlito memory rem-harness
+carlito memory rem-harness --json
 ```
 
 ## Key defaults
@@ -231,7 +231,7 @@ When enabled, the Gateway **Dreams** tab shows:
 
 ### Dreaming never runs (status shows blocked)
 
-The managed dreaming cron rides the default agent's pulsecheck. If pulsecheck is not firing for that agent, the cron enqueues a system event that nobody consumes and dreaming silently does not run. Both `openclaw memory status` and `/dreaming status` will report `blocked` in that case and name the agent whose pulsecheck is the blocker.
+The managed dreaming cron rides the default agent's pulsecheck. If pulsecheck is not firing for that agent, the cron enqueues a system event that nobody consumes and dreaming silently does not run. Both `carlito memory status` and `/dreaming status` will report `blocked` in that case and name the agent whose pulsecheck is the blocker.
 
 Two common causes:
 

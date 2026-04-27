@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import {
   getSessionBindingService,
   type ConversationRef,
@@ -64,7 +64,7 @@ function isPluginOwnedRuntimeBindingRecord(record: SessionBindingRecord | null):
 
 export function resolveConfiguredBindingRoute(
   params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     route: ResolvedAgentRoute;
   } & ConfiguredBindingRouteConversationInput,
 ): ConfiguredBindingRouteResult {
@@ -149,7 +149,7 @@ export function resolveRuntimeConversationBindingRoute(
 }
 
 export async function ensureConfiguredBindingRouteReady(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   bindingResolution: ConfiguredBindingResolution | null;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   return await ensureConfiguredBindingTargetReady(params);

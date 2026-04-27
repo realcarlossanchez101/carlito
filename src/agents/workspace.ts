@@ -14,14 +14,14 @@ import { normalizeOptionalLowercaseString, readStringValue } from "../shared/str
 import { resolveUserPath } from "../utils.js";
 import { resolveWorkspaceTemplateDir } from "./workspace-templates.js";
 
-const DEFAULT_WORKSPACE_STATE_DIRNAMES = [".carlito", ".openclaw"] as const;
+const DEFAULT_WORKSPACE_STATE_DIRNAMES = [".carlito", ".carlito"] as const;
 
 export function resolveDefaultAgentWorkspaceDir(
   env: NodeJS.ProcessEnv = process.env,
   homedir: () => string = os.homedir,
 ): string {
   const home = resolveRequiredHomeDir(env, homedir);
-  const profile = env.OPENCLAW_PROFILE?.trim();
+  const profile = env.CARLITO_PROFILE?.trim();
   const suffix =
     profile && normalizeOptionalLowercaseString(profile) !== "default"
       ? `workspace-${profile}`
@@ -48,7 +48,7 @@ export const DEFAULT_USER_FILENAME = "USER.md";
 export const DEFAULT_PULSECHECK_FILENAME = "PULSECHECK.md";
 export const DEFAULT_BOOTSTRAP_FILENAME = "BOOTSTRAP.md";
 export const DEFAULT_MEMORY_FILENAME = CANONICAL_ROOT_MEMORY_FILENAME;
-const WORKSPACE_STATE_DIRNAME = ".openclaw";
+const WORKSPACE_STATE_DIRNAME = ".carlito";
 const WORKSPACE_STATE_FILENAME = "workspace-state.json";
 const WORKSPACE_STATE_VERSION = 1;
 

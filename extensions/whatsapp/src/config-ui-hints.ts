@@ -1,4 +1,4 @@
-import type { ChannelConfigUiHint } from "openclaw/plugin-sdk/core";
+import type { ChannelConfigUiHint } from "carlito/plugin-sdk/core";
 
 export const whatsAppChannelConfigUiHints = {
   "": {

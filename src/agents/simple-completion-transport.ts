@@ -1,5 +1,5 @@
 import { getApiProvider, type Api, type Model } from "@mariozechner/pi-ai";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { createAnthropicVertexStreamFnForModel } from "./anthropic-vertex-stream.js";
 import { wrapStreamFnWithCarlitoRewriter } from "./carlito-outbound-rewriter.js";
 import { ensureCustomApiRegistered } from "./custom-api-registry.js";
@@ -11,12 +11,12 @@ import {
 
 function resolveAnthropicVertexSimpleApi(baseUrl?: string): Api {
   const suffix = baseUrl?.trim() ? encodeURIComponent(baseUrl.trim()) : "default";
-  return `openclaw-anthropic-vertex-simple:${suffix}`;
+  return `carlito-anthropic-vertex-simple:${suffix}`;
 }
 
 export function prepareModelForSimpleCompletion<TApi extends Api>(params: {
   model: Model<TApi>;
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
 }): Model<Api> {
   const { model, cfg } = params;
   // Only provider-owned custom APIs need runtime stream registration here.

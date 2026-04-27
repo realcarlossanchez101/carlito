@@ -26,9 +26,9 @@ const slackBlockTestState = vi.hoisted(() => ({
   config: {},
 }));
 
-vi.mock("openclaw/plugin-sdk/config-runtime", async () => {
-  const actual = await vi.importActual<typeof import("openclaw/plugin-sdk/config-runtime")>(
-    "openclaw/plugin-sdk/config-runtime",
+vi.mock("carlito/plugin-sdk/config-runtime", async () => {
+  const actual = await vi.importActual<typeof import("carlito/plugin-sdk/config-runtime")>(
+    "carlito/plugin-sdk/config-runtime",
   );
   return {
     ...actual,

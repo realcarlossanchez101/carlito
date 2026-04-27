@@ -1,8 +1,8 @@
 import { getCommandPathWithRootOptions } from "../cli/argv.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveNodeRequireFromMeta } from "./node-require.js";
 
-type LoggingConfig = OpenClawConfig["logging"];
+type LoggingConfig = CarlitoConfig["logging"];
 
 const requireConfig = resolveNodeRequireFromMeta(import.meta.url);
 
@@ -18,7 +18,7 @@ export function readLoggingConfig(): LoggingConfig | undefined {
   try {
     const loaded = requireConfig?.("../config/config.js") as
       | {
-          loadConfig?: () => OpenClawConfig;
+          loadConfig?: () => CarlitoConfig;
         }
       | undefined;
     const parsed = loaded?.loadConfig?.();

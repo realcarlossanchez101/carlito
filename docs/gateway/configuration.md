@@ -1,19 +1,19 @@
 ---
 summary: "Configuration overview: common tasks, quick setup, and links to the full reference"
 read_when:
-  - Setting up OpenClaw for the first time
+  - Setting up Carlito for the first time
   - Looking for common configuration patterns
   - Navigating to specific config sections
 title: "Configuration"
 ---
 
-OpenClaw reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.openclaw/openclaw.json`.
-The active config path must be a regular file. Symlinked `openclaw.json`
-layouts are unsupported for OpenClaw-owned writes; an atomic write may replace
+Carlito reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.carlito/carlito.json`.
+The active config path must be a regular file. Symlinked `carlito.json`
+layouts are unsupported for Carlito-owned writes; an atomic write may replace
 the path instead of preserving the symlink. If you keep config outside the
-default state directory, point `OPENCLAW_CONFIG_PATH` directly at the real file.
+default state directory, point `CARLITO_CONFIG_PATH` directly at the real file.
 
-If the file is missing, OpenClaw uses safe defaults. Common reasons to add a config:
+If the file is missing, Carlito uses safe defaults. Common reasons to add a config:
 
 - Connect channels and control who can message the bot
 - Set models, tools, sandboxing, or automation (cron, hooks)
@@ -22,15 +22,15 @@ If the file is missing, OpenClaw uses safe defaults. Common reasons to add a con
 See the [full reference](/gateway/configuration-reference) for every available field.
 
 <Tip>
-**New to configuration?** Start with `openclaw onboard` for interactive setup, or check out the [Configuration Examples](/gateway/configuration-examples) guide for complete copy-paste configs.
+**New to configuration?** Start with `carlito onboard` for interactive setup, or check out the [Configuration Examples](/gateway/configuration-examples) guide for complete copy-paste configs.
 </Tip>
 
 ## Minimal config
 
 ```json5
-// ~/.openclaw/openclaw.json
+// ~/.carlito/carlito.json
 {
-  agents: { defaults: { workspace: "~/.openclaw/workspace" } },
+  agents: { defaults: { workspace: "~/.carlito/workspace" } },
   channels: { whatsapp: { allowFrom: ["+15555550123"] } },
 }
 ```
@@ -40,15 +40,15 @@ See the [full reference](/gateway/configuration-reference) for every available f
 <Tabs>
   <Tab title="Interactive wizard">
     ```bash
-    openclaw onboard       # full onboarding flow
-    openclaw configure     # config wizard
+    carlito onboard       # full onboarding flow
+    carlito configure     # config wizard
     ```
   </Tab>
   <Tab title="CLI (one-liners)">
     ```bash
-    openclaw config get agents.defaults.workspace
-    openclaw config set agents.defaults.pulsecheck.every "2h"
-    openclaw config unset plugins.entries.brave.config.webSearch.apiKey
+    carlito config get agents.defaults.workspace
+    carlito config set agents.defaults.pulsecheck.every "2h"
+    carlito config unset plugins.entries.brave.config.webSearch.apiKey
     ```
   </Tab>
   <Tab title="Control UI">
@@ -60,17 +60,17 @@ See the [full reference](/gateway/configuration-reference) for every available f
     fetch one path-scoped schema node plus immediate child summaries.
   </Tab>
   <Tab title="Direct edit">
-    Edit `~/.openclaw/openclaw.json` directly. The Gateway watches the file and applies changes automatically (see [hot reload](#config-hot-reload)).
+    Edit `~/.carlito/carlito.json` directly. The Gateway watches the file and applies changes automatically (see [hot reload](#config-hot-reload)).
   </Tab>
 </Tabs>
 
 ## Strict validation
 
 <Warning>
-OpenClaw only accepts configurations that fully match the schema. Unknown keys, malformed types, or invalid values cause the Gateway to **refuse to start**. The only root-level exception is `$schema` (string), so editors can attach JSON Schema metadata.
+Carlito only accepts configurations that fully match the schema. Unknown keys, malformed types, or invalid values cause the Gateway to **refuse to start**. The only root-level exception is `$schema` (string), so editors can attach JSON Schema metadata.
 </Warning>
 
-`openclaw config schema` prints the canonical JSON Schema used by Control UI
+`carlito config schema` prints the canonical JSON Schema used by Control UI
 and validation. `config.schema.lookup` fetches a single path-scoped node plus
 child summaries for drill-down tooling. Field `title`/`description` docs metadata
 carries through nested objects, wildcard (`*`), array-item (`[]`), and `anyOf`/
@@ -80,13 +80,13 @@ manifest registry is loaded.
 When validation fails:
 
 - The Gateway does not boot
-- Only diagnostic commands work (`openclaw doctor`, `openclaw logs`, `openclaw health`, `openclaw status`)
-- Run `openclaw doctor` to see exact issues
-- Run `openclaw doctor --fix` (or `--yes`) to apply repairs
+- Only diagnostic commands work (`carlito doctor`, `carlito logs`, `carlito health`, `carlito status`)
+- Run `carlito doctor` to see exact issues
+- Run `carlito doctor --fix` (or `--yes`) to apply repairs
 
 The Gateway keeps a trusted last-known-good copy after each successful startup.
-If `openclaw.json` later fails validation (or drops `gateway.mode`, shrinks
-sharply, or has a stray log line prepended), OpenClaw preserves the broken file
+If `carlito.json` later fails validation (or drops `gateway.mode`, shrinks
+sharply, or has a stray log line prepended), Carlito preserves the broken file
 as `.clobbered.*`, restores the last-known-good copy, and logs the recovery
 reason. The next agent turn also receives a system-event warning so the main
 agent does not blindly rewrite the restored config. Promotion to last-known-good
@@ -147,7 +147,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     ```
 
     - `agents.defaults.models` defines the model catalog and acts as the allowlist for `/model`.
-    - Use `openclaw config set agents.defaults.models '<json>' --strict-json --merge` to add allowlist entries without removing existing models. Plain replacements that would remove entries are rejected unless you pass `--replace`.
+    - Use `carlito config set agents.defaults.models '<json>' --strict-json --merge` to add allowlist entries without removing existing models. Plain replacements that would remove entries are rejected unless you pass `--replace`.
     - Model refs use `provider/model` format (e.g. `anthropic/claude-opus-4-6`).
     - `agents.defaults.imageMaxDimensionPx` controls transcript/tool image downscaling (default `1200`); lower values usually reduce vision-token usage on screenshot-heavy runs.
     - See [Models CLI](/concepts/models) for switching models in chat and [Model Failover](/concepts/model-failover) for auth rotation and fallback behavior.
@@ -179,7 +179,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
           {
             id: "main",
             groupChat: {
-              mentionPatterns: ["@openclaw", "openclaw"],
+              mentionPatterns: ["@carlito", "carlito"],
             },
           },
         ],
@@ -306,7 +306,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
   </Accordion>
 
   <Accordion title="Enable relay-backed push for official iOS builds">
-    Relay-backed push is configured in `openclaw.json`.
+    Relay-backed push is configured in `carlito.json`.
 
     Set this in gateway config:
 
@@ -329,7 +329,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     CLI equivalent:
 
     ```bash
-    openclaw config set gateway.push.apns.relay.baseUrl https://relay.example.com
+    carlito config set gateway.push.apns.relay.baseUrl https://relay.example.com
     ```
 
     What this does:
@@ -355,8 +355,8 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
 
     Compatibility note:
 
-    - `OPENCLAW_APNS_RELAY_BASE_URL` and `OPENCLAW_APNS_RELAY_TIMEOUT_MS` still work as temporary env overrides.
-    - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` remains a loopback-only development escape hatch; do not persist HTTP relay URLs in config.
+    - `CARLITO_APNS_RELAY_BASE_URL` and `CARLITO_APNS_RELAY_TIMEOUT_MS` still work as temporary env overrides.
+    - `CARLITO_APNS_RELAY_ALLOW_HTTP=true` remains a loopback-only development escape hatch; do not persist HTTP relay URLs in config.
 
     See [iOS App](/platforms/ios#relay-backed-push-for-official-builds) for the end-to-end flow and [Authentication and trust flow](/platforms/ios#authentication-and-trust-flow) for the relay security model.
 
@@ -431,7 +431,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     Security note:
     - Treat all hook/webhook payload content as untrusted input.
     - Use a dedicated `hooks.token`; do not reuse the shared Gateway token.
-    - Hook auth is header-only (`Authorization: Bearer ...` or `x-openclaw-token`); query-string tokens are rejected.
+    - Hook auth is header-only (`Authorization: Bearer ...` or `x-carlito-token`); query-string tokens are rejected.
     - `hooks.path` cannot be `/`; keep webhook ingress on a dedicated subpath such as `/hooks`.
     - Keep unsafe-content bypass flags disabled (`hooks.gmail.allowUnsafeExternalContent`, `hooks.mappings[].allowUnsafeExternalContent`) unless doing tightly scoped debugging.
     - If you enable `hooks.allowRequestSessionKey`, also set `hooks.allowedSessionKeyPrefixes` to bound caller-selected session keys.
@@ -448,8 +448,8 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     {
       agents: {
         list: [
-          { id: "home", default: true, workspace: "~/.openclaw/workspace-home" },
-          { id: "work", workspace: "~/.openclaw/workspace-work" },
+          { id: "home", default: true, workspace: "~/.carlito/workspace-home" },
+          { id: "work", workspace: "~/.carlito/workspace-work" },
         ],
       },
       bindings: [
@@ -467,7 +467,7 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     Use `$include` to organize large configs:
 
     ```json5
-    // ~/.openclaw/openclaw.json
+    // ~/.carlito/carlito.json
     {
       gateway: { port: 18789 },
       agents: { $include: "./agents.json5" },
@@ -482,11 +482,11 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
     - **Sibling keys**: merged after includes (override included values)
     - **Nested includes**: supported up to 10 levels deep
     - **Relative paths**: resolved relative to the including file
-    - **OpenClaw-owned writes**: when a write changes only one top-level section
+    - **Carlito-owned writes**: when a write changes only one top-level section
       backed by a single-file include such as `plugins: { $include: "./plugins.json5" }`,
-      OpenClaw updates that included file and leaves `openclaw.json` intact
+      Carlito updates that included file and leaves `carlito.json` intact
     - **Unsupported write-through**: root includes, include arrays, and includes
-      with sibling overrides fail closed for OpenClaw-owned writes instead of
+      with sibling overrides fail closed for Carlito-owned writes instead of
       flattening the config
     - **Error handling**: clear errors for missing files, parse errors, and circular includes
 
@@ -495,19 +495,19 @@ is skipped when a candidate contains redacted secret placeholders such as `***`.
 
 ## Config hot reload
 
-The Gateway watches `~/.openclaw/openclaw.json` and applies changes automatically — no manual restart needed for most settings.
+The Gateway watches `~/.carlito/carlito.json` and applies changes automatically — no manual restart needed for most settings.
 
 Direct file edits are treated as untrusted until they validate. The watcher waits
 for editor temp-write/rename churn to settle, reads the final file, and rejects
-invalid external edits by restoring the last-known-good config. OpenClaw-owned
+invalid external edits by restoring the last-known-good config. Carlito-owned
 config writes use the same schema gate before writing; destructive clobbers such
 as dropping `gateway.mode` or shrinking the file by more than half are rejected
 and saved as `.rejected.*` for inspection.
 
 If you see `Config auto-restored from last-known-good` or
 `config reload restored last-known-good config` in logs, inspect the matching
-`.clobbered.*` file next to `openclaw.json`, fix the rejected payload, then run
-`openclaw config validate`. See [Gateway troubleshooting](/gateway/troubleshooting#gateway-restored-last-known-good-config)
+`.clobbered.*` file next to `carlito.json`, fix the rejected payload, then run
+`carlito config validate`. See [Gateway troubleshooting](/gateway/troubleshooting#gateway-restored-last-known-good-config)
 for the recovery checklist.
 
 ### Reload modes
@@ -548,7 +548,7 @@ Most fields hot-apply without downtime. In `hybrid` mode, restart-required chang
 
 ### Reload planning
 
-When you edit a source file that is referenced through `$include`, OpenClaw plans
+When you edit a source file that is referenced through `$include`, Carlito plans
 the reload from the source-authored layout, not the flattened in-memory view.
 That keeps hot-reload decisions (hot-apply vs restart) predictable even when a
 single top-level section lives in its own included file such as
@@ -576,8 +576,8 @@ requests coalesce and then enforce a 30-second cooldown between restart cycles.
 Example partial patch:
 
 ```bash
-openclaw gateway call config.get --params '{}'  # capture payload.hash
-openclaw gateway call config.patch --params '{
+carlito gateway call config.get --params '{}'  # capture payload.hash
+carlito gateway call config.patch --params '{
   "raw": "{ channels: { telegram: { groups: { \"*\": { requireMention: false } } } } }",
   "baseHash": "<hash>"
 }'
@@ -589,10 +589,10 @@ config already exists.
 
 ## Environment variables
 
-OpenClaw reads env vars from the parent process plus:
+Carlito reads env vars from the parent process plus:
 
 - `.env` from the current working directory (if present)
-- `~/.openclaw/.env` (global fallback)
+- `~/.carlito/.env` (global fallback)
 
 Neither file overrides existing env vars. You can also set inline env vars in config:
 
@@ -606,7 +606,7 @@ Neither file overrides existing env vars. You can also set inline env vars in co
 ```
 
 <Accordion title="Shell env import (optional)">
-  If enabled and expected keys aren't set, OpenClaw runs your login shell and imports only the missing keys:
+  If enabled and expected keys aren't set, Carlito runs your login shell and imports only the missing keys:
 
 ```json5
 {
@@ -616,7 +616,7 @@ Neither file overrides existing env vars. You can also set inline env vars in co
 }
 ```
 
-Env var equivalent: `OPENCLAW_LOAD_SHELL_ENV=1`
+Env var equivalent: `CARLITO_LOAD_SHELL_ENV=1`
 </Accordion>
 
 <Accordion title="Env var substitution in config values">
@@ -624,7 +624,7 @@ Env var equivalent: `OPENCLAW_LOAD_SHELL_ENV=1`
 
 ```json5
 {
-  gateway: { auth: { token: "${OPENCLAW_GATEWAY_TOKEN}" } },
+  gateway: { auth: { token: "${CARLITO_GATEWAY_TOKEN}" } },
   models: { providers: { custom: { apiKey: "${CUSTOM_API_KEY}" } } },
 }
 ```

@@ -1,17 +1,17 @@
-# @openclaw/zalo
+# @realcarlossanchez101/zalo
 
-Zalo channel plugin for OpenClaw (Bot API).
+Zalo channel plugin for Carlito (Bot API).
 
 ## Install (local checkout)
 
 ```bash
-openclaw plugins install ./path/to/local/zalo-plugin
+carlito plugins install ./path/to/local/zalo-plugin
 ```
 
 ## Install (npm)
 
 ```bash
-openclaw plugins install @openclaw/zalo
+carlito plugins install @realcarlossanchez101/zalo
 ```
 
 Onboarding: select Zalo and confirm the install prompt to fetch the plugin automatically.

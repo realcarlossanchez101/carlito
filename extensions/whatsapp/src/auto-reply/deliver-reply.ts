@@ -1,12 +1,12 @@
-import type { MarkdownTableMode } from "openclaw/plugin-sdk/config-runtime";
-import { chunkMarkdownTextWithMode, type ChunkMode } from "openclaw/plugin-sdk/reply-chunking";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-chunking";
+import type { MarkdownTableMode } from "carlito/plugin-sdk/config-runtime";
+import { chunkMarkdownTextWithMode, type ChunkMode } from "carlito/plugin-sdk/reply-chunking";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-chunking";
 import {
   isReasoningReplyPayload,
   resolveOutboundMediaUrls,
   sendMediaWithLeadingCaption,
-} from "openclaw/plugin-sdk/reply-payload";
-import { logVerbose, shouldLogVerbose } from "openclaw/plugin-sdk/runtime-env";
+} from "carlito/plugin-sdk/reply-payload";
+import { logVerbose, shouldLogVerbose } from "carlito/plugin-sdk/runtime-env";
 import { loadWebMedia } from "../media.js";
 import { buildQuotedMessageOptions, lookupInboundMessageMeta } from "../quoted-message.js";
 import { newConnectionId } from "../reconnect.js";

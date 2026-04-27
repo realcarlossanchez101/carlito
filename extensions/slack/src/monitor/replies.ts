@@ -1,11 +1,11 @@
-import type { MarkdownTableMode, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { MarkdownTableMode, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import {
   deliverTextOrMediaReply,
   resolveSendableOutboundReplyParts,
-} from "openclaw/plugin-sdk/reply-payload";
-import type { ChunkMode } from "openclaw/plugin-sdk/reply-runtime";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
-import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
+} from "carlito/plugin-sdk/reply-payload";
+import type { ChunkMode } from "carlito/plugin-sdk/reply-runtime";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-runtime";
+import type { RuntimeEnv } from "carlito/plugin-sdk/runtime-env";
 import { markdownToSlackMrkdwnChunks } from "../format.js";
 import { SLACK_TEXT_LIMIT } from "../limits.js";
 import { resolveSlackReplyBlocks } from "../reply-blocks.js";
@@ -22,7 +22,7 @@ export function readSlackReplyBlocks(payload: ReplyPayload) {
 }
 
 export async function deliverReplies(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   replies: ReplyPayload[];
   target: string;
   token: string;

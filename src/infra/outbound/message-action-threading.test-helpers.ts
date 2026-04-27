@@ -1,8 +1,8 @@
 import { vi } from "vitest";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 
 type AutoThreadResolver = (params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   to: string;
   toolContext?: Record<string, unknown>;
@@ -10,7 +10,7 @@ type AutoThreadResolver = (params: {
 }) => string | undefined;
 
 type OutboundThreadContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   to: string;
   accountId?: string | null;
   toolContext?: Record<string, unknown>;
@@ -127,7 +127,7 @@ export function createOutboundThreadingMock() {
         resolveAutoThreadId,
       }: {
         actionParams: Record<string, unknown>;
-        cfg: OpenClawConfig;
+        cfg: CarlitoConfig;
         to: string;
         accountId?: string | null;
         toolContext?: Record<string, unknown>;

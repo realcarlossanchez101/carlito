@@ -1,11 +1,11 @@
 {
   "entries": [
     {
-      "name": "@wecom/wecom-openclaw-plugin",
-      "description": "OpenClaw WeCom channel plugin by the Tencent WeCom team.",
+      "name": "@wecom/wecom-carlito-plugin",
+      "description": "Carlito WeCom channel plugin by the Tencent WeCom team.",
       "source": "external",
       "kind": "channel",
-      "openclaw": {
+      "carlito": {
         "channel": {
           "id": "wecom",
           "label": "WeCom",
@@ -18,7 +18,7 @@
           "order": 45
         },
         "install": {
-          "npmSpec": "@wecom/wecom-openclaw-plugin",
+          "npmSpec": "@wecom/wecom-carlito-plugin",
           "defaultChoice": "npm"
         }
       }

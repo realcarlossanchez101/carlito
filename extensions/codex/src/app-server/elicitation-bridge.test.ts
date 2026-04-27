@@ -2,12 +2,12 @@ import {
   callGatewayTool,
   embeddedAgentLog,
   type EmbeddedRunAttemptParams,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleCodexAppServerElicitationRequest } from "./elicitation-bridge.js";
 
-vi.mock("openclaw/plugin-sdk/agent-harness-runtime", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("openclaw/plugin-sdk/agent-harness-runtime")>()),
+vi.mock("carlito/plugin-sdk/agent-harness-runtime", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("carlito/plugin-sdk/agent-harness-runtime")>()),
   callGatewayTool: vi.fn(),
 }));
 
@@ -62,9 +62,7 @@ function buildCurrentCodexApprovalElicitation() {
       connector_name: "GitHub",
       tool_title: "Create pull request",
       tool_description: "Creates a pull request in the selected repository.",
-      tool_params_display: [
-        { name: "repo", display_name: "Repository", value: "openclaw/openclaw" },
-      ],
+      tool_params_display: [{ name: "repo", display_name: "Repository", value: "carlito/carlito" }],
     },
     requestedSchema: {
       type: "object",
@@ -133,7 +131,7 @@ describe("Codex app-server elicitation bridge", () => {
       description: string;
     };
     expect(approvalRequest.description).toContain("Tool: Create pull request");
-    expect(approvalRequest.description).toContain("Repository: openclaw/openclaw");
+    expect(approvalRequest.description).toContain("Repository: carlito/carlito");
   });
 
   it("accepts approval elicitations with a null turn id when the thread matches", async () => {

@@ -1,7 +1,7 @@
 import type { SlackActionMiddlewareArgs } from "@slack/bolt";
 import type { Block, KnownBlock } from "@slack/web-api";
-import { enqueueSystemEvent } from "openclaw/plugin-sdk/infra-runtime";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+import { enqueueSystemEvent } from "carlito/plugin-sdk/infra-runtime";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import { dispatchSlackPluginInteractiveHandler } from "../../interactive-dispatch.js";
 import {
   SLACK_REPLY_BUTTON_ACTION_ID,

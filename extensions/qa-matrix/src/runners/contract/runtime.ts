@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import { loadQaRuntimeModule } from "openclaw/plugin-sdk/qa-runner-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
+import { loadQaRuntimeModule } from "carlito/plugin-sdk/qa-runner-runtime";
 import type { QaReportCheck } from "../../report.js";
 import { renderQaMarkdownReport } from "../../report.js";
 import { type QaProviderModeInput } from "../../run-config.js";
@@ -143,7 +143,7 @@ type MatrixQaTimings = {
 };
 
 function shouldWriteMatrixQaProgress() {
-  const override = process.env.OPENCLAW_QA_MATRIX_PROGRESS;
+  const override = process.env.CARLITO_QA_MATRIX_PROGRESS;
   if (override === "0") {
     return false;
   }
@@ -393,7 +393,7 @@ async function startMatrixQaLiveLaneGateway(params: {
     requiredPluginIds: readonly string[];
     createGatewayConfig: (params: {
       baseUrl: string;
-    }) => Pick<OpenClawConfig, "channels" | "messages">;
+    }) => Pick<CarlitoConfig, "channels" | "messages">;
   };
   transportBaseUrl: string;
   providerMode: "mock-openai" | "live-frontier";
@@ -401,7 +401,7 @@ async function startMatrixQaLiveLaneGateway(params: {
   alternateModel: string;
   fastMode?: boolean;
   controlUiEnabled?: boolean;
-  mutateConfig?: (cfg: OpenClawConfig) => OpenClawConfig;
+  mutateConfig?: (cfg: CarlitoConfig) => CarlitoConfig;
 }): Promise<MatrixQaLiveLaneGatewayHarness> {
   return (await loadQaRuntimeModule().startQaLiveLaneGateway(
     params,
@@ -433,11 +433,11 @@ export async function runMatrixQaLive(params: {
   const scenarios = findMatrixQaScenarios(params.scenarioIds);
   const runSuffix = randomUUID().slice(0, 8);
   const topology = buildMatrixQaTopologyForScenarios({
-    defaultRoomName: `OpenClaw Matrix QA ${runSuffix}`,
+    defaultRoomName: `Carlito Matrix QA ${runSuffix}`,
     scenarios,
   });
   const observedEvents: MatrixQaObservedEvent[] = [];
-  const includeObservedEventContent = process.env.OPENCLAW_QA_MATRIX_CAPTURE_CONTENT === "1";
+  const includeObservedEventContent = process.env.CARLITO_QA_MATRIX_CAPTURE_CONTENT === "1";
   const startedAtDate = new Date();
   const startedAt = startedAtDate.toISOString();
   const runStartedAtMs = Date.now();
@@ -462,7 +462,7 @@ export async function runMatrixQaLive(params: {
           driverLocalpart: `qa-driver-${runSuffix}`,
           observerLocalpart: `qa-observer-${runSuffix}`,
           registrationToken: harness.registrationToken,
-          roomName: `OpenClaw Matrix QA ${runSuffix}`,
+          roomName: `Carlito Matrix QA ${runSuffix}`,
           sutLocalpart: `qa-sut-${runSuffix}`,
           topology,
         }),
@@ -657,7 +657,7 @@ export async function runMatrixQaLive(params: {
               observerDeviceId: provisioning.observer.deviceId,
               observerPassword: provisioning.observer.password,
               observerUserId: provisioning.observer.userId,
-              gatewayStateDir: scenarioGateway.harness.gateway.runtimeEnv?.OPENCLAW_STATE_DIR,
+              gatewayStateDir: scenarioGateway.harness.gateway.runtimeEnv?.CARLITO_STATE_DIR,
               outputDir,
               restartGateway: async () => {
                 if (!gatewayHarness) {

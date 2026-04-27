@@ -1,7 +1,7 @@
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 import type { NormalizedWebhookMessage } from "./monitor-normalize.js";
 import type { BlueBubblesCoreRuntime, WebhookTarget } from "./monitor-shared.js";
-import type { OpenClawConfig } from "./runtime-api.js";
+import type { CarlitoConfig } from "./runtime-api.js";
 
 /**
  * Entry type for debouncing inbound messages.
@@ -174,7 +174,7 @@ function combineDebounceEntries(entries: BlueBubblesDebounceEntry[]): Normalized
 }
 
 function resolveBlueBubblesDebounceMs(
-  config: OpenClawConfig,
+  config: CarlitoConfig,
   core: BlueBubblesCoreRuntime,
   accountConfig: { coalesceSameSenderDms?: boolean },
 ): number {

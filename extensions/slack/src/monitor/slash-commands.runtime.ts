@@ -4,17 +4,16 @@ import {
   listNativeCommandSpecsForConfig as listNativeCommandSpecsForConfigImpl,
   parseCommandArgs as parseCommandArgsImpl,
   resolveCommandArgMenu as resolveCommandArgMenuImpl,
-} from "openclaw/plugin-sdk/command-auth";
+} from "carlito/plugin-sdk/command-auth";
 
 type BuildCommandTextFromArgs =
-  typeof import("openclaw/plugin-sdk/command-auth").buildCommandTextFromArgs;
+  typeof import("carlito/plugin-sdk/command-auth").buildCommandTextFromArgs;
 type FindCommandByNativeName =
-  typeof import("openclaw/plugin-sdk/command-auth").findCommandByNativeName;
+  typeof import("carlito/plugin-sdk/command-auth").findCommandByNativeName;
 type ListNativeCommandSpecsForConfig =
-  typeof import("openclaw/plugin-sdk/command-auth").listNativeCommandSpecsForConfig;
-type ParseCommandArgs = typeof import("openclaw/plugin-sdk/command-auth").parseCommandArgs;
-type ResolveCommandArgMenu =
-  typeof import("openclaw/plugin-sdk/command-auth").resolveCommandArgMenu;
+  typeof import("carlito/plugin-sdk/command-auth").listNativeCommandSpecsForConfig;
+type ParseCommandArgs = typeof import("carlito/plugin-sdk/command-auth").parseCommandArgs;
+type ResolveCommandArgMenu = typeof import("carlito/plugin-sdk/command-auth").resolveCommandArgMenu;
 
 export function buildCommandTextFromArgs(
   ...args: Parameters<BuildCommandTextFromArgs>

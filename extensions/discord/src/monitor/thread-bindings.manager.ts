@@ -1,4 +1,3 @@
-import { Routes } from "discord-api-types/v10";
 import {
   registerSessionBindingAdapter,
   resolveThreadBindingConversationIdFromBindingId,
@@ -6,14 +5,15 @@ import {
   type BindingTargetKind,
   type SessionBindingAdapter,
   type SessionBindingRecord,
-} from "openclaw/plugin-sdk/conversation-runtime";
-import { normalizeAccountId, resolveAgentIdFromSessionKey } from "openclaw/plugin-sdk/routing";
+} from "carlito/plugin-sdk/conversation-runtime";
+import { normalizeAccountId, resolveAgentIdFromSessionKey } from "carlito/plugin-sdk/routing";
 import {
   getRuntimeConfigSnapshot,
-  type OpenClawConfig,
-} from "openclaw/plugin-sdk/runtime-config-snapshot";
-import { logVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+  type CarlitoConfig,
+} from "carlito/plugin-sdk/runtime-config-snapshot";
+import { logVerbose } from "carlito/plugin-sdk/runtime-env";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
+import { Routes } from "discord-api-types/v10";
 import { createDiscordRestClient } from "../client.js";
 import { resolveDiscordChannelId } from "../target-parsing.js";
 import {
@@ -189,7 +189,7 @@ export function createThreadBindingManager(
   params: {
     accountId?: string;
     token?: string;
-    cfg?: OpenClawConfig;
+    cfg?: CarlitoConfig;
     persist?: boolean;
     enableSweeper?: boolean;
     idleTimeoutMs?: number;

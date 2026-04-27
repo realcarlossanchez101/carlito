@@ -4,8 +4,8 @@ import {
   GroupPolicySchema,
   MarkdownConfigSchema,
   requireOpenAllowFrom,
-} from "openclaw/plugin-sdk/channel-config-primitives";
-import { z } from "openclaw/plugin-sdk/zod";
+} from "carlito/plugin-sdk/channel-config-primitives";
+import { z } from "carlito/plugin-sdk/zod";
 import { buildSecretInputSchema } from "./secret-input.js";
 
 const MattermostGroupSchema = z

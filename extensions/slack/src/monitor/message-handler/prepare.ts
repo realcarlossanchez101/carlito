@@ -2,7 +2,7 @@ import {
   resolveAckReaction,
   shouldAckReaction as shouldAckReactionGate,
   type AckReactionScope,
-} from "openclaw/plugin-sdk/channel-feedback";
+} from "carlito/plugin-sdk/channel-feedback";
 import {
   buildMentionRegexes,
   formatInboundEnvelope,
@@ -11,23 +11,23 @@ import {
   matchesMentionWithExplicit,
   resolveEnvelopeFormatOptions,
   resolveInboundMentionDecision,
-} from "openclaw/plugin-sdk/channel-inbound";
-import { hasControlCommand } from "openclaw/plugin-sdk/command-detection";
-import { resolveControlCommandGate } from "openclaw/plugin-sdk/command-gating";
-import { shouldHandleTextCommands } from "openclaw/plugin-sdk/command-surface";
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import { enqueueSystemEvent } from "openclaw/plugin-sdk/infra-runtime";
+} from "carlito/plugin-sdk/channel-inbound";
+import { hasControlCommand } from "carlito/plugin-sdk/command-detection";
+import { resolveControlCommandGate } from "carlito/plugin-sdk/command-gating";
+import { shouldHandleTextCommands } from "carlito/plugin-sdk/command-surface";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
+import { enqueueSystemEvent } from "carlito/plugin-sdk/infra-runtime";
 import {
   buildPendingHistoryContextFromMap,
   recordPendingHistoryEntryIfEnabled,
-} from "openclaw/plugin-sdk/reply-history";
-import type { FinalizedMsgContext } from "openclaw/plugin-sdk/reply-runtime";
-import { logVerbose, shouldLogVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { resolvePinnedMainDmOwnerFromAllowlist } from "openclaw/plugin-sdk/security-runtime";
+} from "carlito/plugin-sdk/reply-history";
+import type { FinalizedMsgContext } from "carlito/plugin-sdk/reply-runtime";
+import { logVerbose, shouldLogVerbose } from "carlito/plugin-sdk/runtime-env";
+import { resolvePinnedMainDmOwnerFromAllowlist } from "carlito/plugin-sdk/security-runtime";
 import {
   normalizeLowercaseStringOrEmpty,
   normalizeOptionalString,
-} from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/text-runtime";
 import type { ResolvedSlackAccount } from "../../accounts.js";
 import { reactSlackMessage } from "../../actions.js";
 import { hasSlackThreadParticipation } from "../../sent-thread-cache.js";

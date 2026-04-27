@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { isWithinActiveHours } from "./pulsecheck-active-hours.js";
 
-function cfgWithUserTimezone(userTimezone = "UTC"): OpenClawConfig {
+function cfgWithUserTimezone(userTimezone = "UTC"): CarlitoConfig {
   return {
     agents: {
       defaults: {

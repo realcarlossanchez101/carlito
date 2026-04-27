@@ -1,10 +1,14 @@
 import {
   embeddedAgentLog,
   type EmbeddedRunAttemptParams,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
 import { renderCodexPromptOverlay } from "../../prompt-overlay.js";
 import type { CodexAppServerClient } from "./client.js";
 import type { CodexAppServerRuntimeOptions } from "./config.js";
+import {
+  assertCodexThreadResumeResponse,
+  assertCodexThreadStartResponse,
+} from "./protocol-validators.js";
 import {
   isJsonObject,
   type CodexDynamicToolSpec,
@@ -15,10 +19,6 @@ import {
   type JsonObject,
   type JsonValue,
 } from "./protocol.js";
-import {
-  assertCodexThreadResumeResponse,
-  assertCodexThreadStartResponse,
-} from "./protocol-validators.js";
 import {
   clearCodexAppServerBinding,
   readCodexAppServerBinding,
@@ -91,24 +91,21 @@ export async function startOrResumeThread(params: {
   }
 
   const response = assertCodexThreadStartResponse(
-    await params.client.request<unknown>(
-      "thread/start",
-      ({
-        model: params.params.modelId,
-        modelProvider: normalizeModelProvider(params.params.provider),
-        cwd: params.cwd,
-        approvalPolicy: params.appServer.approvalPolicy,
-        approvalsReviewer: params.appServer.approvalsReviewer,
-        sandbox: params.appServer.sandbox,
-        ...(params.appServer.serviceTier ? { serviceTier: params.appServer.serviceTier } : {}),
-        serviceName: "OpenClaw",
-        developerInstructions:
-          params.developerInstructions ?? buildDeveloperInstructions(params.params),
-        dynamicTools: params.dynamicTools,
-        experimentalRawEvents: true,
-        persistExtendedHistory: true,
-      } satisfies CodexThreadStartParams) as unknown as JsonValue,
-    ),
+    await params.client.request<unknown>("thread/start", {
+      model: params.params.modelId,
+      modelProvider: normalizeModelProvider(params.params.provider),
+      cwd: params.cwd,
+      approvalPolicy: params.appServer.approvalPolicy,
+      approvalsReviewer: params.appServer.approvalsReviewer,
+      sandbox: params.appServer.sandbox,
+      ...(params.appServer.serviceTier ? { serviceTier: params.appServer.serviceTier } : {}),
+      serviceName: "Carlito",
+      developerInstructions:
+        params.developerInstructions ?? buildDeveloperInstructions(params.params),
+      dynamicTools: params.dynamicTools,
+      experimentalRawEvents: true,
+      persistExtendedHistory: true,
+    } satisfies CodexThreadStartParams as unknown as JsonValue),
   );
   const createdAt = new Date().toISOString();
   await writeCodexAppServerBinding(params.params.sessionFile, {
@@ -214,8 +211,8 @@ function stabilizeJsonValue(value: JsonValue): JsonValue {
 
 export function buildDeveloperInstructions(params: EmbeddedRunAttemptParams): string {
   const sections = [
-    "You are running inside OpenClaw. Use OpenClaw dynamic tools for messaging, cron, sessions, and host actions when available.",
-    "Preserve the user's existing channel/session context. If sending a channel reply, use the OpenClaw messaging tool instead of describing that you would reply.",
+    "You are running inside Carlito. Use Carlito dynamic tools for messaging, cron, sessions, and host actions when available.",
+    "Preserve the user's existing channel/session context. If sending a channel reply, use the Carlito messaging tool instead of describing that you would reply.",
     renderCodexPromptOverlay({ modelId: params.modelId }),
     params.extraSystemPrompt,
     params.skillsSnapshot?.prompt,

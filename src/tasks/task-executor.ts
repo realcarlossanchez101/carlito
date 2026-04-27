@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import type {
   DetachedRunningTaskCreateParams,
@@ -585,7 +585,7 @@ export function runTaskInFlowForOwner(
 }
 
 export async function cancelFlowById(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   flowId: string;
 }): Promise<CancelFlowResult> {
   const flow = getTaskFlowById(params.flowId);
@@ -667,7 +667,7 @@ export async function cancelFlowById(params: {
 }
 
 export async function cancelFlowByIdForOwner(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   flowId: string;
   callerOwnerKey: string;
 }): Promise<CancelFlowResult> {
@@ -688,7 +688,7 @@ export async function cancelFlowByIdForOwner(params: {
   });
 }
 
-export async function cancelDetachedTaskRunById(params: { cfg: OpenClawConfig; taskId: string }) {
+export async function cancelDetachedTaskRunById(params: { cfg: CarlitoConfig; taskId: string }) {
   const task = getTaskById(params.taskId);
   if (!task) {
     return cancelTaskById(params);

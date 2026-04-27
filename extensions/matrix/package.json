@@ -1,7 +1,7 @@
 {
-  "name": "@openclaw/matrix",
+  "name": "@realcarlossanchez101/matrix",
   "version": "2026.4.20",
-  "description": "OpenClaw Matrix channel plugin",
+  "description": "Carlito Matrix channel plugin",
   "type": "module",
   "dependencies": {
     "@matrix-org/matrix-sdk-crypto-nodejs": "^0.4.0",
@@ -14,18 +14,18 @@
     "typebox": "1.1.28"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],
@@ -76,7 +76,7 @@
       }
     },
     "install": {
-      "npmSpec": "@openclaw/matrix",
+      "npmSpec": "@realcarlossanchez101/matrix",
       "defaultChoice": "npm",
       "minHostVersion": ">=2026.4.10",
       "allowInvalidConfigRecovery": true

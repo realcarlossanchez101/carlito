@@ -1,5 +1,5 @@
 ---
-summary: "Install, configure, and manage OpenClaw plugins"
+summary: "Install, configure, and manage Carlito plugins"
 read_when:
   - Installing or configuring plugins
   - Understanding plugin discovery and load rules
@@ -8,10 +8,10 @@ title: "Plugins"
 sidebarTitle: "Install and Configure"
 ---
 
-Plugins extend OpenClaw with new capabilities: channels, model providers,
+Plugins extend Carlito with new capabilities: channels, model providers,
 tools, skills, speech, realtime transcription, realtime voice,
 media-understanding, image generation, video generation, web fetch, web
-search, and more. Some plugins are **core** (shipped with OpenClaw), others
+search, and more. Some plugins are **core** (shipped with Carlito), others
 are **external** (published on npm by the community).
 
 ## Quick start
@@ -19,25 +19,25 @@ are **external** (published on npm by the community).
 <Steps>
   <Step title="See what is loaded">
     ```bash
-    openclaw plugins list
+    carlito plugins list
     ```
   </Step>
 
   <Step title="Install a plugin">
     ```bash
     # From npm
-    openclaw plugins install @openclaw/voice-call
+    carlito plugins install @realcarlossanchez101/voice-call
 
     # From a local directory or archive
-    openclaw plugins install ./my-plugin
-    openclaw plugins install ./my-plugin.tgz
+    carlito plugins install ./my-plugin
+    carlito plugins install ./my-plugin.tgz
     ```
 
   </Step>
 
   <Step title="Restart the Gateway">
     ```bash
-    openclaw gateway restart
+    carlito gateway restart
     ```
 
     Then configure under `plugins.entries.\<id\>.config` in your config file.
@@ -48,7 +48,7 @@ are **external** (published on npm by the community).
 If you prefer chat-native control, enable `commands.plugins: true` and use:
 
 ```text
-/plugin install clawhub:@openclaw/voice-call
+/plugin install clawhub:@realcarlossanchez101/voice-call
 /plugin show voice-call
 /plugin enable voice-call
 ```
@@ -57,27 +57,27 @@ The install path uses the same resolver as the CLI: local path/archive, explicit
 `clawhub:<pkg>`, or bare package spec (ClawHub first, then npm fallback).
 
 If config is invalid, install normally fails closed and points you at
-`openclaw doctor --fix`. The only recovery exception is a narrow bundled-plugin
+`carlito doctor --fix`. The only recovery exception is a narrow bundled-plugin
 reinstall path for plugins that opt into
-`openclaw.install.allowInvalidConfigRecovery`.
+`carlito.install.allowInvalidConfigRecovery`.
 
-Packaged OpenClaw installs do not eagerly install every bundled plugin's
-runtime dependency tree. When a bundled OpenClaw-owned plugin is active from
+Packaged Carlito installs do not eagerly install every bundled plugin's
+runtime dependency tree. When a bundled Carlito-owned plugin is active from
 plugin config, legacy channel config, or a default-enabled manifest, startup
 repairs only that plugin's declared runtime dependencies before importing it.
 External plugins and custom load paths must still be installed through
-`openclaw plugins install`.
+`carlito plugins install`.
 
 ## Plugin types
 
-OpenClaw recognizes two plugin formats:
+Carlito recognizes two plugin formats:
 
-| Format     | How it works                                                       | Examples                                               |
-| ---------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **Native** | `openclaw.plugin.json` + runtime module; executes in-process       | Official plugins, community npm packages               |
-| **Bundle** | Codex/Claude/Cursor-compatible layout; mapped to OpenClaw features | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
+| Format     | How it works                                                      | Examples                                               |
+| ---------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
+| **Native** | `carlito.plugin.json` + runtime module; executes in-process       | Official plugins, community npm packages               |
+| **Bundle** | Codex/Claude/Cursor-compatible layout; mapped to Carlito features | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
 
-Both show up under `openclaw plugins list`. See [Plugin Bundles](/plugins/bundles) for bundle details.
+Both show up under `carlito plugins list`. See [Plugin Bundles](/plugins/bundles) for bundle details.
 
 If you are writing a native plugin, start with [Building Plugins](/plugins/building-plugins)
 and the [Plugin SDK Overview](/plugins/sdk-overview).
@@ -86,16 +86,16 @@ and the [Plugin SDK Overview](/plugins/sdk-overview).
 
 ### Installable (npm)
 
-| Plugin          | Package                | Docs                                 |
-| --------------- | ---------------------- | ------------------------------------ |
-| Matrix          | `@openclaw/matrix`     | [Matrix](/channels/matrix)           |
-| Microsoft Teams | `@openclaw/msteams`    | [Microsoft Teams](/channels/msteams) |
-| Nostr           | `@openclaw/nostr`      | [Nostr](/channels/nostr)             |
-| Voice Call      | `@openclaw/voice-call` | [Voice Call](/plugins/voice-call)    |
-| Zalo            | `@openclaw/zalo`       | [Zalo](/channels/zalo)               |
-| Zalo Personal   | `@openclaw/zalouser`   | [Zalo Personal](/plugins/zalouser)   |
+| Plugin          | Package                            | Docs                                 |
+| --------------- | ---------------------------------- | ------------------------------------ |
+| Matrix          | `@realcarlossanchez101/matrix`     | [Matrix](/channels/matrix)           |
+| Microsoft Teams | `@realcarlossanchez101/msteams`    | [Microsoft Teams](/channels/msteams) |
+| Nostr           | `@realcarlossanchez101/nostr`      | [Nostr](/channels/nostr)             |
+| Voice Call      | `@realcarlossanchez101/voice-call` | [Voice Call](/plugins/voice-call)    |
+| Zalo            | `@realcarlossanchez101/zalo`       | [Zalo](/channels/zalo)               |
+| Zalo Personal   | `@realcarlossanchez101/zalouser`   | [Zalo Personal](/plugins/zalouser)   |
 
-### Core (shipped with OpenClaw)
+### Core (shipped with Carlito)
 
 <AccordionGroup>
   <Accordion title="Model providers (enabled by default)">
@@ -116,7 +116,7 @@ and the [Plugin SDK Overview](/plugins/sdk-overview).
   </Accordion>
 
   <Accordion title="Other">
-    - `browser` — bundled browser plugin for the browser tool, `openclaw browser` CLI, `browser.request` gateway method, browser runtime, and default browser control service (enabled by default; disable before replacing it)
+    - `browser` — bundled browser plugin for the browser tool, `carlito browser` CLI, `browser.request` gateway method, browser runtime, and default browser control service (enabled by default; disable before replacing it)
     - `copilot-proxy` — VS Code Copilot Proxy bridge (disabled by default)
   </Accordion>
 </AccordionGroup>
@@ -149,7 +149,7 @@ Looking for third-party plugins? See [Community Plugins](/plugins/community).
 | `entries.\<id\>` | Per-plugin toggles + config                               |
 
 Config changes **require a gateway restart**. If the Gateway is running with config
-watch + in-process restart enabled (the default `openclaw gateway` path), that
+watch + in-process restart enabled (the default `carlito gateway` path), that
 restart is usually performed automatically a moment after the config write lands.
 
 <Accordion title="Plugin states: disabled vs missing vs invalid">
@@ -160,7 +160,7 @@ restart is usually performed automatically a moment after the config write lands
 
 ## Discovery and precedence
 
-OpenClaw scans for plugins in this order (first match wins):
+Carlito scans for plugins in this order (first match wins):
 
 <Steps>
   <Step title="Config paths">
@@ -168,15 +168,15 @@ OpenClaw scans for plugins in this order (first match wins):
   </Step>
 
   <Step title="Workspace plugins">
-    `\<workspace\>/.openclaw/<plugin-root>/*.ts` and `\<workspace\>/.openclaw/<plugin-root>/*/index.ts`.
+    `\<workspace\>/.carlito/<plugin-root>/*.ts` and `\<workspace\>/.carlito/<plugin-root>/*/index.ts`.
   </Step>
 
   <Step title="Global plugins">
-    `~/.openclaw/<plugin-root>/*.ts` and `~/.openclaw/<plugin-root>/*/index.ts`.
+    `~/.carlito/<plugin-root>/*.ts` and `~/.carlito/<plugin-root>/*/index.ts`.
   </Step>
 
   <Step title="Bundled plugins">
-    Shipped with OpenClaw. Many are enabled by default (model providers, speech).
+    Shipped with Carlito. Many are enabled by default (model providers, speech).
     Others require explicit enablement.
   </Step>
 </Steps>
@@ -213,56 +213,56 @@ Some categories are exclusive (only one active at a time):
 ## CLI reference
 
 ```bash
-openclaw plugins list                       # compact inventory
-openclaw plugins list --enabled            # only loaded plugins
-openclaw plugins list --verbose            # per-plugin detail lines
-openclaw plugins list --json               # machine-readable inventory
-openclaw plugins inspect <id>              # deep detail
-openclaw plugins inspect <id> --json       # machine-readable
-openclaw plugins inspect --all             # fleet-wide table
-openclaw plugins info <id>                 # inspect alias
-openclaw plugins doctor                    # diagnostics
+carlito plugins list                       # compact inventory
+carlito plugins list --enabled            # only loaded plugins
+carlito plugins list --verbose            # per-plugin detail lines
+carlito plugins list --json               # machine-readable inventory
+carlito plugins inspect <id>              # deep detail
+carlito plugins inspect <id> --json       # machine-readable
+carlito plugins inspect --all             # fleet-wide table
+carlito plugins info <id>                 # inspect alias
+carlito plugins doctor                    # diagnostics
 
-openclaw plugins install <package>         # install (ClawHub first, then npm)
-openclaw plugins install clawhub:<pkg>     # install from ClawHub only
-openclaw plugins install <spec> --force    # overwrite existing install
-openclaw plugins install <path>            # install from local path
-openclaw plugins install -l <path>         # link (no copy) for dev
-openclaw plugins install <plugin> --marketplace <source>
-openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
-openclaw plugins install <spec> --pin      # record exact resolved npm spec
-openclaw plugins install <spec> --dangerously-force-unsafe-install
-openclaw plugins update <id-or-npm-spec> # update one plugin
-openclaw plugins update <id-or-npm-spec> --dangerously-force-unsafe-install
-openclaw plugins update --all            # update all
-openclaw plugins uninstall <id>          # remove config/install records
-openclaw plugins uninstall <id> --keep-files
-openclaw plugins marketplace list <source>
-openclaw plugins marketplace list <source> --json
+carlito plugins install <package>         # install (ClawHub first, then npm)
+carlito plugins install clawhub:<pkg>     # install from ClawHub only
+carlito plugins install <spec> --force    # overwrite existing install
+carlito plugins install <path>            # install from local path
+carlito plugins install -l <path>         # link (no copy) for dev
+carlito plugins install <plugin> --marketplace <source>
+carlito plugins install <plugin> --marketplace https://github.com/<owner>/<repo>
+carlito plugins install <spec> --pin      # record exact resolved npm spec
+carlito plugins install <spec> --dangerously-force-unsafe-install
+carlito plugins update <id-or-npm-spec> # update one plugin
+carlito plugins update <id-or-npm-spec> --dangerously-force-unsafe-install
+carlito plugins update --all            # update all
+carlito plugins uninstall <id>          # remove config/install records
+carlito plugins uninstall <id> --keep-files
+carlito plugins marketplace list <source>
+carlito plugins marketplace list <source> --json
 
-openclaw plugins enable <id>
-openclaw plugins disable <id>
+carlito plugins enable <id>
+carlito plugins disable <id>
 ```
 
-Bundled plugins ship with OpenClaw. Many are enabled by default (for example
+Bundled plugins ship with Carlito. Many are enabled by default (for example
 bundled model providers, bundled speech providers, and the bundled browser
-plugin). Other bundled plugins still need `openclaw plugins enable <id>`.
+plugin). Other bundled plugins still need `carlito plugins enable <id>`.
 
 `--force` overwrites an existing installed plugin or hook pack in place. Use
-`openclaw plugins update <id-or-npm-spec>` for routine upgrades of tracked npm
+`carlito plugins update <id-or-npm-spec>` for routine upgrades of tracked npm
 plugins. It is not supported with `--link`, which reuses the source path instead
 of copying over a managed install target.
 
-When `plugins.allow` is already set, `openclaw plugins install` adds the
+When `plugins.allow` is already set, `carlito plugins install` adds the
 installed plugin id to that allowlist before enabling it, so installs are
 immediately loadable after restart.
 
-`openclaw plugins update <id-or-npm-spec>` applies to tracked installs. Passing
+`carlito plugins update <id-or-npm-spec>` applies to tracked installs. Passing
 an npm package spec with a dist-tag or exact version resolves the package name
 back to the tracked plugin record and records the new spec for future updates.
 Passing the package name without a version moves an exact pinned install back to
 the registry's default release line. If the installed npm plugin already matches
-the resolved version and recorded artifact identity, OpenClaw skips the update
+the resolved version and recorded artifact identity, Carlito skips the update
 without downloading, reinstalling, or rewriting config.
 
 `--pin` is npm-only. It is not supported with `--marketplace`, because
@@ -275,7 +275,7 @@ does not bypass plugin `before_install` policy blocks or scan-failure blocking.
 
 This CLI flag applies to plugin install/update flows only. Gateway-backed skill
 dependency installs use the matching `dangerouslyForceUnsafeInstall` request
-override instead, while `openclaw skills install` remains the separate ClawHub
+override instead, while `carlito skills install` remains the separate ClawHub
 skill download/install flow.
 
 Compatible bundles participate in the same plugin list/inspect/enable/disable
@@ -284,7 +284,7 @@ Claude `settings.json` defaults, Claude `.lsp.json` and manifest-declared
 `lspServers` defaults, Cursor command-skills, and compatible Codex hook
 directories.
 
-`openclaw plugins inspect <id>` also reports detected bundle capabilities plus
+`carlito plugins inspect <id>` also reports detected bundle capabilities plus
 supported or unsupported MCP and LSP server entries for bundle-backed plugins.
 
 Marketplace sources can be a Claude known-marketplace name from
@@ -293,7 +293,7 @@ Marketplace sources can be a Claude known-marketplace name from
 URL, or a git URL. For remote marketplaces, plugin entries must stay inside the
 cloned marketplace repo and use relative path sources only.
 
-See [`openclaw plugins` CLI reference](/cli/plugins) for full details.
+See [`carlito plugins` CLI reference](/cli/plugins) for full details.
 
 ## Plugin API overview
 
@@ -319,7 +319,7 @@ export default definePluginEntry({
 });
 ```
 
-OpenClaw loads the entry object and calls `register(api)` during plugin
+Carlito loads the entry object and calls `register(api)` during plugin
 activation. The loader still falls back to `activate(api)` for older plugins,
 but bundled plugins and new external plugins should treat `register` as the
 public contract.

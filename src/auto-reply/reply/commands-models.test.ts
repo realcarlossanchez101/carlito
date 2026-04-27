@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChannelPlugin } from "../../channels/plugins/types.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import {
   createChannelTestPluginBase,
@@ -173,7 +173,7 @@ beforeEach(() => {
 
 function buildParams(
   commandBodyNormalized: string,
-  cfgOverrides: Partial<OpenClawConfig> = {},
+  cfgOverrides: Partial<CarlitoConfig> = {},
 ): HandleCommandsParams {
   return {
     cfg: {
@@ -186,7 +186,7 @@ function buildParams(
         text: true,
       },
       ...cfgOverrides,
-    } as OpenClawConfig,
+    } as CarlitoConfig,
     ctx: {
       Surface: "discord",
     },
@@ -357,7 +357,7 @@ describe("handleModelsCommand", () => {
     );
     expect(result?.reply?.text).toContain("/models openai");
     expect(result?.reply?.text).toContain("/model openai/<modelId>");
-    expect(result?.reply?.text).toContain("openclaw configure");
+    expect(result?.reply?.text).toContain("carlito configure");
     expect(result?.reply?.text).not.toContain("Unknown provider");
   });
 

@@ -6,10 +6,10 @@ import {
   browserSecurityAuditCollectors,
   registerBrowserPlugin,
 } from "./plugin-registration.js";
-import type { OpenClawPluginApi } from "./runtime-api.js";
+import type { CarlitoPluginApi } from "./runtime-api.js";
 import setupPlugin from "./setup-api.js";
 
-type BrowserAutoEnableProbe = Parameters<OpenClawPluginApi["registerAutoEnableProbe"]>[0];
+type BrowserAutoEnableProbe = Parameters<CarlitoPluginApi["registerAutoEnableProbe"]>[0];
 
 const runtimeApiMocks = vi.hoisted(() => ({
   createBrowserPluginService: vi.fn(() => ({ id: "browser-control", start: vi.fn() })),
@@ -45,7 +45,7 @@ function createApi() {
     name: "Browser",
     source: "test",
     config: {},
-    runtime: {} as OpenClawPluginApi["runtime"],
+    runtime: {} as CarlitoPluginApi["runtime"],
     registerCli,
     registerGatewayMethod,
     registerService,
@@ -109,14 +109,14 @@ describe("browser plugin", () => {
   it("declares setup auto-enable reasons for browser config surfaces", () => {
     const probe = registerBrowserAutoEnableProbe();
 
-    expect(probe({ config: { browser: { defaultProfile: "openclaw" } }, env: {} })).toBe(
+    expect(probe({ config: { browser: { defaultProfile: "carlito" } }, env: {} })).toBe(
       "browser configured",
     );
     expect(probe({ config: { tools: { alsoAllow: ["browser"] } }, env: {} })).toBe(
       "browser tool referenced",
     );
     expect(
-      probe({ config: { browser: { defaultProfile: "openclaw", enabled: false } }, env: {} }),
+      probe({ config: { browser: { defaultProfile: "carlito", enabled: false } }, env: {} }),
     ).toBeNull();
   });
 });

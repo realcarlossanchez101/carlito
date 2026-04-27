@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import type { PluginRuntime, RuntimeLogger } from "openclaw/plugin-sdk/plugin-runtime";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
+import type { PluginRuntime, RuntimeLogger } from "carlito/plugin-sdk/plugin-runtime";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import type { GoogleMeetConfig, GoogleMeetMode, GoogleMeetTransport } from "./config.js";
 import { getGoogleMeetSetupStatus } from "./setup.js";
 import { launchChromeMeet } from "./transports/chrome.js";
@@ -53,7 +53,7 @@ export class GoogleMeetRuntime {
   constructor(
     private readonly params: {
       config: GoogleMeetConfig;
-      fullConfig: OpenClawConfig;
+      fullConfig: CarlitoConfig;
       runtime: PluginRuntime;
       logger: RuntimeLogger;
     },

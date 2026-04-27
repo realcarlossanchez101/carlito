@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { setTimeout as sleep } from "node:timers/promises";
-import type { MatrixVerificationSummary } from "@openclaw/matrix/test-api.js";
+import type { MatrixVerificationSummary } from "@realcarlossanchez101/matrix/test-api.js";
 import { createMatrixQaClient } from "../../substrate/client.js";
 import {
   createMatrixQaE2eeScenarioClient,
@@ -655,7 +655,7 @@ export async function runMatrixQaE2eeRecoveryKeyLifecycleScenario(
         baseUrl: context.baseUrl,
       });
       const recoveryDevice = await loginClient.loginWithPassword({
-        deviceName: "OpenClaw Matrix QA Recovery Restore Device",
+        deviceName: "Carlito Matrix QA Recovery Restore Device",
         password: driverPassword,
         userId: context.driverUserId,
       });
@@ -928,7 +928,7 @@ export async function runMatrixQaE2eeStaleDeviceHygieneScenario(
         baseUrl: context.baseUrl,
       });
       const secondary = await loginClient.loginWithPassword({
-        deviceName: "OpenClaw Matrix QA Stale Device",
+        deviceName: "Carlito Matrix QA Stale Device",
         password: driverPassword,
         userId: context.driverUserId,
       });
@@ -1141,7 +1141,7 @@ export async function runMatrixQaE2eeArtifactRedactionScenario(
     },
     details: [
       "decrypted E2EE payload reached in-memory assertions only",
-      "observed-event artifacts redact body/formatted_body unless OPENCLAW_QA_MATRIX_CAPTURE_CONTENT=1",
+      "observed-event artifacts redact body/formatted_body unless CARLITO_QA_MATRIX_CAPTURE_CONTENT=1",
       `encrypted room id: ${result.roomId}`,
       ...buildMatrixReplyDetails("E2EE reply", result.reply),
     ].join("\n"),

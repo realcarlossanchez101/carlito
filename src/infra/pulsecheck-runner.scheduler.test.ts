@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { startPulsecheckRunner } from "./pulsecheck-runner.js";
 import {
   computeNextPulsecheckPhaseDueMs,
@@ -25,14 +25,14 @@ describe("startPulsecheckRunner", () => {
   }
 
   function pulsecheckConfig(
-    list?: NonNullable<NonNullable<OpenClawConfig["agents"]>["list"]>,
-  ): OpenClawConfig {
+    list?: NonNullable<NonNullable<CarlitoConfig["agents"]>["list"]>,
+  ): CarlitoConfig {
     return {
       agents: {
         defaults: { pulsecheck: { every: "30m" } },
         ...(list ? { list } : {}),
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
   }
 
   function resolveDueFromNow(nowMs: number, intervalMs: number, agentId: string) {
@@ -59,7 +59,7 @@ describe("startPulsecheckRunner", () => {
   }
 
   async function expectWakeDispatch(params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     runSpy: RunOnce;
     wake: Parameters<typeof requestPulsecheckNow>[0];
     expectedCall: Record<string, unknown>;
@@ -108,7 +108,7 @@ describe("startPulsecheckRunner", () => {
           { id: "ops", pulsecheck: { every: "15m" } },
         ],
       },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
 
     const nowAfterReload = Date.now();
     const nextMainDueMs = resolveDueFromNow(nowAfterReload, 10 * 60_000, "main");
@@ -169,7 +169,7 @@ describe("startPulsecheckRunner", () => {
 
     const cfg = {
       agents: { defaults: { pulsecheck: { every: "30m" } } },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const firstDueMs = resolveDueFromNow(0, 30 * 60_000, "main");
 
     // Start runner A
@@ -290,7 +290,7 @@ describe("startPulsecheckRunner", () => {
           { id: "main", pulsecheck: { every: "30m" } },
           { id: "ops", pulsecheck: { every: "15m" } },
         ]),
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       runSpy,
       wake: {
         reason: "cron:job-123",
@@ -324,7 +324,7 @@ describe("startPulsecheckRunner", () => {
             },
           },
         ]),
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       runSpy,
       wake: {
         reason: "cron:job-123",
@@ -358,7 +358,7 @@ describe("startPulsecheckRunner", () => {
           { id: "main", pulsecheck: { every: "30m" } },
           { id: "finance", pulsecheck: { every: "30m" } },
         ]),
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       runSpy,
       wake: {
         reason: "exec-event",

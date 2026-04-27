@@ -1,5 +1,5 @@
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 import type { NextFunction, Request, Response } from "express";
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
 import { isLoopbackHost } from "../gateway/net.js";
 
 function firstHeader(value: string | string[] | undefined): string {

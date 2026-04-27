@@ -1,16 +1,16 @@
 {
-  "name": "@openclaw/fireworks-provider",
+  "name": "@realcarlossanchez101/fireworks-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Fireworks provider plugin",
+  "description": "Carlito Fireworks provider plugin",
   "type": "module",
   "dependencies": {
     "@mariozechner/pi-ai": "0.70.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

@@ -22,7 +22,7 @@ env:
 jobs:
   update-docs:
     if: >
-      github.repository == 'openclaw/openclaw' &&
+      github.repository == 'carlito/carlito' &&
       github.actor != 'github-actions[bot]' &&
       (github.event_name != 'workflow_run' ||
         (github.event.workflow_run.conclusion == 'success' &&
@@ -139,11 +139,11 @@ jobs:
       - name: Ensure docs agent key exists
         if: steps.gate.outputs.run_agent == 'true'
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.CARLITO_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
         run: |
           set -euo pipefail
           if [ -z "${OPENAI_API_KEY:-}" ]; then
-            echo "Missing OPENCLAW_DOCS_AGENT_OPENAI_API_KEY or OPENAI_API_KEY secret." >&2
+            echo "Missing CARLITO_DOCS_AGENT_OPENAI_API_KEY or OPENAI_API_KEY secret." >&2
             exit 1
           fi
 
@@ -154,7 +154,7 @@ jobs:
           DOCS_AGENT_BASE_SHA: ${{ steps.gate.outputs.review_base_sha }}
           DOCS_AGENT_HEAD_SHA: ${{ steps.gate.outputs.review_head_sha }}
         with:
-          openai-api-key: ${{ secrets.OPENCLAW_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
+          openai-api-key: ${{ secrets.CARLITO_DOCS_AGENT_OPENAI_API_KEY || secrets.OPENAI_API_KEY }}
           prompt-file: .github/codex/prompts/docs-agent.md
           model: gpt-5.4
           effort: medium
@@ -197,7 +197,8 @@ jobs:
 
       - name: Restore Node 24 path
         if: steps.gate.outputs.run_agent == 'true'
-        run: | # zizmor: ignore[github-env] NODE_BIN is set by the trusted local setup-node-env action in this same job
+        run:
+          | # zizmor: ignore[github-env] NODE_BIN is set by the trusted local setup-node-env action in this same job
           set -euo pipefail
           export PATH="${NODE_BIN}:${PATH}"
           echo "${NODE_BIN}" >> "$GITHUB_PATH"
@@ -223,8 +224,8 @@ jobs:
             exit 0
           fi
 
-          git config user.name "openclaw-docs-agent[bot]"
-          git config user.email "openclaw-docs-agent[bot]@users.noreply.github.com"
+          git config user.name "carlito-docs-agent[bot]"
+          git config user.email "carlito-docs-agent[bot]@users.noreply.github.com"
           git add docs README.md CHANGELOG.md
           git commit --no-verify -m "docs: refresh documentation"
 

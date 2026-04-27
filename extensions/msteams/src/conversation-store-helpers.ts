@@ -1,4 +1,4 @@
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 import type {
   MSTeamsConversationStoreEntry,
   StoredConversationReference,

@@ -1,16 +1,16 @@
 {
-  "name": "@openclaw/webhooks",
+  "name": "@realcarlossanchez101/webhooks",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw webhook bridge plugin",
+  "description": "Carlito webhook bridge plugin",
   "type": "module",
   "dependencies": {
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "bundle": {
       "stageRuntimeDependencies": true
     },

@@ -1,6 +1,6 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { PluginRuntime } from "openclaw/plugin-sdk/plugin-runtime";
-import type { RuntimeLogger } from "openclaw/plugin-sdk/plugin-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { PluginRuntime } from "carlito/plugin-sdk/plugin-runtime";
+import type { RuntimeLogger } from "carlito/plugin-sdk/plugin-runtime";
 import type { GoogleMeetConfig } from "../config.js";
 import {
   startCommandRealtimeAudioBridge,
@@ -33,7 +33,7 @@ export async function assertBlackHole2chAvailable(params: {
     throw new Error(
       [
         "BlackHole 2ch audio device not found.",
-        "Install BlackHole 2ch and route Chrome input/output through the OpenClaw audio bridge.",
+        "Install BlackHole 2ch and route Chrome input/output through the Carlito audio bridge.",
         hint,
       ]
         .filter(Boolean)
@@ -45,7 +45,7 @@ export async function assertBlackHole2chAvailable(params: {
 export async function launchChromeMeet(params: {
   runtime: PluginRuntime;
   config: GoogleMeetConfig;
-  fullConfig: OpenClawConfig;
+  fullConfig: CarlitoConfig;
   meetingSessionId: string;
   mode: "realtime" | "transcribe";
   url: string;

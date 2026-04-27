@@ -1,1 +1,1 @@
-export { resolvePreferredOpenClawTmpDir } from "../../infra/tmp-openclaw-dir.js";
+export { resolvePreferredCarlitoTmpDir } from "../../infra/tmp-carlito-dir.js";

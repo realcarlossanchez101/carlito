@@ -1,13 +1,13 @@
 {
-  "name": "@openclaw/tencent-provider",
+  "name": "@realcarlossanchez101/tencent-provider",
   "version": "2026.4.10",
   "private": true,
-  "description": "OpenClaw Tencent Cloud provider plugin (TokenHub + Token Plan)",
+  "description": "Carlito Tencent Cloud provider plugin (TokenHub + Token Plan)",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

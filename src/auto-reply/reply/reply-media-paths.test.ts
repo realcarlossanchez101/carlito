@@ -185,11 +185,11 @@ describe("createReplyMediaPathNormalizer", () => {
   });
 
   it("stages absolute workspace media paths so the PR scenario now works", async () => {
-    const absolutePath = "/Users/peter/.openclaw/workspace/exports/images/chart.png";
+    const absolutePath = "/Users/peter/.carlito/workspace/exports/images/chart.png";
     const normalize = createReplyMediaPathNormalizer({
       cfg: { agents: { defaults: { mediaMaxMb: 8 } } },
       sessionKey: "session-key",
-      workspaceDir: "/Users/peter/.openclaw/workspace",
+      workspaceDir: "/Users/peter/.carlito/workspace",
     });
 
     const result = await normalize({
@@ -208,7 +208,7 @@ describe("createReplyMediaPathNormalizer", () => {
   });
 
   it("prefers channel account media limits when staging reply attachments", async () => {
-    const absolutePath = "/Users/peter/.openclaw/workspace/exports/images/chart.png";
+    const absolutePath = "/Users/peter/.carlito/workspace/exports/images/chart.png";
     const normalize = createReplyMediaPathNormalizer({
       cfg: {
         channels: {
@@ -224,7 +224,7 @@ describe("createReplyMediaPathNormalizer", () => {
         agents: { defaults: { mediaMaxMb: 8 } },
       },
       sessionKey: undefined,
-      workspaceDir: "/Users/peter/.openclaw/workspace",
+      workspaceDir: "/Users/peter/.carlito/workspace",
       messageProvider: "whatsapp",
       accountId: "work",
     });
@@ -281,7 +281,7 @@ describe("createReplyMediaPathNormalizer", () => {
   });
 
   it("keeps managed generated media under the shared media root", async () => {
-    vi.stubEnv("OPENCLAW_STATE_DIR", "/Users/peter/.openclaw");
+    vi.stubEnv("CARLITO_STATE_DIR", "/Users/peter/.carlito");
     const normalize = createReplyMediaPathNormalizer({
       cfg: {},
       sessionKey: "session-key",
@@ -289,12 +289,12 @@ describe("createReplyMediaPathNormalizer", () => {
     });
 
     const result = await normalize({
-      mediaUrls: ["/Users/peter/.openclaw/media/tool-image-generation/generated.png"],
+      mediaUrls: ["/Users/peter/.carlito/media/tool-image-generation/generated.png"],
     });
 
     expect(result).toMatchObject({
-      mediaUrl: "/Users/peter/.openclaw/media/tool-image-generation/generated.png",
-      mediaUrls: ["/Users/peter/.openclaw/media/tool-image-generation/generated.png"],
+      mediaUrl: "/Users/peter/.carlito/media/tool-image-generation/generated.png",
+      mediaUrls: ["/Users/peter/.carlito/media/tool-image-generation/generated.png"],
     });
     expect(resolveOutboundAttachmentFromUrl).not.toHaveBeenCalled();
   });

@@ -13,7 +13,7 @@ vi.mock("./chrome-mcp.js", () => ({
   openChromeMcpTab: vi.fn(async () => ({
     targetId: "8",
     title: "",
-    url: "https://openclaw.ai",
+    url: "https://carlito.ai",
     type: "page",
   })),
   closeChromeMcpTab: vi.fn(async () => {}),
@@ -94,22 +94,22 @@ describe("browser server-context existing-session profile", () => {
       ])
       .mockResolvedValueOnce([
         { targetId: "7", title: "", url: "https://example.com", type: "page" },
-        { targetId: "8", title: "", url: "https://openclaw.ai", type: "page" },
+        { targetId: "8", title: "", url: "https://carlito.ai", type: "page" },
       ])
       .mockResolvedValueOnce([
         { targetId: "7", title: "", url: "https://example.com", type: "page" },
-        { targetId: "8", title: "", url: "https://openclaw.ai", type: "page" },
+        { targetId: "8", title: "", url: "https://carlito.ai", type: "page" },
       ])
       .mockResolvedValueOnce([
         { targetId: "7", title: "", url: "https://example.com", type: "page" },
-        { targetId: "8", title: "", url: "https://openclaw.ai", type: "page" },
+        { targetId: "8", title: "", url: "https://carlito.ai", type: "page" },
       ]);
 
     await live.ensureBrowserAvailable();
     const tabs = await live.listTabs();
     expect(tabs.map((tab) => tab.targetId)).toEqual(["7"]);
 
-    const opened = await live.openTab("https://openclaw.ai");
+    const opened = await live.openTab("https://carlito.ai");
     expect(opened.targetId).toBe("8");
 
     const selected = await live.ensureTabAvailable();
@@ -125,7 +125,7 @@ describe("browser server-context existing-session profile", () => {
     expect(chromeMcp.listChromeMcpTabs).toHaveBeenCalledWith("chrome-live", "/tmp/brave-profile");
     expect(chromeMcp.openChromeMcpTab).toHaveBeenCalledWith(
       "chrome-live",
-      "https://openclaw.ai",
+      "https://carlito.ai",
       "/tmp/brave-profile",
     );
     expect(chromeMcp.focusChromeMcpTab).toHaveBeenCalledWith(
@@ -151,7 +151,7 @@ describe("browser server-context existing-session profile", () => {
 
     const pending = live.ensureBrowserAvailable();
     const assertion = expect(pending).rejects.toThrow(
-      /could not connect to Chrome.*managed "openclaw" profile.*DevToolsActivePort/s,
+      /could not connect to Chrome.*managed "carlito" profile.*DevToolsActivePort/s,
     );
     await vi.advanceTimersByTimeAsync(8_000);
     await assertion;

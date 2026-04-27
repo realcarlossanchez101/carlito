@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizePluginsConfig, resolveEffectivePluginActivationState } from "./config-state.js";
 import type { PluginManifestRecord } from "./manifest-registry.js";
 
@@ -51,7 +51,7 @@ export function passesManifestOwnerBasePolicy(params: {
 export function isActivatedManifestOwner(params: {
   plugin: OwnerPlugin;
   normalizedConfig: NormalizedPluginsConfig;
-  rootConfig?: OpenClawConfig;
+  rootConfig?: CarlitoConfig;
 }): boolean {
   return resolveEffectivePluginActivationState({
     id: params.plugin.id,

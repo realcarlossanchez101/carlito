@@ -70,7 +70,7 @@ const requiredPathGroups = [
 ];
 const forbiddenPrefixes = [
   "dist-runtime/",
-  "dist/OpenClaw.app/",
+  "dist/Carlito.app/",
   "dist/extensions/qa-channel/",
   "dist/extensions/qa-lab/",
   "dist/plugin-sdk/extensions/qa-lab/",
@@ -219,8 +219,8 @@ function resolveGlobalRoot(prefixDir: string, cwd: string): string {
 
 function resolveInstalledBinaryPath(prefixDir: string): string {
   return process.platform === "win32"
-    ? join(prefixDir, "openclaw.cmd")
-    : join(prefixDir, "bin", "openclaw");
+    ? join(prefixDir, "carlito.cmd")
+    : join(prefixDir, "bin", "carlito");
 }
 
 export function createPackedBundledPluginPostinstallEnv(
@@ -228,7 +228,7 @@ export function createPackedBundledPluginPostinstallEnv(
 ): NodeJS.ProcessEnv {
   return {
     ...env,
-    OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+    CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
   };
 }
 
@@ -271,9 +271,9 @@ export function createPackedCliSmokeEnv(
     AWS_EC2_METADATA_DISABLED: "true",
     AWS_SHARED_CREDENTIALS_FILE: homeDir ? join(homeDir, ".aws", "credentials") : undefined,
     AWS_CONFIG_FILE: homeDir ? join(homeDir, ".aws", "config") : undefined,
-    OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
-    OPENCLAW_NO_ONBOARD: "1",
-    OPENCLAW_SUPPRESS_NOTES: "1",
+    CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+    CARLITO_NO_ONBOARD: "1",
+    CARLITO_SUPPRESS_NOTES: "1",
     ...overrides,
   };
 }
@@ -366,8 +366,8 @@ function assertBundledRuntimeDependencyPresent(params: {
 }
 
 function writePackedBundledPluginActivationConfig(homeDir: string): void {
-  const configPath = join(homeDir, ".openclaw", "openclaw.json");
-  mkdirSync(join(homeDir, ".openclaw"), { recursive: true });
+  const configPath = join(homeDir, ".carlito", "carlito.json");
+  mkdirSync(join(homeDir, ".carlito"), { recursive: true });
   writeFileSync(
     configPath,
     `${JSON.stringify(
@@ -385,7 +385,7 @@ function writePackedBundledPluginActivationConfig(homeDir: string): void {
         models: {
           providers: {
             openai: {
-              apiKey: "sk-openclaw-release-check",
+              apiKey: "sk-carlito-release-check",
               baseUrl: "https://api.openai.com/v1",
               models: [],
             },
@@ -420,16 +420,16 @@ function runPackedBundledPluginActivationSmoke(packageRoot: string, tmpRoot: str
   const homeDir = join(tmpRoot, "activation-home");
   mkdirSync(homeDir, { recursive: true });
   writePackedBundledPluginActivationConfig(homeDir);
-  execFileSync(process.execPath, [join(packageRoot, "openclaw.mjs"), "plugins", "doctor"], {
+  execFileSync(process.execPath, [join(packageRoot, "carlito.mjs"), "plugins", "doctor"], {
     cwd: packageRoot,
     stdio: "inherit",
     env: {
       ...process.env,
       HOME: homeDir,
-      OPENAI_API_KEY: "sk-openclaw-release-check",
-      OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
-      OPENCLAW_NO_ONBOARD: "1",
-      OPENCLAW_SUPPRESS_NOTES: "1",
+      OPENAI_API_KEY: "sk-carlito-release-check",
+      CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+      CARLITO_NO_ONBOARD: "1",
+      CARLITO_SUPPRESS_NOTES: "1",
     },
   });
 
@@ -447,21 +447,25 @@ function runPackedCliSmoke(params: {
   const binaryPath = resolveInstalledBinaryPath(params.prefixDir);
   const env = createPackedCliSmokeEnv(process.env, {
     HOME: params.homeDir,
-    OPENCLAW_STATE_DIR: params.stateDir,
-    OPENAI_API_KEY: "sk-openclaw-release-check",
+    CARLITO_STATE_DIR: params.stateDir,
+    OPENAI_API_KEY: "sk-carlito-release-check",
   });
   const windowsRoot = env.SystemRoot ?? env.WINDIR ?? "C:\\Windows";
   const trustedCmdPath = join(windowsRoot, "System32", "cmd.exe");
 
   for (const args of PACKED_CLI_SMOKE_COMMANDS) {
     if (process.platform === "win32") {
-      execFileSync(trustedCmdPath, ["/d", "/s", "/c", buildCmdExeCommandLine(binaryPath, [...args])], {
-        cwd: params.cwd,
-        stdio: "inherit",
-        env,
-        shell: false,
-        windowsVerbatimArguments: true,
-      });
+      execFileSync(
+        trustedCmdPath,
+        ["/d", "/s", "/c", buildCmdExeCommandLine(binaryPath, [...args])],
+        {
+          cwd: params.cwd,
+          stdio: "inherit",
+          env,
+          shell: false,
+          windowsVerbatimArguments: true,
+        },
+      );
       continue;
     }
     execFileSync(binaryPath, [...args], {
@@ -474,7 +478,7 @@ function runPackedCliSmoke(params: {
 }
 
 function runPackedBundledChannelEntrySmoke(): void {
-  const tmpRoot = mkdtempSync(join(tmpdir(), "openclaw-release-pack-smoke-"));
+  const tmpRoot = mkdtempSync(join(tmpdir(), "carlito-release-pack-smoke-"));
   try {
     const packDir = join(tmpRoot, "pack");
     mkdirSync(packDir);
@@ -484,7 +488,7 @@ function runPackedBundledChannelEntrySmoke(): void {
     const prefixDir = join(tmpRoot, "prefix");
     installPackedTarball(prefixDir, tarballPath, tmpRoot);
 
-    const packageRoot = join(resolveGlobalRoot(prefixDir, tmpRoot), "openclaw");
+    const packageRoot = join(resolveGlobalRoot(prefixDir, tmpRoot), "carlito");
     const homeDir = join(tmpRoot, "home");
     const stateDir = join(tmpRoot, "state");
     mkdirSync(homeDir, { recursive: true });
@@ -507,23 +511,23 @@ function runPackedBundledChannelEntrySmoke(): void {
         stdio: "inherit",
         env: {
           ...process.env,
-          OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+          CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
         },
       },
     );
 
     execFileSync(
       process.execPath,
-      [join(packageRoot, "openclaw.mjs"), "completion", "--write-state"],
+      [join(packageRoot, "carlito.mjs"), "completion", "--write-state"],
       {
         cwd: packageRoot,
         stdio: "inherit",
         env: {
           ...process.env,
           HOME: homeDir,
-          OPENCLAW_STATE_DIR: stateDir,
-          OPENCLAW_SUPPRESS_NOTES: "1",
-          OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+          CARLITO_STATE_DIR: stateDir,
+          CARLITO_SUPPRESS_NOTES: "1",
+          CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
         },
       },
     );
@@ -558,8 +562,8 @@ export function collectForbiddenPackPaths(paths: Iterable<string>): string[] {
     .filter(
       (path) =>
         forbiddenPrefixes.some((prefix) => path.startsWith(prefix)) ||
-        /(^|\/)\.openclaw-runtime-deps-[^/]+(\/|$)/u.test(path) ||
-        path.endsWith("/.openclaw-runtime-deps-stamp.json") ||
+        /(^|\/)\.carlito-runtime-deps-[^/]+(\/|$)/u.test(path) ||
+        path.endsWith("/.carlito-runtime-deps-stamp.json") ||
         path.includes("node_modules/"),
     )
     .toSorted((left, right) => left.localeCompare(right));
@@ -671,7 +675,7 @@ function checkAppcastSparkleVersions() {
   }
 }
 
-// Critical functions that channel extension plugins import from openclaw/plugin-sdk.
+// Critical functions that channel extension plugins import from carlito/plugin-sdk.
 // If any are missing from the compiled output, plugins crash at runtime (#27569).
 const requiredPluginSdkExports = [
   "isDangerousNameMatchingEnabled",

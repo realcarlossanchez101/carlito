@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ChannelPlugin } from "../../channels/plugins/types.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import { getActivePluginRegistry, setActivePluginRegistry } from "../../plugins/runtime.js";
 import { createTestRegistry } from "../../test-utils/channel-plugins.js";
 import { runMessageAction } from "./message-action-runner.js";
@@ -38,7 +38,7 @@ const pollerConfig = {
       botToken: "poller-test",
     },
   },
-} as OpenClawConfig;
+} as CarlitoConfig;
 
 const pollerTestPlugin: ChannelPlugin = {
   id: "poller",
@@ -85,7 +85,7 @@ const pollerTestPlugin: ChannelPlugin = {
 };
 
 async function runPollAction(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   actionParams: Record<string, unknown>;
   toolContext?: Record<string, unknown>;
 }) {

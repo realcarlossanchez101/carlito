@@ -4,23 +4,23 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 source "$ROOT_DIR/scripts/lib/docker-e2e-image.sh"
 
-IMAGE_NAME="$(docker_e2e_resolve_image "openclaw-bundled-channel-deps-e2e" OPENCLAW_BUNDLED_CHANNEL_DEPS_E2E_IMAGE)"
-UPDATE_BASELINE_VERSION="${OPENCLAW_BUNDLED_CHANNEL_UPDATE_BASELINE_VERSION:-2026.4.20}"
-DOCKER_TARGET="${OPENCLAW_BUNDLED_CHANNEL_DOCKER_TARGET:-e2e-runner}"
-HOST_BUILD="${OPENCLAW_BUNDLED_CHANNEL_HOST_BUILD:-1}"
-PACKAGE_TGZ="${OPENCLAW_BUNDLED_CHANNEL_PACKAGE_TGZ:-}"
-RUN_CHANNEL_SCENARIOS="${OPENCLAW_BUNDLED_CHANNEL_SCENARIOS:-1}"
-RUN_UPDATE_SCENARIO="${OPENCLAW_BUNDLED_CHANNEL_UPDATE_SCENARIO:-1}"
-RUN_ROOT_OWNED_SCENARIO="${OPENCLAW_BUNDLED_CHANNEL_ROOT_OWNED_SCENARIO:-1}"
-RUN_SETUP_ENTRY_SCENARIO="${OPENCLAW_BUNDLED_CHANNEL_SETUP_ENTRY_SCENARIO:-1}"
-RUN_LOAD_FAILURE_SCENARIO="${OPENCLAW_BUNDLED_CHANNEL_LOAD_FAILURE_SCENARIO:-1}"
+IMAGE_NAME="$(docker_e2e_resolve_image "carlito-bundled-channel-deps-e2e" CARLITO_BUNDLED_CHANNEL_DEPS_E2E_IMAGE)"
+UPDATE_BASELINE_VERSION="${CARLITO_BUNDLED_CHANNEL_UPDATE_BASELINE_VERSION:-2026.4.20}"
+DOCKER_TARGET="${CARLITO_BUNDLED_CHANNEL_DOCKER_TARGET:-e2e-runner}"
+HOST_BUILD="${CARLITO_BUNDLED_CHANNEL_HOST_BUILD:-1}"
+PACKAGE_TGZ="${CARLITO_BUNDLED_CHANNEL_PACKAGE_TGZ:-}"
+RUN_CHANNEL_SCENARIOS="${CARLITO_BUNDLED_CHANNEL_SCENARIOS:-1}"
+RUN_UPDATE_SCENARIO="${CARLITO_BUNDLED_CHANNEL_UPDATE_SCENARIO:-1}"
+RUN_ROOT_OWNED_SCENARIO="${CARLITO_BUNDLED_CHANNEL_ROOT_OWNED_SCENARIO:-1}"
+RUN_SETUP_ENTRY_SCENARIO="${CARLITO_BUNDLED_CHANNEL_SETUP_ENTRY_SCENARIO:-1}"
+RUN_LOAD_FAILURE_SCENARIO="${CARLITO_BUNDLED_CHANNEL_LOAD_FAILURE_SCENARIO:-1}"
 
 docker_e2e_build_or_reuse "$IMAGE_NAME" bundled-channel-deps "$ROOT_DIR/scripts/e2e/Dockerfile" "$ROOT_DIR" "$DOCKER_TARGET"
 
 prepare_package_tgz() {
   if [ -n "$PACKAGE_TGZ" ]; then
     if [ ! -f "$PACKAGE_TGZ" ]; then
-      echo "OPENCLAW_BUNDLED_CHANNEL_PACKAGE_TGZ does not exist: $PACKAGE_TGZ" >&2
+      echo "CARLITO_BUNDLED_CHANNEL_PACKAGE_TGZ does not exist: $PACKAGE_TGZ" >&2
       exit 1
     fi
     PACKAGE_TGZ="$(cd "$(dirname "$PACKAGE_TGZ")" && pwd)/$(basename "$PACKAGE_TGZ")"
@@ -31,51 +31,51 @@ prepare_package_tgz() {
     echo "Building host package artifacts..."
     run_logged bundled-channel-deps-host-build pnpm build
   else
-    echo "Skipping host build (OPENCLAW_BUNDLED_CHANNEL_HOST_BUILD=0)"
+    echo "Skipping host build (CARLITO_BUNDLED_CHANNEL_HOST_BUILD=0)"
   fi
 
   echo "Writing package inventory and packing once..."
   run_logged bundled-channel-deps-inventory node --import tsx --input-type=module -e 'const { writePackageDistInventory } = await import("./src/infra/package-dist-inventory.ts"); await writePackageDistInventory(process.cwd());'
   local pack_dir
-  pack_dir="$(mktemp -d "${TMPDIR:-/tmp}/openclaw-bundled-channel-pack.XXXXXX")"
+  pack_dir="$(mktemp -d "${TMPDIR:-/tmp}/carlito-bundled-channel-pack.XXXXXX")"
   run_logged bundled-channel-deps-pack npm pack --ignore-scripts --pack-destination "$pack_dir"
-  PACKAGE_TGZ="$(find "$pack_dir" -maxdepth 1 -name 'openclaw-*.tgz' -print -quit)"
+  PACKAGE_TGZ="$(find "$pack_dir" -maxdepth 1 -name 'carlito-*.tgz' -print -quit)"
   if [ -z "$PACKAGE_TGZ" ]; then
-    echo "missing packed OpenClaw tarball" >&2
+    echo "missing packed Carlito tarball" >&2
     exit 1
   fi
   PACKAGE_TGZ="$(cd "$(dirname "$PACKAGE_TGZ")" && pwd)/$(basename "$PACKAGE_TGZ")"
 }
 
 prepare_package_tgz
-DOCKER_PACKAGE_TGZ="/tmp/openclaw-current.tgz"
-PACKAGE_DOCKER_ARGS=(-v "$PACKAGE_TGZ:$DOCKER_PACKAGE_TGZ:ro" -e "OPENCLAW_CURRENT_PACKAGE_TGZ=$DOCKER_PACKAGE_TGZ")
+DOCKER_PACKAGE_TGZ="/tmp/carlito-current.tgz"
+PACKAGE_DOCKER_ARGS=(-v "$PACKAGE_TGZ:$DOCKER_PACKAGE_TGZ:ro" -e "CARLITO_CURRENT_PACKAGE_TGZ=$DOCKER_PACKAGE_TGZ")
 
 run_channel_scenario() {
   local channel="$1"
   local dep_sentinel="$2"
   local run_log
-  run_log="$(mktemp "${TMPDIR:-/tmp}/openclaw-bundled-channel-deps-$channel.XXXXXX")"
+  run_log="$(mktemp "${TMPDIR:-/tmp}/carlito-bundled-channel-deps-$channel.XXXXXX")"
 
   echo "Running bundled $channel runtime deps Docker E2E..."
   if ! docker run --rm \
     -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
-    -e OPENCLAW_CHANNEL_UNDER_TEST="$channel" \
-    -e OPENCLAW_DEP_SENTINEL="$dep_sentinel" \
+    -e CARLITO_CHANNEL_UNDER_TEST="$channel" \
+    -e CARLITO_DEP_SENTINEL="$dep_sentinel" \
     "${PACKAGE_DOCKER_ARGS[@]}" \
     -i "$IMAGE_NAME" bash -s >"$run_log" 2>&1 <<'EOF'
 set -euo pipefail
 
-export HOME="$(mktemp -d "/tmp/openclaw-bundled-channel-deps.XXXXXX")"
+export HOME="$(mktemp -d "/tmp/carlito-bundled-channel-deps.XXXXXX")"
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
-export OPENAI_API_KEY="sk-openclaw-bundled-channel-deps-e2e"
-export OPENCLAW_NO_ONBOARD=1
+export OPENAI_API_KEY="sk-carlito-bundled-channel-deps-e2e"
+export CARLITO_NO_ONBOARD=1
 
 TOKEN="bundled-channel-deps-token"
 PORT="18789"
-CHANNEL="${OPENCLAW_CHANNEL_UNDER_TEST:?missing OPENCLAW_CHANNEL_UNDER_TEST}"
-DEP_SENTINEL="${OPENCLAW_DEP_SENTINEL:?missing OPENCLAW_DEP_SENTINEL}"
+CHANNEL="${CARLITO_CHANNEL_UNDER_TEST:?missing CARLITO_CHANNEL_UNDER_TEST}"
+DEP_SENTINEL="${CARLITO_DEP_SENTINEL:?missing CARLITO_DEP_SENTINEL}"
 gateway_pid=""
 
 cleanup() {
@@ -86,12 +86,12 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "Installing mounted OpenClaw package..."
-package_tgz="${OPENCLAW_CURRENT_PACKAGE_TGZ:?missing OPENCLAW_CURRENT_PACKAGE_TGZ}"
-npm install -g "$package_tgz" --no-fund --no-audit >/tmp/openclaw-install.log 2>&1
+echo "Installing mounted Carlito package..."
+package_tgz="${CARLITO_CURRENT_PACKAGE_TGZ:?missing CARLITO_CURRENT_PACKAGE_TGZ}"
+npm install -g "$package_tgz" --no-fund --no-audit >/tmp/carlito-install.log 2>&1
 
-command -v openclaw >/dev/null
-package_root="$(npm root -g)/openclaw"
+command -v carlito >/dev/null
+package_root="$(npm root -g)/carlito"
 test -d "$package_root/dist/extensions/telegram"
 test -d "$package_root/dist/extensions/discord"
 test -d "$package_root/dist/extensions/slack"
@@ -113,7 +113,7 @@ const path = require("node:path");
 const mode = process.argv[2];
 const token = process.argv[3];
 const port = Number(process.argv[4]);
-const configPath = path.join(process.env.HOME, ".openclaw", "openclaw.json");
+const configPath = path.join(process.env.HOME, ".carlito", "carlito.json");
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, "utf8"))
   : {};
@@ -209,7 +209,7 @@ if (mode === "memory-lancedb") {
             apiKey: process.env.OPENAI_API_KEY,
             model: "text-embedding-3-small",
           },
-          dbPath: "~/.openclaw/memory/lancedb-e2e",
+          dbPath: "~/.carlito/memory/lancedb-e2e",
           autoCapture: false,
           autoRecall: false,
         },
@@ -226,7 +226,7 @@ NODE
 start_gateway() {
   local log_file="$1"
   : >"$log_file"
-  openclaw gateway --port "$PORT" --bind loopback --allow-unconfigured >"$log_file" 2>&1 &
+  carlito gateway --port "$PORT" --bind loopback --allow-unconfigured >"$log_file" 2>&1 &
   gateway_pid="$!"
 
   for _ in $(seq 1 240); do
@@ -256,7 +256,7 @@ stop_gateway() {
 
 wait_for_gateway_health() {
   for _ in $(seq 1 120); do
-    if openclaw gateway health --url "ws://127.0.0.1:$PORT" --token "$TOKEN" --json >/dev/null 2>&1; then
+    if carlito gateway health --url "ws://127.0.0.1:$PORT" --token "$TOKEN" --json >/dev/null 2>&1; then
       return 0
     fi
     sleep 0.25
@@ -271,8 +271,8 @@ assert_channel_status() {
     echo "memory-lancedb plugin activation verified by dependency sentinel"
     return 0
   fi
-  local out="/tmp/openclaw-channel-status-$channel.json"
-  openclaw gateway call channels.status \
+  local out="/tmp/carlito-channel-status-$channel.json"
+  carlito gateway call channels.status \
     --url "ws://127.0.0.1:$PORT" \
     --token "$TOKEN" \
     --timeout 30000 \
@@ -351,24 +351,24 @@ assert_no_dep_sentinel() {
 
 echo "Starting baseline gateway with OpenAI configured..."
 write_config baseline
-start_gateway "/tmp/openclaw-$CHANNEL-baseline.log"
+start_gateway "/tmp/carlito-$CHANNEL-baseline.log"
 wait_for_gateway_health
 stop_gateway
 assert_no_dep_sentinel "$CHANNEL" "$DEP_SENTINEL"
 
 echo "Enabling $CHANNEL by config edit, then restarting gateway..."
 write_config "$CHANNEL"
-start_gateway "/tmp/openclaw-$CHANNEL-first.log"
+start_gateway "/tmp/carlito-$CHANNEL-first.log"
 wait_for_gateway_health
-assert_installed_once "/tmp/openclaw-$CHANNEL-first.log" "$CHANNEL" "$DEP_SENTINEL"
+assert_installed_once "/tmp/carlito-$CHANNEL-first.log" "$CHANNEL" "$DEP_SENTINEL"
 assert_dep_sentinel "$CHANNEL" "$DEP_SENTINEL"
 assert_channel_status "$CHANNEL"
 stop_gateway
 
 echo "Restarting gateway again; $CHANNEL deps must stay installed..."
-start_gateway "/tmp/openclaw-$CHANNEL-second.log"
+start_gateway "/tmp/carlito-$CHANNEL-second.log"
 wait_for_gateway_health
-assert_not_installed "/tmp/openclaw-$CHANNEL-second.log" "$CHANNEL"
+assert_not_installed "/tmp/carlito-$CHANNEL-second.log" "$CHANNEL"
 assert_channel_status "$CHANNEL"
 stop_gateway
 
@@ -386,7 +386,7 @@ EOF
 
 run_root_owned_global_scenario() {
   local run_log
-  run_log="$(mktemp "${TMPDIR:-/tmp}/openclaw-bundled-channel-root-owned.XXXXXX")"
+  run_log="$(mktemp "${TMPDIR:-/tmp}/carlito-bundled-channel-root-owned.XXXXXX")"
 
   echo "Running bundled channel root-owned global install Docker E2E..."
   if ! docker run --rm --user root \
@@ -396,9 +396,9 @@ run_root_owned_global_scenario() {
 set -euo pipefail
 
 export HOME="/root"
-export OPENAI_API_KEY="sk-openclaw-bundled-channel-root-owned-e2e"
-export OPENCLAW_NO_ONBOARD=1
-export OPENCLAW_PLUGIN_STAGE_DIR="/var/lib/openclaw/plugin-runtime-deps"
+export OPENAI_API_KEY="sk-carlito-bundled-channel-root-owned-e2e"
+export CARLITO_NO_ONBOARD=1
+export CARLITO_PLUGIN_STAGE_DIR="/var/lib/carlito/plugin-runtime-deps"
 
 TOKEN="bundled-channel-root-owned-token"
 PORT="18791"
@@ -407,7 +407,7 @@ DEP_SENTINEL="@slack/web-api"
 gateway_pid=""
 
 package_root() {
-  printf "%s/openclaw" "$(npm root -g)"
+  printf "%s/carlito" "$(npm root -g)"
 }
 
 cleanup() {
@@ -418,16 +418,16 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "Installing mounted OpenClaw package into root-owned global npm..."
-package_tgz="${OPENCLAW_CURRENT_PACKAGE_TGZ:?missing OPENCLAW_CURRENT_PACKAGE_TGZ}"
-npm install -g "$package_tgz" --no-fund --no-audit >/tmp/openclaw-root-owned-install.log 2>&1
+echo "Installing mounted Carlito package into root-owned global npm..."
+package_tgz="${CARLITO_CURRENT_PACKAGE_TGZ:?missing CARLITO_CURRENT_PACKAGE_TGZ}"
+npm install -g "$package_tgz" --no-fund --no-audit >/tmp/carlito-root-owned-install.log 2>&1
 
 root="$(package_root)"
 test -d "$root/dist/extensions/$CHANNEL"
 rm -rf "$root/dist/extensions/$CHANNEL/node_modules"
 chmod -R a-w "$root"
-mkdir -p "$OPENCLAW_PLUGIN_STAGE_DIR" /home/appuser/.openclaw
-chown -R appuser:appuser /home/appuser/.openclaw /var/lib/openclaw
+mkdir -p "$CARLITO_PLUGIN_STAGE_DIR" /home/appuser/.carlito
+chown -R appuser:appuser /home/appuser/.carlito /var/lib/carlito
 
 if runuser -u appuser -- test -w "$root"; then
   echo "expected package root to be unwritable for appuser" >&2
@@ -439,7 +439,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const token = process.argv[2];
 const port = Number(process.argv[3]);
-const configPath = "/home/appuser/.openclaw/openclaw.json";
+const configPath = "/home/appuser/.carlito/carlito.json";
 const config = {
   gateway: {
     port,
@@ -472,7 +472,7 @@ const config = {
 fs.mkdirSync(path.dirname(configPath), { recursive: true });
 fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 NODE
-chown appuser:appuser /home/appuser/.openclaw/openclaw.json
+chown appuser:appuser /home/appuser/.carlito/carlito.json
 
 start_gateway() {
   local log_file="$1"
@@ -481,10 +481,10 @@ start_gateway() {
   runuser -u appuser -- env \
     HOME=/home/appuser \
     OPENAI_API_KEY="$OPENAI_API_KEY" \
-    OPENCLAW_NO_ONBOARD=1 \
-    OPENCLAW_PLUGIN_STAGE_DIR="$OPENCLAW_PLUGIN_STAGE_DIR" \
-    npm_config_cache=/tmp/openclaw-root-owned-npm-cache \
-    openclaw gateway --port "$PORT" --bind loopback --allow-unconfigured >"$log_file" 2>&1 &
+    CARLITO_NO_ONBOARD=1 \
+    CARLITO_PLUGIN_STAGE_DIR="$CARLITO_PLUGIN_STAGE_DIR" \
+    npm_config_cache=/tmp/carlito-root-owned-npm-cache \
+    carlito gateway --port "$PORT" --bind loopback --allow-unconfigured >"$log_file" 2>&1 &
   gateway_pid="$!"
 
   for _ in $(seq 1 240); do
@@ -506,7 +506,7 @@ start_gateway() {
 
 wait_for_gateway_health() {
   for _ in $(seq 1 120); do
-    if runuser -u appuser -- env HOME=/home/appuser openclaw gateway health --url "ws://127.0.0.1:$PORT" --token "$TOKEN" --json >/dev/null 2>&1; then
+    if runuser -u appuser -- env HOME=/home/appuser carlito gateway health --url "ws://127.0.0.1:$PORT" --token "$TOKEN" --json >/dev/null 2>&1; then
       return 0
     fi
     sleep 0.25
@@ -516,8 +516,8 @@ wait_for_gateway_health() {
 }
 
 assert_channel_status() {
-  local out="/tmp/openclaw-root-owned-channel-status.json"
-  runuser -u appuser -- env HOME=/home/appuser openclaw gateway call channels.status \
+  local out="/tmp/carlito-root-owned-channel-status.json"
+  runuser -u appuser -- env HOME=/home/appuser carlito gateway call channels.status \
     --url "ws://127.0.0.1:$PORT" \
     --token "$TOKEN" \
     --timeout 30000 \
@@ -534,12 +534,12 @@ if (!payload.channels || !payload.channels[channel]) {
 console.log(`${channel} channel plugin visible`);
 NODE
   then
-    cat /tmp/openclaw-root-owned-gateway.log >&2
+    cat /tmp/carlito-root-owned-gateway.log >&2
     exit 1
   fi
 }
 
-start_gateway /tmp/openclaw-root-owned-gateway.log
+start_gateway /tmp/carlito-root-owned-gateway.log
 wait_for_gateway_health
 assert_channel_status
 
@@ -548,10 +548,10 @@ if [ -e "$root/dist/extensions/$CHANNEL/node_modules/$DEP_SENTINEL/package.json"
   find "$root/dist/extensions/$CHANNEL/node_modules" -maxdepth 4 -type f | sort | head -80 >&2 || true
   exit 1
 fi
-if ! find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
+if ! find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
   echo "missing external staged dependency sentinel for $DEP_SENTINEL" >&2
-  find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -120 >&2 || true
-  cat /tmp/openclaw-root-owned-gateway.log >&2
+  find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -120 >&2 || true
+  cat /tmp/carlito-root-owned-gateway.log >&2
   exit 1
 fi
 
@@ -569,7 +569,7 @@ EOF
 
 run_setup_entry_scenario() {
   local run_log
-  run_log="$(mktemp "${TMPDIR:-/tmp}/openclaw-bundled-channel-setup-entry.XXXXXX")"
+  run_log="$(mktemp "${TMPDIR:-/tmp}/carlito-bundled-channel-setup-entry.XXXXXX")"
 
   echo "Running bundled channel setup-entry runtime deps Docker E2E..."
   if ! docker run --rm \
@@ -578,23 +578,23 @@ run_setup_entry_scenario() {
     -i "$IMAGE_NAME" bash -s >"$run_log" 2>&1 <<'EOF'
 set -euo pipefail
 
-export HOME="$(mktemp -d "/tmp/openclaw-bundled-channel-setup-entry.XXXXXX")"
+export HOME="$(mktemp -d "/tmp/carlito-bundled-channel-setup-entry.XXXXXX")"
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
-export OPENCLAW_NO_ONBOARD=1
-export OPENCLAW_PLUGIN_STAGE_DIR="$HOME/.openclaw/plugin-runtime-deps"
-mkdir -p "$OPENCLAW_PLUGIN_STAGE_DIR"
+export CARLITO_NO_ONBOARD=1
+export CARLITO_PLUGIN_STAGE_DIR="$HOME/.carlito/plugin-runtime-deps"
+mkdir -p "$CARLITO_PLUGIN_STAGE_DIR"
 
 CHANNEL="feishu"
 DEP_SENTINEL="@larksuiteoapi/node-sdk"
 
 package_root() {
-  printf "%s/openclaw" "$(npm root -g)"
+  printf "%s/carlito" "$(npm root -g)"
 }
 
-echo "Installing mounted OpenClaw package..."
-package_tgz="${OPENCLAW_CURRENT_PACKAGE_TGZ:?missing OPENCLAW_CURRENT_PACKAGE_TGZ}"
-npm install -g "$package_tgz" --no-fund --no-audit >/tmp/openclaw-setup-entry-install.log 2>&1
+echo "Installing mounted Carlito package..."
+package_tgz="${CARLITO_CURRENT_PACKAGE_TGZ:?missing CARLITO_CURRENT_PACKAGE_TGZ}"
+npm install -g "$package_tgz" --no-fund --no-audit >/tmp/carlito-setup-entry-install.log 2>&1
 
 root="$(package_root)"
 test -d "$root/dist/extensions/$CHANNEL"
@@ -642,9 +642,9 @@ if [ -e "$root/dist/extensions/$CHANNEL/node_modules/$DEP_SENTINEL/package.json"
   echo "setup-entry discovery installed deps into bundled plugin tree before channel configuration" >&2
   exit 1
 fi
-if find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
+if find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
   echo "setup-entry discovery installed external staged deps before channel configuration" >&2
-  find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -160 >&2 || true
+  find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -160 >&2 || true
   exit 1
 fi
 
@@ -653,7 +653,7 @@ node - <<'NODE'
 const fs = require("node:fs");
 const path = require("node:path");
 
-const configPath = path.join(process.env.HOME, ".openclaw", "openclaw.json");
+const configPath = path.join(process.env.HOME, ".carlito", "carlito.json");
 fs.mkdirSync(path.dirname(configPath), { recursive: true });
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, "utf8"))
@@ -674,16 +674,16 @@ config.channels = {
 fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 NODE
 
-openclaw doctor --non-interactive >/tmp/openclaw-setup-entry-doctor.log 2>&1
+carlito doctor --non-interactive >/tmp/carlito-setup-entry-doctor.log 2>&1
 
 if [ -e "$root/dist/extensions/$CHANNEL/node_modules/$DEP_SENTINEL/package.json" ]; then
   echo "expected configured Feishu deps to be installed externally, not into bundled plugin tree" >&2
   exit 1
 fi
-if ! find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
+if ! find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -path "*/node_modules/$DEP_SENTINEL/package.json" -type f | grep -q .; then
   echo "missing external staged dependency sentinel for configured $CHANNEL: $DEP_SENTINEL" >&2
-  cat /tmp/openclaw-setup-entry-doctor.log >&2
-  find "$OPENCLAW_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -160 >&2 || true
+  cat /tmp/carlito-setup-entry-doctor.log >&2
+  find "$CARLITO_PLUGIN_STAGE_DIR" -maxdepth 12 -type f | sort | head -160 >&2 || true
   exit 1
 fi
 
@@ -701,31 +701,31 @@ EOF
 
 run_update_scenario() {
   local run_log
-  run_log="$(mktemp "${TMPDIR:-/tmp}/openclaw-bundled-channel-update.XXXXXX")"
+  run_log="$(mktemp "${TMPDIR:-/tmp}/carlito-bundled-channel-update.XXXXXX")"
 
   echo "Running bundled channel runtime deps Docker update E2E..."
   if ! docker run --rm \
     -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
-    -e OPENCLAW_BUNDLED_CHANNEL_UPDATE_BASELINE_VERSION="$UPDATE_BASELINE_VERSION" \
+    -e CARLITO_BUNDLED_CHANNEL_UPDATE_BASELINE_VERSION="$UPDATE_BASELINE_VERSION" \
     "${PACKAGE_DOCKER_ARGS[@]}" \
     -i "$IMAGE_NAME" bash -s >"$run_log" 2>&1 <<'EOF'
 set -euo pipefail
 
-export HOME="$(mktemp -d "/tmp/openclaw-bundled-channel-update.XXXXXX")"
+export HOME="$(mktemp -d "/tmp/carlito-bundled-channel-update.XXXXXX")"
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
-export OPENAI_API_KEY="sk-openclaw-bundled-channel-update-e2e"
-export OPENCLAW_NO_ONBOARD=1
-export OPENCLAW_UPDATE_PACKAGE_SPEC=""
+export OPENAI_API_KEY="sk-carlito-bundled-channel-update-e2e"
+export CARLITO_NO_ONBOARD=1
+export CARLITO_UPDATE_PACKAGE_SPEC=""
 
 TOKEN="bundled-channel-update-token"
 PORT="18790"
 
 package_root() {
-  printf "%s/openclaw" "$(npm root -g)"
+  printf "%s/carlito" "$(npm root -g)"
 }
 
-package_tgz="${OPENCLAW_CURRENT_PACKAGE_TGZ:?missing OPENCLAW_CURRENT_PACKAGE_TGZ}"
+package_tgz="${CARLITO_CURRENT_PACKAGE_TGZ:?missing CARLITO_CURRENT_PACKAGE_TGZ}"
 update_target="file:$package_tgz"
 candidate_version="$(node - <<'NODE' "$package_tgz"
 const { execFileSync } = require("node:child_process");
@@ -745,7 +745,7 @@ const path = require("node:path");
 const mode = process.argv[2];
 const token = process.argv[3];
 const port = Number(process.argv[4]);
-const configPath = path.join(process.env.HOME, ".openclaw", "openclaw.json");
+const configPath = path.join(process.env.HOME, ".carlito", "carlito.json");
 const config = fs.existsSync(configPath)
   ? JSON.parse(fs.readFileSync(configPath, "utf8"))
   : {};
@@ -826,7 +826,7 @@ if (mode === "memory-lancedb") {
             apiKey: process.env.OPENAI_API_KEY,
             model: "text-embedding-3-small",
           },
-          dbPath: "~/.openclaw/memory/lancedb-update-e2e",
+          dbPath: "~/.carlito/memory/lancedb-update-e2e",
           autoCapture: false,
           autoRecall: false,
         },
@@ -930,12 +930,12 @@ if ((payload.after?.version ?? null) !== expectedAfter) {
   );
 }
 const steps = Array.isArray(payload.steps) ? payload.steps : [];
-const doctor = steps.find((step) => step?.name === "openclaw doctor");
+const doctor = steps.find((step) => step?.name === "carlito doctor");
 if (!doctor) {
-  throw new Error("missing openclaw doctor step");
+  throw new Error("missing carlito doctor step");
 }
 if (Number(doctor.exitCode ?? 1) !== 0) {
-  throw new Error(`openclaw doctor step failed: ${JSON.stringify(doctor)}`);
+  throw new Error(`carlito doctor step failed: ${JSON.stringify(doctor)}`);
 }
 NODE
 }
@@ -944,20 +944,20 @@ run_update_and_capture() {
   local label="$1"
   local out_file="$2"
   set +e
-  openclaw update --tag "$update_target" --yes --json >"$out_file" 2>"/tmp/openclaw-$label-update.stderr"
+  carlito update --tag "$update_target" --yes --json >"$out_file" 2>"/tmp/carlito-$label-update.stderr"
   local status=$?
   set -e
   if [ "$status" -ne 0 ]; then
-    echo "openclaw update failed for $label with exit code $status" >&2
+    echo "carlito update failed for $label with exit code $status" >&2
     cat "$out_file" >&2 || true
-    cat "/tmp/openclaw-$label-update.stderr" >&2 || true
+    cat "/tmp/carlito-$label-update.stderr" >&2 || true
     exit "$status"
   fi
 }
 
 echo "Installing current candidate as update baseline..."
-npm install -g "$package_tgz" --no-fund --no-audit >/tmp/openclaw-update-baseline-install.log 2>&1
-command -v openclaw >/dev/null
+npm install -g "$package_tgz" --no-fund --no-audit >/tmp/carlito-update-baseline-install.log 2>&1
+command -v carlito >/dev/null
 baseline_root="$(package_root)"
 test -d "$baseline_root/dist/extensions/telegram"
 test -d "$baseline_root/dist/extensions/feishu"
@@ -966,7 +966,7 @@ echo "Replicating configured Telegram missing-runtime state..."
 write_config telegram
 assert_no_dep_available telegram grammy
 set +e
-openclaw doctor --non-interactive >/tmp/openclaw-baseline-doctor.log 2>&1
+carlito doctor --non-interactive >/tmp/carlito-baseline-doctor.log 2>&1
 baseline_doctor_status=$?
 set -e
 echo "baseline doctor exited with $baseline_doctor_status"
@@ -974,17 +974,17 @@ remove_runtime_dep telegram grammy
 assert_no_dep_available telegram grammy
 
 echo "Updating from baseline to current candidate; candidate doctor must repair Telegram deps..."
-run_update_and_capture telegram /tmp/openclaw-update-telegram.json
-cat /tmp/openclaw-update-telegram.json
-assert_update_ok /tmp/openclaw-update-telegram.json "$candidate_version"
+run_update_and_capture telegram /tmp/carlito-update-telegram.json
+cat /tmp/carlito-update-telegram.json
+assert_update_ok /tmp/carlito-update-telegram.json "$candidate_version"
 assert_dep_available telegram grammy
 
 echo "Mutating installed package: remove Telegram deps, then update-mode doctor repairs them..."
 remove_runtime_dep telegram grammy
 assert_no_dep_available telegram grammy
-if ! OPENCLAW_UPDATE_IN_PROGRESS=1 openclaw doctor --non-interactive >/tmp/openclaw-update-mode-doctor.log 2>&1; then
+if ! CARLITO_UPDATE_IN_PROGRESS=1 carlito doctor --non-interactive >/tmp/carlito-update-mode-doctor.log 2>&1; then
   echo "update-mode doctor failed while repairing Telegram deps" >&2
-  cat /tmp/openclaw-update-mode-doctor.log >&2
+  cat /tmp/carlito-update-mode-doctor.log >&2
   exit 1
 fi
 assert_dep_available telegram grammy
@@ -993,36 +993,36 @@ echo "Mutating config to Discord and rerunning same-version update path..."
 write_config discord
 remove_runtime_dep discord discord-api-types
 assert_no_dep_available discord discord-api-types
-run_update_and_capture discord /tmp/openclaw-update-discord.json
-cat /tmp/openclaw-update-discord.json
-assert_update_ok /tmp/openclaw-update-discord.json "$candidate_version"
+run_update_and_capture discord /tmp/carlito-update-discord.json
+cat /tmp/carlito-update-discord.json
+assert_update_ok /tmp/carlito-update-discord.json "$candidate_version"
 assert_dep_available discord discord-api-types
 
 echo "Mutating config to Slack and rerunning same-version update path..."
 write_config slack
 remove_runtime_dep slack @slack/web-api
 assert_no_dep_available slack @slack/web-api
-run_update_and_capture slack /tmp/openclaw-update-slack.json
-cat /tmp/openclaw-update-slack.json
-assert_update_ok /tmp/openclaw-update-slack.json "$candidate_version"
+run_update_and_capture slack /tmp/carlito-update-slack.json
+cat /tmp/carlito-update-slack.json
+assert_update_ok /tmp/carlito-update-slack.json "$candidate_version"
 assert_dep_available slack @slack/web-api
 
 echo "Mutating config to Feishu and rerunning same-version update path..."
 write_config feishu
 remove_runtime_dep feishu @larksuiteoapi/node-sdk
 assert_no_dep_available feishu @larksuiteoapi/node-sdk
-run_update_and_capture feishu /tmp/openclaw-update-feishu.json
-cat /tmp/openclaw-update-feishu.json
-assert_update_ok /tmp/openclaw-update-feishu.json "$candidate_version"
+run_update_and_capture feishu /tmp/carlito-update-feishu.json
+cat /tmp/carlito-update-feishu.json
+assert_update_ok /tmp/carlito-update-feishu.json "$candidate_version"
 assert_dep_available feishu @larksuiteoapi/node-sdk
 
 echo "Mutating config to memory-lancedb and rerunning same-version update path..."
 write_config memory-lancedb
 remove_runtime_dep memory-lancedb @lancedb/lancedb
 assert_no_dep_available memory-lancedb @lancedb/lancedb
-run_update_and_capture memory-lancedb /tmp/openclaw-update-memory-lancedb.json
-cat /tmp/openclaw-update-memory-lancedb.json
-assert_update_ok /tmp/openclaw-update-memory-lancedb.json "$candidate_version"
+run_update_and_capture memory-lancedb /tmp/carlito-update-memory-lancedb.json
+cat /tmp/carlito-update-memory-lancedb.json
+assert_update_ok /tmp/carlito-update-memory-lancedb.json "$candidate_version"
 assert_dep_available memory-lancedb @lancedb/lancedb
 
 echo "bundled channel runtime deps Docker update E2E passed"
@@ -1039,7 +1039,7 @@ EOF
 
 run_load_failure_scenario() {
   local run_log
-  run_log="$(mktemp "${TMPDIR:-/tmp}/openclaw-bundled-channel-load-failure.XXXXXX")"
+  run_log="$(mktemp "${TMPDIR:-/tmp}/carlito-bundled-channel-load-failure.XXXXXX")"
 
   echo "Running bundled channel load-failure isolation Docker E2E..."
   if ! docker run --rm \
@@ -1048,35 +1048,35 @@ run_load_failure_scenario() {
     -i "$IMAGE_NAME" bash -s >"$run_log" 2>&1 <<'EOF'
 set -euo pipefail
 
-export HOME="$(mktemp -d "/tmp/openclaw-bundled-channel-load-failure.XXXXXX")"
+export HOME="$(mktemp -d "/tmp/carlito-bundled-channel-load-failure.XXXXXX")"
 export NPM_CONFIG_PREFIX="$HOME/.npm-global"
 export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
-export OPENCLAW_NO_ONBOARD=1
+export CARLITO_NO_ONBOARD=1
 
 package_root() {
-  printf "%s/openclaw" "$(npm root -g)"
+  printf "%s/carlito" "$(npm root -g)"
 }
 
-echo "Installing mounted OpenClaw package..."
-package_tgz="${OPENCLAW_CURRENT_PACKAGE_TGZ:?missing OPENCLAW_CURRENT_PACKAGE_TGZ}"
-npm install -g "$package_tgz" --no-fund --no-audit >/tmp/openclaw-load-failure-install.log 2>&1
+echo "Installing mounted Carlito package..."
+package_tgz="${CARLITO_CURRENT_PACKAGE_TGZ:?missing CARLITO_CURRENT_PACKAGE_TGZ}"
+npm install -g "$package_tgz" --no-fund --no-audit >/tmp/carlito-load-failure-install.log 2>&1
 
 root="$(package_root)"
 plugin_dir="$root/dist/extensions/load-failure-alpha"
 mkdir -p "$plugin_dir"
 cat >"$plugin_dir/package.json" <<'JSON'
 {
-  "name": "@openclaw/load-failure-alpha",
+  "name": "@realcarlossanchez101/load-failure-alpha",
   "version": "2026.4.21",
   "private": true,
   "type": "module",
-  "openclaw": {
+  "carlito": {
     "extensions": ["./index.js"],
     "setupEntry": "./setup-entry.js"
   }
 }
 JSON
-cat >"$plugin_dir/openclaw.plugin.json" <<'JSON'
+cat >"$plugin_dir/carlito.plugin.json" <<'JSON'
 {
   "id": "load-failure-alpha",
   "channels": ["load-failure-alpha"],
@@ -1121,7 +1121,7 @@ JS
 echo "Loading synthetic failing bundled channel through packaged loader..."
 (
   cd "$root"
-  OPENCLAW_BUNDLED_PLUGINS_DIR="$root/dist/extensions" node --input-type=module - <<'NODE'
+  CARLITO_BUNDLED_PLUGINS_DIR="$root/dist/extensions" node --input-type=module - <<'NODE'
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";

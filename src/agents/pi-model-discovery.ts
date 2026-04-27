@@ -140,7 +140,7 @@ function instantiatePiModelRegistry(
   return new Registry(authStorage, modelsJsonPath);
 }
 
-function createOpenClawModelRegistry(
+function createCarlitoModelRegistry(
   authStorage: PiAuthStorage,
   modelsJsonPath: string,
   agentDir: string,
@@ -169,7 +169,7 @@ function createOpenClawModelRegistry(
 }
 
 export function scrubLegacyStaticAuthJsonEntriesForDiscovery(pathname: string): void {
-  if (process.env.OPENCLAW_AUTH_STORE_READONLY === "1") {
+  if (process.env.CARLITO_AUTH_STORE_READONLY === "1") {
     return;
   }
   if (!fs.existsSync(pathname)) {
@@ -335,7 +335,7 @@ export function discoverModels(
   agentDir: string,
   options?: DiscoverModelsOptions,
 ): PiModelRegistry {
-  return createOpenClawModelRegistry(
+  return createCarlitoModelRegistry(
     authStorage,
     path.join(agentDir, "models.json"),
     agentDir,

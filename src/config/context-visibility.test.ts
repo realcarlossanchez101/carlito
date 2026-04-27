@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "./config.js";
+import type { CarlitoConfig } from "./config.js";
 import {
   resolveChannelContextVisibilityMode,
   resolveDefaultContextVisibility,
@@ -45,7 +45,7 @@ describe("resolveChannelContextVisibilityMode", () => {
           },
         },
       },
-    } satisfies OpenClawConfig;
+    } satisfies CarlitoConfig;
     expect(
       resolveChannelContextVisibilityMode({
         cfg,
@@ -66,7 +66,7 @@ describe("resolveChannelContextVisibilityMode", () => {
           channels: {
             defaults: { contextVisibility: "allowlist_quote" },
           },
-        } satisfies OpenClawConfig,
+        } satisfies CarlitoConfig,
         channel: "signal",
       }),
     ).toBe("allowlist_quote");

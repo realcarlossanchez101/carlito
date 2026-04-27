@@ -25,16 +25,16 @@ const GATEWAY_E2E_TIMEOUT_MS = 90_000;
 let gatewayTestSeq = 0;
 const GATEWAY_TEST_ENV_KEYS = [
   "HOME",
-  "OPENCLAW_STATE_DIR",
-  "OPENCLAW_CONFIG_PATH",
-  "OPENCLAW_GATEWAY_TOKEN",
-  "OPENCLAW_SKIP_CHANNELS",
-  "OPENCLAW_SKIP_GMAIL_WATCHER",
-  "OPENCLAW_SKIP_CRON",
-  "OPENCLAW_SKIP_CANVAS_HOST",
-  "OPENCLAW_SKIP_BROWSER_CONTROL_SERVER",
-  "OPENCLAW_SKIP_PROVIDERS",
-  "OPENCLAW_BUNDLED_PLUGINS_DIR",
+  "CARLITO_STATE_DIR",
+  "CARLITO_CONFIG_PATH",
+  "CARLITO_GATEWAY_TOKEN",
+  "CARLITO_SKIP_CHANNELS",
+  "CARLITO_SKIP_GMAIL_WATCHER",
+  "CARLITO_SKIP_CRON",
+  "CARLITO_SKIP_CANVAS_HOST",
+  "CARLITO_SKIP_BROWSER_CONTROL_SERVER",
+  "CARLITO_SKIP_PROVIDERS",
+  "CARLITO_BUNDLED_PLUGINS_DIR",
 ] as const;
 
 function nextGatewayId(prefix: string): string {
@@ -42,7 +42,7 @@ function nextGatewayId(prefix: string): string {
 }
 
 async function createEmptyBundledPluginsDir(tempHome: string): Promise<string> {
-  const bundledPluginsDir = path.join(tempHome, "openclaw-test-empty-bundled-plugins");
+  const bundledPluginsDir = path.join(tempHome, "carlito-test-empty-bundled-plugins");
   await fs.mkdir(bundledPluginsDir, { recursive: true });
   return bundledPluginsDir;
 }
@@ -52,10 +52,10 @@ async function writeWorkspacePlugin(params: {
   id: string;
   body: string;
 }): Promise<void> {
-  const pluginDir = path.join(params.workspaceDir, ".openclaw", "extensions", params.id);
+  const pluginDir = path.join(params.workspaceDir, ".carlito", "extensions", params.id);
   await fs.mkdir(pluginDir, { recursive: true });
   await fs.writeFile(
-    path.join(pluginDir, "openclaw.plugin.json"),
+    path.join(pluginDir, "carlito.plugin.json"),
     `${JSON.stringify(
       {
         id: params.id,
@@ -88,28 +88,28 @@ async function readCounterWithRetry(filePath: string): Promise<number> {
 async function setupGatewayTempHome(params: { prefix: string; minimalGateway?: boolean }) {
   const envSnapshot = captureEnv([
     ...GATEWAY_TEST_ENV_KEYS,
-    ...(params.minimalGateway ? (["OPENCLAW_TEST_MINIMAL_GATEWAY"] as const) : []),
+    ...(params.minimalGateway ? (["CARLITO_TEST_MINIMAL_GATEWAY"] as const) : []),
   ]);
 
   const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), params.prefix));
   process.env.HOME = tempHome;
-  process.env.OPENCLAW_STATE_DIR = path.join(tempHome, ".openclaw");
-  delete process.env.OPENCLAW_CONFIG_PATH;
-  process.env.OPENCLAW_SKIP_CHANNELS = "1";
-  process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-  process.env.OPENCLAW_SKIP_CRON = "1";
-  process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-  process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
-  process.env.OPENCLAW_SKIP_PROVIDERS = "1";
+  process.env.CARLITO_STATE_DIR = path.join(tempHome, ".carlito");
+  delete process.env.CARLITO_CONFIG_PATH;
+  process.env.CARLITO_SKIP_CHANNELS = "1";
+  process.env.CARLITO_SKIP_GMAIL_WATCHER = "1";
+  process.env.CARLITO_SKIP_CRON = "1";
+  process.env.CARLITO_SKIP_CANVAS_HOST = "1";
+  process.env.CARLITO_SKIP_BROWSER_CONTROL_SERVER = "1";
+  process.env.CARLITO_SKIP_PROVIDERS = "1";
   if (params.minimalGateway) {
-    process.env.OPENCLAW_TEST_MINIMAL_GATEWAY = "1";
+    process.env.CARLITO_TEST_MINIMAL_GATEWAY = "1";
   } else {
-    delete process.env.OPENCLAW_TEST_MINIMAL_GATEWAY;
+    delete process.env.CARLITO_TEST_MINIMAL_GATEWAY;
   }
 
-  const workspaceDir = path.join(tempHome, "openclaw");
+  const workspaceDir = path.join(tempHome, "carlito");
   await fs.mkdir(workspaceDir, { recursive: true });
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = await createEmptyBundledPluginsDir(tempHome);
+  process.env.CARLITO_BUNDLED_PLUGINS_DIR = await createEmptyBundledPluginsDir(tempHome);
   return { envSnapshot, tempHome, workspaceDir };
 }
 
@@ -142,16 +142,16 @@ describe("gateway e2e", () => {
     async () => {
       const { baseUrl: openaiBaseUrl, restore } = installOpenAiResponsesMock();
       const { envSnapshot, tempHome, workspaceDir } = await setupGatewayTempHome({
-        prefix: "openclaw-gw-mock-home-",
+        prefix: "carlito-gw-mock-home-",
         minimalGateway: true,
       });
 
       const token = nextGatewayId("test-token");
-      process.env.OPENCLAW_GATEWAY_TOKEN = token;
+      process.env.CARLITO_GATEWAY_TOKEN = token;
 
-      const configDir = path.join(tempHome, ".openclaw");
+      const configDir = path.join(tempHome, ".carlito");
       await fs.mkdir(configDir, { recursive: true });
-      const configPath = path.join(configDir, "openclaw.json");
+      const configPath = path.join(configDir, "carlito.json");
       const mockProvider = buildMockOpenAiResponsesProvider(openaiBaseUrl);
 
       const cfg = {
@@ -222,11 +222,11 @@ describe("gateway e2e", () => {
     { timeout: GATEWAY_E2E_TIMEOUT_MS },
     async () => {
       const { envSnapshot, tempHome, workspaceDir } = await setupGatewayTempHome({
-        prefix: "openclaw-gw-http-tools-home-",
+        prefix: "carlito-gw-http-tools-home-",
       });
 
       const token = nextGatewayId("http-tools-token");
-      process.env.OPENCLAW_GATEWAY_TOKEN = token;
+      process.env.CARLITO_GATEWAY_TOKEN = token;
       const registerCountPath = path.join(tempHome, "workspace-plugin-register-count.txt");
       await writeWorkspacePlugin({
         workspaceDir,
@@ -246,9 +246,9 @@ module.exports = {
 `.trimStart(),
       });
 
-      const configDir = path.join(tempHome, ".openclaw");
+      const configDir = path.join(tempHome, ".carlito");
       await fs.mkdir(configDir, { recursive: true });
-      const configPath = path.join(configDir, "openclaw.json");
+      const configPath = path.join(configDir, "carlito.json");
       const cfg = {
         agents: {
           defaults: { workspace: workspaceDir },
@@ -260,7 +260,7 @@ module.exports = {
         gateway: { auth: { token } },
       };
       await fs.writeFile(configPath, `${JSON.stringify(cfg, null, 2)}\n`);
-      process.env.OPENCLAW_CONFIG_PATH = configPath;
+      process.env.CARLITO_CONFIG_PATH = configPath;
 
       const port = await getFreeGatewayPort();
       const server = await startGatewayServer(port, {
@@ -308,33 +308,33 @@ module.exports = {
     async () => {
       const envSnapshot = captureEnv([
         "HOME",
-        "OPENCLAW_STATE_DIR",
-        "OPENCLAW_CONFIG_PATH",
-        "OPENCLAW_GATEWAY_TOKEN",
-        "OPENCLAW_SKIP_CHANNELS",
-        "OPENCLAW_SKIP_GMAIL_WATCHER",
-        "OPENCLAW_SKIP_CRON",
-        "OPENCLAW_SKIP_CANVAS_HOST",
-        "OPENCLAW_SKIP_BROWSER_CONTROL_SERVER",
-        "OPENCLAW_SKIP_PROVIDERS",
-        "OPENCLAW_BUNDLED_PLUGINS_DIR",
-        "OPENCLAW_TEST_MINIMAL_GATEWAY",
+        "CARLITO_STATE_DIR",
+        "CARLITO_CONFIG_PATH",
+        "CARLITO_GATEWAY_TOKEN",
+        "CARLITO_SKIP_CHANNELS",
+        "CARLITO_SKIP_GMAIL_WATCHER",
+        "CARLITO_SKIP_CRON",
+        "CARLITO_SKIP_CANVAS_HOST",
+        "CARLITO_SKIP_BROWSER_CONTROL_SERVER",
+        "CARLITO_SKIP_PROVIDERS",
+        "CARLITO_BUNDLED_PLUGINS_DIR",
+        "CARLITO_TEST_MINIMAL_GATEWAY",
       ]);
 
-      process.env.OPENCLAW_SKIP_CHANNELS = "1";
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-      process.env.OPENCLAW_SKIP_CRON = "1";
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-      process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
-      process.env.OPENCLAW_SKIP_PROVIDERS = "1";
-      process.env.OPENCLAW_TEST_MINIMAL_GATEWAY = "1";
-      delete process.env.OPENCLAW_GATEWAY_TOKEN;
+      process.env.CARLITO_SKIP_CHANNELS = "1";
+      process.env.CARLITO_SKIP_GMAIL_WATCHER = "1";
+      process.env.CARLITO_SKIP_CRON = "1";
+      process.env.CARLITO_SKIP_CANVAS_HOST = "1";
+      process.env.CARLITO_SKIP_BROWSER_CONTROL_SERVER = "1";
+      process.env.CARLITO_SKIP_PROVIDERS = "1";
+      process.env.CARLITO_TEST_MINIMAL_GATEWAY = "1";
+      delete process.env.CARLITO_GATEWAY_TOKEN;
 
-      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-wizard-home-"));
+      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-wizard-home-"));
       process.env.HOME = tempHome;
-      process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = await createEmptyBundledPluginsDir(tempHome);
-      delete process.env.OPENCLAW_STATE_DIR;
-      delete process.env.OPENCLAW_CONFIG_PATH;
+      process.env.CARLITO_BUNDLED_PLUGINS_DIR = await createEmptyBundledPluginsDir(tempHome);
+      delete process.env.CARLITO_STATE_DIR;
+      delete process.env.CARLITO_CONFIG_PATH;
 
       const wizardToken = nextGatewayId("wiz-token");
       const port = await getFreeGatewayPort();
@@ -442,38 +442,38 @@ module.exports = {
     async () => {
       const envSnapshot = captureEnv([
         "HOME",
-        "OPENCLAW_STATE_DIR",
-        "OPENCLAW_CONFIG_PATH",
-        "OPENCLAW_GATEWAY_TOKEN",
-        "OPENCLAW_SKIP_CHANNELS",
-        "OPENCLAW_SKIP_GMAIL_WATCHER",
-        "OPENCLAW_SKIP_CRON",
-        "OPENCLAW_SKIP_CANVAS_HOST",
-        "OPENCLAW_SKIP_BROWSER_CONTROL_SERVER",
-        "OPENCLAW_SKIP_PROVIDERS",
-        "OPENCLAW_BUNDLED_PLUGINS_DIR",
-        "OPENCLAW_TEST_MINIMAL_GATEWAY",
+        "CARLITO_STATE_DIR",
+        "CARLITO_CONFIG_PATH",
+        "CARLITO_GATEWAY_TOKEN",
+        "CARLITO_SKIP_CHANNELS",
+        "CARLITO_SKIP_GMAIL_WATCHER",
+        "CARLITO_SKIP_CRON",
+        "CARLITO_SKIP_CANVAS_HOST",
+        "CARLITO_SKIP_BROWSER_CONTROL_SERVER",
+        "CARLITO_SKIP_PROVIDERS",
+        "CARLITO_BUNDLED_PLUGINS_DIR",
+        "CARLITO_TEST_MINIMAL_GATEWAY",
         "DISCORD_BOT_TOKEN",
       ]);
 
-      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-minimal-gateway-home-"));
-      const configPath = path.join(tempHome, ".openclaw", "openclaw.json");
-      const bundledPluginsDir = path.join(tempHome, "openclaw-test-no-bundled-extensions");
+      const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-minimal-gateway-home-"));
+      const configPath = path.join(tempHome, ".carlito", "carlito.json");
+      const bundledPluginsDir = path.join(tempHome, "carlito-test-no-bundled-extensions");
       process.env.HOME = tempHome;
-      process.env.OPENCLAW_STATE_DIR = path.join(tempHome, ".openclaw");
-      process.env.OPENCLAW_CONFIG_PATH = configPath;
-      process.env.OPENCLAW_SKIP_CHANNELS = "1";
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-      process.env.OPENCLAW_SKIP_CRON = "1";
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-      process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
-      process.env.OPENCLAW_SKIP_PROVIDERS = "1";
-      process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledPluginsDir;
-      process.env.OPENCLAW_TEST_MINIMAL_GATEWAY = "1";
+      process.env.CARLITO_STATE_DIR = path.join(tempHome, ".carlito");
+      process.env.CARLITO_CONFIG_PATH = configPath;
+      process.env.CARLITO_SKIP_CHANNELS = "1";
+      process.env.CARLITO_SKIP_GMAIL_WATCHER = "1";
+      process.env.CARLITO_SKIP_CRON = "1";
+      process.env.CARLITO_SKIP_CANVAS_HOST = "1";
+      process.env.CARLITO_SKIP_BROWSER_CONTROL_SERVER = "1";
+      process.env.CARLITO_SKIP_PROVIDERS = "1";
+      process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledPluginsDir;
+      process.env.CARLITO_TEST_MINIMAL_GATEWAY = "1";
       process.env.DISCORD_BOT_TOKEN = "discord-test-token";
 
       const token = nextGatewayId("minimal-token");
-      process.env.OPENCLAW_GATEWAY_TOKEN = token;
+      process.env.CARLITO_GATEWAY_TOKEN = token;
       await fs.mkdir(path.dirname(configPath), { recursive: true });
       await fs.mkdir(bundledPluginsDir, { recursive: true });
       await fs.writeFile(

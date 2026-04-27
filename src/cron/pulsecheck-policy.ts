@@ -1,4 +1,4 @@
-import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
+import { resolveSendableOutboundReplyParts } from "carlito/plugin-sdk/reply-payload";
 import { stripPulsecheckToken } from "../auto-reply/pulsecheck.js";
 
 export type PulsecheckDeliveryPayload = {

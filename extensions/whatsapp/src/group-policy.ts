@@ -2,11 +2,11 @@ import {
   resolveChannelGroupRequireMention,
   resolveChannelGroupToolsPolicy,
   type GroupToolPolicyConfig,
-} from "openclaw/plugin-sdk/channel-policy";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+} from "carlito/plugin-sdk/channel-policy";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 
 type WhatsAppGroupContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   groupId?: string | null;
   senderId?: string | null;

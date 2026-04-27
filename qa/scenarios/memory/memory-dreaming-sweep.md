@@ -96,7 +96,7 @@ steps:
                 - ref: env
             - set: managed
               value:
-                expr: "jobs.find((job) => job.name === 'Memory Dreaming Promotion' && job.payload?.kind === 'systemEvent' && job.payload.text === '__openclaw_memory_core_short_term_promotion_dream__')"
+                expr: "jobs.find((job) => job.name === 'Memory Dreaming Promotion' && job.payload?.kind === 'systemEvent' && job.payload.text === '__carlito_memory_core_short_term_promotion_dream__')"
             - assert:
                 expr: "Boolean(managed?.id)"
                 message: managed dreaming cron job missing after enablement
@@ -155,7 +155,7 @@ steps:
           expr: "path.join(env.gateway.workspaceDir, 'MEMORY.md')"
       - set: homeDir
         value:
-          expr: "env.gateway.runtimeEnv.HOME ?? env.gateway.runtimeEnv.OPENCLAW_HOME ?? env.gateway.tempRoot"
+          expr: "env.gateway.runtimeEnv.HOME ?? env.gateway.runtimeEnv.CARLITO_HOME ?? env.gateway.tempRoot"
       - set: sessionsDir
         value:
           expr: "resolveSessionTranscriptsDirForAgent('qa', env.gateway.runtimeEnv, () => homeDir)"

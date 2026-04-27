@@ -1,11 +1,11 @@
-import type { OpenClawConfig } from "../../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../../config/types.carlito.js";
 import { runPluginSetupConfigMigrations } from "../../../plugins/setup-registry.js";
 import { applyChannelDoctorCompatibilityMigrations } from "./channel-legacy-config-migrate.js";
 import { normalizeBaseCompatibilityConfigValues } from "./legacy-config-compatibility-base.js";
 import { normalizeLegacyOpenAICodexModelsAddMetadata } from "./legacy-config-core-normalizers.js";
 
-export function normalizeCompatibilityConfigValues(cfg: OpenClawConfig): {
-  config: OpenClawConfig;
+export function normalizeCompatibilityConfigValues(cfg: CarlitoConfig): {
+  config: CarlitoConfig;
   changes: string[];
 } {
   const changes: string[] = [];

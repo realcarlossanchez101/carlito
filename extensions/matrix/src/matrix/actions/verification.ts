@@ -1,5 +1,5 @@
-import { requireRuntimeConfig } from "openclaw/plugin-sdk/config-runtime";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/string-coerce-runtime";
+import { requireRuntimeConfig } from "carlito/plugin-sdk/config-runtime";
+import { normalizeOptionalString } from "carlito/plugin-sdk/string-coerce-runtime";
 import type { CoreConfig } from "../../types.js";
 import { formatMatrixEncryptionUnavailableError } from "../encryption-guidance.js";
 import { withResolvedActionClient, withStartedActionClient } from "./client.js";

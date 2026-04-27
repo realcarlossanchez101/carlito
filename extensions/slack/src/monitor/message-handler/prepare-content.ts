@@ -1,6 +1,6 @@
-import { runTasksWithConcurrency } from "openclaw/plugin-sdk/infra-runtime";
-import { logVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+import { runTasksWithConcurrency } from "carlito/plugin-sdk/infra-runtime";
+import { logVerbose } from "carlito/plugin-sdk/runtime-env";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import type { SlackFile, SlackMessageEvent } from "../../types.js";
 import {
   MAX_SLACK_MEDIA_FILES,

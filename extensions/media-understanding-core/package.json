@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/media-understanding-core",
+  "name": "@realcarlossanchez101/media-understanding-core",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw media understanding runtime package",
+  "description": "Carlito media understanding runtime package",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   }
 }

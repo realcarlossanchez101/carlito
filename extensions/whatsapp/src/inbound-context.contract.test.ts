@@ -1,5 +1,5 @@
-import { finalizeInboundContext } from "openclaw/plugin-sdk/reply-runtime";
-import { expectChannelInboundContextContract } from "openclaw/plugin-sdk/testing";
+import { finalizeInboundContext } from "carlito/plugin-sdk/reply-runtime";
+import { expectChannelInboundContextContract } from "carlito/plugin-sdk/testing";
 import { describe, it } from "vitest";
 
 describe("WhatsApp inbound context contract", () => {

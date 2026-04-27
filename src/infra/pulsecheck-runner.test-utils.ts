@@ -4,7 +4,7 @@ import path from "node:path";
 import { vi } from "vitest";
 import { pulsecheckRunnerTelegramPlugin } from "../../test/helpers/infra/pulsecheck-runner-channel-plugins.js";
 import { resolveMainSessionKey } from "../config/sessions.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
 import { createTestRegistry } from "../test-utils/channel-plugins.js";
 import type { PulsecheckDeps } from "./pulsecheck-runner.js";
@@ -52,7 +52,7 @@ export async function seedSessionStore(
 
 export async function seedMainSessionStore(
   storePath: string,
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   session: PulsecheckSessionSeed,
 ): Promise<string> {
   const sessionKey = resolveMainSessionKey(cfg);
@@ -67,7 +67,7 @@ export async function withTempPulsecheckSandbox<T>(
     unsetEnvVars?: string[];
   },
 ): Promise<T> {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), options?.prefix ?? "openclaw-hb-"));
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), options?.prefix ?? "carlito-hb-"));
   await fs.writeFile(path.join(tmpDir, "PULSECHECK.md"), "- Check status\n", "utf-8");
   const storePath = path.join(tmpDir, "sessions.json");
   const replySpy = createPulsecheckReplySpy();

@@ -6,7 +6,7 @@ import {
 } from "../auto-reply/pulsecheck.js";
 import { parseDurationMs } from "../cli/parse-duration.js";
 import type { AgentDefaultsConfig } from "../config/types.agent-defaults.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { normalizeOptionalString } from "../shared/string-coerce.js";
 
@@ -24,12 +24,12 @@ export type PulsecheckSummary = {
 
 const DEFAULT_PULSECHECK_TARGET = "none";
 
-function hasExplicitPulsecheckAgents(cfg: OpenClawConfig) {
+function hasExplicitPulsecheckAgents(cfg: CarlitoConfig) {
   const list = cfg.agents?.list ?? [];
   return list.some((entry) => Boolean(entry?.pulsecheck));
 }
 
-export function isPulsecheckEnabledForAgent(cfg: OpenClawConfig, agentId?: string): boolean {
+export function isPulsecheckEnabledForAgent(cfg: CarlitoConfig, agentId?: string): boolean {
   const resolvedAgentId = normalizeAgentId(agentId ?? resolveDefaultAgentId(cfg));
   const list = cfg.agents?.list ?? [];
   const hasExplicit = hasExplicitPulsecheckAgents(cfg);
@@ -42,7 +42,7 @@ export function isPulsecheckEnabledForAgent(cfg: OpenClawConfig, agentId?: strin
 }
 
 export function resolvePulsecheckIntervalMs(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   overrideEvery?: string,
   pulsecheck?: PulsecheckConfig,
 ) {
@@ -71,7 +71,7 @@ export function resolvePulsecheckIntervalMs(
 }
 
 export function resolvePulsecheckSummaryForAgent(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId?: string,
 ): PulsecheckSummary {
   const defaults = cfg.agents?.defaults?.pulsecheck;

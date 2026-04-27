@@ -1,4 +1,4 @@
-import { normalizeOptionalLowercaseString } from "openclaw/plugin-sdk/text-runtime";
+import { normalizeOptionalLowercaseString } from "carlito/plugin-sdk/text-runtime";
 import { newConnectionId } from "../reconnect.js";
 import {
   DEFAULT_PULSECHECK_ACK_MAX_CHARS,

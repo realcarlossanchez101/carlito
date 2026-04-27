@@ -1,8 +1,8 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/provider-onboard";
+import type { CarlitoConfig } from "carlito/plugin-sdk/provider-onboard";
 
 export const VYDRA_DEFAULT_IMAGE_MODEL_REF = "vydra/grok-imagine";
 
-export function applyVydraConfig(cfg: OpenClawConfig): OpenClawConfig {
+export function applyVydraConfig(cfg: CarlitoConfig): CarlitoConfig {
   if (cfg.agents?.defaults?.imageGenerationModel) {
     return cfg;
   }

@@ -1,6 +1,6 @@
 import path from "node:path";
-import { resolveLivePluginConfigObject } from "openclaw/plugin-sdk/config-runtime";
-import { resolvePreferredOpenClawTmpDir, type OpenClawPluginApi } from "../api.js";
+import { resolveLivePluginConfigObject } from "carlito/plugin-sdk/config-runtime";
+import { resolvePreferredCarlitoTmpDir, type CarlitoPluginApi } from "../api.js";
 import {
   resolveDiffsPluginDefaults,
   resolveDiffsPluginSecurity,
@@ -11,9 +11,9 @@ import { DIFFS_AGENT_GUIDANCE } from "./prompt-guidance.js";
 import { DiffArtifactStore } from "./store.js";
 import { createDiffsTool } from "./tool.js";
 
-export function registerDiffsPlugin(api: OpenClawPluginApi): void {
+export function registerDiffsPlugin(api: CarlitoPluginApi): void {
   const store = new DiffArtifactStore({
-    rootDir: path.join(resolvePreferredOpenClawTmpDir(), "openclaw-diffs"),
+    rootDir: path.join(resolvePreferredCarlitoTmpDir(), "carlito-diffs"),
     logger: api.logger,
   });
   const resolveCurrentPluginConfig = () =>

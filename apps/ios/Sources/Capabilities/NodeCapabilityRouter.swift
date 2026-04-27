@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawKit
+import CarlitoKit
 
 @MainActor
 final class NodeCapabilityRouter {

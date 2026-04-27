@@ -1,12 +1,12 @@
 import { applyPluginAutoEnable } from "../config/plugin-auto-enable.js";
-import type { OpenClawConfig } from "../config/types.js";
+import type { CarlitoConfig } from "../config/types.js";
 import type { RuntimeEnv } from "../runtime.js";
 import {
   type CommandSecretResolutionMode,
   resolveCommandSecretRefsViaGateway,
 } from "./command-secret-gateway.js";
 
-export async function resolveCommandConfigWithSecrets<TConfig extends OpenClawConfig>(params: {
+export async function resolveCommandConfigWithSecrets<TConfig extends CarlitoConfig>(params: {
   config: TConfig;
   commandName: string;
   targetIds: Set<string>;

@@ -1,7 +1,7 @@
 {
-  "name": "@openclaw/codex",
+  "name": "@realcarlossanchez101/codex",
   "version": "2026.4.20",
-  "description": "OpenClaw Codex harness and model provider plugin",
+  "description": "Carlito Codex harness and model provider plugin",
   "type": "module",
   "dependencies": {
     "@mariozechner/pi-coding-agent": "0.70.0",
@@ -10,9 +10,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],

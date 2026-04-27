@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `openclaw configure` (interactive configuration prompts)"
+summary: "CLI reference for `carlito configure` (interactive configuration prompts)"
 read_when:
   - You want to tweak credentials, devices, or agent defaults interactively
 title: "Configure"
 ---
 
-# `openclaw configure`
+# `carlito configure`
 
 Interactive prompt to set up credentials, devices, and agent defaults.
 
@@ -21,10 +21,10 @@ variants (`volcengine-plan/*`, `byteplus-plan/*`). If the preferred-provider
 filter would produce an empty list, configure falls back to the unfiltered
 catalog instead of showing a blank picker.
 
-Tip: `openclaw config` without a subcommand opens the same wizard. Use
-`openclaw config get|set|unset` for non-interactive edits.
+Tip: `carlito config` without a subcommand opens the same wizard. Use
+`carlito config get|set|unset` for non-interactive edits.
 
-For web search, `openclaw configure --section web` lets you choose a provider
+For web search, `carlito configure --section web` lets you choose a provider
 and configure its credentials. Some providers also show provider-specific
 follow-up prompts:
 
@@ -65,8 +65,8 @@ Notes:
 ## Examples
 
 ```bash
-openclaw configure
-openclaw configure --section web
-openclaw configure --section model --section channels
-openclaw configure --section gateway --section daemon
+carlito configure
+carlito configure --section web
+carlito configure --section model --section channels
+carlito configure --section gateway --section daemon
 ```

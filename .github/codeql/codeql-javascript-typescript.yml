@@ -1,4 +1,4 @@
-name: openclaw-codeql-javascript-typescript
+name: carlito-codeql-javascript-typescript
 
 paths:
   - src

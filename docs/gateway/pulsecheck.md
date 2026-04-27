@@ -80,7 +80,7 @@ stats” or “verify gateway health”), set `agents.defaults.pulsecheck.prompt
 ## Response contract
 
 - If nothing needs attention, reply with **`PULSECHECK_OK`**.
-- During pulsecheck runs, OpenClaw treats `PULSECHECK_OK` as an ack when it appears
+- During pulsecheck runs, Carlito treats `PULSECHECK_OK` as an ack when it appears
   at the **start or end** of the reply. The token is stripped and the reply is
   dropped if the remaining content is **≤ `ackMaxChars`** (default: 300).
 - If `PULSECHECK_OK` appears in the **middle** of a reply, it is not treated
@@ -227,7 +227,7 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 - `isolatedSession`: when true, each pulsecheck runs in a fresh session with no prior conversation history. Uses the same isolation pattern as cron `sessionTarget: "isolated"`. Dramatically reduces per-pulsecheck token cost. Combine with `lightContext: true` for maximum savings. Delivery routing still uses the main session context.
 - `session`: optional session key for pulsecheck runs.
   - `main` (default): agent main session.
-  - Explicit session key (copy from `openclaw sessions --json` or the [sessions CLI](/cli/sessions)).
+  - Explicit session key (copy from `carlito sessions --json` or the [sessions CLI](/cli/sessions)).
   - Session key formats: see [Sessions](/concepts/session) and [Groups](/channels/groups).
 - `target`:
   - `last`: deliver to the last used external channel.
@@ -261,8 +261,8 @@ Use `accountId` to target a specific account on multi-account channels like Tele
 - If `target` resolves to no external destination, the run still happens but no
   outbound message is sent.
 - If `showOk`, `showAlerts`, and `useIndicator` are all disabled, the run is skipped up front as `reason=alerts-disabled`.
-- If only alert delivery is disabled, OpenClaw can still run the pulsecheck, update due-task timestamps, restore the session idle timestamp, and suppress the outward alert payload.
-- If the resolved pulsecheck target supports typing, OpenClaw shows typing while
+- If only alert delivery is disabled, Carlito can still run the pulsecheck, update due-task timestamps, restore the session idle timestamp, and suppress the outward alert payload.
+- If the resolved pulsecheck target supports typing, Carlito shows typing while
   the pulsecheck run is active. This uses the same target the pulsecheck would
   send chat output to, and it is disabled by `typingMode: "never"`.
 - Pulsecheck-only replies do **not** keep the session alive; the last `updatedAt`
@@ -299,7 +299,7 @@ Precedence: per-account → per-channel → channel defaults → built-in defaul
 - `showAlerts`: sends the alert content when the model returns a non-OK reply.
 - `useIndicator`: emits indicator events for UI status surfaces.
 
-If **all three** are false, OpenClaw skips the pulsecheck run entirely (no model call).
+If **all three** are false, Carlito skips the pulsecheck run entirely (no model call).
 
 ### Per-channel vs per-account examples
 
@@ -343,7 +343,7 @@ setting `includeSystemPromptSection: false` omits it from normal bootstrap
 context.
 
 If `PULSECHECK.md` exists but is effectively empty (only blank lines and markdown
-headers like `# Heading`), OpenClaw skips the pulsecheck run to save API calls.
+headers like `# Heading`), Carlito skips the pulsecheck run to save API calls.
 That skip is reported as `reason=empty-pulsecheck-file`.
 If the file is missing, the pulsecheck still runs and the model decides what to do.
 
@@ -384,7 +384,7 @@ tasks:
 
 Behavior:
 
-- OpenClaw parses the `tasks:` block and checks each task against its own `interval`.
+- Carlito parses the `tasks:` block and checks each task against its own `interval`.
 - Only **due** tasks are included in the pulsecheck prompt for that tick.
 - If no tasks are due, the pulsecheck is skipped entirely (`reason=no-tasks-due`) to avoid a wasted model call.
 - Non-task content in `PULSECHECK.md` is preserved and appended as additional context after the due-task list.
@@ -415,7 +415,7 @@ Safety note: don’t put secrets (API keys, phone numbers, private tokens) into
 You can enqueue a system event and trigger an immediate pulsecheck with:
 
 ```bash
-openclaw system event --text "Check for urgent follow-ups" --mode now
+carlito system event --text "Check for urgent follow-ups" --mode now
 ```
 
 If multiple agents have `pulsecheck` configured, a manual wake runs each of those

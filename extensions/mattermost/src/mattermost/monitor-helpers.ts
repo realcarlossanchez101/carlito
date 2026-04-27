@@ -1,11 +1,11 @@
-import { rawDataToString } from "openclaw/plugin-sdk/browser-node-runtime";
-import { formatInboundFromLabel as formatInboundFromLabelShared } from "openclaw/plugin-sdk/channel-inbound";
-import { createDedupeCache, type OpenClawConfig } from "openclaw/plugin-sdk/core";
-import { resolveThreadSessionKeys as resolveThreadSessionKeysShared } from "openclaw/plugin-sdk/routing";
+import { rawDataToString } from "carlito/plugin-sdk/browser-node-runtime";
+import { formatInboundFromLabel as formatInboundFromLabelShared } from "carlito/plugin-sdk/channel-inbound";
+import { createDedupeCache, type CarlitoConfig } from "carlito/plugin-sdk/core";
+import { resolveThreadSessionKeys as resolveThreadSessionKeysShared } from "carlito/plugin-sdk/routing";
 import {
   normalizeLowercaseStringOrEmpty,
   normalizeOptionalString,
-} from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/text-runtime";
 
 export { createDedupeCache, rawDataToString };
 
@@ -42,22 +42,22 @@ function normalizeAgentId(value: string | undefined | null): string {
   );
 }
 
-type AgentEntry = NonNullable<NonNullable<OpenClawConfig["agents"]>["list"]>[number];
+type AgentEntry = NonNullable<NonNullable<CarlitoConfig["agents"]>["list"]>[number];
 
 function isAgentEntry(entry: unknown): entry is AgentEntry {
   return Boolean(entry && typeof entry === "object");
 }
 
-function listAgents(cfg: OpenClawConfig): AgentEntry[] {
+function listAgents(cfg: CarlitoConfig): AgentEntry[] {
   return Array.isArray(cfg.agents?.list) ? cfg.agents.list.filter(isAgentEntry) : [];
 }
 
-function resolveAgentEntry(cfg: OpenClawConfig, agentId: string): AgentEntry | undefined {
+function resolveAgentEntry(cfg: CarlitoConfig, agentId: string): AgentEntry | undefined {
   const id = normalizeAgentId(agentId);
   return listAgents(cfg).find((entry) => normalizeAgentId(entry.id) === id);
 }
 
-export function resolveIdentityName(cfg: OpenClawConfig, agentId: string): string | undefined {
+export function resolveIdentityName(cfg: CarlitoConfig, agentId: string): string | undefined {
   const entry = resolveAgentEntry(cfg, agentId);
   return normalizeOptionalString(entry?.identity?.name);
 }

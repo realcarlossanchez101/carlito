@@ -1,6 +1,6 @@
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import type {
   EmbeddedRunAttemptParams,
   EmbeddedRunAttemptResult,
@@ -24,25 +24,25 @@ vi.mock("./builtin-pi.js", () => ({
   }),
 }));
 
-const originalRuntime = process.env.OPENCLAW_AGENT_RUNTIME;
-const originalHarnessFallback = process.env.OPENCLAW_AGENT_HARNESS_FALLBACK;
+const originalRuntime = process.env.CARLITO_AGENT_RUNTIME;
+const originalHarnessFallback = process.env.CARLITO_AGENT_HARNESS_FALLBACK;
 
 afterEach(() => {
   clearAgentHarnesses();
   piRunAttempt.mockClear();
   if (originalRuntime == null) {
-    delete process.env.OPENCLAW_AGENT_RUNTIME;
+    delete process.env.CARLITO_AGENT_RUNTIME;
   } else {
-    process.env.OPENCLAW_AGENT_RUNTIME = originalRuntime;
+    process.env.CARLITO_AGENT_RUNTIME = originalRuntime;
   }
   if (originalHarnessFallback == null) {
-    delete process.env.OPENCLAW_AGENT_HARNESS_FALLBACK;
+    delete process.env.CARLITO_AGENT_HARNESS_FALLBACK;
   } else {
-    process.env.OPENCLAW_AGENT_HARNESS_FALLBACK = originalHarnessFallback;
+    process.env.CARLITO_AGENT_HARNESS_FALLBACK = originalHarnessFallback;
   }
 });
 
-function createAttemptParams(config?: OpenClawConfig): EmbeddedRunAttemptParams {
+function createAttemptParams(config?: CarlitoConfig): EmbeddedRunAttemptParams {
   return {
     prompt: "hello",
     sessionId: "session-1",
@@ -101,7 +101,7 @@ function registerFailingCodexHarness(): void {
 
 describe("runAgentHarnessAttemptWithFallback", () => {
   it("falls back to the PI harness when a forced plugin harness is unavailable", async () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "codex";
+    process.env.CARLITO_AGENT_RUNTIME = "codex";
 
     const result = await runAgentHarnessAttemptWithFallback(createAttemptParams());
 
@@ -110,7 +110,7 @@ describe("runAgentHarnessAttemptWithFallback", () => {
   });
 
   it("falls back to the PI harness in auto mode when no plugin harness matches", async () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "auto";
+    process.env.CARLITO_AGENT_RUNTIME = "auto";
 
     const result = await runAgentHarnessAttemptWithFallback(createAttemptParams());
 
@@ -119,7 +119,7 @@ describe("runAgentHarnessAttemptWithFallback", () => {
   });
 
   it("surfaces an auto-selected plugin harness failure instead of replaying through PI", async () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "auto";
+    process.env.CARLITO_AGENT_RUNTIME = "auto";
     registerFailingCodexHarness();
 
     await expect(runAgentHarnessAttemptWithFallback(createAttemptParams())).rejects.toThrow(
@@ -129,7 +129,7 @@ describe("runAgentHarnessAttemptWithFallback", () => {
   });
 
   it("surfaces a forced plugin harness failure instead of replaying through PI", async () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "codex";
+    process.env.CARLITO_AGENT_RUNTIME = "codex";
     registerFailingCodexHarness();
 
     await expect(runAgentHarnessAttemptWithFallback(createAttemptParams())).rejects.toThrow(
@@ -139,8 +139,8 @@ describe("runAgentHarnessAttemptWithFallback", () => {
   });
 
   it("honors env fallback override over config fallback", async () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "auto";
-    process.env.OPENCLAW_AGENT_HARNESS_FALLBACK = "none";
+    process.env.CARLITO_AGENT_RUNTIME = "auto";
+    process.env.CARLITO_AGENT_HARNESS_FALLBACK = "none";
 
     await expect(
       runAgentHarnessAttemptWithFallback(
@@ -153,7 +153,7 @@ describe("runAgentHarnessAttemptWithFallback", () => {
 
 describe("selectAgentHarness", () => {
   it("auto-selects the highest-priority plugin harness without duplicate support probes", () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "auto";
+    process.env.CARLITO_AGENT_RUNTIME = "auto";
     const lowPrioritySupports = vi.fn(() => ({
       supported: true as const,
       priority: 10,
@@ -238,7 +238,7 @@ describe("selectAgentHarness", () => {
   });
 
   it("allows per-agent embedded harness policy overrides", () => {
-    const config: OpenClawConfig = {
+    const config: CarlitoConfig = {
       agents: {
         defaults: { embeddedHarness: { fallback: "pi" } },
         list: [
@@ -275,7 +275,7 @@ describe("selectAgentHarness", () => {
   });
 
   it("keeps an existing session pinned to its plugin harness even when env now forces PI", () => {
-    process.env.OPENCLAW_AGENT_RUNTIME = "pi";
+    process.env.CARLITO_AGENT_RUNTIME = "pi";
     registerFailingCodexHarness();
 
     expect(

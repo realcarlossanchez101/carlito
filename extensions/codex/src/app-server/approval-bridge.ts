@@ -1,7 +1,7 @@
 import {
   type AgentApprovalEventData,
   type EmbeddedRunAttemptParams,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
 import {
   mapExecDecisionToOutcome,
   requestPluginApproval,
@@ -251,7 +251,7 @@ function requestedPermissions(requestParams: JsonObject | undefined): JsonObject
 function unsupportedApprovalResponse(): JsonValue {
   return {
     decision: "decline",
-    reason: "OpenClaw codex app-server bridge does not grant native approvals yet.",
+    reason: "Carlito codex app-server bridge does not grant native approvals yet.",
   };
 }
 

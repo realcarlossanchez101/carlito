@@ -1,19 +1,19 @@
 ---
-summary: "CLI reference for `openclaw config` (get/set/unset/file/schema/validate)"
+summary: "CLI reference for `carlito config` (get/set/unset/file/schema/validate)"
 read_when:
   - You want to read or edit config non-interactively
 title: "Config"
 ---
 
-# `openclaw config`
+# `carlito config`
 
-Config helpers for non-interactive edits in `openclaw.json`: get/set/unset/file/schema/validate
+Config helpers for non-interactive edits in `carlito.json`: get/set/unset/file/schema/validate
 values by path and print the active config file. Run without a subcommand to
-open the configure wizard (same as `openclaw configure`).
+open the configure wizard (same as `carlito configure`).
 
 Root options:
 
-- `--section <section>`: repeatable guided-setup section filter when you run `openclaw config` without a subcommand
+- `--section <section>`: repeatable guided-setup section filter when you run `carlito config` without a subcommand
 
 Supported guided sections:
 
@@ -30,26 +30,26 @@ Supported guided sections:
 ## Examples
 
 ```bash
-openclaw config file
-openclaw config --section model
-openclaw config --section gateway --section daemon
-openclaw config schema
-openclaw config get browser.executablePath
-openclaw config set browser.executablePath "/usr/bin/google-chrome"
-openclaw config set agents.defaults.pulsecheck.every "2h"
-openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
-openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
-openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
-openclaw config set secrets.providers.vaultfile --provider-source file --provider-path /etc/openclaw/secrets.json --provider-mode json
-openclaw config unset plugins.entries.brave.config.webSearch.apiKey
-openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN --dry-run
-openclaw config validate
-openclaw config validate --json
+carlito config file
+carlito config --section model
+carlito config --section gateway --section daemon
+carlito config schema
+carlito config get browser.executablePath
+carlito config set browser.executablePath "/usr/bin/google-chrome"
+carlito config set agents.defaults.pulsecheck.every "2h"
+carlito config set agents.list[0].tools.exec.node "node-id-or-name"
+carlito config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
+carlito config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
+carlito config set secrets.providers.vaultfile --provider-source file --provider-path /etc/carlito/secrets.json --provider-mode json
+carlito config unset plugins.entries.brave.config.webSearch.apiKey
+carlito config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN --dry-run
+carlito config validate
+carlito config validate --json
 ```
 
 ### `config schema`
 
-Print the generated JSON schema for `openclaw.json` to stdout as JSON.
+Print the generated JSON schema for `carlito.json` to stdout as JSON.
 
 What it includes:
 
@@ -68,13 +68,13 @@ Related runtime RPC:
   path-scoped drill-down in Control UI or custom clients.
 
 ```bash
-openclaw config schema
+carlito config schema
 ```
 
 Pipe it into a file when you want to inspect or validate it with other tools:
 
 ```bash
-openclaw config schema > openclaw.schema.json
+carlito config schema > carlito.schema.json
 ```
 
 ### Paths
@@ -82,15 +82,15 @@ openclaw config schema > openclaw.schema.json
 Paths use dot or bracket notation:
 
 ```bash
-openclaw config get agents.defaults.workspace
-openclaw config get agents.list[0].id
+carlito config get agents.defaults.workspace
+carlito config get agents.list[0].id
 ```
 
 Use the agent list index to target a specific agent:
 
 ```bash
-openclaw config get agents.list
-openclaw config set agents.list[1].tools.exec.node "node-id-or-name"
+carlito config get agents.list
+carlito config set agents.list[1].tools.exec.node "node-id-or-name"
 ```
 
 ## Values
@@ -99,9 +99,9 @@ Values are parsed as JSON5 when possible; otherwise they are treated as strings.
 Use `--strict-json` to require JSON5 parsing. `--json` remains supported as a legacy alias.
 
 ```bash
-openclaw config set agents.defaults.pulsecheck.every "0m"
-openclaw config set gateway.port 19001 --strict-json
-openclaw config set channels.whatsapp.groups '["*"]' --strict-json
+carlito config set agents.defaults.pulsecheck.every "0m"
+carlito config set gateway.port 19001 --strict-json
+carlito config set channels.whatsapp.groups '["*"]' --strict-json
 ```
 
 `config get <path> --json` prints the raw value as JSON instead of terminal-formatted text.
@@ -115,8 +115,8 @@ you pass `--replace`.
 Use `--merge` when adding entries to those maps:
 
 ```bash
-openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
-openclaw config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
+carlito config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
+carlito config set models.providers.ollama.models '[{"id":"llama3.2","name":"Llama 3.2"}]' --strict-json --merge
 ```
 
 Use `--replace` only when you intentionally want the provided value to become
@@ -124,13 +124,13 @@ the complete target value.
 
 ## `config set` modes
 
-`openclaw config set` supports four assignment styles:
+`carlito config set` supports four assignment styles:
 
-1. Value mode: `openclaw config set <path> <value>`
+1. Value mode: `carlito config set <path> <value>`
 2. SecretRef builder mode:
 
 ```bash
-openclaw config set channels.discord.token \
+carlito config set channels.discord.token \
   --ref-provider default \
   --ref-source env \
   --ref-id DISCORD_BOT_TOKEN
@@ -139,9 +139,9 @@ openclaw config set channels.discord.token \
 3. Provider builder mode (`secrets.providers.<alias>` path only):
 
 ```bash
-openclaw config set secrets.providers.vault \
+carlito config set secrets.providers.vault \
   --provider-source exec \
-  --provider-command /usr/local/bin/openclaw-vault \
+  --provider-command /usr/local/bin/carlito-vault \
   --provider-arg read \
   --provider-arg openai/api-key \
   --provider-timeout-ms 5000
@@ -150,7 +150,7 @@ openclaw config set secrets.providers.vault \
 4. Batch mode (`--batch-json` or `--batch-file`):
 
 ```bash
-openclaw config set --batch-json '[
+carlito config set --batch-json '[
   {
     "path": "secrets.providers.default",
     "provider": { "source": "env" }
@@ -163,7 +163,7 @@ openclaw config set --batch-json '[
 ```
 
 ```bash
-openclaw config set --batch-file ./config-set.batch.json --dry-run
+carlito config set --batch-file ./config-set.batch.json --dry-run
 ```
 
 Policy note:
@@ -176,12 +176,12 @@ Batch parsing always uses the batch payload (`--batch-json`/`--batch-file`) as t
 JSON path/value mode remains supported for both SecretRefs and providers:
 
 ```bash
-openclaw config set channels.discord.token \
+carlito config set channels.discord.token \
   '{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}' \
   --strict-json
 
-openclaw config set secrets.providers.vaultfile \
-  '{"source":"file","path":"/etc/openclaw/secrets.json","mode":"json"}' \
+carlito config set secrets.providers.vaultfile \
+  '{"source":"file","path":"/etc/carlito/secrets.json","mode":"json"}' \
   --strict-json
 ```
 
@@ -221,9 +221,9 @@ Exec provider (`--provider-source exec`):
 Hardened exec provider example:
 
 ```bash
-openclaw config set secrets.providers.vault \
+carlito config set secrets.providers.vault \
   --provider-source exec \
-  --provider-command /usr/local/bin/openclaw-vault \
+  --provider-command /usr/local/bin/carlito-vault \
   --provider-arg read \
   --provider-arg openai/api-key \
   --provider-json-only \
@@ -234,23 +234,23 @@ openclaw config set secrets.providers.vault \
 
 ## Dry run
 
-Use `--dry-run` to validate changes without writing `openclaw.json`.
+Use `--dry-run` to validate changes without writing `carlito.json`.
 
 ```bash
-openclaw config set channels.discord.token \
+carlito config set channels.discord.token \
   --ref-provider default \
   --ref-source env \
   --ref-id DISCORD_BOT_TOKEN \
   --dry-run
 
-openclaw config set channels.discord.token \
+carlito config set channels.discord.token \
   --ref-provider default \
   --ref-source env \
   --ref-id DISCORD_BOT_TOKEN \
   --dry-run \
   --json
 
-openclaw config set channels.discord.token \
+carlito config set channels.discord.token \
   --ref-provider vault \
   --ref-source exec \
   --ref-id discord/token \
@@ -309,7 +309,7 @@ Success example:
 {
   "ok": true,
   "operations": 1,
-  "configPath": "~/.openclaw/openclaw.json",
+  "configPath": "~/.carlito/carlito.json",
   "inputModes": ["builder"],
   "checks": {
     "schema": false,
@@ -327,7 +327,7 @@ Failure example:
 {
   "ok": false,
   "operations": 1,
-  "configPath": "~/.openclaw/openclaw.json",
+  "configPath": "~/.carlito/carlito.json",
   "inputModes": ["builder"],
   "checks": {
     "schema": false,
@@ -356,28 +356,28 @@ If dry-run fails:
 
 ## Write safety
 
-`openclaw config set` and other OpenClaw-owned config writers validate the full
+`carlito config set` and other Carlito-owned config writers validate the full
 post-change config before committing it to disk. If the new payload fails schema
 validation or looks like a destructive clobber, the active config is left alone
-and the rejected payload is saved beside it as `openclaw.json.rejected.*`.
-The active config path must be a regular file. Symlinked `openclaw.json`
-layouts are unsupported for writes; use `OPENCLAW_CONFIG_PATH` to point directly
+and the rejected payload is saved beside it as `carlito.json.rejected.*`.
+The active config path must be a regular file. Symlinked `carlito.json`
+layouts are unsupported for writes; use `CARLITO_CONFIG_PATH` to point directly
 at the real file instead.
 
 Prefer CLI writes for small edits:
 
 ```bash
-openclaw config set gateway.reload.mode hybrid --dry-run
-openclaw config set gateway.reload.mode hybrid
-openclaw config validate
+carlito config set gateway.reload.mode hybrid --dry-run
+carlito config set gateway.reload.mode hybrid
+carlito config validate
 ```
 
 If a write is rejected, inspect the saved payload and fix the full config shape:
 
 ```bash
-CONFIG="$(openclaw config file)"
+CONFIG="$(carlito config file)"
 ls -lt "$CONFIG".rejected.* 2>/dev/null | head
-openclaw config validate
+carlito config validate
 ```
 
 Direct editor writes are still allowed, but the running Gateway treats them as
@@ -387,7 +387,7 @@ last-known-good backup during startup or hot reload. See
 
 ## Subcommands
 
-- `config file`: Print the active config file path (resolved from `OPENCLAW_CONFIG_PATH` or default location). The path should name a regular file, not a symlink.
+- `config file`: Print the active config file path (resolved from `CARLITO_CONFIG_PATH` or default location). The path should name a regular file, not a symlink.
 
 Restart the gateway after edits.
 
@@ -397,34 +397,34 @@ Validate the current config against the active schema without starting the
 gateway.
 
 ```bash
-openclaw config validate
-openclaw config validate --json
+carlito config validate
+carlito config validate --json
 ```
 
-After `openclaw config validate` is passing, you can use the local TUI to have
+After `carlito config validate` is passing, you can use the local TUI to have
 an embedded agent compare the active config against the docs while you validate
 each change from the same terminal:
 
-If validation is already failing, start with `openclaw configure` or
-`openclaw doctor --fix`. `openclaw chat` does not bypass the invalid-config
+If validation is already failing, start with `carlito configure` or
+`carlito doctor --fix`. `carlito chat` does not bypass the invalid-config
 guard.
 
 ```bash
-openclaw chat
+carlito chat
 ```
 
 Then inside the TUI:
 
 ```text
-!openclaw config file
-!openclaw docs gateway auth token secretref
-!openclaw config validate
-!openclaw doctor
+!carlito config file
+!carlito docs gateway auth token secretref
+!carlito config validate
+!carlito doctor
 ```
 
 Typical repair loop:
 
 - Ask the agent to compare your current config with the relevant docs page and suggest the smallest fix.
-- Apply targeted edits with `openclaw config set` or `openclaw configure`.
-- Rerun `openclaw config validate` after each change.
-- If validation passes but the runtime is still unhealthy, run `openclaw doctor` or `openclaw doctor --fix` for migration and repair help.
+- Apply targeted edits with `carlito config set` or `carlito configure`.
+- Rerun `carlito config validate` after each change.
+- If validation passes but the runtime is still unhealthy, run `carlito doctor` or `carlito doctor --fix` for migration and repair help.

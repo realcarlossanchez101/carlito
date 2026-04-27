@@ -1,4 +1,4 @@
-import { resolveInboundMentionDecision } from "openclaw/plugin-sdk/channel-inbound";
+import { resolveInboundMentionDecision } from "carlito/plugin-sdk/channel-inbound";
 import {
   buildPendingHistoryContextFromMap,
   clearHistoryEntriesIfEnabled,

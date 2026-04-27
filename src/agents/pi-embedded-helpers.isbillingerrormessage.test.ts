@@ -32,7 +32,7 @@ const ANTHROPIC_OVERLOADED_PAYLOAD =
 // OpenRouter 402 billing example: https://openrouter.ai/docs/api-reference/errors
 const OPENROUTER_CREDITS_MESSAGE = "Payment Required: insufficient credits";
 // Issue-backed Anthropic/OpenAI-compatible insufficient_quota payload under HTTP 400:
-// https://github.com/openclaw/openclaw/issues/23440
+// https://github.com/realcarlossanchez101/carlito/issues/23440
 const INSUFFICIENT_QUOTA_PAYLOAD =
   '{"type":"error","error":{"type":"insufficient_quota","message":"Your account has insufficient quota balance to run this request."}}'; // pragma: allowlist secret
 // Together AI error code examples: https://docs.together.ai/docs/error-codes
@@ -1022,7 +1022,7 @@ describe("classifyFailoverReason", () => {
     expect(classifyFailoverReason("no api key found")).toBe("auth");
     expect(
       classifyFailoverReason(
-        'No API key found for provider "openai". Auth store: /tmp/openclaw-agent-abc/auth-profiles.json (agentDir: /tmp/openclaw-agent-abc).',
+        'No API key found for provider "openai". Auth store: /tmp/carlito-agent-abc/auth-profiles.json (agentDir: /tmp/carlito-agent-abc).',
       ),
     ).toBe("auth");
     expect(classifyFailoverReason("You have insufficient permissions for this operation.")).toBe(
@@ -1277,7 +1277,7 @@ describe("classifyProviderRuntimeFailureKind", () => {
       ),
     ).toBe("refresh_timeout");
     expect(
-      classifyProviderRuntimeFailureKind("file lock timeout for /tmp/openclaw-oauth-refresh.lock"),
+      classifyProviderRuntimeFailureKind("file lock timeout for /tmp/carlito-oauth-refresh.lock"),
     ).toBe("refresh_contention");
     expect(
       classifyProviderRuntimeFailureKind({

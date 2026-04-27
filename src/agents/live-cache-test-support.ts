@@ -1,17 +1,17 @@
 import { completeSimple, type Api, type AssistantMessage, type Model } from "@mariozechner/pi-ai";
 import { loadConfig } from "../config/config.js";
 import { isTruthyEnvValue } from "../infra/env.js";
-import { resolveOpenClawAgentDir } from "./agent-paths.js";
+import { resolveCarlitoAgentDir } from "./agent-paths.js";
 import { collectProviderApiKeys } from "./live-auth-keys.js";
 import { isLiveTestEnabled } from "./live-test-helpers.js";
 import { getApiKeyForModel, requireApiKey } from "./model-auth.js";
 import { normalizeProviderId, parseModelRef } from "./model-selection.js";
-import { ensureOpenClawModelsJson } from "./models-config.js";
+import { ensureCarlitoModelsJson } from "./models-config.js";
 import { discoverAuthStorage, discoverModels } from "./pi-model-discovery.js";
 import { buildAssistantMessageWithZeroUsage } from "./stream-message-shared.js";
 
 export const LIVE_CACHE_TEST_ENABLED =
-  isLiveTestEnabled() && isTruthyEnvValue(process.env.OPENCLAW_LIVE_CACHE_TEST);
+  isLiveTestEnabled() && isTruthyEnvValue(process.env.CARLITO_LIVE_CACHE_TEST);
 
 const DEFAULT_PULSECHECK_MS = 20_000;
 const DEFAULT_TIMEOUT_MS = 90_000;
@@ -40,7 +40,7 @@ export async function withLiveCachePulsecheck<T>(
 ): Promise<T> {
   const pulsecheckMs = Math.max(
     1_000,
-    toInt(process.env.OPENCLAW_LIVE_PULSECHECK_MS, DEFAULT_PULSECHECK_MS),
+    toInt(process.env.CARLITO_LIVE_PULSECHECK_MS, DEFAULT_PULSECHECK_MS),
   );
   const startedAt = Date.now();
   let pulsecheckCount = 0;
@@ -68,10 +68,7 @@ export async function completeSimpleWithLiveTimeout<TApi extends Api>(
   context: Parameters<typeof completeSimple<TApi>>[1],
   options: Parameters<typeof completeSimple<TApi>>[2],
   progressContext: string,
-  timeoutMs = Math.max(
-    1_000,
-    toInt(process.env.OPENCLAW_LIVE_MODEL_TIMEOUT_MS, DEFAULT_TIMEOUT_MS),
-  ),
+  timeoutMs = Math.max(1_000, toInt(process.env.CARLITO_LIVE_MODEL_TIMEOUT_MS, DEFAULT_TIMEOUT_MS)),
 ): Promise<AssistantMessage> {
   const controller = new AbortController();
   const abortTimer = setTimeout(() => controller.abort(), timeoutMs);
@@ -162,8 +159,8 @@ export async function resolveLiveDirectModel(params: {
   preferredModelIds: readonly string[];
 }): Promise<LiveResolvedModel> {
   const cfg = loadConfig();
-  await ensureOpenClawModelsJson(cfg);
-  const agentDir = resolveOpenClawAgentDir();
+  await ensureCarlitoModelsJson(cfg);
+  const agentDir = resolveCarlitoAgentDir();
   const authStorage = discoverAuthStorage(agentDir);
   const models = discoverModels(authStorage, agentDir).getAll();
 

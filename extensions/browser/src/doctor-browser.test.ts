@@ -8,7 +8,7 @@ describe("browser doctor readiness", () => {
       {
         browser: {
           profiles: {
-            openclaw: { color: "#FF4500" },
+            carlito: { color: "#FF4500" },
           },
         },
       },

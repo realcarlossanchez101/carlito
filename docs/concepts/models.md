@@ -13,7 +13,7 @@ Quick provider overview + examples: [/concepts/model-providers](/concepts/model-
 
 ## How model selection works
 
-OpenClaw selects models in this order:
+Carlito selects models in this order:
 
 1. **Primary** model (`agents.defaults.model.primary` or `agents.defaults.model`).
 2. **Fallbacks** in `agents.defaults.model.fallbacks` (in order).
@@ -22,7 +22,7 @@ OpenClaw selects models in this order:
 
 Related:
 
-- `agents.defaults.models` is the allowlist/catalog of models OpenClaw can use (plus aliases).
+- `agents.defaults.models` is the allowlist/catalog of models Carlito can use (plus aliases).
 - `agents.defaults.imageModel` is used **only when** the primary model can’t accept images.
 - `agents.defaults.pdfModel` is used by the `pdf` tool. If omitted, the tool
   falls back to `agents.defaults.imageModel`, then the resolved session/default
@@ -43,7 +43,7 @@ Related:
 If you don’t want to hand-edit config, run onboarding:
 
 ```bash
-openclaw onboard
+carlito onboard
 ```
 
 It can set up model + auth for common providers, including **OpenAI Code (Codex)
@@ -70,16 +70,16 @@ Provider configuration examples (including OpenCode) live in
 Use additive writes when updating `agents.defaults.models` by hand:
 
 ```bash
-openclaw config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
+carlito config set agents.defaults.models '{"openai/gpt-5.4":{}}' --strict-json --merge
 ```
 
-`openclaw config set` protects model/provider maps from accidental clobbers. A
+`carlito config set` protects model/provider maps from accidental clobbers. A
 plain object assignment to `agents.defaults.models`, `models.providers`, or
 `models.providers.<id>.models` is rejected when it would remove existing
 entries. Use `--merge` for additive changes; use `--replace` only when the
 provided value should become the complete target value.
 
-Interactive provider setup and `openclaw configure --section model` also merge
+Interactive provider setup and `carlito configure --section model` also merge
 provider-scoped selections into the existing allowlist, so adding Codex,
 Ollama, or another provider does not drop unrelated model entries.
 
@@ -87,7 +87,7 @@ Ollama, or another provider does not drop unrelated model entries.
 
 If `agents.defaults.models` is set, it becomes the **allowlist** for `/model` and for
 session overrides. When a user selects a model that isn’t in that allowlist,
-OpenClaw returns:
+Carlito returns:
 
 ```
 Model "provider/model" is not allowed. Use /model to list available models.
@@ -136,16 +136,16 @@ Notes:
 - `/model <#>` selects from that picker.
 - `/model` persists the new session selection immediately.
 - If the agent is idle, the next run uses the new model right away.
-- If a run is already active, OpenClaw marks a live switch as pending and only restarts into the new model at a clean retry point.
+- If a run is already active, Carlito marks a live switch as pending and only restarts into the new model at a clean retry point.
 - If tool activity or reply output has already started, the pending switch can stay queued until a later retry opportunity or the next user turn.
 - `/model status` is the detailed view (auth candidates and, when configured, provider endpoint `baseUrl` + `api` mode).
 - Model refs are parsed by splitting on the **first** `/`. Use `provider/model` when typing `/model <ref>`.
 - If the model ID itself contains `/` (OpenRouter-style), you must include the provider prefix (example: `/model openrouter/moonshotai/kimi-k2`).
-- If you omit the provider, OpenClaw resolves the input in this order:
+- If you omit the provider, Carlito resolves the input in this order:
   1. alias match
   2. unique configured-provider match for that exact unprefixed model id
   3. deprecated fallback to the configured default provider
-     If that provider no longer exposes the configured default model, OpenClaw
+     If that provider no longer exposes the configured default model, Carlito
      instead falls back to the first configured provider/model to avoid
      surfacing a stale removed-provider default.
 
@@ -162,27 +162,27 @@ Examples:
 ## CLI commands
 
 ```bash
-openclaw models list
-openclaw models status
-openclaw models set <provider/model>
-openclaw models set-image <provider/model>
+carlito models list
+carlito models status
+carlito models set <provider/model>
+carlito models set-image <provider/model>
 
-openclaw models aliases list
-openclaw models aliases add <alias> <provider/model>
-openclaw models aliases remove <alias>
+carlito models aliases list
+carlito models aliases add <alias> <provider/model>
+carlito models aliases remove <alias>
 
-openclaw models fallbacks list
-openclaw models fallbacks add <provider/model>
-openclaw models fallbacks remove <provider/model>
-openclaw models fallbacks clear
+carlito models fallbacks list
+carlito models fallbacks add <provider/model>
+carlito models fallbacks remove <provider/model>
+carlito models fallbacks clear
 
-openclaw models image-fallbacks list
-openclaw models image-fallbacks add <provider/model>
-openclaw models image-fallbacks remove <provider/model>
-openclaw models image-fallbacks clear
+carlito models image-fallbacks list
+carlito models image-fallbacks add <provider/model>
+carlito models image-fallbacks remove <provider/model>
+carlito models image-fallbacks clear
 ```
 
-`openclaw models` (no subcommand) is a shortcut for `models status`.
+`carlito models` (no subcommand) is a shortcut for `models status`.
 
 ### `models list`
 
@@ -225,12 +225,12 @@ Example (Claude CLI):
 
 ```bash
 claude auth login
-openclaw models status
+carlito models status
 ```
 
 ## Scanning (OpenRouter free models)
 
-`openclaw models scan` inspects OpenRouter’s **free model catalog** and can
+`carlito models scan` inspects OpenRouter’s **free model catalog** and can
 optionally probe models for tool and image support.
 
 Key flags:
@@ -266,7 +266,7 @@ mode, pass `--yes` to accept defaults.
 ## Models registry (`models.json`)
 
 Custom providers in `models.providers` are written into `models.json` under the
-agent directory (default `~/.openclaw/agents/<agentId>/agent/models.json`). This file
+agent directory (default `~/.carlito/agents/<agentId>/agent/models.json`). This file
 is merged by default unless `models.mode` is set to `replace`.
 
 Merge mode precedence for matching provider IDs:
@@ -278,8 +278,8 @@ Merge mode precedence for matching provider IDs:
 - Empty or missing agent `apiKey`/`baseUrl` fall back to config `models.providers`.
 - Other provider fields are refreshed from config and normalized catalog data.
 
-Marker persistence is source-authoritative: OpenClaw writes markers from the active source config snapshot (pre-resolution), not from resolved runtime secret values.
-This applies whenever OpenClaw regenerates `models.json`, including command-driven paths like `openclaw agent`.
+Marker persistence is source-authoritative: Carlito writes markers from the active source config snapshot (pre-resolution), not from resolved runtime secret values.
+This applies whenever Carlito regenerates `models.json`, including command-driven paths like `carlito agent`.
 
 ## Related
 

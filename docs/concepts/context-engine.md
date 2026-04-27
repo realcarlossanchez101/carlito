@@ -1,17 +1,17 @@
 ---
 summary: "Context engine: pluggable context assembly, compaction, and subagent lifecycle"
 read_when:
-  - You want to understand how OpenClaw assembles model context
+  - You want to understand how Carlito assembles model context
   - You are switching between the legacy engine and a plugin engine
   - You are building a context engine plugin
 title: "Context engine"
 ---
 
-A **context engine** controls how OpenClaw builds model context for each run:
+A **context engine** controls how Carlito builds model context for each run:
 which messages to include, how to summarize older history, and how to manage
 context across subagent boundaries.
 
-OpenClaw ships with a built-in `legacy` engine and uses it by default — most
+Carlito ships with a built-in `legacy` engine and uses it by default — most
 users never need to change this. Install and select a plugin engine only when
 you want different assembly, compaction, or cross-session recall behavior.
 
@@ -20,28 +20,28 @@ you want different assembly, compaction, or cross-session recall behavior.
 Check which engine is active:
 
 ```bash
-openclaw doctor
+carlito doctor
 # or inspect config directly:
-cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
+cat ~/.carlito/carlito.json | jq '.plugins.slots.contextEngine'
 ```
 
 ### Installing a context engine plugin
 
-Context engine plugins are installed like any other OpenClaw plugin. Install
+Context engine plugins are installed like any other Carlito plugin. Install
 first, then select the engine in the slot:
 
 ```bash
 # Install from npm
-openclaw plugins install @martian-engineering/lossless-claw
+carlito plugins install @martian-engineering/lossless-claw
 
 # Or install from a local path (for development)
-openclaw plugins install -l ./my-context-engine
+carlito plugins install -l ./my-context-engine
 ```
 
 Then enable the plugin and select it as the active engine in your config:
 
 ```json5
-// openclaw.json
+// carlito.json
 {
   plugins: {
     slots: {
@@ -64,7 +64,7 @@ remove the key entirely — `"legacy"` is the default).
 
 ## How it works
 
-Every time OpenClaw runs a model prompt, the context engine participates at
+Every time Carlito runs a model prompt, the context engine participates at
 four lifecycle points:
 
 1. **Ingest** — called when a new message is added to the session. The engine
@@ -79,25 +79,25 @@ four lifecycle points:
 
 ### Subagent lifecycle (optional)
 
-OpenClaw calls two optional subagent lifecycle hooks:
+Carlito calls two optional subagent lifecycle hooks:
 
 - **prepareSubagentSpawn** — prepare shared context state before a child run
   starts. The hook receives parent/child session keys, `contextMode`
   (`isolated` or `fork`), available transcript ids/files, and optional TTL.
-  If it returns a rollback handle, OpenClaw calls it when spawn fails after
+  If it returns a rollback handle, Carlito calls it when spawn fails after
   preparation succeeds.
 - **onSubagentEnded** — clean up when a subagent session completes or is swept.
 
 ### System prompt addition
 
-The `assemble` method can return a `systemPromptAddition` string. OpenClaw
+The `assemble` method can return a `systemPromptAddition` string. Carlito
 prepends this to the system prompt for the run. This lets engines inject
 dynamic recall guidance, retrieval instructions, or context-aware hints
 without requiring static workspace files.
 
 ## The legacy engine
 
-The built-in `legacy` engine preserves OpenClaw's original behavior:
+The built-in `legacy` engine preserves Carlito's original behavior:
 
 - **Ingest**: no-op (the session manager handles message persistence directly).
 - **Assemble**: pass-through (the existing sanitize → validate → limit pipeline
@@ -116,7 +116,7 @@ engine is used automatically.
 A plugin can register a context engine using the plugin API:
 
 ```ts
-import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
+import { buildMemorySystemPromptAddition } from "carlito/plugin-sdk/core";
 
 export default function register(api) {
   api.registerContextEngine("my-engine", () => ({
@@ -183,7 +183,7 @@ Required members:
 
 - `messages` — the ordered messages to send to the model.
 - `estimatedTokens` (required, `number`) — the engine's estimate of total
-  tokens in the assembled context. OpenClaw uses this for compaction threshold
+  tokens in the assembled context. Carlito uses this for compaction threshold
   decisions and diagnostic reporting.
 - `systemPromptAddition` (optional, `string`) — prepended to the system prompt.
 
@@ -203,7 +203,7 @@ Optional members:
 `ownsCompaction` controls whether Pi's built-in in-attempt auto-compaction stays
 enabled for the run:
 
-- `true` — the engine owns compaction behavior. OpenClaw disables Pi's built-in
+- `true` — the engine owns compaction behavior. Carlito disables Pi's built-in
   auto-compaction for that run, and the engine's `compact()` implementation is
   responsible for `/compact`, overflow recovery compaction, and any proactive
   compaction it wants to do in `afterTurn()`.
@@ -211,7 +211,7 @@ enabled for the run:
   execution, but the active engine's `compact()` method is still called for
   `/compact` and overflow recovery.
 
-`ownsCompaction: false` does **not** mean OpenClaw automatically falls back to
+`ownsCompaction: false` does **not** mean Carlito automatically falls back to
 the legacy engine's compaction path.
 
 That means there are two valid plugin patterns:
@@ -219,8 +219,8 @@ That means there are two valid plugin patterns:
 - **Owning mode** — implement your own compaction algorithm and set
   `ownsCompaction: true`.
 - **Delegating mode** — set `ownsCompaction: false` and have `compact()` call
-  `delegateCompactionToRuntime(...)` from `openclaw/plugin-sdk/core` to use
-  OpenClaw's built-in compaction behavior.
+  `delegateCompactionToRuntime(...)` from `carlito/plugin-sdk/core` to use
+  Carlito's built-in compaction behavior.
 
 A no-op `compact()` is unsafe for an active non-owning engine because it
 disables the normal `/compact` and overflow-recovery compaction path for that
@@ -244,36 +244,36 @@ The slot is exclusive at run time — only one registered context engine is
 resolved for a given run or compaction operation. Other enabled
 `kind: "context-engine"` plugins can still load and run their registration
 code; `plugins.slots.contextEngine` only selects which registered engine id
-OpenClaw resolves when it needs a context engine.
+Carlito resolves when it needs a context engine.
 
 ## Relationship to compaction and memory
 
 - **Compaction** is one responsibility of the context engine. The legacy engine
-  delegates to OpenClaw's built-in summarization. Plugin engines can implement
+  delegates to Carlito's built-in summarization. Plugin engines can implement
   any compaction strategy (DAG summaries, vector retrieval, etc.).
 - **Memory plugins** (`plugins.slots.memory`) are separate from context engines.
   Memory plugins provide search/retrieval; context engines control what the
   model sees. They can work together — a context engine might use memory
   plugin data during assembly. Plugin engines that want the active memory
   prompt path should prefer `buildMemorySystemPromptAddition(...)` from
-  `openclaw/plugin-sdk/core`, which converts the active memory prompt sections
+  `carlito/plugin-sdk/core`, which converts the active memory prompt sections
   into a ready-to-prepend `systemPromptAddition`. If an engine needs lower-level
   control, it can still pull raw lines from
-  `openclaw/plugin-sdk/memory-host-core` via
+  `carlito/plugin-sdk/memory-host-core` via
   `buildActiveMemoryPromptSection(...)`.
 - **Session pruning** (trimming old tool results in-memory) still runs
   regardless of which context engine is active.
 
 ## Tips
 
-- Use `openclaw doctor` to verify your engine is loading correctly.
+- Use `carlito doctor` to verify your engine is loading correctly.
 - If switching engines, existing sessions continue with their current history.
   The new engine takes over for future runs.
 - Engine errors are logged and surfaced in diagnostics. If a plugin engine
-  fails to register or the selected engine id cannot be resolved, OpenClaw
+  fails to register or the selected engine id cannot be resolved, Carlito
   does not fall back automatically; runs fail until you fix the plugin or
   switch `plugins.slots.contextEngine` back to `"legacy"`.
-- For development, use `openclaw plugins install -l ./my-engine` to link a
+- For development, use `carlito plugins install -l ./my-engine` to link a
   local plugin directory without copying.
 
 See also: [Compaction](/concepts/compaction), [Context](/concepts/context),

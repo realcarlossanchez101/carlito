@@ -1,8 +1,8 @@
 import {
   createTempHomeEnv,
   expectChannelInboundContextContract,
-  type OpenClawConfig,
-} from "openclaw/plugin-sdk/testing";
+  type CarlitoConfig,
+} from "carlito/plugin-sdk/testing";
 import { describe, expect, it } from "vitest";
 import {
   createInboundSlackTestContext,
@@ -39,12 +39,12 @@ function createSlackMessage(overrides: Partial<SlackMessageEvent>): SlackMessage
 
 describe("Slack inbound context contract", () => {
   it("keeps inbound context finalized", async () => {
-    const tempHome = await createTempHomeEnv("openclaw-slack-inbound-contract-");
+    const tempHome = await createTempHomeEnv("carlito-slack-inbound-contract-");
     try {
       const ctx = createInboundSlackTestContext({
         cfg: {
           channels: { slack: { enabled: true } },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
       });
       ctx.resolveUserName = async () => ({ name: "Alice" }) as never;
 

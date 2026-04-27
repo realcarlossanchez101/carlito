@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import type { Command } from "commander";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
 import { callBrowserRequest, type BrowserParentOpts } from "./browser-cli-shared.js";
 import {
   danger,

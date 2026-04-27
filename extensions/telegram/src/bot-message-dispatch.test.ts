@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../../src/config/types.openclaw.js";
+import type { CarlitoConfig } from "../../../src/config/types.carlito.js";
 import { resolveAutoTopicLabelConfig as resolveAutoTopicLabelConfigRuntime } from "./auto-topic-label-config.js";
 import type { TelegramBotDeps } from "./bot-deps.js";
 import {
@@ -64,7 +64,7 @@ const resolveDefaultModelForAgent = vi.hoisted(() =>
   vi.fn(() => ({ provider: "openai", model: "gpt-test" })),
 );
 const getAgentScopedMediaLocalRoots = vi.hoisted(() =>
-  vi.fn((_cfg: unknown, agentId: string) => [`/tmp/.openclaw/workspace-${agentId}`]),
+  vi.fn((_cfg: unknown, agentId: string) => [`/tmp/.carlito/workspace-${agentId}`]),
 );
 const resolveChunkMode = vi.hoisted(() => vi.fn(() => undefined));
 const resolveMarkdownTableMode = vi.hoisted(() => vi.fn(() => "preserve"));
@@ -420,7 +420,7 @@ describe("dispatchTelegramMessage draft streaming", () => {
       expect.objectContaining({
         thread: { id: 777, scope: "dm" },
         mediaLocalRoots: expect.arrayContaining([
-          expect.stringMatching(/[\\/]\.openclaw[\\/]workspace-work$/u),
+          expect.stringMatching(/[\\/]\.carlito[\\/]workspace-work$/u),
         ]),
       }),
     );
@@ -2597,7 +2597,7 @@ describe("dispatchTelegramMessage draft streaming", () => {
             },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as CarlitoConfig,
     });
 
     expect(deliverReplies).toHaveBeenCalledTimes(1);
@@ -2635,7 +2635,7 @@ describe("dispatchTelegramMessage draft streaming", () => {
             },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as CarlitoConfig,
     });
 
     expect(deliverReplies).toHaveBeenCalledTimes(1);
@@ -2682,7 +2682,7 @@ describe("dispatchTelegramMessage draft streaming", () => {
             },
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as CarlitoConfig,
     });
 
     expect(deliverReplies).not.toHaveBeenCalled();

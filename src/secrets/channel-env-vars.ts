@@ -1,9 +1,9 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { loadPluginManifestRegistry } from "../plugins/manifest-registry.js";
 export { isSafeChannelEnvVarTriggerName } from "./channel-env-var-names.js";
 
 type ChannelEnvVarLookupParams = {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
 };

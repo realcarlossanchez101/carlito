@@ -4,17 +4,17 @@
 
 #include "Config/Version.xcconfig"
 
-OPENCLAW_CODE_SIGN_STYLE = Manual
-OPENCLAW_DEVELOPMENT_TEAM = Y5PE65HELJ
+CARLITO_CODE_SIGN_STYLE = Manual
+CARLITO_DEVELOPMENT_TEAM = Y5PE65HELJ
 
-OPENCLAW_APP_BUNDLE_ID = ai.openclaw.client
-OPENCLAW_SHARE_BUNDLE_ID = ai.openclaw.client.share
-OPENCLAW_WATCH_APP_BUNDLE_ID = ai.openclaw.client.watchkitapp
-OPENCLAW_WATCH_EXTENSION_BUNDLE_ID = ai.openclaw.client.watchkitapp.extension
-OPENCLAW_ACTIVITY_WIDGET_BUNDLE_ID = ai.openclaw.client.activitywidget
+CARLITO_APP_BUNDLE_ID = ai.carlito.client
+CARLITO_SHARE_BUNDLE_ID = ai.carlito.client.share
+CARLITO_WATCH_APP_BUNDLE_ID = ai.carlito.client.watchkitapp
+CARLITO_WATCH_EXTENSION_BUNDLE_ID = ai.carlito.client.watchkitapp.extension
+CARLITO_ACTIVITY_WIDGET_BUNDLE_ID = ai.carlito.client.activitywidget
 
-OPENCLAW_APP_PROFILE = ai.openclaw.client Development
-OPENCLAW_SHARE_PROFILE = ai.openclaw.client.share Development
+CARLITO_APP_PROFILE = ai.carlito.client Development
+CARLITO_SHARE_PROFILE = ai.carlito.client.share Development
 
 // Keep local includes after defaults: xcconfig is evaluated top-to-bottom,
 // so later assignments in local files override the defaults above.

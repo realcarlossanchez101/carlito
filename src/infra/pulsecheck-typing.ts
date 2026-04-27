@@ -1,6 +1,6 @@
 import type { ChannelPulsecheckDeps, ChannelPlugin } from "../channels/plugins/types.public.js";
 import { createTypingCallbacks, type TypingCallbacks } from "../channels/typing.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 
 const DEFAULT_PULSECHECK_TYPING_INTERVAL_SECONDS = 6;
 
@@ -16,7 +16,7 @@ export type PulsecheckTypingTarget = {
 };
 
 export function createPulsecheckTypingCallbacks(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   target: PulsecheckTypingTarget;
   plugin?: Pick<ChannelPlugin, "pulsecheck">;
   deps?: ChannelPulsecheckDeps;

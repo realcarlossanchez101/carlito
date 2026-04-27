@@ -1,5 +1,5 @@
 ---
-summary: "Run OpenClaw embedded agent turns through the bundled Codex app-server harness"
+summary: "Run Carlito embedded agent turns through the bundled Codex app-server harness"
 title: "Codex harness"
 read_when:
   - You want to use the bundled Codex app-server harness
@@ -7,12 +7,12 @@ read_when:
   - You want to disable PI fallback for Codex-only deployments
 ---
 
-The bundled `codex` plugin lets OpenClaw run embedded agent turns through the
+The bundled `codex` plugin lets Carlito run embedded agent turns through the
 Codex app-server instead of the built-in PI harness.
 
 Use this when you want Codex to own the low-level agent session: model
 discovery, native thread resume, native compaction, and app-server execution.
-OpenClaw still owns chat channels, session files, model selection, tools,
+Carlito still owns chat channels, session files, model selection, tools,
 approvals, media delivery, and the visible transcript mirror.
 
 Native Codex turns also respect the shared plugin hooks so prompt shims,
@@ -31,7 +31,7 @@ async `tool_result` middleware.
 
 The harness is off by default. New configs should keep OpenAI model refs
 canonical as `openai/gpt-*` and explicitly force
-`embeddedHarness.runtime: "codex"` or `OPENCLAW_AGENT_RUNTIME=codex` when they
+`embeddedHarness.runtime: "codex"` or `CARLITO_AGENT_RUNTIME=codex` when they
 want native app-server execution. Legacy `codex/*` model refs still auto-select
 the harness for compatibility.
 
@@ -41,13 +41,13 @@ OpenAI-family routes are prefix-specific. Use `openai-codex/*` when you want
 Codex OAuth through PI; use `openai/*` when you want direct OpenAI API access or
 when you are forcing the native Codex app-server harness:
 
-| Model ref                                             | Runtime path                                 | Use when                                                                  |
-| ----------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
-| `openai/gpt-5.4`                                      | OpenAI provider through OpenClaw/PI plumbing | You want current direct OpenAI Platform API access with `OPENAI_API_KEY`. |
-| `openai-codex/gpt-5.5`                                | OpenAI Codex OAuth through OpenClaw/PI       | You want ChatGPT/Codex subscription auth with the default PI runner.      |
-| `openai/gpt-5.5` + `embeddedHarness.runtime: "codex"` | Codex app-server harness                     | You want native Codex app-server execution for the embedded agent turn.   |
+| Model ref                                             | Runtime path                                | Use when                                                                  |
+| ----------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
+| `openai/gpt-5.4`                                      | OpenAI provider through Carlito/PI plumbing | You want current direct OpenAI Platform API access with `OPENAI_API_KEY`. |
+| `openai-codex/gpt-5.5`                                | OpenAI Codex OAuth through Carlito/PI       | You want ChatGPT/Codex subscription auth with the default PI runner.      |
+| `openai/gpt-5.5` + `embeddedHarness.runtime: "codex"` | Codex app-server harness                    | You want native Codex app-server execution for the embedded agent turn.   |
 
-GPT-5.5 is currently subscription/OAuth-only in OpenClaw. Use
+GPT-5.5 is currently subscription/OAuth-only in Carlito. Use
 `openai-codex/gpt-5.5` for PI OAuth, or `openai/gpt-5.5` with the Codex
 app-server harness. Direct API-key access for `openai/gpt-5.5` is supported
 once OpenAI enables GPT-5.5 on the public API.
@@ -71,9 +71,9 @@ includes the selected harness id, selection reason, runtime/fallback policy, and
 in `auto` mode, each plugin candidate's support result.
 
 Harness selection is not a live session control. When an embedded turn runs,
-OpenClaw records the selected harness id on that session and keeps using it for
+Carlito records the selected harness id on that session and keeps using it for
 later turns in the same session id. Change `embeddedHarness` config or
-`OPENCLAW_AGENT_RUNTIME` when you want future sessions to use another harness;
+`CARLITO_AGENT_RUNTIME` when you want future sessions to use another harness;
 use `/new` or `/reset` to start a fresh session before switching an existing
 conversation between PI and Codex. This avoids replaying one transcript through
 two incompatible native session systems.
@@ -88,12 +88,12 @@ not add a separate harness badge.
 
 ## Requirements
 
-- OpenClaw with the bundled `codex` plugin available.
+- Carlito with the bundled `codex` plugin available.
 - Codex app-server `0.118.0` or newer.
 - Codex auth available to the app-server process.
 
 The plugin blocks older or unversioned app-server handshakes. That keeps
-OpenClaw on the protocol surface it has been tested against.
+Carlito on the protocol surface it has been tested against.
 
 For live and Docker smoke tests, auth usually comes from `OPENAI_API_KEY`, plus
 optional Codex CLI files such as `~/.codex/auth.json` and
@@ -206,12 +206,12 @@ the Codex harness:
 Environment override:
 
 ```bash
-OPENCLAW_AGENT_RUNTIME=codex \
-OPENCLAW_AGENT_HARNESS_FALLBACK=none \
-openclaw gateway run
+CARLITO_AGENT_RUNTIME=codex \
+CARLITO_AGENT_HARNESS_FALLBACK=none \
+carlito gateway run
 ```
 
-With fallback disabled, OpenClaw fails early if the Codex plugin is disabled,
+With fallback disabled, Carlito fails early if the Codex plugin is disabled,
 the app-server is too old, or the app-server cannot start.
 
 ## Per-agent Codex
@@ -249,8 +249,8 @@ auto-selection:
 ```
 
 Use normal session commands to switch agents and models. `/new` creates a fresh
-OpenClaw session and the Codex harness creates or resumes its sidecar app-server
-thread as needed. `/reset` clears the OpenClaw session binding for that thread
+Carlito session and the Codex harness creates or resumes its sidecar app-server
+thread as needed. `/reset` clears the Carlito session binding for that thread
 and lets the next turn resolve the harness from current config again.
 
 ## Model discovery
@@ -310,7 +310,7 @@ By default, the plugin starts Codex locally with:
 codex app-server --listen stdio://
 ```
 
-By default, OpenClaw starts local Codex harness sessions in YOLO mode:
+By default, Carlito starts local Codex harness sessions in YOLO mode:
 `approvalPolicy: "never"`, `approvalsReviewer: "user"`, and
 `sandbox: "danger-full-access"`. This is the trusted local operator posture used
 for autonomous pulsechecks: Codex can use shell and network tools without
@@ -383,15 +383,15 @@ Supported `appServer` fields:
 The older environment variables still work as fallbacks for local testing when
 the matching config field is unset:
 
-- `OPENCLAW_CODEX_APP_SERVER_BIN`
-- `OPENCLAW_CODEX_APP_SERVER_ARGS`
-- `OPENCLAW_CODEX_APP_SERVER_MODE=yolo|guardian`
-- `OPENCLAW_CODEX_APP_SERVER_APPROVAL_POLICY`
-- `OPENCLAW_CODEX_APP_SERVER_SANDBOX`
+- `CARLITO_CODEX_APP_SERVER_BIN`
+- `CARLITO_CODEX_APP_SERVER_ARGS`
+- `CARLITO_CODEX_APP_SERVER_MODE=yolo|guardian`
+- `CARLITO_CODEX_APP_SERVER_APPROVAL_POLICY`
+- `CARLITO_CODEX_APP_SERVER_SANDBOX`
 
-`OPENCLAW_CODEX_APP_SERVER_GUARDIAN=1` was removed. Use
+`CARLITO_CODEX_APP_SERVER_GUARDIAN=1` was removed. Use
 `plugins.entries.codex.config.appServer.mode: "guardian"` instead, or
-`OPENCLAW_CODEX_APP_SERVER_MODE=guardian` for one-off local testing. Config is
+`CARLITO_CODEX_APP_SERVER_MODE=guardian` for one-off local testing. Config is
 preferred for repeatable deployments because it keeps the plugin behavior in the
 same reviewed file as the rest of the Codex harness setup.
 
@@ -463,7 +463,7 @@ Remote app-server with explicit headers:
             transport: "websocket",
             url: "ws://gateway-host:39175",
             headers: {
-              "X-OpenClaw-Agent": "main",
+              "X-Carlito-Agent": "main",
             },
           },
         },
@@ -473,7 +473,7 @@ Remote app-server with explicit headers:
 }
 ```
 
-Model switching stays OpenClaw-controlled. When an OpenClaw session is attached
+Model switching stays Carlito-controlled. When an Carlito session is attached
 to an existing Codex thread, the next turn sends the currently selected
 OpenAI model, provider, approval policy, sandbox, and service tier to
 app-server again. Switching from `openai/gpt-5.5` to `openai/gpt-5.2` keeps the
@@ -482,14 +482,14 @@ thread binding but asks Codex to continue with the newly selected model.
 ## Codex command
 
 The bundled plugin registers `/codex` as an authorized slash command. It is
-generic and works on any channel that supports OpenClaw text commands.
+generic and works on any channel that supports Carlito text commands.
 
 Common forms:
 
 - `/codex status` shows live app-server connectivity, models, account, rate limits, MCP servers, and skills.
 - `/codex models` lists live Codex app-server models.
 - `/codex threads [filter]` lists recent Codex threads.
-- `/codex resume <thread-id>` attaches the current OpenClaw session to an existing Codex thread.
+- `/codex resume <thread-id>` attaches the current Carlito session to an existing Codex thread.
 - `/codex compact` asks Codex app-server to compact the attached thread.
 - `/codex review` starts Codex native review for the attached thread.
 - `/codex account` shows account and rate-limit status.
@@ -497,8 +497,8 @@ Common forms:
 - `/codex skills` lists Codex app-server skills.
 
 `/codex resume` writes the same sidecar binding file that the harness uses for
-normal turns. On the next message, OpenClaw resumes that Codex thread, passes the
-currently selected OpenClaw model into app-server, and keeps extended history
+normal turns. On the next message, Carlito resumes that Codex thread, passes the
+currently selected Carlito model into app-server, and keeps extended history
 enabled.
 
 The command surface requires Codex app-server `0.118.0` or newer. Individual
@@ -509,20 +509,20 @@ future or custom app-server does not expose that JSON-RPC method.
 
 The Codex harness changes the low-level embedded agent executor only.
 
-OpenClaw still builds the tool list and receives dynamic tool results from the
+Carlito still builds the tool list and receives dynamic tool results from the
 harness. Text, images, video, music, TTS, approvals, and messaging-tool output
-continue through the normal OpenClaw delivery path.
+continue through the normal Carlito delivery path.
 
-Codex MCP tool approval elicitations are routed through OpenClaw's plugin
+Codex MCP tool approval elicitations are routed through Carlito's plugin
 approval flow when Codex marks `_meta.codex_approval_kind` as
 `"mcp_tool_call"`; other elicitation and free-form input requests still fail
 closed.
 
 When the selected model uses the Codex harness, native thread compaction is
-delegated to Codex app-server. OpenClaw keeps a transcript mirror for channel
+delegated to Codex app-server. Carlito keeps a transcript mirror for channel
 history, search, `/new`, `/reset`, and future model or harness switching. The
 mirror includes the user prompt, final assistant text, and lightweight Codex
-reasoning or plan records when the app-server emits them. Today, OpenClaw only
+reasoning or plan records when the app-server emits them. Today, Carlito only
 records native compaction start and completion signals. It does not yet expose a
 human-readable compaction summary or an auditable list of which entries Codex
 kept after compaction.
@@ -538,8 +538,8 @@ understanding continue to use the matching provider/model settings such as
 select an `openai/gpt-*` model with `embeddedHarness.runtime: "codex"` (or a
 legacy `codex/*` ref), and check whether `plugins.allow` excludes `codex`.
 
-**OpenClaw uses PI instead of Codex:** if no Codex harness claims the run,
-OpenClaw may use PI as the compatibility backend. Set
+**Carlito uses PI instead of Codex:** if no Codex harness claims the run,
+Carlito may use PI as the compatibility backend. Set
 `embeddedHarness.runtime: "codex"` to force Codex selection while testing, or
 `embeddedHarness.fallback: "none"` to fail when no plugin harness matches. Once
 Codex app-server is selected, its failures surface directly without extra

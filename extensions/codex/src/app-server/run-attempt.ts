@@ -9,7 +9,7 @@ import {
   normalizeProviderToolSchemas,
   resolveAttemptSpawnWorkspaceDir,
   resolveModelAuthMode,
-  resolveOpenClawAgentDir,
+  resolveCarlitoAgentDir,
   resolveSandboxContext,
   resolveSessionAgentIds,
   resolveUserPath,
@@ -21,7 +21,7 @@ import {
   supportsModelTools,
   type EmbeddedRunAttemptParams,
   type EmbeddedRunAttemptResult,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
 import { handleCodexAppServerApprovalRequest } from "./approval-bridge.js";
 import {
   createCodexAppServerClientFactoryTestHooks,
@@ -33,6 +33,10 @@ import { createCodexDynamicToolBridge } from "./dynamic-tools.js";
 import { handleCodexAppServerElicitationRequest } from "./elicitation-bridge.js";
 import { CodexAppServerEventProjector } from "./event-projector.js";
 import {
+  assertCodexTurnStartResponse,
+  readCodexDynamicToolCallParams,
+} from "./protocol-validators.js";
+import {
   isJsonObject,
   type CodexServerNotification,
   type CodexDynamicToolCallParams,
@@ -40,10 +44,6 @@ import {
   type JsonObject,
   type JsonValue,
 } from "./protocol.js";
-import {
-  assertCodexTurnStartResponse,
-  readCodexDynamicToolCallParams,
-} from "./protocol-validators.js";
 import { readCodexAppServerBinding, type CodexAppServerThreadBinding } from "./session-binding.js";
 import { clearSharedCodexAppServerClient } from "./shared-client.js";
 import {
@@ -205,7 +205,7 @@ export async function runCodexAppServerAttempt(
     }
     // Determine terminal-turn status before invoking the projector so a throw
     // inside projector.handleNotification still releases the session lane.
-    // See openclaw/openclaw#67996.
+    // See carlito/carlito#67996.
     const isTurnCompletion =
       notification.method === "turn/completed" &&
       isTurnNotification(notification.params, thread.threadId, turnId);
@@ -522,9 +522,9 @@ async function buildDynamicTools(input: DynamicToolBuildParams) {
     return [];
   }
   const modelHasVision = params.model.input?.includes("image") ?? false;
-  const agentDir = params.agentDir ?? resolveOpenClawAgentDir();
-  const { createOpenClawCodingTools } = await import("openclaw/plugin-sdk/agent-harness");
-  const allTools = createOpenClawCodingTools({
+  const agentDir = params.agentDir ?? resolveCarlitoAgentDir();
+  const { createCarlitoCodingTools } = await import("carlito/plugin-sdk/agent-harness");
+  const allTools = createCarlitoCodingTools({
     agentId: input.sessionAgentId,
     ...buildEmbeddedAttemptToolRunContext(params),
     exec: {

@@ -1,4 +1,7 @@
 import { EventEmitter } from "node:events";
+import { KeyedAsyncQueue } from "carlito/plugin-sdk/keyed-async-queue";
+import type { PinnedDispatcherPolicy } from "carlito/plugin-sdk/ssrf-dispatcher";
+import { normalizeNullableString } from "carlito/plugin-sdk/string-coerce-runtime";
 import {
   ClientEvent,
   Filter,
@@ -10,9 +13,6 @@ import {
   type MatrixEvent,
 } from "matrix-js-sdk/lib/matrix.js";
 import { VerificationMethod } from "matrix-js-sdk/lib/types.js";
-import { KeyedAsyncQueue } from "openclaw/plugin-sdk/keyed-async-queue";
-import type { PinnedDispatcherPolicy } from "openclaw/plugin-sdk/ssrf-dispatcher";
-import { normalizeNullableString } from "openclaw/plugin-sdk/string-coerce-runtime";
 import type { SsrFPolicy } from "../runtime-api.js";
 import { resolveMatrixRoomKeyBackupReadinessError } from "./backup-health.js";
 import { FileBackedMatrixSyncStore } from "./client/file-sync-store.js";

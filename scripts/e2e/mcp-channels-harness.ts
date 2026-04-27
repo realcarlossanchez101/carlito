@@ -332,14 +332,14 @@ export async function connectMcpClient(params: {
   gatewayUrl: string;
   gatewayToken: string;
 }): Promise<McpClientHandle> {
-  const tokenDir = "/tmp/openclaw-mcp-client";
+  const tokenDir = "/tmp/carlito-mcp-client";
   const tokenFile = `${tokenDir}/gateway.token`;
   mkdirSync(tokenDir, { recursive: true });
   writeFileSync(tokenFile, `${params.gatewayToken}\n`, { encoding: "utf8", mode: 0o600 });
   const transport = new StdioClientTransport({
     command: "node",
     args: [
-      "/app/openclaw.mjs",
+      "/app/carlito.mjs",
       "mcp",
       "serve",
       "--url",
@@ -352,13 +352,13 @@ export async function connectMcpClient(params: {
     cwd: "/app",
     env: {
       ...process.env,
-      OPENCLAW_ALLOW_INSECURE_PRIVATE_WS: "1",
-      OPENCLAW_STATE_DIR: "/tmp/openclaw-mcp-client",
+      CARLITO_ALLOW_INSECURE_PRIVATE_WS: "1",
+      CARLITO_STATE_DIR: "/tmp/carlito-mcp-client",
     },
     stderr: "pipe",
   });
   transport.stderr?.on("data", (chunk) => {
-    process.stderr.write(`[openclaw mcp] ${String(chunk)}`);
+    process.stderr.write(`[carlito mcp] ${String(chunk)}`);
   });
   const rawMessages: unknown[] = [];
   // The MCP stdio transport here exposes a writable onmessage callback at

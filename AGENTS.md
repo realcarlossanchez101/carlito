@@ -4,7 +4,7 @@ Telegraph style. Root rules only. Read scoped `AGENTS.md` before touching a subt
 
 ## Start
 
-- Repo: `https://github.com/openclaw/openclaw`
+- Repo: `https://github.com/realcarlossanchez101/carlito`
 - Replies: repo-root file refs only, e.g. `extensions/telegram/src/index.ts:80`. No absolute paths, no `~/`.
 - CODEOWNERS: maintenance/refactors/tests are ok. For larger behavior, product, security, or ownership-sensitive changes, get a listed owner request/review first.
 - First pass: run docs list (`pnpm docs:list`; ignore if unavailable), then read only relevant docs/guides.
@@ -23,7 +23,7 @@ Telegraph style. Root rules only. Read scoped `AGENTS.md` before touching a subt
 - Gateway protocol: `src/gateway/protocol/*`
 - Docs: `docs/`
 - Apps: `apps/`, `Swabble/`
-- Installers served from `openclaw.ai`: sibling `../openclaw.ai`
+- Installers served from `carlito.ai`: sibling `../carlito.ai`
 
 Scoped guides:
 
@@ -39,7 +39,7 @@ Scoped guides:
 ## Architecture
 
 - Core must stay extension-agnostic. No core special cases for bundled plugin/provider/channel ids when manifest/registry/capability contracts can express it.
-- Extensions cross into core only via `openclaw/plugin-sdk/*`, manifest metadata, injected runtime helpers, and documented local barrels (`api.ts`, `runtime-api.ts`).
+- Extensions cross into core only via `carlito/plugin-sdk/*`, manifest metadata, injected runtime helpers, and documented local barrels (`api.ts`, `runtime-api.ts`).
 - Extension production code must not import core `src/**`, `src/plugin-sdk-internal/**`, another extension's `src/**`, or relative paths outside its package.
 - Core code/tests must not deep-import plugin internals (`extensions/*/src/**`, `onboard.js`). Use plugin `api.ts` / public SDK facade / generic contract.
 - Extension-owned behavior stays in the extension: legacy repair, detection, onboarding, auth/provider defaults, provider tools/settings.
@@ -57,7 +57,7 @@ Scoped guides:
 
 - Runtime: Node 22+. Keep Node and Bun paths working.
 - Install: `pnpm install` (Bun supported; keep lockfiles/patches aligned if touched).
-- Dev CLI: `pnpm openclaw ...` or `pnpm dev`.
+- Dev CLI: `pnpm carlito ...` or `pnpm dev`.
 - Build: `pnpm build`
 - Smart local gate: `pnpm check:changed` (scoped typecheck/lint/guards + relevant tests)
 - Explain smart gate: `pnpm changed:lanes --json`
@@ -67,7 +67,7 @@ Scoped guides:
 - Changed tests only: `pnpm test:changed`
 - Local serial loop: `pnpm test:serial`
 - Extension tests: `pnpm test:extensions` or `pnpm test extensions` = all extension shards; `pnpm test extensions/<id>` = one extension lane. Heavy channels/OpenAI have dedicated shards.
-- Shard timing artifact: `.artifacts/vitest-shard-timings.json`; auto-used for balanced shard ordering. Disable with `OPENCLAW_TEST_PROJECTS_TIMINGS=0`.
+- Shard timing artifact: `.artifacts/vitest-shard-timings.json`; auto-used for balanced shard ordering. Disable with `CARLITO_TEST_PROJECTS_TIMINGS=0`.
 - Targeted tests: `pnpm test <path-or-filter> [vitest args...]`; do not call raw `vitest`.
 - Coverage: `pnpm test:coverage`
 - Format check/fix: `pnpm format:check` / `pnpm format`
@@ -84,13 +84,13 @@ Scoped guides:
   - `pnpm lint:core`, `pnpm lint:extensions`, `pnpm lint:scripts`
   - `pnpm lint:apps`: Swift/app surface, separate from TS lint
   - `pnpm lint:all`: legacy comparison lane
-- Local heavy-check behavior: `OPENCLAW_LOCAL_CHECK=1` default; `OPENCLAW_LOCAL_CHECK_MODE=throttled|full`; `OPENCLAW_LOCAL_CHECK=0` for CI/shared runs.
-- Local validation is local-first. Do not default to Blacksmith/Testbox for routine OpenClaw iteration; it burns warm caches and startup time. Use repo `pnpm` lanes first, then reach for remote CI/Testbox only for parity-only failures, secrets/services, or when explicitly requested.
+- Local heavy-check behavior: `CARLITO_LOCAL_CHECK=1` default; `CARLITO_LOCAL_CHECK_MODE=throttled|full`; `CARLITO_LOCAL_CHECK=0` for CI/shared runs.
+- Local validation is local-first. Do not default to Blacksmith/Testbox for routine Carlito iteration; it burns warm caches and startup time. Use repo `pnpm` lanes first, then reach for remote CI/Testbox only for parity-only failures, secrets/services, or when explicitly requested.
 
 ## GitHub API
 
 - Issue/PR triage: list first, hydrate few. Use bounded fields + `--jq`, e.g. `gh issue list --state open --limit 80 --json number,title,labels,updatedAt,comments --jq '.[]|[.number,.updatedAt,.comments,.title]|@tsv'`; then `gh issue view <n> --json title,body,comments,labels,createdAt,updatedAt,url --jq '{title,labels,createdAt,updatedAt,url,body,comments:[.comments[]|{author:.author.login,createdAt,body}]}'` only for shortlisted items.
-- Search/dedupe: prefer `gh search issues 'repo:openclaw/openclaw is:open <terms>' --json number,title,state,updatedAt --limit 20 --jq '.[]|[.number,.updatedAt,.title]|@tsv'`; avoid repeated full `--comments` scans.
+- Search/dedupe: prefer `gh search issues 'repo:carlito/carlito is:open <terms>' --json number,title,state,updatedAt --limit 20 --jq '.[]|[.number,.updatedAt,.title]|@tsv'`; avoid repeated full `--comments` scans.
 - After landing a PR: search for duplicate open issues/PRs that can be closed.
 - Before closing an issue/PR: add a comment explaining why, usually duplicate/invalid, with the canonical issue/PR when relevant.
 - PR links: `gh pr list --state open --search '<issue-or-terms>' --json number,title,updatedAt,headRefName --limit 20`; use `gh pr view <n> --json number,title,body,closingIssuesReferences,files,statusCheckRollup,reviewDecision` only after shortlist.
@@ -131,7 +131,7 @@ Scoped guides:
 - Classes: no prototype mixins/mutations. Use explicit inheritance/composition. Tests prefer per-instance stubs.
 - Comments: brief only for non-obvious logic.
 - File size: split around ~700 LOC when it improves clarity/testability.
-- Product naming: **OpenClaw** product/docs; `openclaw` CLI/package/path/config.
+- Product naming: **Carlito** product/docs; `carlito` CLI/package/path/config.
 - Written English: American spelling.
 
 ## Tests
@@ -146,13 +146,13 @@ Scoped guides:
 - Prefer injected deps over module mocks; if mocking modules, mock narrow local `*.runtime.ts` seams, not broad barrels.
 - Share fixtures/builders; do not recreate temp dirs, package manifests, or plugin workspaces in every case unless state isolation needs it.
 - Delete duplicate assertions when another test owns the boundary; assert only the behavior that can regress here.
-- Avoid broad `importOriginal()` / broad `openclaw/plugin-sdk/*` partial mocks in hot tests. Add narrow local `*.runtime.ts` seam and mock it.
+- Avoid broad `importOriginal()` / broad `carlito/plugin-sdk/*` partial mocks in hot tests. Add narrow local `*.runtime.ts` seam and mock it.
 - Use existing deps/callback/runtime injection seams before module mocks.
 - Import-dominated test time is a boundary smell; shrink import surface before adding cases.
 - Replacing slow integration coverage: extract production composition into a named helper and test that helper.
 - Do not modify baseline/inventory/ignore/snapshot/expected-failure files to silence checks without explicit approval.
-- Do not set test workers above 16. For memory pressure: `OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test`.
-- Live: `OPENCLAW_LIVE_TEST=1 pnpm test:live`; full logs `OPENCLAW_LIVE_TEST_QUIET=0`.
+- Do not set test workers above 16. For memory pressure: `CARLITO_VITEST_MAX_WORKERS=1 pnpm test`.
+- Live: `CARLITO_LIVE_TEST=1 pnpm test:live`; full logs `CARLITO_LIVE_TEST_QUIET=0`.
 - Full testing guide: `docs/help/testing.md`.
 
 ## Docs / Changelog
@@ -171,19 +171,19 @@ Scoped guides:
 - User says "commit": commit your changes only. "commit all": commit everything in grouped chunks. "push": may `git pull --rebase` first.
 - Do not delete/rename unexpected files; ask if it blocks. Otherwise ignore unrelated WIP.
 - If bulk PR close/reopen affects >5 PRs, ask with exact count/scope.
-- PR/issue workflows: use `$openclaw-pr-maintainer`.
+- PR/issue workflows: use `$carlito-pr-maintainer`.
 - `/landpr`: use `~/.codex/prompts/landpr.md`.
 
 ## Security / Release
 
 - Never commit real phone numbers, videos, credentials, live config.
-- Secrets: channel/provider credentials under `~/.openclaw/credentials/`; model auth profiles under `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
+- Secrets: channel/provider credentials under `~/.carlito/credentials/`; model auth profiles under `~/.carlito/agents/<agentId>/agent/auth-profiles.json`.
 - Env keys: check `~/.profile`.
 - Dependency patches/overrides/vendor changes require explicit approval. `pnpm.patchedDependencies` must use exact versions.
 - Carbon pins owner-only: do not change `@buape/carbon` versions unless Shadow (`@thewilloftheshadow`, verified by `gh`) asks.
 - Releases/publish/version bumps require explicit approval.
-- Release docs: `docs/reference/RELEASING.md`; use `$openclaw-release-maintainer`.
-- GHSA/advisories: use `$openclaw-ghsa-maintainer`.
+- Release docs: `docs/reference/RELEASING.md`; use `$carlito-release-maintainer`.
+- GHSA/advisories: use `$carlito-ghsa-maintainer`.
 - Beta tag/version must match, e.g. `vYYYY.M.D-beta.N` => npm `YYYY.M.D-beta.N --tag beta`.
 
 ## Apps / Platform
@@ -191,21 +191,21 @@ Scoped guides:
 - Before simulator/emulator testing, check connected real iOS/Android devices first.
 - "restart iOS/Android apps" = rebuild/reinstall/relaunch, not kill/launch.
 - SwiftUI: prefer Observation (`@Observable`, `@Bindable`) over new `ObservableObject`.
-- mac gateway: use app or `openclaw gateway restart/status --deep`; avoid ad-hoc tmux gateway sessions. Rebuild mac app locally, not over SSH.
+- mac gateway: use app or `carlito gateway restart/status --deep`; avoid ad-hoc tmux gateway sessions. Rebuild mac app locally, not over SSH.
 - mac logs: `./scripts/clawlog.sh`.
 - Version bump touches: `package.json`, `apps/android/app/build.gradle.kts`, `apps/ios/version.json` then `pnpm ios:version:sync`, `apps/macos/.../Info.plist`, `docs/install/updating.md`. Appcast only for Sparkle release.
 - iOS Team ID: `security find-identity -p codesigning -v`; fallback `defaults read com.apple.dt.Xcode IDEProvisioningTeamIdentifiers`.
-- Mobile LAN pairing: plaintext `ws://` is loopback-only by default. Trusted private-network `ws://` needs `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`; Tailscale/public use `wss://` or a tunnel.
+- Mobile LAN pairing: plaintext `ws://` is loopback-only by default. Trusted private-network `ws://` needs `CARLITO_ALLOW_INSECURE_PRIVATE_WS=1`; Tailscale/public use `wss://` or a tunnel.
 - A2UI hash `src/canvas-host/a2ui/.bundle.hash`: generated; ignore unless running `pnpm canvas:a2ui:bundle`; commit separately.
 
 ## External Ops
 
 - Remote install docs: `docs/install/exe-dev.md`, `docs/install/fly.md`, `docs/install/hetzner.md`.
-- Parallels smoke: `$openclaw-parallels-smoke`; Discord roundtrip: `parallels-discord-roundtrip`.
+- Parallels smoke: `$carlito-parallels-smoke`; Discord roundtrip: `parallels-discord-roundtrip`.
 
 ## Misc Footguns
 
-- Rebrand/migration/config warnings: run `openclaw doctor`.
+- Rebrand/migration/config warnings: run `carlito doctor`.
 - Never edit `node_modules`.
 - Local-only `.agents` ignores: use `.git/info/exclude`, not repo `.gitignore`.
 - CLI progress: use `src/cli/progress.ts`; status tables: `src/terminal/table.ts`.

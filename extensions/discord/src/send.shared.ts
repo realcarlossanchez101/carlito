@@ -6,21 +6,21 @@ import {
   type MessagePayloadObject,
   type TopLevelComponents,
 } from "@buape/carbon";
-import { PollLayoutType } from "discord-api-types/payloads/v10";
-import type { RESTAPIPoll } from "discord-api-types/rest/v10";
-import { Routes, type APIChannel, type APIEmbed } from "discord-api-types/v10";
-import { requireRuntimeConfig, type OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { buildOutboundMediaLoadOptions } from "openclaw/plugin-sdk/media-runtime";
-import { extensionForMime } from "openclaw/plugin-sdk/media-runtime";
+import { requireRuntimeConfig, type CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { buildOutboundMediaLoadOptions } from "carlito/plugin-sdk/media-runtime";
+import { extensionForMime } from "carlito/plugin-sdk/media-runtime";
 import {
   normalizePollDurationHours,
   normalizePollInput,
   type PollInput,
-} from "openclaw/plugin-sdk/media-runtime";
-import type { ChunkMode } from "openclaw/plugin-sdk/reply-chunking";
-import { resolveTextChunksWithFallback } from "openclaw/plugin-sdk/reply-payload";
-import type { RetryRunner } from "openclaw/plugin-sdk/retry-runtime";
-import { loadWebMedia } from "openclaw/plugin-sdk/web-media";
+} from "carlito/plugin-sdk/media-runtime";
+import type { ChunkMode } from "carlito/plugin-sdk/reply-chunking";
+import { resolveTextChunksWithFallback } from "carlito/plugin-sdk/reply-payload";
+import type { RetryRunner } from "carlito/plugin-sdk/retry-runtime";
+import { loadWebMedia } from "carlito/plugin-sdk/web-media";
+import { PollLayoutType } from "discord-api-types/payloads/v10";
+import type { RESTAPIPoll } from "discord-api-types/rest/v10";
+import { Routes, type APIChannel, type APIEmbed } from "discord-api-types/v10";
 import { chunkDiscordTextWithMode } from "./chunk.js";
 import { createDiscordClient, resolveDiscordRest, type DiscordClientOpts } from "./client.js";
 import { parseAndResolveRecipient } from "./recipient-resolution.js";
@@ -139,7 +139,7 @@ async function buildDiscordSendError(
   err: unknown,
   ctx: {
     channelId: string;
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     rest: RequestClient;
     token: string;
     hasMedia: boolean;
@@ -231,7 +231,7 @@ async function resolveChannelId(
 
 async function resolveDiscordTargetChannelId(
   raw: string,
-  opts: DiscordClientOpts & { cfg: OpenClawConfig },
+  opts: DiscordClientOpts & { cfg: CarlitoConfig },
 ): Promise<{ channelId: string; dm?: boolean }> {
   const cfg = requireRuntimeConfig(opts.cfg, "Discord target channel resolution");
   const recipient = await parseAndResolveRecipient(raw, opts.accountId, cfg, {

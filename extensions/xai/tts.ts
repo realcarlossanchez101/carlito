@@ -1,10 +1,10 @@
-import { postJsonRequest } from "openclaw/plugin-sdk/provider-http";
+import { postJsonRequest } from "carlito/plugin-sdk/provider-http";
 import {
   asObject,
   readResponseTextLimited,
   trimToUndefined,
   truncateErrorDetail,
-} from "openclaw/plugin-sdk/speech";
+} from "carlito/plugin-sdk/speech";
 import { XAI_BASE_URL } from "./api.js";
 export { XAI_BASE_URL };
 

@@ -2,8 +2,8 @@ import {
   createDetectedBinaryStatus,
   setSetupChannelEnabled,
   type ChannelSetupWizard,
-} from "openclaw/plugin-sdk/setup";
-import { detectBinary } from "openclaw/plugin-sdk/setup-tools";
+} from "carlito/plugin-sdk/setup";
+import { detectBinary } from "carlito/plugin-sdk/setup-tools";
 import { resolveIMessageAccount } from "./accounts.js";
 import {
   createIMessageCliPathTextInput,

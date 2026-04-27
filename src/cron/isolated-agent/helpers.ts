@@ -1,4 +1,4 @@
-import { hasOutboundReplyContent } from "openclaw/plugin-sdk/reply-payload";
+import { hasOutboundReplyContent } from "carlito/plugin-sdk/reply-payload";
 import { DEFAULT_PULSECHECK_ACK_MAX_CHARS } from "../../auto-reply/pulsecheck.js";
 import type { ReplyPayload } from "../../auto-reply/reply-payload.js";
 import { normalizeOptionalString } from "../../shared/string-coerce.js";

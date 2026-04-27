@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 import { PassThrough, Writable } from "node:stream";
-import type { OpenClawPluginApi } from "openclaw/plugin-sdk/plugin-entry";
-import type { RealtimeVoiceProviderPlugin } from "openclaw/plugin-sdk/realtime-voice";
+import type { CarlitoPluginApi } from "carlito/plugin-sdk/plugin-entry";
+import type { RealtimeVoiceProviderPlugin } from "carlito/plugin-sdk/realtime-voice";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestPluginApi } from "../../test/helpers/plugins/plugin-api.ts";
 import plugin from "./index.js";
@@ -40,7 +40,7 @@ const fetchGuardMocks = vi.hoisted(() => ({
   ),
 }));
 
-vi.mock("openclaw/plugin-sdk/ssrf-runtime", () => ({
+vi.mock("carlito/plugin-sdk/ssrf-runtime", () => ({
   fetchWithSsrFGuard: fetchGuardMocks.fetchWithSsrFGuard,
 }));
 
@@ -87,7 +87,7 @@ function setup(config: Record<string, unknown> = {}) {
         runCommandWithTimeout,
         formatNativeDependencyHint: vi.fn(() => "Install with brew install blackhole-2ch."),
       },
-    } as unknown as OpenClawPluginApi["runtime"],
+    } as unknown as CarlitoPluginApi["runtime"],
     logger: noopLogger,
     registerGatewayMethod: (method: string, handler: unknown) => methods.set(method, handler),
     registerTool: (tool: unknown) => tools.push(tool),
@@ -126,13 +126,13 @@ describe("google-meet plugin", () => {
       resolveGoogleMeetConfigWithEnv(
         {},
         {
-          OPENCLAW_GOOGLE_MEET_CLIENT_ID: "client-id",
+          CARLITO_GOOGLE_MEET_CLIENT_ID: "client-id",
           GOOGLE_MEET_CLIENT_SECRET: "client-secret",
-          OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN: "refresh-token",
+          CARLITO_GOOGLE_MEET_REFRESH_TOKEN: "refresh-token",
           GOOGLE_MEET_ACCESS_TOKEN: "access-token",
-          OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT: "123456",
+          CARLITO_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT: "123456",
           GOOGLE_MEET_DEFAULT_MEETING: "https://meet.google.com/abc-defg-hij",
-          OPENCLAW_GOOGLE_MEET_PREVIEW_ACK: "true",
+          CARLITO_GOOGLE_MEET_PREVIEW_ACK: "true",
         },
       ),
     ).toMatchObject({
@@ -366,8 +366,8 @@ describe("google-meet plugin", () => {
   it("reports setup status through the tool", async () => {
     const { tools } = setup({
       chrome: {
-        audioInputCommand: ["openclaw-audio-bridge", "capture"],
-        audioOutputCommand: ["openclaw-audio-bridge", "play"],
+        audioInputCommand: ["carlito-audio-bridge", "capture"],
+        audioOutputCommand: ["carlito-audio-bridge", "play"],
       },
     });
     const tool = tools[0] as {
@@ -551,7 +551,7 @@ describe("google-meet plugin", () => {
     callbacks?.onToolCall?.({
       itemId: "item-1",
       callId: "tool-call-1",
-      name: "openclaw_agent_consult",
+      name: "carlito_agent_consult",
       args: { question: "What should I say about launch timing?" },
     });
 
@@ -567,7 +567,7 @@ describe("google-meet plugin", () => {
     expect(callbacks).toMatchObject({
       tools: [
         expect.objectContaining({
-          name: "openclaw_agent_consult",
+          name: "carlito_agent_consult",
         }),
       ],
     });

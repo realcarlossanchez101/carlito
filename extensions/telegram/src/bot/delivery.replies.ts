@@ -1,29 +1,29 @@
-import { type Bot, GrammyError, InputFile } from "grammy";
-import type { ReplyToMode } from "openclaw/plugin-sdk/config-runtime";
-import type { MarkdownTableMode } from "openclaw/plugin-sdk/config-runtime";
-import { fireAndForgetHook } from "openclaw/plugin-sdk/hook-runtime";
-import { createInternalHookEvent, triggerInternalHook } from "openclaw/plugin-sdk/hook-runtime";
+import type { ReplyToMode } from "carlito/plugin-sdk/config-runtime";
+import type { MarkdownTableMode } from "carlito/plugin-sdk/config-runtime";
+import { fireAndForgetHook } from "carlito/plugin-sdk/hook-runtime";
+import { createInternalHookEvent, triggerInternalHook } from "carlito/plugin-sdk/hook-runtime";
 import {
   buildCanonicalSentMessageHookContext,
   toInternalMessageSentContext,
   toPluginMessageContext,
   toPluginMessageSentEvent,
-} from "openclaw/plugin-sdk/hook-runtime";
-import type { ReplyPayloadDelivery } from "openclaw/plugin-sdk/interactive-runtime";
-import { buildOutboundMediaLoadOptions } from "openclaw/plugin-sdk/media-runtime";
-import { isGifMedia, kindFromMime } from "openclaw/plugin-sdk/media-runtime";
+} from "carlito/plugin-sdk/hook-runtime";
+import type { ReplyPayloadDelivery } from "carlito/plugin-sdk/interactive-runtime";
+import { buildOutboundMediaLoadOptions } from "carlito/plugin-sdk/media-runtime";
+import { isGifMedia, kindFromMime } from "carlito/plugin-sdk/media-runtime";
 import {
   createOutboundPayloadPlan,
   projectOutboundPayloadPlanForDelivery,
-} from "openclaw/plugin-sdk/outbound-runtime";
-import { getGlobalHookRunner } from "openclaw/plugin-sdk/plugin-runtime";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
-import { chunkMarkdownTextWithMode, type ChunkMode } from "openclaw/plugin-sdk/reply-runtime";
-import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
-import { danger, logVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { createSubsystemLogger } from "openclaw/plugin-sdk/runtime-env";
-import { formatErrorMessage } from "openclaw/plugin-sdk/ssrf-runtime";
-import { loadWebMedia } from "openclaw/plugin-sdk/web-media";
+} from "carlito/plugin-sdk/outbound-runtime";
+import { getGlobalHookRunner } from "carlito/plugin-sdk/plugin-runtime";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-runtime";
+import { chunkMarkdownTextWithMode, type ChunkMode } from "carlito/plugin-sdk/reply-runtime";
+import type { RuntimeEnv } from "carlito/plugin-sdk/runtime-env";
+import { danger, logVerbose } from "carlito/plugin-sdk/runtime-env";
+import { createSubsystemLogger } from "carlito/plugin-sdk/runtime-env";
+import { formatErrorMessage } from "carlito/plugin-sdk/ssrf-runtime";
+import { loadWebMedia } from "carlito/plugin-sdk/web-media";
+import { type Bot, GrammyError, InputFile } from "grammy";
 import type { TelegramInlineButtons } from "../button-types.js";
 import { splitTelegramCaption } from "../caption.js";
 import {
@@ -590,7 +590,7 @@ export function emitTelegramMessageSentHooks(params: EmitMessageSentHookParams):
 
 export async function deliverReplies(params: {
   replies: ReplyPayload[];
-  cfg?: import("openclaw/plugin-sdk/config-runtime").OpenClawConfig;
+  cfg?: import("carlito/plugin-sdk/config-runtime").CarlitoConfig;
   chatId: string;
   accountId?: string;
   sessionKeyForInternalHooks?: string;

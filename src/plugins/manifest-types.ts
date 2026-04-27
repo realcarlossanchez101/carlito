@@ -7,7 +7,7 @@ export type PluginConfigUiHint = {
   placeholder?: string;
 };
 
-export type PluginFormat = "openclaw" | "bundle";
+export type PluginFormat = "carlito" | "bundle";
 
 export type PluginBundleFormat = "codex" | "claude" | "cursor";
 

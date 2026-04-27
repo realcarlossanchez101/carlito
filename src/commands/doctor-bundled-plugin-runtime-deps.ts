@@ -1,6 +1,6 @@
 import { formatCliCommand } from "../cli/command-format.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
-import { resolveOpenClawPackageRootSync } from "../infra/openclaw-root.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
+import { resolveCarlitoPackageRootSync } from "../infra/carlito-root.js";
 import {
   installBundledRuntimeDeps,
   resolveBundledRuntimeDependencyPackageInstallRoot,
@@ -13,7 +13,7 @@ import type { DoctorPrompter } from "./doctor-prompter.js";
 export async function maybeRepairBundledPluginRuntimeDeps(params: {
   runtime: RuntimeEnv;
   prompter: DoctorPrompter;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   env?: NodeJS.ProcessEnv;
   packageRoot?: string | null;
   includeConfiguredChannels?: boolean;
@@ -25,7 +25,7 @@ export async function maybeRepairBundledPluginRuntimeDeps(params: {
 }): Promise<void> {
   const packageRoot =
     params.packageRoot ??
-    resolveOpenClawPackageRootSync({
+    resolveCarlitoPackageRootSync({
       argv1: process.argv[1],
       cwd: process.cwd(),
       moduleUrl: import.meta.url,
@@ -53,7 +53,7 @@ export async function maybeRepairBundledPluginRuntimeDeps(params: {
       [
         "Bundled plugin runtime deps use conflicting versions.",
         ...conflictLines,
-        `Update bundled plugins and rerun ${formatCliCommand("openclaw doctor")}.`,
+        `Update bundled plugins and rerun ${formatCliCommand("carlito doctor")}.`,
       ].join("\n"),
       "Bundled plugins",
     );
@@ -69,7 +69,7 @@ export async function maybeRepairBundledPluginRuntimeDeps(params: {
     [
       "Bundled plugin runtime deps are missing.",
       ...missing.map((dep) => `- ${dep.name}@${dep.version} (used by ${dep.pluginIds.join(", ")})`),
-      `Fix: run ${formatCliCommand("openclaw doctor --fix")} to install them.`,
+      `Fix: run ${formatCliCommand("carlito doctor --fix")} to install them.`,
     ].join("\n"),
     "Bundled plugins",
   );

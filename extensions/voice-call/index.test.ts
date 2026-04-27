@@ -4,7 +4,7 @@ import path from "node:path";
 import { Command } from "commander";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestPluginApi } from "../../test/helpers/plugins/plugin-api.ts";
-import type { OpenClawPluginApi } from "./api.js";
+import type { CarlitoPluginApi } from "./api.js";
 
 let runtimeStub: {
   config: { toNumber?: string };
@@ -68,7 +68,7 @@ function setup(config: Record<string, unknown>): Registered {
     source: "test",
     config: {},
     pluginConfig: config,
-    runtime: { tts: { textToSpeechTelephony: vi.fn() } } as unknown as OpenClawPluginApi["runtime"],
+    runtime: { tts: { textToSpeechTelephony: vi.fn() } } as unknown as CarlitoPluginApi["runtime"],
     logger: noopLogger,
     registerGatewayMethod: (method: string, handler: unknown) => methods.set(method, handler),
     registerTool: (tool: unknown) => tools.push(tool),
@@ -221,7 +221,7 @@ describe("voice-call plugin", () => {
       },
     });
     expect(noopLogger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Run "openclaw doctor --fix"'),
+      expect.stringContaining('Run "carlito doctor --fix"'),
     );
   });
 

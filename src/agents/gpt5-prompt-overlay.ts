@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizeOptionalLowercaseString } from "../shared/string-coerce.js";
 import type { ProviderSystemPromptContribution } from "./system-prompt-contribution.js";
 
@@ -98,7 +98,7 @@ export function normalizeGpt5PromptOverlayMode(value: unknown): Gpt5PromptOverla
 }
 
 export function resolveGpt5PromptOverlayMode(
-  config?: OpenClawConfig,
+  config?: CarlitoConfig,
   legacyPluginConfig?: Record<string, unknown>,
 ): Gpt5PromptOverlayMode {
   return (
@@ -115,7 +115,7 @@ export function isGpt5ModelId(modelId?: string): boolean {
 }
 
 export function resolveGpt5SystemPromptContribution(params: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   modelId?: string;
   legacyPluginConfig?: Record<string, unknown>;
   enabled?: boolean;
@@ -132,7 +132,7 @@ export function resolveGpt5SystemPromptContribution(params: {
 }
 
 export function renderGpt5PromptOverlay(params: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   modelId?: string;
   legacyPluginConfig?: Record<string, unknown>;
   enabled?: boolean;

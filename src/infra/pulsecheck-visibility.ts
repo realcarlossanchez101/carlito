@@ -1,5 +1,5 @@
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import type { ChannelPulsecheckVisibilityConfig } from "../config/types.channels.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
 import type { GatewayMessageChannel } from "../utils/message-channel.js";
 
 export type ResolvedPulsecheckVisibility = {
@@ -20,7 +20,7 @@ const DEFAULT_VISIBILITY: ResolvedPulsecheckVisibility = {
  * For webchat, uses channels.defaults.pulsecheck since webchat doesn't have per-channel config.
  */
 export function resolvePulsecheckVisibility(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   channel: GatewayMessageChannel;
   accountId?: string;
 }): ResolvedPulsecheckVisibility {

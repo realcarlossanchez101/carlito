@@ -1,5 +1,5 @@
 ---
-summary: "CLI reference for `openclaw skills` (search/install/update/list/info/check)"
+summary: "CLI reference for `carlito skills` (search/install/update/list/info/check)"
 read_when:
   - You want to see which skills are available and ready to run
   - You want to search, install, or update skills from ClawHub
@@ -7,7 +7,7 @@ read_when:
 title: "Skills"
 ---
 
-# `openclaw skills`
+# `carlito skills`
 
 Inspect local skills and install/update skills from ClawHub.
 
@@ -20,21 +20,21 @@ Related:
 ## Commands
 
 ```bash
-openclaw skills search "calendar"
-openclaw skills search --limit 20 --json
-openclaw skills install <slug>
-openclaw skills install <slug> --version <version>
-openclaw skills install <slug> --force
-openclaw skills update <slug>
-openclaw skills update --all
-openclaw skills list
-openclaw skills list --eligible
-openclaw skills list --json
-openclaw skills list --verbose
-openclaw skills info <name>
-openclaw skills info <name> --json
-openclaw skills check
-openclaw skills check --json
+carlito skills search "calendar"
+carlito skills search --limit 20 --json
+carlito skills install <slug>
+carlito skills install <slug> --version <version>
+carlito skills install <slug> --force
+carlito skills update <slug>
+carlito skills update --all
+carlito skills list
+carlito skills list --eligible
+carlito skills list --json
+carlito skills list --verbose
+carlito skills info <name>
+carlito skills info <name> --json
+carlito skills check
+carlito skills check --json
 ```
 
 `search`/`install`/`update` use ClawHub directly and install into the active

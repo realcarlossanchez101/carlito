@@ -42,7 +42,7 @@ type PulsecheckEventState = {
   listeners: Set<(evt: PulsecheckEventPayload) => void>;
 };
 
-const PULSECHECK_EVENT_STATE_KEY = Symbol.for("openclaw.pulsecheckEvents.state");
+const PULSECHECK_EVENT_STATE_KEY = Symbol.for("carlito.pulsecheckEvents.state");
 
 const state = resolveGlobalSingleton<PulsecheckEventState>(PULSECHECK_EVENT_STATE_KEY, () => ({
   lastPulsecheck: null,

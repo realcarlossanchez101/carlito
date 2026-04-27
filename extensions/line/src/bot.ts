@@ -1,13 +1,13 @@
 import type { webhook } from "@line/bot-sdk";
-import type { NextFunction, Request, Response } from "express";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { loadConfig } from "openclaw/plugin-sdk/config-runtime";
-import { DEFAULT_GROUP_HISTORY_LIMIT, type HistoryEntry } from "openclaw/plugin-sdk/reply-history";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { loadConfig } from "carlito/plugin-sdk/config-runtime";
+import { DEFAULT_GROUP_HISTORY_LIMIT, type HistoryEntry } from "carlito/plugin-sdk/reply-history";
 import {
   createNonExitingRuntime,
   logVerbose,
   type RuntimeEnv,
-} from "openclaw/plugin-sdk/runtime-env";
+} from "carlito/plugin-sdk/runtime-env";
+import type { NextFunction, Request, Response } from "express";
 import { resolveLineAccount } from "./accounts.js";
 import { createLineWebhookReplayCache, handleLineWebhookEvents } from "./bot-handlers.js";
 import type { LineInboundContext } from "./bot-message-context.js";
@@ -19,7 +19,7 @@ export interface LineBotOptions {
   channelSecret: string;
   accountId?: string;
   runtime?: RuntimeEnv;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   mediaMaxMb?: number;
   onMessage?: (ctx: LineInboundContext) => Promise<void>;
 }

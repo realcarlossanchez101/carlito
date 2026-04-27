@@ -1,13 +1,13 @@
 {
-  "name": "@openclaw/opencode-provider",
+  "name": "@realcarlossanchez101/opencode-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw OpenCode Zen provider plugin",
+  "description": "Carlito OpenCode Zen provider plugin",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

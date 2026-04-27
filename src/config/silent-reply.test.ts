@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveSilentReplyPolicy, resolveSilentReplyRewriteEnabled } from "./silent-reply.js";
-import type { OpenClawConfig } from "./types.openclaw.js";
+import type { CarlitoConfig } from "./types.carlito.js";
 
 describe("silent reply config resolution", () => {
   it("uses the default direct/group/internal policy and rewrite flags", () => {
@@ -26,7 +26,7 @@ describe("silent reply config resolution", () => {
   });
 
   it("applies configured defaults by conversation type", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {
@@ -62,7 +62,7 @@ describe("silent reply config resolution", () => {
   });
 
   it("lets surface overrides beat the default policy and rewrite flags", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {

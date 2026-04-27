@@ -5,52 +5,49 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DEFAULT_E2E_IMAGE = "openclaw-docker-e2e:local";
+const DEFAULT_E2E_IMAGE = "carlito-docker-e2e:local";
 const DEFAULT_PARALLELISM = 4;
 const DEFAULT_FAILURE_TAIL_LINES = 80;
 const DEFAULT_LANE_TIMEOUT_MS = 120 * 60 * 1000;
 
 const lanes = [
-  ["live-models", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-models"],
-  ["live-gateway", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-gateway"],
+  ["live-models", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-models"],
+  ["live-gateway", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-gateway"],
   [
     "live-cli-backend-claude",
-    "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:claude",
+    "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:claude",
   ],
   [
     "live-cli-backend-gemini",
-    "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:gemini",
+    "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:gemini",
   ],
-  ["openwebui", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:openwebui"],
-  ["onboard", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:onboard"],
+  ["openwebui", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:openwebui"],
+  ["onboard", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:onboard"],
   [
     "npm-onboard-channel-agent",
-    "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:npm-onboard-channel-agent",
+    "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:npm-onboard-channel-agent",
   ],
-  ["gateway-network", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:gateway-network"],
-  ["mcp-channels", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:mcp-channels"],
-  ["pi-bundle-mcp-tools", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:pi-bundle-mcp-tools"],
-  ["cron-mcp-cleanup", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:cron-mcp-cleanup"],
-  ["doctor-switch", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:doctor-switch"],
-  ["plugins", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:plugins"],
-  ["plugin-update", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:plugin-update"],
-  ["config-reload", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:config-reload"],
-  ["bundled-channel-deps", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:bundled-channel-deps"],
-  ["openai-image-auth", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:openai-image-auth"],
+  ["gateway-network", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:gateway-network"],
+  ["mcp-channels", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:mcp-channels"],
+  ["pi-bundle-mcp-tools", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:pi-bundle-mcp-tools"],
+  ["cron-mcp-cleanup", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:cron-mcp-cleanup"],
+  ["doctor-switch", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:doctor-switch"],
+  ["plugins", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:plugins"],
+  ["plugin-update", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:plugin-update"],
+  ["config-reload", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:config-reload"],
+  ["bundled-channel-deps", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:bundled-channel-deps"],
+  ["openai-image-auth", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:openai-image-auth"],
   ["qr", "pnpm test:docker:qr"],
 ];
 
 const exclusiveLanes = [
   [
     "openai-web-search-minimal",
-    "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:openai-web-search-minimal",
+    "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:openai-web-search-minimal",
   ],
-  ["live-codex-harness", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-codex-harness"],
-  [
-    "live-cli-backend-codex",
-    "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:codex",
-  ],
-  ["live-acp-bind", "OPENCLAW_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-acp-bind"],
+  ["live-codex-harness", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-codex-harness"],
+  ["live-cli-backend-codex", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-cli-backend:codex"],
+  ["live-acp-bind", "CARLITO_SKIP_DOCKER_BUILD=1 pnpm test:docker:live-acp-bind"],
 ];
 
 function parsePositiveInt(raw, fallback, label) {
@@ -80,12 +77,12 @@ function utcStamp() {
 }
 
 function appendExtension(env, extension) {
-  const current = env.OPENCLAW_DOCKER_BUILD_EXTENSIONS ?? env.OPENCLAW_EXTENSIONS ?? "";
+  const current = env.CARLITO_DOCKER_BUILD_EXTENSIONS ?? env.CARLITO_EXTENSIONS ?? "";
   const tokens = current.split(/\s+/).filter(Boolean);
   if (!tokens.includes(extension)) {
     tokens.push(extension);
   }
-  env.OPENCLAW_DOCKER_BUILD_EXTENSIONS = tokens.join(" ");
+  env.CARLITO_DOCKER_BUILD_EXTENSIONS = tokens.join(" ");
 }
 
 function commandEnv(extra = {}) {
@@ -158,11 +155,11 @@ function laneEnv(name, baseEnv, logDir) {
   const env = {
     ...baseEnv,
   };
-  if (!process.env.OPENCLAW_DOCKER_CLI_TOOLS_DIR) {
-    env.OPENCLAW_DOCKER_CLI_TOOLS_DIR = path.join(logDir, `${name}-cli-tools`);
+  if (!process.env.CARLITO_DOCKER_CLI_TOOLS_DIR) {
+    env.CARLITO_DOCKER_CLI_TOOLS_DIR = path.join(logDir, `${name}-cli-tools`);
   }
-  if (!process.env.OPENCLAW_DOCKER_CACHE_HOME_DIR) {
-    env.OPENCLAW_DOCKER_CACHE_HOME_DIR = path.join(logDir, `${name}-cache`);
+  if (!process.env.CARLITO_DOCKER_CACHE_HOME_DIR) {
+    env.CARLITO_DOCKER_CACHE_HOME_DIR = path.join(logDir, `${name}-cache`);
   }
   return env;
 }
@@ -171,13 +168,13 @@ async function runLane(lane, baseEnv, logDir, timeoutMs) {
   const [name, command] = lane;
   const logFile = path.join(logDir, `${name}.log`);
   const env = laneEnv(name, baseEnv, logDir);
-  await mkdir(env.OPENCLAW_DOCKER_CLI_TOOLS_DIR, { recursive: true });
-  await mkdir(env.OPENCLAW_DOCKER_CACHE_HOME_DIR, { recursive: true });
+  await mkdir(env.CARLITO_DOCKER_CLI_TOOLS_DIR, { recursive: true });
+  await mkdir(env.CARLITO_DOCKER_CACHE_HOME_DIR, { recursive: true });
   await fs.promises.writeFile(
     logFile,
     [
-      `==> [${name}] cli tools dir: ${env.OPENCLAW_DOCKER_CLI_TOOLS_DIR}`,
-      `==> [${name}] cache dir: ${env.OPENCLAW_DOCKER_CACHE_HOME_DIR}`,
+      `==> [${name}] cli tools dir: ${env.CARLITO_DOCKER_CLI_TOOLS_DIR}`,
+      `==> [${name}] cache dir: ${env.CARLITO_DOCKER_CACHE_HOME_DIR}`,
       "",
     ].join("\n"),
   );
@@ -276,30 +273,29 @@ process.on("SIGTERM", () => {
 
 async function main() {
   const parallelism = parsePositiveInt(
-    process.env.OPENCLAW_DOCKER_ALL_PARALLELISM,
+    process.env.CARLITO_DOCKER_ALL_PARALLELISM,
     DEFAULT_PARALLELISM,
-    "OPENCLAW_DOCKER_ALL_PARALLELISM",
+    "CARLITO_DOCKER_ALL_PARALLELISM",
   );
   const tailLines = parsePositiveInt(
-    process.env.OPENCLAW_DOCKER_ALL_FAILURE_TAIL_LINES,
+    process.env.CARLITO_DOCKER_ALL_FAILURE_TAIL_LINES,
     DEFAULT_FAILURE_TAIL_LINES,
-    "OPENCLAW_DOCKER_ALL_FAILURE_TAIL_LINES",
+    "CARLITO_DOCKER_ALL_FAILURE_TAIL_LINES",
   );
   const laneTimeoutMs = parsePositiveInt(
-    process.env.OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS,
+    process.env.CARLITO_DOCKER_ALL_LANE_TIMEOUT_MS,
     DEFAULT_LANE_TIMEOUT_MS,
-    "OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS",
+    "CARLITO_DOCKER_ALL_LANE_TIMEOUT_MS",
   );
-  const failFast = parseBool(process.env.OPENCLAW_DOCKER_ALL_FAIL_FAST, true);
-  const runId = process.env.OPENCLAW_DOCKER_ALL_RUN_ID || utcStampForPath();
+  const failFast = parseBool(process.env.CARLITO_DOCKER_ALL_FAIL_FAST, true);
+  const runId = process.env.CARLITO_DOCKER_ALL_RUN_ID || utcStampForPath();
   const logDir = path.resolve(
-    process.env.OPENCLAW_DOCKER_ALL_LOG_DIR ||
-      path.join(ROOT_DIR, ".artifacts/docker-tests", runId),
+    process.env.CARLITO_DOCKER_ALL_LOG_DIR || path.join(ROOT_DIR, ".artifacts/docker-tests", runId),
   );
   await mkdir(logDir, { recursive: true });
 
   const baseEnv = commandEnv({
-    OPENCLAW_DOCKER_E2E_IMAGE: process.env.OPENCLAW_DOCKER_E2E_IMAGE || DEFAULT_E2E_IMAGE,
+    CARLITO_DOCKER_E2E_IMAGE: process.env.CARLITO_DOCKER_E2E_IMAGE || DEFAULT_E2E_IMAGE,
   });
   appendExtension(baseEnv, "matrix");
   appendExtension(baseEnv, "acpx");
@@ -309,11 +305,11 @@ async function main() {
   console.log(`==> Parallelism: ${parallelism}`);
   console.log(`==> Lane timeout: ${laneTimeoutMs}ms`);
   console.log(`==> Fail fast: ${failFast ? "yes" : "no"}`);
-  console.log(`==> Live-test bundled plugin deps: ${baseEnv.OPENCLAW_DOCKER_BUILD_EXTENSIONS}`);
+  console.log(`==> Live-test bundled plugin deps: ${baseEnv.CARLITO_DOCKER_BUILD_EXTENSIONS}`);
 
   await runForeground("Build shared live-test image once", "pnpm test:docker:live-build", baseEnv);
   await runForeground(
-    `Build shared Docker E2E image once: ${baseEnv.OPENCLAW_DOCKER_E2E_IMAGE}`,
+    `Build shared Docker E2E image once: ${baseEnv.CARLITO_DOCKER_E2E_IMAGE}`,
     "pnpm test:docker:e2e-build",
     baseEnv,
   );

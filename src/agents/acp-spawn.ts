@@ -37,7 +37,7 @@ import { resolveStorePath } from "../config/sessions/paths.js";
 import { loadSessionStore } from "../config/sessions/store.js";
 import { resolveSessionTranscriptFile } from "../config/sessions/transcript.js";
 import type { SessionEntry } from "../config/sessions/types.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { callGateway } from "../gateway/call.js";
 import {
   getSessionBindingService,
@@ -168,7 +168,7 @@ export const ACP_SPAWN_SESSION_ACCEPTED_NOTE =
   "thread-bound ACP session stays active after this task; continue in-thread for follow-ups.";
 
 export function resolveAcpSpawnRuntimePolicyError(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   requesterSessionKey?: string;
   requesterSandboxed?: boolean;
   sandbox?: SpawnAcpSandboxMode;
@@ -300,7 +300,7 @@ function resolveAcpSessionMode(mode: SpawnAcpMode): AcpRuntimeSessionMode {
 }
 
 function isPulsecheckEnabledForSessionAgent(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   sessionKey?: string;
 }): boolean {
   if (!arePulsechecksEnabled()) {
@@ -338,9 +338,9 @@ function isPulsecheckEnabledForSessionAgent(params: {
 }
 
 function resolvePulsecheckConfigForAgent(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentId: string;
-}): NonNullable<NonNullable<OpenClawConfig["agents"]>["defaults"]>["pulsecheck"] {
+}): NonNullable<NonNullable<CarlitoConfig["agents"]>["defaults"]>["pulsecheck"] {
   const defaults = params.cfg.agents?.defaults?.pulsecheck;
   const overrides = resolveAgentConfig(params.cfg, params.agentId)?.pulsecheck;
   if (!defaults && !overrides) {
@@ -353,7 +353,7 @@ function resolvePulsecheckConfigForAgent(params: {
 }
 
 function hasSessionLocalPulsecheckRelayRoute(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   parentSessionKey: string;
   requesterAgentId: string;
 }): boolean {
@@ -390,7 +390,7 @@ function hasSessionLocalPulsecheckRelayRoute(params: {
 
 function resolveTargetAcpAgentId(params: {
   requestedAgentId?: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
 }): { ok: true; agentId: string } | { ok: false; error: string } {
   const requested = normalizeOptionalAgentId(params.requestedAgentId);
   if (requested) {
@@ -468,7 +468,7 @@ async function resolveRuntimeCwdForAcpSpawn(params: {
 }
 
 function resolveRequesterInternalSessionKey(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   requesterSessionKey?: string;
 }): string {
   const { mainKey, alias } = resolveMainSessionAlias(params.cfg);
@@ -512,7 +512,7 @@ async function persistAcpSpawnSessionFileBestEffort(params: {
 }
 
 function resolveConversationRefForThreadBinding(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   channel?: string;
   accountId?: string;
   to?: string;
@@ -532,7 +532,7 @@ function resolveConversationRefForThreadBinding(params: {
 }
 
 function resolveAcpSpawnChannelAccountId(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   channel?: string;
   accountId?: string;
 }): string | undefined {
@@ -550,7 +550,7 @@ function resolveAcpSpawnChannelAccountId(params: {
 }
 
 function prepareAcpThreadBinding(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   channel?: string;
   accountId?: string;
   to?: string;
@@ -649,7 +649,7 @@ function prepareAcpThreadBinding(params: {
 }
 
 function resolveAcpSpawnRequesterState(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   parentSessionKey?: string;
   targetAgentId: string;
   ctx: SpawnAcpContext;
@@ -703,7 +703,7 @@ function resolveAcpSpawnRequesterState(params: {
 }
 
 function resolveAcpSubagentEnvelopeState(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   requesterSessionKey?: string;
   targetAgentId: string;
   requestedAgentId?: string;
@@ -820,7 +820,7 @@ function resolveAcpSpawnStreamPlan(params: {
 }
 
 async function initializeAcpSpawnRuntime(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   sessionKey: string;
   targetAgentId: string;
   runtimeMode: AcpRuntimeSessionMode;
@@ -869,7 +869,7 @@ async function initializeAcpSpawnRuntime(params: {
 }
 
 async function bindPreparedAcpThread(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   sessionKey: string;
   targetAgentId: string;
   label?: string;
@@ -949,7 +949,7 @@ async function bindPreparedAcpThread(params: {
 }
 
 function resolveAcpSpawnBootstrapDeliveryPlan(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   spawnMode: SpawnAcpMode;
   requestThreadBinding: boolean;
   effectiveStreamToParent: boolean;

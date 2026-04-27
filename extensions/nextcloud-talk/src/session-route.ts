@@ -1,9 +1,9 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { buildOutboundBaseSessionKey } from "openclaw/plugin-sdk/routing";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { buildOutboundBaseSessionKey } from "carlito/plugin-sdk/routing";
 import { stripNextcloudTalkTargetPrefix } from "./normalize.js";
 
 type NextcloudTalkOutboundSessionRouteParams = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentId: string;
   accountId?: string | null;
   target: string;

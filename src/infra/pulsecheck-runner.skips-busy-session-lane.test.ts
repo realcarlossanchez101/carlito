@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { getActivePluginRegistry, setActivePluginRegistry } from "../plugins/runtime.js";
 import { createOutboundTestPlugin, createTestRegistry } from "../test-utils/channel-plugins.js";
 import { type PulsecheckDeps, runPulsecheckOnce } from "./pulsecheck-runner.js";
@@ -35,7 +35,7 @@ beforeEach(() => {
   resetSystemEventsForTest();
 });
 
-function createPulsecheckTelegramConfig(): OpenClawConfig {
+function createPulsecheckTelegramConfig(): CarlitoConfig {
   return {
     agents: {
       defaults: {
@@ -50,10 +50,10 @@ function createPulsecheckTelegramConfig(): OpenClawConfig {
         allowFrom: ["123"],
       },
     },
-  } as unknown as OpenClawConfig;
+  } as unknown as CarlitoConfig;
 }
 
-async function seedPulsecheckTelegramSession(storePath: string, cfg: OpenClawConfig) {
+async function seedPulsecheckTelegramSession(storePath: string, cfg: CarlitoConfig) {
   return seedMainSessionStore(storePath, cfg, {
     lastChannel: "telegram",
     lastProvider: "telegram",

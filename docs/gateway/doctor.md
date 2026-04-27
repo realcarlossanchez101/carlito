@@ -6,44 +6,44 @@ read_when:
 title: "Doctor"
 ---
 
-`openclaw doctor` is the repair + migration tool for OpenClaw. It fixes stale
+`carlito doctor` is the repair + migration tool for Carlito. It fixes stale
 config/state, checks health, and provides actionable repair steps.
 
 ## Quick start
 
 ```bash
-openclaw doctor
+carlito doctor
 ```
 
 ### Headless / automation
 
 ```bash
-openclaw doctor --yes
+carlito doctor --yes
 ```
 
 Accept defaults without prompting (including restart/service/sandbox repair steps when applicable).
 
 ```bash
-openclaw doctor --repair
+carlito doctor --repair
 ```
 
 Apply recommended repairs without prompting (repairs + restarts where safe).
 
 ```bash
-openclaw doctor --repair --force
+carlito doctor --repair --force
 ```
 
 Apply aggressive repairs too (overwrites custom supervisor configs).
 
 ```bash
-openclaw doctor --non-interactive
+carlito doctor --non-interactive
 ```
 
 Run without prompts and only apply safe migrations (config normalization + on-disk state moves). Skips restart/service/sandbox actions that require human confirmation.
 Legacy state migrations run automatically when detected.
 
 ```bash
-openclaw doctor --deep
+carlito doctor --deep
 ```
 
 Scan system services for extra gateway installs (launchd/systemd/schtasks).
@@ -51,7 +51,7 @@ Scan system services for extra gateway installs (launchd/systemd/schtasks).
 If you want to review changes before writing, open the config file first:
 
 ```bash
-cat ~/.openclaw/openclaw.json
+cat ~/.carlito/carlito.json
 ```
 
 ## What it does (summary)
@@ -73,7 +73,7 @@ cat ~/.openclaw/openclaw.json
 - State integrity and permissions checks (sessions, transcripts, state dir).
 - Config file permission checks (chmod 600) when running locally.
 - Model auth health: checks OAuth expiry, can refresh expiring tokens, and reports auth-profile cooldown/disabled states.
-- Extra workspace dir detection (`~/openclaw`).
+- Extra workspace dir detection (`~/carlito`).
 - Sandbox image repair when sandboxing is enabled.
 - Legacy service migration and extra gateway detection.
 - Matrix channel legacy state migration (in `--fix` / `--repair` mode).
@@ -96,7 +96,7 @@ cat ~/.openclaw/openclaw.json
 
 The Control UI Dreams scene includes **Backfill**, **Reset**, and **Clear Grounded**
 actions for the grounded dreaming workflow. These actions use gateway
-doctor-style RPC methods, but they are **not** part of `openclaw doctor` CLI
+doctor-style RPC methods, but they are **not** part of `carlito doctor` CLI
 repair/migration.
 
 What they do:
@@ -120,7 +120,7 @@ If you want grounded historical replay to influence the normal deep promotion
 lane, use the CLI flow instead:
 
 ```bash
-openclaw memory rem-backfill --path ./memory --stage-short-term
+carlito memory rem-backfill --path ./memory --stage-short-term
 ```
 
 That stages grounded durable candidates into the short-term dreaming store while
@@ -147,17 +147,17 @@ That includes legacy Talk flat fields. Current public Talk config is
 ### 2) Legacy config key migrations
 
 When the config contains deprecated keys, other commands refuse to run and ask
-you to run `openclaw doctor`.
+you to run `carlito doctor`.
 
 Doctor will:
 
 - Explain which legacy keys were found.
 - Show the migration it applied.
-- Rewrite `~/.openclaw/openclaw.json` with the updated schema.
+- Rewrite `~/.carlito/carlito.json` with the updated schema.
 
 The Gateway also auto-runs doctor migrations on startup when it detects a
 legacy config format, so stale configs are repaired without manual intervention.
-Cron job store migrations are handled by `openclaw doctor --fix`.
+Cron job store migrations are handled by `carlito doctor --fix`.
 
 Current migrations:
 
@@ -261,18 +261,18 @@ trigger this warning.
 Doctor can migrate older on-disk layouts into the current structure:
 
 - Sessions store + transcripts:
-  - from `~/.openclaw/sessions/` to `~/.openclaw/agents/<agentId>/sessions/`
+  - from `~/.carlito/sessions/` to `~/.carlito/agents/<agentId>/sessions/`
 - Agent dir:
-  - from `~/.openclaw/agent/` to `~/.openclaw/agents/<agentId>/agent/`
+  - from `~/.carlito/agent/` to `~/.carlito/agents/<agentId>/agent/`
 - WhatsApp auth state (Baileys):
-  - from legacy `~/.openclaw/credentials/*.json` (except `oauth.json`)
-  - to `~/.openclaw/credentials/whatsapp/<accountId>/...` (default account id: `default`)
+  - from legacy `~/.carlito/credentials/*.json` (except `oauth.json`)
+  - to `~/.carlito/credentials/whatsapp/<accountId>/...` (default account id: `default`)
 
 These migrations are best-effort and idempotent; doctor will emit warnings when
 it leaves any legacy folders behind as backups. The Gateway/CLI also auto-migrates
 the legacy sessions + agent dir on startup so history/auth/models land in the
 per-agent path without a manual doctor run. WhatsApp auth is intentionally only
-migrated via `openclaw doctor`. Talk provider/provider-map normalization now
+migrated via `carlito doctor`. Talk provider/provider-map normalization now
 compares by structural equality, so key-order-only diffs no longer trigger
 repeat no-op `doctor --fix` changes.
 
@@ -289,7 +289,7 @@ without duplicating the data.
 
 ### 3b) Legacy cron store migrations
 
-Doctor also checks the cron job store (`~/.openclaw/cron/jobs.json` by default,
+Doctor also checks the cron job store (`~/.carlito/cron/jobs.json` by default,
 or `cron.store` when overridden) for old job shapes that the scheduler still
 accepts for compatibility.
 
@@ -339,12 +339,12 @@ Doctor checks:
   transcript files.
 - **Main session “1-line JSONL”**: flags when the main transcript has only one
   line (history is not accumulating).
-- **Multiple state dirs**: warns when multiple `~/.openclaw` folders exist across
-  home directories or when `OPENCLAW_STATE_DIR` points elsewhere (history can
+- **Multiple state dirs**: warns when multiple `~/.carlito` folders exist across
+  home directories or when `CARLITO_STATE_DIR` points elsewhere (history can
   split between installs).
 - **Remote mode reminder**: if `gateway.mode=remote`, doctor reminds you to run
   it on the remote host (the state lives there).
-- **Config file permissions**: warns if `~/.openclaw/openclaw.json` is
+- **Config file permissions**: warns if `~/.carlito/carlito.json` is
   group/world readable and offers to tighten to `600`.
 
 ### 5) Model auth health (OAuth expiry)
@@ -358,7 +358,7 @@ skips refresh attempts.
 
 When an OAuth refresh fails permanently (for example `refresh_token_reused`,
 `invalid_grant`, or a provider telling you to sign in again), doctor reports
-that re-auth is required and prints the exact `openclaw models auth login --provider ...`
+that re-auth is required and prints the exact `carlito models auth login --provider ...`
 command to run.
 
 Doctor also reports auth profiles that are temporarily unusable due to:
@@ -383,16 +383,16 @@ the current config or enabled by their bundled manifest default, for example
 `plugins.entries.discord.enabled: true`, legacy
 `channels.discord.enabled: true`, or a default-enabled bundled provider. If any
 are missing, doctor reports the packages and installs them in
-`openclaw doctor --fix` / `openclaw doctor --repair` mode. External plugins still
-use `openclaw plugins install` / `openclaw plugins update`; doctor does not
+`carlito doctor --fix` / `carlito doctor --repair` mode. External plugins still
+use `carlito plugins install` / `carlito plugins update`; doctor does not
 install dependencies for arbitrary plugin paths.
 
 ### 8) Gateway service migrations and cleanup hints
 
 Doctor detects legacy gateway services (launchd/systemd/schtasks) and
-offers to remove them and install the OpenClaw service using the current gateway
+offers to remove them and install the Carlito service using the current gateway
 port. It can also scan for extra gateway-like services and print cleanup hints.
-Profile-named OpenClaw gateway services are considered first-class and are not
+Profile-named Carlito gateway services are considered first-class and are not
 flagged as "extra."
 
 ### 8b) Startup Matrix migration
@@ -401,7 +401,7 @@ When a Matrix channel account has a pending or actionable legacy state migration
 doctor (in `--fix` / `--repair` mode) creates a pre-migration snapshot and then
 runs the best-effort migration steps: legacy Matrix state migration and legacy
 encrypted-state preparation. Both steps are non-fatal; errors are logged and
-startup continues. In read-only mode (`openclaw doctor` without `--fix`) this check
+startup continues. In read-only mode (`carlito doctor` without `--fix`) this check
 is skipped entirely.
 
 ### 8c) Device pairing and auth drift
@@ -423,10 +423,10 @@ What it reports:
 Doctor does not auto-approve pair requests or auto-rotate device tokens. It
 prints the exact next steps instead:
 
-- inspect pending requests with `openclaw devices list`
-- approve the exact request with `openclaw devices approve <requestId>`
-- rotate a fresh token with `openclaw devices rotate --device <deviceId> --role <role>`
-- remove and re-approve a stale record with `openclaw devices remove <deviceId>`
+- inspect pending requests with `carlito devices list`
+- approve the exact request with `carlito devices approve <requestId>`
+- rotate a fresh token with `carlito devices rotate --device <deviceId> --role <role>`
+- remove and re-approve a stale record with `carlito devices remove <deviceId>`
 
 This closes the common "already paired but still getting pairing required"
 hole: doctor now distinguishes first-time pairing from pending role/scope
@@ -447,7 +447,7 @@ gateway stays alive after logout.
 Doctor prints a summary of the workspace state for the default agent:
 
 - **Skills status**: counts eligible, missing-requirements, and allowlist-blocked skills.
-- **Legacy workspace dirs**: warns when `~/openclaw` or other legacy workspace directories
+- **Legacy workspace dirs**: warns when `~/carlito` or other legacy workspace directories
   exist alongside the current workspace.
 - **Plugin status**: counts loaded/disabled/errored plugins; lists plugin IDs for any
   errors; reports bundle plugin capabilities.
@@ -472,14 +472,14 @@ Doctor checks whether tab completion is installed for the current shell
 (zsh, bash, fish, or PowerShell):
 
 - If the shell profile uses a slow dynamic completion pattern
-  (`source <(openclaw completion ...)`), doctor upgrades it to the faster
+  (`source <(carlito completion ...)`), doctor upgrades it to the faster
   cached file variant.
 - If completion is configured in the profile but the cache file is missing,
   doctor regenerates the cache automatically.
 - If no completion is configured at all, doctor prompts to install it
   (interactive mode only; skipped with `--non-interactive`).
 
-Run `openclaw completion --write-state` to regenerate the cache manually.
+Run `carlito completion --write-state` to regenerate the cache manually.
 
 ### 12) Gateway auth checks (local token)
 
@@ -487,13 +487,13 @@ Doctor checks local gateway token auth readiness.
 
 - If token mode needs a token and no token source exists, doctor offers to generate one.
 - If `gateway.auth.token` is SecretRef-managed but unavailable, doctor warns and does not overwrite it with plaintext.
-- `openclaw doctor --generate-gateway-token` forces generation only when no token SecretRef is configured.
+- `carlito doctor --generate-gateway-token` forces generation only when no token SecretRef is configured.
 
 ### 12b) Read-only SecretRef-aware repairs
 
 Some repair flows need to inspect configured credentials without weakening runtime fail-fast behavior.
 
-- `openclaw doctor --fix` now uses the same read-only SecretRef summary model as status-family commands for targeted config repairs.
+- `carlito doctor --fix` now uses the same read-only SecretRef summary model as status-family commands for targeted config repairs.
 - Example: Telegram `allowFrom` / `groupAllowFrom` `@username` repair tries to use configured bot credentials when available.
 - If the Telegram bot token is configured via SecretRef but unavailable in the current command path, doctor reports that the credential is configured-but-unavailable and skips auto-resolution instead of crashing or misreporting the token as missing.
 
@@ -520,7 +520,7 @@ When a gateway probe result is available (gateway was healthy at the time of the
 check), doctor cross-references its result with the CLI-visible config and notes
 any discrepancy.
 
-Use `openclaw memory status --deep` to verify embedding readiness at runtime.
+Use `carlito memory status --deep` to verify embedding readiness at runtime.
 
 ### 14) Channel status warnings
 
@@ -536,15 +536,15 @@ rewrite the service file/task to the current defaults.
 
 Notes:
 
-- `openclaw doctor` prompts before rewriting supervisor config.
-- `openclaw doctor --yes` accepts the default repair prompts.
-- `openclaw doctor --repair` applies recommended fixes without prompts.
-- `openclaw doctor --repair --force` overwrites custom supervisor configs.
+- `carlito doctor` prompts before rewriting supervisor config.
+- `carlito doctor --yes` accepts the default repair prompts.
+- `carlito doctor --repair` applies recommended fixes without prompts.
+- `carlito doctor --repair --force` overwrites custom supervisor configs.
 - If token auth requires a token and `gateway.auth.token` is SecretRef-managed, doctor service install/repair validates the SecretRef but does not persist resolved plaintext token values into supervisor service environment metadata.
 - If token auth requires a token and the configured token SecretRef is unresolved, doctor blocks the install/repair path with actionable guidance.
 - If both `gateway.auth.token` and `gateway.auth.password` are configured and `gateway.auth.mode` is unset, doctor blocks install/repair until mode is set explicitly.
 - For Linux user-systemd units, doctor token drift checks now include both `Environment=` and `EnvironmentFile=` sources when comparing service auth metadata.
-- You can always force a full rewrite via `openclaw gateway install --force`.
+- You can always force a full rewrite via `carlito gateway install --force`.
 
 ### 16) Gateway runtime + port diagnostics
 

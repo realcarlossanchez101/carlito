@@ -1,11 +1,8 @@
 import path from "node:path";
-import type { OpenClawConfig } from "../config/types.js";
-import {
-  POSIX_OPENCLAW_TMP_DIR,
-  resolvePreferredOpenClawTmpDir,
-} from "../infra/tmp-openclaw-dir.js";
+import type { CarlitoConfig } from "../config/types.js";
+import { POSIX_CARLITO_TMP_DIR, resolvePreferredCarlitoTmpDir } from "../infra/tmp-carlito-dir.js";
 
-const LOG_PREFIX = "openclaw";
+const LOG_PREFIX = "carlito";
 const LOG_SUFFIX = ".log";
 
 function canUseNodeFs(): boolean {
@@ -32,10 +29,10 @@ function formatLocalDate(date: Date): string {
 }
 
 export function resolveDefaultRollingLogFile(date = new Date()): string {
-  const logDir = canUseNodeFs() ? resolvePreferredOpenClawTmpDir() : POSIX_OPENCLAW_TMP_DIR;
+  const logDir = canUseNodeFs() ? resolvePreferredCarlitoTmpDir() : POSIX_CARLITO_TMP_DIR;
   return path.join(logDir, `${LOG_PREFIX}-${formatLocalDate(date)}${LOG_SUFFIX}`);
 }
 
-export function resolveConfiguredLogFilePath(config?: OpenClawConfig | null): string {
+export function resolveConfiguredLogFilePath(config?: CarlitoConfig | null): string {
   return config?.logging?.file ?? resolveDefaultRollingLogFile();
 }

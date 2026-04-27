@@ -20,8 +20,8 @@ for (const arg of process.argv.slice(2)) {
 
 const env = {
   ...process.env,
-  OPENCLAW_LIVE_TEST: process.env.OPENCLAW_LIVE_TEST || "1",
-  OPENCLAW_LIVE_TEST_QUIET: quietOverride ?? process.env.OPENCLAW_LIVE_TEST_QUIET ?? "1",
+  CARLITO_LIVE_TEST: process.env.CARLITO_LIVE_TEST || "1",
+  CARLITO_LIVE_TEST_QUIET: quietOverride ?? process.env.CARLITO_LIVE_TEST_QUIET ?? "1",
 };
 
 function parsePositiveInt(value, fallback) {
@@ -32,7 +32,7 @@ function parsePositiveInt(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-const pulsecheckMs = parsePositiveInt(process.env.OPENCLAW_LIVE_WRAPPER_PULSECHECK_MS, 20_000);
+const pulsecheckMs = parsePositiveInt(process.env.CARLITO_LIVE_WRAPPER_PULSECHECK_MS, 20_000);
 const startedAt = Date.now();
 let lastOutputAt = startedAt;
 

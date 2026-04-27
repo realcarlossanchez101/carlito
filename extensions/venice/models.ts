@@ -1,7 +1,7 @@
-import type { ModelDefinitionConfig } from "openclaw/plugin-sdk/provider-model-shared";
-import { createSubsystemLogger, retryAsync } from "openclaw/plugin-sdk/runtime-env";
-import { fetchWithSsrFGuard } from "openclaw/plugin-sdk/ssrf-runtime";
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
+import type { ModelDefinitionConfig } from "carlito/plugin-sdk/provider-model-shared";
+import { createSubsystemLogger, retryAsync } from "carlito/plugin-sdk/runtime-env";
+import { fetchWithSsrFGuard } from "carlito/plugin-sdk/ssrf-runtime";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 
 const log = createSubsystemLogger("venice-models");
 

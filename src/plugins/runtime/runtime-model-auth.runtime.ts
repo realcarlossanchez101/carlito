@@ -3,7 +3,7 @@ import {
   getApiKeyForModel as resolveModelApiKey,
   resolveApiKeyForProvider as resolveProviderApiKey,
 } from "../../agents/model-auth.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { prepareProviderRuntimeAuth } from "../provider-runtime.runtime.js";
 import type { ResolvedProviderRuntimeAuth } from "./model-auth-types.js";
 
@@ -25,7 +25,7 @@ export async function resolveApiKeyForProvider(
  */
 export async function getRuntimeAuthForModel(params: {
   model: Model<Api>;
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   workspaceDir?: string;
 }): Promise<ResolvedProviderRuntimeAuth> {
   const resolvedAuth = await resolveModelApiKey({

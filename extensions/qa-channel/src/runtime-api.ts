@@ -2,22 +2,22 @@ export type {
   ChannelMessageActionAdapter,
   ChannelMessageActionName,
   ChannelGatewayContext,
-} from "openclaw/plugin-sdk/channel-contract";
-export type { ChannelPlugin } from "openclaw/plugin-sdk/channel-core";
-export type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-export type { RuntimeEnv } from "openclaw/plugin-sdk/runtime";
-export type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
+} from "carlito/plugin-sdk/channel-contract";
+export type { ChannelPlugin } from "carlito/plugin-sdk/channel-core";
+export type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+export type { RuntimeEnv } from "carlito/plugin-sdk/runtime";
+export type { PluginRuntime } from "carlito/plugin-sdk/runtime-store";
 export {
   buildChannelConfigSchema,
   buildChannelOutboundSessionRoute,
   createChatChannelPlugin,
   defineChannelPluginEntry,
-} from "openclaw/plugin-sdk/channel-core";
-export { jsonResult, readStringParam } from "openclaw/plugin-sdk/channel-actions";
-export { getChatChannelMeta } from "openclaw/plugin-sdk/channel-plugin-common";
+} from "carlito/plugin-sdk/channel-core";
+export { jsonResult, readStringParam } from "carlito/plugin-sdk/channel-actions";
+export { getChatChannelMeta } from "carlito/plugin-sdk/channel-plugin-common";
 export {
   createComputedAccountStatusAdapter,
   createDefaultChannelRuntimeState,
-} from "openclaw/plugin-sdk/status-helpers";
-export { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
-export { dispatchInboundReplyWithBase } from "openclaw/plugin-sdk/inbound-reply-dispatch";
+} from "carlito/plugin-sdk/status-helpers";
+export { createPluginRuntimeStore } from "carlito/plugin-sdk/runtime-store";
+export { dispatchInboundReplyWithBase } from "carlito/plugin-sdk/inbound-reply-dispatch";

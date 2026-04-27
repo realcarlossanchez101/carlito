@@ -1,25 +1,25 @@
 {
-  "name": "@openclaw/google-meet",
+  "name": "@realcarlossanchez101/google-meet",
   "version": "2026.4.20",
-  "description": "OpenClaw Google Meet participant plugin",
+  "description": "Carlito Google Meet participant plugin",
   "type": "module",
   "dependencies": {
     "commander": "^14.0.3",
     "typebox": "1.1.28"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],
@@ -30,7 +30,7 @@
       "pluginApi": ">=2026.4.20"
     },
     "build": {
-      "openclawVersion": "2026.4.20"
+      "carlitoVersion": "2026.4.20"
     },
     "release": {
       "publishToClawHub": true,

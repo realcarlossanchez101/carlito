@@ -2,8 +2,8 @@ export {
   buildPluginConfigSchema,
   definePluginEntry,
   type AnyAgentTool,
-  type OpenClawConfig,
-  type OpenClawPluginApi,
-  type OpenClawPluginConfigSchema,
-} from "openclaw/plugin-sdk/plugin-entry";
-export { z } from "openclaw/plugin-sdk/zod";
+  type CarlitoConfig,
+  type CarlitoPluginApi,
+  type CarlitoPluginConfigSchema,
+} from "carlito/plugin-sdk/plugin-entry";
+export { z } from "carlito/plugin-sdk/zod";

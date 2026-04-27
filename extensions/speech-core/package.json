@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/speech-core",
+  "name": "@realcarlossanchez101/speech-core",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw speech runtime package",
+  "description": "Carlito speech runtime package",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   }
 }

@@ -1,8 +1,8 @@
 import type { WebClient as SlackWebClient } from "@slack/web-api";
-import { pruneMapToMaxSize } from "openclaw/plugin-sdk/collection-runtime";
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import { normalizeHostname } from "openclaw/plugin-sdk/host-runtime";
-import { resolveRequestUrl } from "openclaw/plugin-sdk/request-url";
+import { pruneMapToMaxSize } from "carlito/plugin-sdk/collection-runtime";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
+import { normalizeHostname } from "carlito/plugin-sdk/host-runtime";
+import { resolveRequestUrl } from "carlito/plugin-sdk/request-url";
 import type { SlackAttachment, SlackFile } from "../types.js";
 import {
   type FetchLike,

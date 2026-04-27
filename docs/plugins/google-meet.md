@@ -1,20 +1,20 @@
 ---
 summary: "Google Meet plugin: join explicit Meet URLs through Chrome or Twilio with realtime voice defaults"
 read_when:
-  - You want an OpenClaw agent to join a Google Meet call
+  - You want an Carlito agent to join a Google Meet call
   - You are configuring Chrome or Twilio as a Google Meet transport
 title: "Google Meet Plugin"
 ---
 
 # Google Meet (plugin)
 
-Google Meet participant support for OpenClaw.
+Google Meet participant support for Carlito.
 
 The plugin is explicit by design:
 
 - It only joins an explicit `https://meet.google.com/...` URL.
 - `realtime` voice is the default mode.
-- Realtime voice can call back into the full OpenClaw agent when deeper
+- Realtime voice can call back into the full Carlito agent when deeper
   reasoning or tools are needed.
 - Auth starts as personal Google OAuth or an already signed-in Chrome profile.
 - There is no automatic consent announcement.
@@ -33,10 +33,10 @@ If configured, it also runs an audio bridge health command and startup command
 before opening Chrome.
 
 ```bash
-openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
+carlito googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 ```
 
-Route Chrome microphone and speaker audio through the local OpenClaw audio
+Route Chrome microphone and speaker audio through the local Carlito audio
 bridge. If `BlackHole 2ch` is not installed, the join fails with a setup error
 instead of silently joining without an audio path.
 
@@ -46,7 +46,7 @@ Twilio transport is a strict dial plan delegated to the Voice Call plugin. It
 does not parse Meet pages for phone numbers.
 
 ```bash
-openclaw googlemeet join https://meet.google.com/abc-defg-hij \
+carlito googlemeet join https://meet.google.com/abc-defg-hij \
   --transport twilio \
   --dial-in-number +15551234567 \
   --pin 123456
@@ -55,7 +55,7 @@ openclaw googlemeet join https://meet.google.com/abc-defg-hij \
 Use `--dtmf-sequence` when the meeting needs a custom sequence:
 
 ```bash
-openclaw googlemeet join https://meet.google.com/abc-defg-hij \
+carlito googlemeet join https://meet.google.com/abc-defg-hij \
   --transport twilio \
   --dial-in-number +15551234567 \
   --dtmf-sequence ww123456#
@@ -67,7 +67,7 @@ Google Meet Media API access uses a personal OAuth client first. Configure
 `oauth.clientId` and optionally `oauth.clientSecret`, then run:
 
 ```bash
-openclaw googlemeet auth login --json
+carlito googlemeet auth login --json
 ```
 
 The command prints an `oauth` config block with a refresh token. It uses PKCE,
@@ -76,25 +76,25 @@ copy/paste flow with `--manual`.
 
 These environment variables are accepted as fallbacks:
 
-- `OPENCLAW_GOOGLE_MEET_CLIENT_ID` or `GOOGLE_MEET_CLIENT_ID`
-- `OPENCLAW_GOOGLE_MEET_CLIENT_SECRET` or `GOOGLE_MEET_CLIENT_SECRET`
-- `OPENCLAW_GOOGLE_MEET_REFRESH_TOKEN` or `GOOGLE_MEET_REFRESH_TOKEN`
-- `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN` or `GOOGLE_MEET_ACCESS_TOKEN`
-- `OPENCLAW_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` or
+- `CARLITO_GOOGLE_MEET_CLIENT_ID` or `GOOGLE_MEET_CLIENT_ID`
+- `CARLITO_GOOGLE_MEET_CLIENT_SECRET` or `GOOGLE_MEET_CLIENT_SECRET`
+- `CARLITO_GOOGLE_MEET_REFRESH_TOKEN` or `GOOGLE_MEET_REFRESH_TOKEN`
+- `CARLITO_GOOGLE_MEET_ACCESS_TOKEN` or `GOOGLE_MEET_ACCESS_TOKEN`
+- `CARLITO_GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT` or
   `GOOGLE_MEET_ACCESS_TOKEN_EXPIRES_AT`
-- `OPENCLAW_GOOGLE_MEET_DEFAULT_MEETING` or `GOOGLE_MEET_DEFAULT_MEETING`
-- `OPENCLAW_GOOGLE_MEET_PREVIEW_ACK` or `GOOGLE_MEET_PREVIEW_ACK`
+- `CARLITO_GOOGLE_MEET_DEFAULT_MEETING` or `GOOGLE_MEET_DEFAULT_MEETING`
+- `CARLITO_GOOGLE_MEET_PREVIEW_ACK` or `GOOGLE_MEET_PREVIEW_ACK`
 
 Resolve a Meet URL, code, or `spaces/{id}` through `spaces.get`:
 
 ```bash
-openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
+carlito googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 ```
 
 Run preflight before media work:
 
 ```bash
-openclaw googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
+carlito googlemeet preflight --meeting https://meet.google.com/abc-defg-hij
 ```
 
 Set `preview.enrollmentAcknowledged: true` only after confirming your Cloud
@@ -169,7 +169,7 @@ Set config under `plugins.entries.google-meet.config`:
           realtime: {
             provider: "openai",
             model: "gpt-realtime",
-            instructions: "You are joining a private Google Meet as my OpenClaw agent. Keep replies brief unless asked.",
+            instructions: "You are joining a private Google Meet as my Carlito agent. Keep replies brief unless asked.",
             toolPolicy: "safe-read-only",
             providers: {
               openai: {
@@ -212,9 +212,9 @@ Use `action: "status"` to list active sessions or inspect a session ID. Use
 Chrome realtime mode is optimized for a live voice loop. The realtime voice
 provider hears the meeting audio and speaks through the configured audio bridge.
 When the realtime model needs deeper reasoning, current information, or normal
-OpenClaw tools, it can call `openclaw_agent_consult`.
+Carlito tools, it can call `carlito_agent_consult`.
 
-The consult tool runs the regular OpenClaw agent behind the scenes with recent
+The consult tool runs the regular Carlito agent behind the scenes with recent
 meeting transcript context and returns a concise spoken answer to the realtime
 voice session. The voice model can then speak that answer back into the meeting.
 
@@ -239,7 +239,7 @@ phone dial-in participation.
 
 Chrome realtime mode needs either:
 
-- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw owns the
+- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: Carlito owns the
   realtime model bridge and pipes 8 kHz G.711 mu-law audio between those
   commands and the selected realtime voice provider.
 - `chrome.audioBridgeCommand`: an external bridge command owns the whole local

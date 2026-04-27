@@ -23,15 +23,15 @@ function createStubTransport(baseUrl = "http://127.0.0.1:43123") {
         "qa-channel": {
           enabled: true,
           baseUrl,
-          botUserId: "openclaw",
-          botDisplayName: "OpenClaw QA",
+          botUserId: "carlito",
+          botDisplayName: "Carlito QA",
           allowFrom: ["*"],
           pollTimeoutMs: 250,
         },
       },
       messages: {
         groupChat: {
-          mentionPatterns: ["\\b@?openclaw\\b"],
+          mentionPatterns: ["\\b@?carlito\\b"],
         },
       },
     }),
@@ -71,7 +71,7 @@ describe("startQaLiveLaneGateway", () => {
 
   it("threads the mock provider base url into the gateway child", async () => {
     const harness = await startQaLiveLaneGateway({
-      repoRoot: "/tmp/openclaw-repo",
+      repoRoot: "/tmp/carlito-repo",
       transport: createStubTransport(),
       transportBaseUrl: "http://127.0.0.1:43123",
       providerMode: "mock-openai",
@@ -96,7 +96,7 @@ describe("startQaLiveLaneGateway", () => {
 
   it("skips mock bootstrap for live frontier runs", async () => {
     const harness = await startQaLiveLaneGateway({
-      repoRoot: "/tmp/openclaw-repo",
+      repoRoot: "/tmp/carlito-repo",
       transport: createStubTransport(),
       transportBaseUrl: "http://127.0.0.1:43123",
       providerMode: "live-frontier",
@@ -121,7 +121,7 @@ describe("startQaLiveLaneGateway", () => {
   it("still stops the mock server when gateway shutdown fails", async () => {
     gatewayStop.mockRejectedValueOnce(new Error("gateway down"));
     const harness = await startQaLiveLaneGateway({
-      repoRoot: "/tmp/openclaw-repo",
+      repoRoot: "/tmp/carlito-repo",
       transport: createStubTransport(),
       transportBaseUrl: "http://127.0.0.1:43123",
       providerMode: "mock-openai",
@@ -141,7 +141,7 @@ describe("startQaLiveLaneGateway", () => {
     gatewayStop.mockRejectedValueOnce(new Error("gateway down"));
     mockStop.mockRejectedValueOnce(new Error("mock down"));
     const harness = await startQaLiveLaneGateway({
-      repoRoot: "/tmp/openclaw-repo",
+      repoRoot: "/tmp/carlito-repo",
       transport: createStubTransport(),
       transportBaseUrl: "http://127.0.0.1:43123",
       providerMode: "mock-openai",

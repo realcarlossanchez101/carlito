@@ -11,7 +11,7 @@ minimumReleaseAgeExclude:
   - "axios"
   - "basic-ftp"
   - "hono"
-  - "openclaw"
+  - "carlito"
   - "protobufjs"
   - "@buape/carbon"
   - "vite"

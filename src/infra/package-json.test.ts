@@ -15,17 +15,17 @@ async function expectPackageMeta(params: {
 
 describe("package-json helpers", () => {
   it("reads package version and trims package name", async () => {
-    await withTempDir({ prefix: "openclaw-package-json-" }, async (root) => {
+    await withTempDir({ prefix: "carlito-package-json-" }, async (root) => {
       await fs.writeFile(
         path.join(root, "package.json"),
-        JSON.stringify({ version: " 1.2.3 ", name: "  @openclaw/demo  " }),
+        JSON.stringify({ version: " 1.2.3 ", name: "  @realcarlossanchez101/demo  " }),
         "utf8",
       );
 
       await expectPackageMeta({
         root,
         expectedVersion: "1.2.3",
-        expectedName: "@openclaw/demo",
+        expectedName: "@realcarlossanchez101/demo",
       });
     });
   });
@@ -62,17 +62,17 @@ describe("package-json helpers", () => {
       writePackageJson: async (root: string) => {
         await fs.writeFile(
           path.join(root, "package.json"),
-          JSON.stringify({ version: "   ", name: "@openclaw/demo" }),
+          JSON.stringify({ version: "   ", name: "@realcarlossanchez101/demo" }),
           "utf8",
         );
       },
       expectedVersion: null,
-      expectedName: "@openclaw/demo",
+      expectedName: "@realcarlossanchez101/demo",
     },
   ])(
     "returns normalized nulls for $name",
     async ({ writePackageJson, expectedVersion, expectedName }) => {
-      await withTempDir({ prefix: "openclaw-package-json-" }, async (root) => {
+      await withTempDir({ prefix: "carlito-package-json-" }, async (root) => {
         await writePackageJson(root);
         await expectPackageMeta({
           root,

@@ -1,10 +1,10 @@
-import { DEFAULT_ACCOUNT_ID } from "openclaw/plugin-sdk/account-id";
+import { DEFAULT_ACCOUNT_ID } from "carlito/plugin-sdk/account-id";
 import {
   getSessionBindingService,
   type SessionBindingRecord,
-} from "openclaw/plugin-sdk/conversation-binding-runtime";
-import type { OpenClawPluginApi } from "openclaw/plugin-sdk/core";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/string-coerce-runtime";
+} from "carlito/plugin-sdk/conversation-binding-runtime";
+import type { CarlitoPluginApi } from "carlito/plugin-sdk/core";
+import { normalizeOptionalString } from "carlito/plugin-sdk/string-coerce-runtime";
 import { findMatrixAccountConfig, resolveMatrixBaseConfig } from "./account-config.js";
 import { resolveMatrixTargetIdentity } from "./target-ids.js";
 import {
@@ -77,7 +77,7 @@ function summarizeError(err: unknown): string {
 }
 
 function resolveThreadBindingFlags(
-  api: OpenClawPluginApi,
+  api: CarlitoPluginApi,
   accountId?: string,
 ): { enabled: boolean; spawnSubagentSessions: boolean } {
   const matrix = resolveMatrixBaseConfig(api.config);
@@ -121,7 +121,7 @@ function resolveMatrixBindingDeliveryOrigin(
 }
 
 export async function handleMatrixSubagentSpawning(
-  api: OpenClawPluginApi,
+  api: CarlitoPluginApi,
   event: MatrixSubagentSpawningEvent,
 ): Promise<SpawningResult | undefined> {
   if (!event.threadRequested) {

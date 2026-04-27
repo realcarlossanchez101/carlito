@@ -25,7 +25,7 @@ function createChildProcess(): ChildProcess {
 describe("launchTuiCli", () => {
   beforeEach(() => {
     process.argv = [...originalArgv];
-    process.argv[1] = "/repo/openclaw.mjs";
+    process.argv[1] = "/repo/carlito.mjs";
     process.execArgv.length = 0;
     spawnMock.mockReset();
     detachMock.mockReset();
@@ -73,7 +73,7 @@ describe("launchTuiCli", () => {
         "--import",
         "tsx",
         "--no-warnings",
-        "/repo/openclaw.mjs",
+        "/repo/carlito.mjs",
         "tui",
         "--url",
         "ws://127.0.0.1:18789",
@@ -97,7 +97,7 @@ describe("launchTuiCli", () => {
 
     expect(spawnMock).toHaveBeenCalledWith(
       process.execPath,
-      ["/repo/openclaw.mjs", "tui", "--local"],
+      ["/repo/carlito.mjs", "tui", "--local"],
       expect.objectContaining({ stdio: "inherit" }),
     );
   });
@@ -133,10 +133,10 @@ describe("launchTuiCli", () => {
 
     expect(spawnMock).toHaveBeenCalledWith(
       process.execPath,
-      ["/repo/openclaw.mjs", "tui"],
+      ["/repo/carlito.mjs", "tui"],
       expect.objectContaining({
         env: expect.objectContaining({
-          OPENCLAW_GATEWAY_URL: "ws://127.0.0.1:18789",
+          CARLITO_GATEWAY_URL: "ws://127.0.0.1:18789",
           CARLITO_TUI_SETUP_AUTH_SOURCE: "config",
         }),
       }),

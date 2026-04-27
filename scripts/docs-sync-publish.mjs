@@ -12,11 +12,11 @@ const SOURCE_CONFIG_PATH = path.join(SOURCE_DOCS_DIR, "docs.json");
 const SYNC_SUPPORT_FILES = [
   {
     source: path.join(ROOT, "scripts", "check-docs-mdx.mjs"),
-    target: path.join(".openclaw-sync", "check-docs-mdx.mjs"),
+    target: path.join(".carlito-sync", "check-docs-mdx.mjs"),
   },
   {
     source: path.join(ROOT, ".github", "codex", "prompts", "docs-mdx-repair.md"),
-    target: path.join(".openclaw-sync", "docs-mdx-repair.md"),
+    target: path.join(".carlito-sync", "docs-mdx-repair.md"),
   },
 ];
 const GENERATED_LOCALES = [
@@ -399,7 +399,7 @@ function writeSyncMetadata(targetRoot, args) {
     sha: args.sourceSha || "",
     syncedAt: new Date().toISOString(),
   };
-  writeJson(path.join(targetRoot, ".openclaw-sync", "source.json"), metadata);
+  writeJson(path.join(targetRoot, ".carlito-sync", "source.json"), metadata);
 }
 
 function syncSupportFiles(targetRoot) {

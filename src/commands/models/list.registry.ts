@@ -2,7 +2,7 @@ import type { Api, Model } from "@mariozechner/pi-ai";
 import type { ModelRegistry } from "@mariozechner/pi-coding-agent";
 import type { AuthProfileStore } from "../../agents/auth-profiles/types.js";
 import { shouldSuppressBuiltInModel } from "../../agents/model-suppression.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { resolveRuntimeSyntheticAuthProviderRefs } from "../../plugins/synthetic-auth.runtime.js";
 import {
   formatErrorWithStack,
@@ -17,14 +17,14 @@ import {
   listProfilesForProvider,
   resolveAwsSdkEnvVarName,
   resolveEnvApiKey,
-  resolveOpenClawAgentDir,
+  resolveCarlitoAgentDir,
 } from "./list.runtime.js";
 import type { ModelRow } from "./list.types.js";
 import { modelKey } from "./shared.js";
 
 const hasAuthForProvider = (
   provider: string,
-  cfg?: OpenClawConfig,
+  cfg?: CarlitoConfig,
   authStore?: AuthProfileStore,
 ) => {
   if (!cfg || !authStore) {
@@ -86,7 +86,7 @@ function validateAvailableModels(availableModels: unknown): Model<Api>[] {
   return availableModels as Model<Api>[];
 }
 
-function loadAvailableModels(registry: ModelRegistry, cfg: OpenClawConfig): Model<Api>[] {
+function loadAvailableModels(registry: ModelRegistry, cfg: CarlitoConfig): Model<Api>[] {
   let availableModels: unknown;
   try {
     availableModels = registry.getAvailable();
@@ -108,8 +108,8 @@ function loadAvailableModels(registry: ModelRegistry, cfg: OpenClawConfig): Mode
   }
 }
 
-export async function loadModelRegistry(cfg: OpenClawConfig, opts?: { providerFilter?: string }) {
-  const agentDir = resolveOpenClawAgentDir();
+export async function loadModelRegistry(cfg: CarlitoConfig, opts?: { providerFilter?: string }) {
+  const agentDir = resolveCarlitoAgentDir();
   const authStorage = discoverAuthStorage(agentDir, { readOnly: true });
   const registry = discoverModels(authStorage, agentDir, {
     providerFilter: opts?.providerFilter,

@@ -5,9 +5,9 @@ import {
   listMemoryEmbeddingProviders,
   listRegisteredMemoryEmbeddingProviderAdapters,
   type MemoryEmbeddingProviderAdapter,
-} from "openclaw/plugin-sdk/memory-core-host-engine-embeddings";
-import { resolveUserPath } from "openclaw/plugin-sdk/memory-core-host-engine-foundation";
-import { getProviderEnvVars } from "openclaw/plugin-sdk/provider-env-vars";
+} from "carlito/plugin-sdk/memory-core-host-engine-embeddings";
+import { resolveUserPath } from "carlito/plugin-sdk/memory-core-host-engine-foundation";
+import { getProviderEnvVars } from "carlito/plugin-sdk/provider-env-vars";
 import { formatErrorMessage } from "../dreaming-shared.js";
 import { filterUnregisteredMemoryEmbeddingProviderAdapters } from "./provider-adapter-registration.js";
 
@@ -55,7 +55,7 @@ function formatLocalSetupError(err: unknown): string {
     "To enable local embeddings:",
     "1) Use Node 24 (recommended for installs/updates; Node 22 LTS, currently 22.14+, remains supported)",
     missing
-      ? "2) Reinstall OpenClaw (this should install node-llama-cpp): npm i -g openclaw@latest"
+      ? "2) Reinstall Carlito (this should install node-llama-cpp): npm i -g carlito@latest"
       : null,
     "3) If you use pnpm: pnpm approve-builds (select node-llama-cpp), then pnpm rebuild node-llama-cpp",
     ...listRemoteEmbeddingSetupHints(),

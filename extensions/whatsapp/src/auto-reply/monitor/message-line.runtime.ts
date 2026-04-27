@@ -1,5 +1,5 @@
-export { resolveMessagePrefix } from "openclaw/plugin-sdk/agent-runtime";
+export { resolveMessagePrefix } from "carlito/plugin-sdk/agent-runtime";
 export {
   formatInboundEnvelope,
   type EnvelopeFormatOptions,
-} from "openclaw/plugin-sdk/channel-inbound";
+} from "carlito/plugin-sdk/channel-inbound";

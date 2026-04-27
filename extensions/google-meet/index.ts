@@ -1,7 +1,7 @@
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
-import type { GatewayRequestHandlerOptions } from "openclaw/plugin-sdk/gateway-runtime";
-import { definePluginEntry, type OpenClawPluginApi } from "openclaw/plugin-sdk/plugin-entry";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
+import type { GatewayRequestHandlerOptions } from "carlito/plugin-sdk/gateway-runtime";
+import { definePluginEntry, type CarlitoPluginApi } from "carlito/plugin-sdk/plugin-entry";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import { Type } from "typebox";
 import { registerGoogleMeetCli } from "./src/cli.js";
 import {
@@ -175,7 +175,7 @@ export default definePluginEntry({
   name: "Google Meet",
   description: "Join Google Meet calls through Chrome or Twilio transports",
   configSchema: googleMeetConfigSchema,
-  register(api: OpenClawPluginApi) {
+  register(api: CarlitoPluginApi) {
     const config = googleMeetConfigSchema.parse(api.pluginConfig);
     let runtime: GoogleMeetRuntime | null = null;
 

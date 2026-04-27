@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-type DiscoverOpenClawPlugins = typeof import("./discovery.js").discoverOpenClawPlugins;
+type DiscoverCarlitoPlugins = typeof import("./discovery.js").discoverCarlitoPlugins;
 type LoadPluginManifest = typeof import("./manifest.js").loadPluginManifest;
 type ResolveManifestProviderAuthChoices =
   typeof import("./provider-auth-choices.js").resolveManifestProviderAuthChoices;
 
-const discoverOpenClawPlugins = vi.hoisted(() =>
-  vi.fn<DiscoverOpenClawPlugins>(() => ({ candidates: [], diagnostics: [] })),
+const discoverCarlitoPlugins = vi.hoisted(() =>
+  vi.fn<DiscoverCarlitoPlugins>(() => ({ candidates: [], diagnostics: [] })),
 );
 vi.mock("./discovery.js", () => ({
-  discoverOpenClawPlugins,
+  discoverCarlitoPlugins,
 }));
 
 const loadPluginManifest = vi.hoisted(() => vi.fn<LoadPluginManifest>());
@@ -36,7 +36,7 @@ import {
 describe("provider install catalog", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [],
       diagnostics: [],
     });
@@ -44,7 +44,7 @@ describe("provider install catalog", () => {
   });
 
   it("merges manifest auth-choice metadata with discovery install metadata", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "openai",
@@ -52,11 +52,11 @@ describe("provider install catalog", () => {
           rootDir: "/repo/extensions/openai",
           source: "/repo/extensions/openai/index.ts",
           workspaceDir: "/repo",
-          packageName: "@openclaw/openai",
+          packageName: "@realcarlossanchez101/openai",
           packageDir: "/repo/extensions/openai",
           packageManifest: {
             install: {
-              npmSpec: "@openclaw/openai@1.2.3",
+              npmSpec: "@realcarlossanchez101/openai@1.2.3",
               defaultChoice: "npm",
               expectedIntegrity: "sha512-openai",
             },
@@ -67,7 +67,7 @@ describe("provider install catalog", () => {
     });
     loadPluginManifest.mockReturnValue({
       ok: true,
-      manifestPath: "/repo/extensions/openai/openclaw.plugin.json",
+      manifestPath: "/repo/extensions/openai/carlito.plugin.json",
       manifest: {
         id: "openai",
         configSchema: {
@@ -99,7 +99,7 @@ describe("provider install catalog", () => {
         label: "OpenAI",
         origin: "bundled",
         install: {
-          npmSpec: "@openclaw/openai@1.2.3",
+          npmSpec: "@realcarlossanchez101/openai@1.2.3",
           localPath: "extensions/openai",
           defaultChoice: "npm",
           expectedIntegrity: "sha512-openai",
@@ -109,7 +109,7 @@ describe("provider install catalog", () => {
   });
 
   it("falls back to workspace-relative local path when install metadata is sparse", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "demo-provider",
@@ -126,7 +126,7 @@ describe("provider install catalog", () => {
     });
     loadPluginManifest.mockReturnValue({
       ok: true,
-      manifestPath: "/repo/extensions/demo-provider/openclaw.plugin.json",
+      manifestPath: "/repo/extensions/demo-provider/carlito.plugin.json",
       manifest: {
         id: "demo-provider",
         configSchema: {
@@ -162,18 +162,18 @@ describe("provider install catalog", () => {
   });
 
   it("resolves one installable auth choice by id", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "vllm",
           origin: "config",
-          rootDir: "/Users/test/.openclaw/extensions/vllm",
-          source: "/Users/test/.openclaw/extensions/vllm/index.js",
-          packageName: "@openclaw/vllm",
-          packageDir: "/Users/test/.openclaw/extensions/vllm",
+          rootDir: "/Users/test/.carlito/extensions/vllm",
+          source: "/Users/test/.carlito/extensions/vllm/index.js",
+          packageName: "@realcarlossanchez101/vllm",
+          packageDir: "/Users/test/.carlito/extensions/vllm",
           packageManifest: {
             install: {
-              npmSpec: "@openclaw/vllm@2.0.0",
+              npmSpec: "@realcarlossanchez101/vllm@2.0.0",
               expectedIntegrity: "sha512-vllm",
             },
           },
@@ -183,7 +183,7 @@ describe("provider install catalog", () => {
     });
     loadPluginManifest.mockReturnValue({
       ok: true,
-      manifestPath: "/Users/test/.openclaw/extensions/vllm/openclaw.plugin.json",
+      manifestPath: "/Users/test/.carlito/extensions/vllm/carlito.plugin.json",
       manifest: {
         id: "vllm",
         configSchema: {
@@ -212,7 +212,7 @@ describe("provider install catalog", () => {
       label: "vLLM",
       origin: "config",
       install: {
-        npmSpec: "@openclaw/vllm@2.0.0",
+        npmSpec: "@realcarlossanchez101/vllm@2.0.0",
         expectedIntegrity: "sha512-vllm",
         defaultChoice: "npm",
       },
@@ -220,18 +220,18 @@ describe("provider install catalog", () => {
   });
 
   it("exposes trusted registry npm specs without requiring an exact version or integrity pin", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "vllm",
           origin: "config",
-          rootDir: "/Users/test/.openclaw/extensions/vllm",
-          source: "/Users/test/.openclaw/extensions/vllm/index.js",
-          packageName: "@openclaw/vllm",
-          packageDir: "/Users/test/.openclaw/extensions/vllm",
+          rootDir: "/Users/test/.carlito/extensions/vllm",
+          source: "/Users/test/.carlito/extensions/vllm/index.js",
+          packageName: "@realcarlossanchez101/vllm",
+          packageDir: "/Users/test/.carlito/extensions/vllm",
           packageManifest: {
             install: {
-              npmSpec: "@openclaw/vllm",
+              npmSpec: "@realcarlossanchez101/vllm",
             },
           },
         },
@@ -240,7 +240,7 @@ describe("provider install catalog", () => {
     });
     loadPluginManifest.mockReturnValue({
       ok: true,
-      manifestPath: "/Users/test/.openclaw/extensions/vllm/openclaw.plugin.json",
+      manifestPath: "/Users/test/.carlito/extensions/vllm/carlito.plugin.json",
       manifest: {
         id: "vllm",
         configSchema: {
@@ -267,22 +267,22 @@ describe("provider install catalog", () => {
       label: "vLLM",
       origin: "config",
       install: {
-        npmSpec: "@openclaw/vllm",
+        npmSpec: "@realcarlossanchez101/vllm",
         defaultChoice: "npm",
       },
     });
   });
 
   it("does not expose npm install specs from untrusted package metadata", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "demo-provider",
           origin: "global",
-          rootDir: "/Users/test/.openclaw/extensions/demo-provider",
-          source: "/Users/test/.openclaw/extensions/demo-provider/index.js",
+          rootDir: "/Users/test/.carlito/extensions/demo-provider",
+          source: "/Users/test/.carlito/extensions/demo-provider/index.js",
           packageName: "@vendor/demo-provider",
-          packageDir: "/Users/test/.openclaw/extensions/demo-provider",
+          packageDir: "/Users/test/.carlito/extensions/demo-provider",
           packageManifest: {
             install: {
               npmSpec: "@vendor/demo-provider@1.2.3",
@@ -295,7 +295,7 @@ describe("provider install catalog", () => {
     });
     loadPluginManifest.mockReturnValue({
       ok: true,
-      manifestPath: "/Users/test/.openclaw/extensions/demo-provider/openclaw.plugin.json",
+      manifestPath: "/Users/test/.carlito/extensions/demo-provider/carlito.plugin.json",
       manifest: {
         id: "demo-provider",
         configSchema: {
@@ -317,7 +317,7 @@ describe("provider install catalog", () => {
   });
 
   it("skips untrusted workspace install candidates when requested", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "demo-provider",
@@ -351,7 +351,7 @@ describe("provider install catalog", () => {
   });
 
   it("skips untrusted workspace candidates without id hints before manifest load", () => {
-    discoverOpenClawPlugins.mockReturnValue({
+    discoverCarlitoPlugins.mockReturnValue({
       candidates: [
         {
           idHint: "",

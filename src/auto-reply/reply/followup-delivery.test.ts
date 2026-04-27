@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import { resolveFollowupDeliveryPayloads } from "./followup-delivery.js";
 
-const baseConfig = {} as OpenClawConfig;
+const baseConfig = {} as CarlitoConfig;
 
 describe("resolveFollowupDeliveryPayloads", () => {
   it("drops pulsecheck ack payloads without media", () => {

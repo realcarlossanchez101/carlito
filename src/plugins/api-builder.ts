@@ -1,6 +1,6 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import type { PluginRuntime } from "./runtime/types.js";
-import type { OpenClawPluginApi, PluginLogger } from "./types.js";
+import type { CarlitoPluginApi, PluginLogger } from "./types.js";
 
 export type BuildPluginApiParams = {
   id: string;
@@ -9,15 +9,15 @@ export type BuildPluginApiParams = {
   description?: string;
   source: string;
   rootDir?: string;
-  registrationMode: OpenClawPluginApi["registrationMode"];
-  config: OpenClawConfig;
+  registrationMode: CarlitoPluginApi["registrationMode"];
+  config: CarlitoConfig;
   pluginConfig?: Record<string, unknown>;
   runtime: PluginRuntime;
   logger: PluginLogger;
   resolvePath: (input: string) => string;
   handlers?: Partial<
     Pick<
-      OpenClawPluginApi,
+      CarlitoPluginApi,
       | "registerTool"
       | "registerHook"
       | "registerHttpRoute"
@@ -63,62 +63,62 @@ export type BuildPluginApiParams = {
   >;
 };
 
-const noopRegisterTool: OpenClawPluginApi["registerTool"] = () => {};
-const noopRegisterHook: OpenClawPluginApi["registerHook"] = () => {};
-const noopRegisterHttpRoute: OpenClawPluginApi["registerHttpRoute"] = () => {};
-const noopRegisterChannel: OpenClawPluginApi["registerChannel"] = () => {};
-const noopRegisterGatewayMethod: OpenClawPluginApi["registerGatewayMethod"] = () => {};
-const noopRegisterCli: OpenClawPluginApi["registerCli"] = () => {};
-const noopRegisterReload: OpenClawPluginApi["registerReload"] = () => {};
-const noopRegisterNodeHostCommand: OpenClawPluginApi["registerNodeHostCommand"] = () => {};
-const noopRegisterSecurityAuditCollector: OpenClawPluginApi["registerSecurityAuditCollector"] =
+const noopRegisterTool: CarlitoPluginApi["registerTool"] = () => {};
+const noopRegisterHook: CarlitoPluginApi["registerHook"] = () => {};
+const noopRegisterHttpRoute: CarlitoPluginApi["registerHttpRoute"] = () => {};
+const noopRegisterChannel: CarlitoPluginApi["registerChannel"] = () => {};
+const noopRegisterGatewayMethod: CarlitoPluginApi["registerGatewayMethod"] = () => {};
+const noopRegisterCli: CarlitoPluginApi["registerCli"] = () => {};
+const noopRegisterReload: CarlitoPluginApi["registerReload"] = () => {};
+const noopRegisterNodeHostCommand: CarlitoPluginApi["registerNodeHostCommand"] = () => {};
+const noopRegisterSecurityAuditCollector: CarlitoPluginApi["registerSecurityAuditCollector"] =
   () => {};
-const noopRegisterService: OpenClawPluginApi["registerService"] = () => {};
-const noopRegisterCliBackend: OpenClawPluginApi["registerCliBackend"] = () => {};
-const noopRegisterTextTransforms: OpenClawPluginApi["registerTextTransforms"] = () => {};
-const noopRegisterConfigMigration: OpenClawPluginApi["registerConfigMigration"] = () => {};
-const noopRegisterAutoEnableProbe: OpenClawPluginApi["registerAutoEnableProbe"] = () => {};
-const noopRegisterProvider: OpenClawPluginApi["registerProvider"] = () => {};
-const noopRegisterSpeechProvider: OpenClawPluginApi["registerSpeechProvider"] = () => {};
-const noopRegisterRealtimeTranscriptionProvider: OpenClawPluginApi["registerRealtimeTranscriptionProvider"] =
+const noopRegisterService: CarlitoPluginApi["registerService"] = () => {};
+const noopRegisterCliBackend: CarlitoPluginApi["registerCliBackend"] = () => {};
+const noopRegisterTextTransforms: CarlitoPluginApi["registerTextTransforms"] = () => {};
+const noopRegisterConfigMigration: CarlitoPluginApi["registerConfigMigration"] = () => {};
+const noopRegisterAutoEnableProbe: CarlitoPluginApi["registerAutoEnableProbe"] = () => {};
+const noopRegisterProvider: CarlitoPluginApi["registerProvider"] = () => {};
+const noopRegisterSpeechProvider: CarlitoPluginApi["registerSpeechProvider"] = () => {};
+const noopRegisterRealtimeTranscriptionProvider: CarlitoPluginApi["registerRealtimeTranscriptionProvider"] =
   () => {};
-const noopRegisterRealtimeVoiceProvider: OpenClawPluginApi["registerRealtimeVoiceProvider"] =
+const noopRegisterRealtimeVoiceProvider: CarlitoPluginApi["registerRealtimeVoiceProvider"] =
   () => {};
-const noopRegisterMediaUnderstandingProvider: OpenClawPluginApi["registerMediaUnderstandingProvider"] =
+const noopRegisterMediaUnderstandingProvider: CarlitoPluginApi["registerMediaUnderstandingProvider"] =
   () => {};
-const noopRegisterImageGenerationProvider: OpenClawPluginApi["registerImageGenerationProvider"] =
+const noopRegisterImageGenerationProvider: CarlitoPluginApi["registerImageGenerationProvider"] =
   () => {};
-const noopRegisterVideoGenerationProvider: OpenClawPluginApi["registerVideoGenerationProvider"] =
+const noopRegisterVideoGenerationProvider: CarlitoPluginApi["registerVideoGenerationProvider"] =
   () => {};
-const noopRegisterMusicGenerationProvider: OpenClawPluginApi["registerMusicGenerationProvider"] =
+const noopRegisterMusicGenerationProvider: CarlitoPluginApi["registerMusicGenerationProvider"] =
   () => {};
-const noopRegisterWebFetchProvider: OpenClawPluginApi["registerWebFetchProvider"] = () => {};
-const noopRegisterWebSearchProvider: OpenClawPluginApi["registerWebSearchProvider"] = () => {};
-const noopRegisterInteractiveHandler: OpenClawPluginApi["registerInteractiveHandler"] = () => {};
-const noopOnConversationBindingResolved: OpenClawPluginApi["onConversationBindingResolved"] =
+const noopRegisterWebFetchProvider: CarlitoPluginApi["registerWebFetchProvider"] = () => {};
+const noopRegisterWebSearchProvider: CarlitoPluginApi["registerWebSearchProvider"] = () => {};
+const noopRegisterInteractiveHandler: CarlitoPluginApi["registerInteractiveHandler"] = () => {};
+const noopOnConversationBindingResolved: CarlitoPluginApi["onConversationBindingResolved"] =
   () => {};
-const noopRegisterCommand: OpenClawPluginApi["registerCommand"] = () => {};
-const noopRegisterContextEngine: OpenClawPluginApi["registerContextEngine"] = () => {};
-const noopRegisterCompactionProvider: OpenClawPluginApi["registerCompactionProvider"] = () => {};
-const noopRegisterAgentHarness: OpenClawPluginApi["registerAgentHarness"] = () => {};
-const noopRegisterEmbeddedExtensionFactory: OpenClawPluginApi["registerEmbeddedExtensionFactory"] =
+const noopRegisterCommand: CarlitoPluginApi["registerCommand"] = () => {};
+const noopRegisterContextEngine: CarlitoPluginApi["registerContextEngine"] = () => {};
+const noopRegisterCompactionProvider: CarlitoPluginApi["registerCompactionProvider"] = () => {};
+const noopRegisterAgentHarness: CarlitoPluginApi["registerAgentHarness"] = () => {};
+const noopRegisterEmbeddedExtensionFactory: CarlitoPluginApi["registerEmbeddedExtensionFactory"] =
   () => {};
-const noopRegisterCodexAppServerExtensionFactory: OpenClawPluginApi["registerCodexAppServerExtensionFactory"] =
+const noopRegisterCodexAppServerExtensionFactory: CarlitoPluginApi["registerCodexAppServerExtensionFactory"] =
   () => {};
-const noopRegisterDetachedTaskRuntime: OpenClawPluginApi["registerDetachedTaskRuntime"] = () => {};
-const noopRegisterMemoryCapability: OpenClawPluginApi["registerMemoryCapability"] = () => {};
-const noopRegisterMemoryPromptSection: OpenClawPluginApi["registerMemoryPromptSection"] = () => {};
-const noopRegisterMemoryPromptSupplement: OpenClawPluginApi["registerMemoryPromptSupplement"] =
+const noopRegisterDetachedTaskRuntime: CarlitoPluginApi["registerDetachedTaskRuntime"] = () => {};
+const noopRegisterMemoryCapability: CarlitoPluginApi["registerMemoryCapability"] = () => {};
+const noopRegisterMemoryPromptSection: CarlitoPluginApi["registerMemoryPromptSection"] = () => {};
+const noopRegisterMemoryPromptSupplement: CarlitoPluginApi["registerMemoryPromptSupplement"] =
   () => {};
-const noopRegisterMemoryCorpusSupplement: OpenClawPluginApi["registerMemoryCorpusSupplement"] =
+const noopRegisterMemoryCorpusSupplement: CarlitoPluginApi["registerMemoryCorpusSupplement"] =
   () => {};
-const noopRegisterMemoryFlushPlan: OpenClawPluginApi["registerMemoryFlushPlan"] = () => {};
-const noopRegisterMemoryRuntime: OpenClawPluginApi["registerMemoryRuntime"] = () => {};
-const noopRegisterMemoryEmbeddingProvider: OpenClawPluginApi["registerMemoryEmbeddingProvider"] =
+const noopRegisterMemoryFlushPlan: CarlitoPluginApi["registerMemoryFlushPlan"] = () => {};
+const noopRegisterMemoryRuntime: CarlitoPluginApi["registerMemoryRuntime"] = () => {};
+const noopRegisterMemoryEmbeddingProvider: CarlitoPluginApi["registerMemoryEmbeddingProvider"] =
   () => {};
-const noopOn: OpenClawPluginApi["on"] = () => {};
+const noopOn: CarlitoPluginApi["on"] = () => {};
 
-export function buildPluginApi(params: BuildPluginApiParams): OpenClawPluginApi {
+export function buildPluginApi(params: BuildPluginApiParams): CarlitoPluginApi {
   const handlers = params.handlers ?? {};
   return {
     id: params.id,

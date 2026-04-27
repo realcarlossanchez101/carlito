@@ -6,7 +6,7 @@ import {
   runSetupWizardConfigure,
   type WizardPrompter,
 } from "../../../test/helpers/plugins/setup-wizard.js";
-import type { OpenClawConfig } from "../api.js";
+import type { CarlitoConfig } from "../api.js";
 import { TlonAuthorizationSchema, TlonConfigSchema } from "./config-schema.js";
 import { tlonSetupWizard } from "./setup-surface.js";
 import { normalizeShip, resolveTlonOutboundTarget } from "./targets.js";
@@ -19,17 +19,17 @@ const tlonTestPlugin = {
   config: {
     listAccountIds: listTlonAccountIds,
     defaultAccountId: () => "default",
-    resolveAllowFrom: ({ cfg, accountId }: { cfg: OpenClawConfig; accountId?: string | null }) =>
+    resolveAllowFrom: ({ cfg, accountId }: { cfg: CarlitoConfig; accountId?: string | null }) =>
       resolveTlonAccount(cfg, accountId).dmAllowlist,
     formatAllowFrom: ({
       allowFrom,
     }: {
-      cfg: OpenClawConfig;
+      cfg: CarlitoConfig;
       allowFrom: Array<string | number> | undefined | null;
     }) => (allowFrom ?? []).map((entry) => normalizeShip(String(entry))).filter(Boolean),
   },
   setup: {
-    resolveAccountId: ({ accountId }: { cfg: OpenClawConfig; accountId?: string | null }) =>
+    resolveAccountId: ({ accountId }: { cfg: CarlitoConfig; accountId?: string | null }) =>
       accountId ?? "default",
   },
 };
@@ -41,7 +41,7 @@ describe("tlon core", () => {
   it("formats dm allowlist entries through the shared hybrid adapter", () => {
     expect(
       tlonTestPlugin.config.formatAllowFrom?.({
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         allowFrom: ["zod", " ~nec "],
       }),
     ).toEqual(["~zod", "~nec"]);
@@ -50,7 +50,7 @@ describe("tlon core", () => {
   it("returns an empty dm allowlist when the default account is unconfigured", () => {
     expect(
       tlonTestPlugin.config.resolveAllowFrom?.({
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         accountId: "default",
       }),
     ).toEqual([]);
@@ -68,7 +68,7 @@ describe("tlon core", () => {
               dmAllowlist: ["~zod"],
             },
           },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         accountId: "default",
       }),
     ).toEqual(["~zod"]);
@@ -137,7 +137,7 @@ describe("tlon core", () => {
 
     const result = await runSetupWizardConfigure({
       configure: tlonConfigure,
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       prompter,
       options: {},
     });
@@ -190,7 +190,7 @@ describe("tlon core", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(listTlonAccountIds(cfg)).toEqual(["alerts", "default", "work"]);
   });
@@ -216,7 +216,7 @@ describe("tlon core", () => {
             },
           },
         },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       "work",
     );
 
@@ -247,7 +247,7 @@ describe("tlon core", () => {
             },
           },
         },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       "default",
     );
 
@@ -268,7 +268,7 @@ describe("tlon core", () => {
             },
           },
         },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       accountOverrides: { tlon: "work" },
     });
 

@@ -1,7 +1,7 @@
-import { resolveSendableOutboundReplyParts } from "openclaw/plugin-sdk/reply-payload";
+import { resolveSendableOutboundReplyParts } from "carlito/plugin-sdk/reply-payload";
 import { describe, expect, it } from "vitest";
 import type { ReplyPayload } from "../../auto-reply/types.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { typedCases } from "../../test-utils/typed-cases.js";
 import {
   createOutboundPayloadPlan,
@@ -80,7 +80,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
         { text: "Replied in-thread." },
         { text: "Replied in #maintainers." },
         {
-          text: "Updated [wiki/providers.md](/Users/steipete/.openclaw/workspace/wiki/providers.md:33). No channel reply.",
+          text: "Updated [wiki/providers.md](/Users/steipete/.carlito/workspace/wiki/providers.md:33). No channel reply.",
         },
         {
           text: "Updated [wiki/tools.md] with the rollback failure-mode nuance. No channel reply.",
@@ -190,7 +190,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
   });
 
   it("rewrites bare silent replies for direct conversations when requested", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {
@@ -219,7 +219,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
   });
 
   it("drops bare silent replies for groups when policy allows silence", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {
@@ -246,7 +246,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
   });
 
   it("does not add rewrite chatter when visible content is already being delivered", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {
@@ -277,7 +277,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
   });
 
   describe("pending spawned subagent children", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: { direct: "disallow", group: "allow", internal: "allow" },
@@ -325,7 +325,7 @@ describe("normalizeReplyPayloadsForDelivery", () => {
   });
 
   it("keeps bare NO_REPLY visible when silence is disallowed but rewrite is off", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           silentReply: {

@@ -1,8 +1,8 @@
 import type { ChannelType, Client, User } from "@buape/carbon";
-import type { ReplyToMode } from "openclaw/plugin-sdk/config-runtime";
-import type { SessionBindingRecord } from "openclaw/plugin-sdk/conversation-runtime";
-import type { HistoryEntry } from "openclaw/plugin-sdk/reply-history";
-import type { resolveAgentRoute } from "openclaw/plugin-sdk/routing";
+import type { ReplyToMode } from "carlito/plugin-sdk/config-runtime";
+import type { SessionBindingRecord } from "carlito/plugin-sdk/conversation-runtime";
+import type { HistoryEntry } from "carlito/plugin-sdk/reply-history";
+import type { resolveAgentRoute } from "carlito/plugin-sdk/routing";
 import type { DiscordChannelConfigResolved, DiscordGuildEntryResolved } from "./allow-list.js";
 import type { DiscordChannelInfo } from "./message-utils.js";
 import type { DiscordThreadBindingLookup } from "./reply-delivery.js";
@@ -12,16 +12,16 @@ export type { DiscordSenderIdentity } from "./sender-identity.js";
 import type { DiscordThreadChannel } from "./threading.js";
 
 export type LoadedConfig = ReturnType<
-  typeof import("openclaw/plugin-sdk/config-runtime").loadConfig
+  typeof import("carlito/plugin-sdk/config-runtime").loadConfig
 >;
-export type RuntimeEnv = import("openclaw/plugin-sdk/runtime-env").RuntimeEnv;
+export type RuntimeEnv = import("carlito/plugin-sdk/runtime-env").RuntimeEnv;
 
 export type DiscordMessageEvent = import("./listeners.js").DiscordMessageEvent;
 
 type DiscordMessagePreflightSharedFields = {
   cfg: LoadedConfig;
   discordConfig: NonNullable<
-    import("openclaw/plugin-sdk/config-runtime").OpenClawConfig["channels"]
+    import("carlito/plugin-sdk/config-runtime").CarlitoConfig["channels"]
   >["discord"];
   accountId: string;
   token: string;

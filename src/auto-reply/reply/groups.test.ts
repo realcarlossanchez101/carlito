@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import { resetPluginRuntimeStateForTest } from "../../plugins/runtime.js";
 
 describe("group runtime loading", () => {
@@ -31,7 +31,7 @@ describe("group runtime loading", () => {
     );
     expect(
       groups.buildGroupIntro({
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         sessionCtx: { Provider: "whatsapp" },
         defaultActivation: "mention",
         silentToken: "NO_REPLY",
@@ -39,7 +39,7 @@ describe("group runtime loading", () => {
     ).toContain("Activation: trigger-only");
     expect(
       groups.buildGroupIntro({
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         sessionCtx: { Provider: "whatsapp" },
         defaultActivation: "mention",
         silentToken: "NO_REPLY",
@@ -70,7 +70,7 @@ describe("group runtime loading", () => {
               },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as CarlitoConfig,
         ctx: {
           Provider: "slack",
           From: "slack:channel:C123",
@@ -110,7 +110,7 @@ describe("group runtime loading", () => {
               },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as CarlitoConfig,
         ctx: {
           Provider: "discord",
           From: "discord:channel:C1",
@@ -152,7 +152,7 @@ describe("group runtime loading", () => {
               },
             },
           },
-        } as unknown as OpenClawConfig,
+        } as unknown as CarlitoConfig,
         ctx: {
           Provider: "discord",
           From: "discord:channel:C1",

@@ -23,7 +23,7 @@ const spawnSyncMock = vi.mocked(spawnSync);
 const tempDirs: string[] = [];
 
 function makeTempDir(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-runtime-deps-test-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-runtime-deps-test-"));
   tempDirs.push(dir);
   return dir;
 }
@@ -154,10 +154,10 @@ describe("installBundledRuntimeDeps", () => {
       throw error;
     });
 
-    expect(isWritableDirectory("/usr/lib/node_modules/openclaw")).toBe(false);
+    expect(isWritableDirectory("/usr/lib/node_modules/carlito")).toBe(false);
     expect(accessSpy).not.toHaveBeenCalled();
     expect(mkdirSpy).toHaveBeenCalledWith(
-      path.join("/usr/lib/node_modules/openclaw", ".openclaw-write-probe-"),
+      path.join("/usr/lib/node_modules/carlito", ".carlito-write-probe-"),
     );
   });
 
@@ -176,7 +176,7 @@ describe("installBundledRuntimeDeps", () => {
     });
 
     installBundledRuntimeDeps({
-      installRoot: "C:\\openclaw",
+      installRoot: "C:\\carlito",
       missingSpecs: ["acpx@0.5.3"],
       env: {
         npm_config_prefix: "C:\\prefix",
@@ -189,7 +189,7 @@ describe("installBundledRuntimeDeps", () => {
       expect.any(String),
       ["C:\\node\\node_modules\\npm\\bin\\npm-cli.js", "install", "--ignore-scripts", "acpx@0.5.3"],
       expect.objectContaining({
-        cwd: "C:\\openclaw",
+        cwd: "C:\\carlito",
         env: expect.objectContaining({
           npm_config_legacy_peer_deps: "true",
           npm_config_package_lock: "false",
@@ -238,7 +238,7 @@ describe("installBundledRuntimeDeps", () => {
     expect(
       JSON.parse(fs.readFileSync(path.join(installExecutionRoot, "package.json"), "utf8")),
     ).toEqual({
-      name: "openclaw-runtime-deps-install",
+      name: "carlito-runtime-deps-install",
       private: true,
     });
     expect(
@@ -269,7 +269,7 @@ describe("installBundledRuntimeDeps", () => {
     vi.spyOn(fs, "rmSync").mockImplementation((target, options) => {
       if (
         !blockedCleanup &&
-        path.basename(String(target)).startsWith(".openclaw-runtime-deps-copy-")
+        path.basename(String(target)).startsWith(".carlito-runtime-deps-copy-")
       ) {
         blockedCleanup = true;
         const error = new Error("Directory not empty") as NodeJS.ErrnoException;
@@ -337,7 +337,7 @@ describe("installBundledRuntimeDeps", () => {
 
     expect(() =>
       installBundledRuntimeDeps({
-        installRoot: "/tmp/openclaw",
+        installRoot: "/tmp/carlito",
         missingSpecs: ["browser-runtime@1.0.0"],
         env: {},
       }),
@@ -406,9 +406,9 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       path.join(pluginRoot, "package.json"),
       JSON.stringify({
         dependencies: {
-          "@openclaw/plugin-sdk": "workspace:*",
+          "@realcarlossanchez101/plugin-sdk": "workspace:*",
           "external-runtime": "^1.2.3",
-          openclaw: "workspace:*",
+          carlito: "workspace:*",
         },
       }),
     );
@@ -441,7 +441,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     const stageDir = makeTempDir();
     fs.writeFileSync(
       path.join(packageRoot, "package.json"),
-      JSON.stringify({ name: "openclaw", version: "2026.4.22" }),
+      JSON.stringify({ name: "carlito", version: "2026.4.22" }),
     );
     const pluginRoot = path.join(packageRoot, "dist", "extensions", "slack");
     fs.mkdirSync(pluginRoot, { recursive: true });
@@ -454,7 +454,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       }),
     );
 
-    const env = { OPENCLAW_PLUGIN_STAGE_DIR: stageDir };
+    const env = { CARLITO_PLUGIN_STAGE_DIR: stageDir };
     const calls: BundledRuntimeDepsInstallParams[] = [];
     const result = ensureBundledPluginRuntimeDeps({
       env,
@@ -506,7 +506,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     const stageDir = makeTempDir();
     fs.writeFileSync(
       path.join(packageRoot, "package.json"),
-      JSON.stringify({ name: "openclaw", version: "2026.4.22" }),
+      JSON.stringify({ name: "carlito", version: "2026.4.22" }),
     );
     const alphaRoot = path.join(packageRoot, "dist", "extensions", "alpha");
     const betaRoot = path.join(packageRoot, "dist", "extensions", "beta");
@@ -521,7 +521,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       JSON.stringify({ dependencies: { "beta-runtime": "2.0.0" } }),
     );
 
-    const env = { OPENCLAW_PLUGIN_STAGE_DIR: stageDir };
+    const env = { CARLITO_PLUGIN_STAGE_DIR: stageDir };
     const calls: BundledRuntimeDepsInstallParams[] = [];
     const installDeps = (params: BundledRuntimeDepsInstallParams) => {
       calls.push(params);
@@ -572,8 +572,8 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       path.join(pluginRoot, "package.json"),
       JSON.stringify({
         dependencies: {
-          "@openclaw/plugin-sdk": "workspace:*",
-          openclaw: "workspace:*",
+          "@realcarlossanchez101/plugin-sdk": "workspace:*",
+          carlito: "workspace:*",
         },
       }),
     );
@@ -608,7 +608,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
 
     const calls: BundledRuntimeDepsInstallParams[] = [];
     const result = ensureBundledPluginRuntimeDeps({
-      env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+      env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
       installDeps: (params) => {
         calls.push(params);
       },
@@ -621,7 +621,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       retainSpecs: ["tokenjuice@0.6.1"],
     });
     const installRoot = resolveBundledRuntimeDependencyInstallRoot(pluginRoot, {
-      env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+      env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
     });
     expect(calls).toEqual([
       {
@@ -633,7 +633,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     expect(installRoot).toContain(stageDir);
     expect(installRoot).not.toBe(pluginRoot);
     expect(
-      JSON.parse(fs.readFileSync(path.join(installRoot, ".openclaw-runtime-deps.json"), "utf8")),
+      JSON.parse(fs.readFileSync(path.join(installRoot, ".carlito-runtime-deps.json"), "utf8")),
     ).toEqual({ specs: ["tokenjuice@0.6.1"] });
   });
 
@@ -644,7 +644,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     const pluginRoot = path.join(packageRoot, "extensions", "tokenjuice");
     fs.mkdirSync(pluginRoot, { recursive: true });
     fs.writeFileSync(
-      path.join(pluginRoot, ".openclaw-runtime-deps.json"),
+      path.join(pluginRoot, ".carlito-runtime-deps.json"),
       JSON.stringify({ specs: ["stale@9.9.9"] }),
     );
     fs.writeFileSync(
@@ -681,7 +681,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       },
     ]);
     expect(resolveBundledRuntimeDependencyInstallRoot(pluginRoot, { env: {} })).toBe(pluginRoot);
-    expect(fs.existsSync(path.join(pluginRoot, ".openclaw-runtime-deps.json"))).toBe(false);
+    expect(fs.existsSync(path.join(pluginRoot, ".carlito-runtime-deps.json"))).toBe(false);
   });
 
   it("removes stale source-checkout manifests even when runtime deps are present", () => {
@@ -703,7 +703,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       JSON.stringify({ name: "tokenjuice", version: "0.6.1" }),
     );
     fs.writeFileSync(
-      path.join(pluginRoot, ".openclaw-runtime-deps.json"),
+      path.join(pluginRoot, ".carlito-runtime-deps.json"),
       JSON.stringify({ specs: ["stale@9.9.9"] }),
     );
 
@@ -717,7 +717,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     });
 
     expect(result).toEqual({ installedSpecs: [], retainSpecs: [] });
-    expect(fs.existsSync(path.join(pluginRoot, ".openclaw-runtime-deps.json"))).toBe(false);
+    expect(fs.existsSync(path.join(pluginRoot, ".carlito-runtime-deps.json"))).toBe(false);
   });
 
   it("treats Docker build source trees without .git as source checkouts", () => {
@@ -733,7 +733,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
           acpx: "0.5.3",
         },
         devDependencies: {
-          "@openclaw/plugin-sdk": "workspace:*",
+          "@realcarlossanchez101/plugin-sdk": "workspace:*",
         },
       }),
     );
@@ -789,7 +789,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     const calls: BundledRuntimeDepsInstallParams[] = [];
 
     const result = ensureBundledPluginRuntimeDeps({
-      env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+      env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
       installDeps: (params) => {
         calls.push(params);
       },
@@ -804,7 +804,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
     expect(calls).toEqual([
       {
         installRoot: resolveBundledRuntimeDependencyInstallRoot(pluginRoot, {
-          env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+          env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
         }),
         missingSpecs: ["tokenjuice@0.6.1"],
         installSpecs: ["tokenjuice@0.6.1"],
@@ -837,7 +837,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
 
     const calls: BundledRuntimeDepsInstallParams[] = [];
     const result = ensureBundledPluginRuntimeDeps({
-      env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+      env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
       installDeps: (params) => {
         calls.push(params);
       },
@@ -850,7 +850,7 @@ describe("ensureBundledPluginRuntimeDeps", () => {
       retainSpecs: ["tokenjuice@0.6.1"],
     });
     const installRoot = resolveBundledRuntimeDependencyInstallRoot(pluginRoot, {
-      env: { OPENCLAW_PLUGIN_STAGE_DIR: stageDir },
+      env: { CARLITO_PLUGIN_STAGE_DIR: stageDir },
     });
     expect(calls).toEqual([
       {

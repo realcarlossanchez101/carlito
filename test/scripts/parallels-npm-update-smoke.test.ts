@@ -19,7 +19,7 @@ describe("parallels npm update smoke", () => {
     expect(script).toContain("scrub_future_plugin_entries");
     expect(script).toContain("delete entries.feishu");
     expect(script).toContain("delete entries.whatsapp");
-    expect(script).toContain("Remove-FuturePluginEntries\n  Stop-OpenClawGatewayProcesses");
-    expect(script).toContain("scrub_future_plugin_entries\nstop_openclaw_gateway_processes");
+    expect(script).toContain("Remove-FuturePluginEntries\n  Stop-CarlitoGatewayProcesses");
+    expect(script).toContain("scrub_future_plugin_entries\nstop_carlito_gateway_processes");
   });
 });

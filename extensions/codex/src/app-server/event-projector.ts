@@ -9,7 +9,8 @@ import {
   type EmbeddedRunAttemptParams,
   type EmbeddedRunAttemptResult,
   type MessagingToolSend,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
+import { readCodexTurn } from "./protocol-validators.js";
 import {
   isJsonObject,
   type CodexServerNotification,
@@ -18,7 +19,6 @@ import {
   type JsonObject,
   type JsonValue,
 } from "./protocol.js";
-import { readCodexTurn } from "./protocol-validators.js";
 
 export type CodexAppServerToolTelemetry = {
   didSendViaMessagingTool: boolean;
@@ -147,7 +147,7 @@ export class CodexAppServerEventProjector {
       },
     ];
     // Codex owns the canonical thread. These mirror records keep enough local
-    // context for OpenClaw history, search, and future harness switching.
+    // context for Carlito history, search, and future harness switching.
     if (reasoningText) {
       messagesSnapshot.push(this.createAssistantMirrorMessage("Codex reasoning", reasoningText));
     }

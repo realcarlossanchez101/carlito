@@ -1,3 +1,3 @@
-export { resolveMarkdownTableMode } from "openclaw/plugin-sdk/config-runtime";
-export { chunkTextWithMode, resolveChunkMode } from "openclaw/plugin-sdk/reply-runtime";
-export { convertMarkdownTables } from "openclaw/plugin-sdk/text-runtime";
+export { resolveMarkdownTableMode } from "carlito/plugin-sdk/config-runtime";
+export { chunkTextWithMode, resolveChunkMode } from "carlito/plugin-sdk/reply-runtime";
+export { convertMarkdownTables } from "carlito/plugin-sdk/text-runtime";

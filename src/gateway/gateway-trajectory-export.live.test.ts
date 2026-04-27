@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { isLiveTestEnabled } from "../agents/live-test-helpers.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { extractFirstTextBlock } from "../shared/chat-message-content.js";
 import { GatewayClient } from "./client.js";
 import {
@@ -16,8 +16,8 @@ import { restoreLiveEnv, snapshotLiveEnv, type LiveEnvSnapshot } from "./live-en
 import { extractPayloadText } from "./test-helpers.agent-results.js";
 
 const LIVE = isLiveTestEnabled();
-const CODEX_HARNESS_LIVE = process.env.OPENCLAW_LIVE_CODEX_HARNESS === "1";
-const CODEX_HARNESS_DEBUG = process.env.OPENCLAW_LIVE_CODEX_HARNESS_DEBUG === "1";
+const CODEX_HARNESS_LIVE = process.env.CARLITO_LIVE_CODEX_HARNESS === "1";
+const CODEX_HARNESS_DEBUG = process.env.CARLITO_LIVE_CODEX_HARNESS_DEBUG === "1";
 const describeLive = LIVE && CODEX_HARNESS_LIVE ? describe : describe.skip;
 const LIVE_TIMEOUT_MS = 420_000;
 const GATEWAY_CONNECT_TIMEOUT_MS = 60_000;
@@ -33,7 +33,7 @@ function logLiveStep(step: string, details?: Record<string, unknown>): void {
 }
 
 function snapshotEnv(): LiveEnvSnapshot {
-  return snapshotLiveEnv(["OPENCLAW_TRAJECTORY", "OPENCLAW_TRAJECTORY_DIR"]);
+  return snapshotLiveEnv(["CARLITO_TRAJECTORY", "CARLITO_TRAJECTORY_DIR"]);
 }
 
 function restoreEnv(snapshot: LiveEnvSnapshot): void {
@@ -47,7 +47,7 @@ async function writeLiveGatewayConfig(params: {
   token: string;
   workspace: string;
 }): Promise<void> {
-  const cfg: OpenClawConfig = {
+  const cfg: CarlitoConfig = {
     gateway: {
       mode: "local",
       port: params.port,
@@ -154,7 +154,7 @@ describeLive("gateway live trajectory export", () => {
       const { startGatewayServer } = await import("./server.js");
 
       const previousEnv = snapshotEnv();
-      const tempDir = await fs.mkdtemp(path.join(process.cwd(), ".tmp-openclaw-trajectory-live-"));
+      const tempDir = await fs.mkdtemp(path.join(process.cwd(), ".tmp-carlito-trajectory-live-"));
       cleanup.push(async () => {
         restoreEnv(previousEnv);
         clearRuntimeConfigSnapshot();
@@ -164,26 +164,26 @@ describeLive("gateway live trajectory export", () => {
       const stateDir = path.join(tempDir, "state");
       const trajectoryDir = path.join(tempDir, "runtime-traces");
       const { workspaceDir } = await createBootstrapWorkspace(tempDir);
-      const configPath = path.join(tempDir, "openclaw.json");
+      const configPath = path.join(tempDir, "carlito.json");
       const token = `test-${randomUUID()}`;
       const port = await getFreeGatewayPort();
-      const modelKey = process.env.OPENCLAW_LIVE_CODEX_HARNESS_MODEL ?? DEFAULT_CODEX_MODEL;
+      const modelKey = process.env.CARLITO_LIVE_CODEX_HARNESS_MODEL ?? DEFAULT_CODEX_MODEL;
 
       clearRuntimeConfigSnapshot();
-      process.env.OPENCLAW_AGENT_RUNTIME = "codex";
-      process.env.OPENCLAW_AGENT_HARNESS_FALLBACK = "none";
+      process.env.CARLITO_AGENT_RUNTIME = "codex";
+      process.env.CARLITO_AGENT_HARNESS_FALLBACK = "none";
       delete process.env.OPENAI_BASE_URL;
       delete process.env.OPENAI_API_KEY;
-      process.env.OPENCLAW_CONFIG_PATH = configPath;
-      process.env.OPENCLAW_GATEWAY_TOKEN = token;
-      process.env.OPENCLAW_SKIP_BROWSER_CONTROL_SERVER = "1";
-      process.env.OPENCLAW_SKIP_CANVAS_HOST = "1";
-      process.env.OPENCLAW_SKIP_CHANNELS = "1";
-      process.env.OPENCLAW_SKIP_CRON = "1";
-      process.env.OPENCLAW_SKIP_GMAIL_WATCHER = "1";
-      process.env.OPENCLAW_STATE_DIR = stateDir;
-      process.env.OPENCLAW_TRAJECTORY = "1";
-      process.env.OPENCLAW_TRAJECTORY_DIR = trajectoryDir;
+      process.env.CARLITO_CONFIG_PATH = configPath;
+      process.env.CARLITO_GATEWAY_TOKEN = token;
+      process.env.CARLITO_SKIP_BROWSER_CONTROL_SERVER = "1";
+      process.env.CARLITO_SKIP_CANVAS_HOST = "1";
+      process.env.CARLITO_SKIP_CHANNELS = "1";
+      process.env.CARLITO_SKIP_CRON = "1";
+      process.env.CARLITO_SKIP_GMAIL_WATCHER = "1";
+      process.env.CARLITO_STATE_DIR = stateDir;
+      process.env.CARLITO_TRAJECTORY = "1";
+      process.env.CARLITO_TRAJECTORY_DIR = trajectoryDir;
 
       await fs.mkdir(stateDir, { recursive: true });
       await fs.mkdir(trajectoryDir, { recursive: true });
@@ -225,7 +225,7 @@ describeLive("gateway live trajectory export", () => {
       logLiveStep("runtime-traces", { trajectoryDir, files: trajectoryFiles });
       expect(trajectoryFiles.length).toBeGreaterThan(0);
 
-      const bundleDir = path.join(workspaceDir, ".openclaw", "trajectory-exports", "bundle");
+      const bundleDir = path.join(workspaceDir, ".carlito", "trajectory-exports", "bundle");
       const beforeExport = new Set(await listDirectoryNames(tempDir));
       const exportRunId = `chat-export-${randomUUID()}`;
       logLiveStep("export:start", { bundleDir, exportRunId });

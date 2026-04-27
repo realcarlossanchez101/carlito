@@ -1,7 +1,7 @@
 ---
-summary: "OpenClaw tools and plugins overview: what the agent can do and how to extend it"
+summary: "Carlito tools and plugins overview: what the agent can do and how to extend it"
 read_when:
-  - You want to understand what tools OpenClaw provides
+  - You want to understand what tools Carlito provides
   - You need to configure, allow, or deny tools
   - You are deciding between built-in tools, skills, and plugins
 title: "Tools and plugins"
@@ -13,12 +13,12 @@ messages, and interacts with devices.
 
 ## Tools, skills, and plugins
 
-OpenClaw has three layers that work together:
+Carlito has three layers that work together:
 
 <Steps>
   <Step title="Tools are what the agent calls">
     A tool is a typed function the agent can invoke (e.g. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw ships a set of **built-in tools** and
+    `web_search`, `message`). Carlito ships a set of **built-in tools** and
     plugins can register additional ones.
 
     The agent sees tools as structured function definitions sent to the model API.
@@ -40,7 +40,7 @@ OpenClaw has three layers that work together:
     channels, model providers, tools, skills, speech, realtime transcription,
     realtime voice, media understanding, image generation, video generation,
     web fetch, web search, and more. Some plugins are **core** (shipped with
-    OpenClaw), others are **external** (published on npm by the community).
+    Carlito), others are **external** (published on npm by the community).
 
     [Install and configure plugins](/tools/plugin) | [Build your own](/plugins/building-plugins)
 
@@ -49,7 +49,7 @@ OpenClaw has three layers that work together:
 
 ## Built-in tools
 
-These tools ship with OpenClaw and are available without installing any plugins:
+These tools ship with Carlito and are available without installing any plugins:
 
 | Tool                                       | What it does                                                          | Page                                                         |
 | ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -159,7 +159,7 @@ Use `group:*` shorthands in allow/deny lists:
 | `group:nodes`      | nodes                                                                                                     |
 | `group:agents`     | agents_list                                                                                               |
 | `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | All built-in OpenClaw tools (excludes plugin tools)                                                       |
+| `group:carlito`    | All built-in Carlito tools (excludes plugin tools)                                                        |
 
 `sessions_history` returns a bounded, safety-filtered recall view. It strips
 thinking tags, `<relevant-memories>` scaffolding, plain-text tool-call XML

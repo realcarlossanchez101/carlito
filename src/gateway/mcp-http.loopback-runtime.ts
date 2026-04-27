@@ -30,15 +30,15 @@ export function clearActiveMcpLoopbackRuntimeByOwnerToken(ownerToken: string): v
 export function createMcpLoopbackServerConfig(port: number) {
   return {
     mcpServers: {
-      openclaw: {
+      carlito: {
         type: "http",
         url: `http://127.0.0.1:${port}/mcp`,
         headers: {
-          Authorization: "Bearer ${OPENCLAW_MCP_TOKEN}",
-          "x-session-key": "${OPENCLAW_MCP_SESSION_KEY}",
-          "x-openclaw-agent-id": "${OPENCLAW_MCP_AGENT_ID}",
-          "x-openclaw-account-id": "${OPENCLAW_MCP_ACCOUNT_ID}",
-          "x-openclaw-message-channel": "${OPENCLAW_MCP_MESSAGE_CHANNEL}",
+          Authorization: "Bearer ${CARLITO_MCP_TOKEN}",
+          "x-session-key": "${CARLITO_MCP_SESSION_KEY}",
+          "x-carlito-agent-id": "${CARLITO_MCP_AGENT_ID}",
+          "x-carlito-account-id": "${CARLITO_MCP_ACCOUNT_ID}",
+          "x-carlito-message-channel": "${CARLITO_MCP_MESSAGE_CHANNEL}",
         },
       },
     },

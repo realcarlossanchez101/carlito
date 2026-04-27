@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { runPulsecheckOnce } from "./pulsecheck-runner.js";
 import { installPulsecheckRunnerTestRuntime } from "./pulsecheck-runner.test-harness.js";
 import { seedMainSessionStore, withTempPulsecheckSandbox } from "./pulsecheck-runner.test-utils.js";
@@ -10,7 +10,7 @@ describe("runPulsecheckOnce", () => {
   it("uses the delivery target as sender when lastTo differs", async () => {
     await withTempPulsecheckSandbox(
       async ({ tmpDir, storePath, replySpy }) => {
-        const cfg: OpenClawConfig = {
+        const cfg: CarlitoConfig = {
           agents: {
             defaults: {
               workspace: tmpDir,
@@ -53,7 +53,7 @@ describe("runPulsecheckOnce", () => {
 
         expect(sendSlack).toHaveBeenCalled();
       },
-      { prefix: "openclaw-hb-" },
+      { prefix: "carlito-hb-" },
     );
   });
 });

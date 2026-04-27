@@ -1,26 +1,26 @@
 {
-  "name": "@openclaw/memory-core",
+  "name": "@realcarlossanchez101/memory-core",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw core memory search plugin",
+  "description": "Carlito core memory search plugin",
   "type": "module",
   "dependencies": {
     "chokidar": "^5.0.0",
     "typebox": "1.1.28"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

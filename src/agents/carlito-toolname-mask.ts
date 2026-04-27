@@ -24,7 +24,7 @@ function escapeRegex(value: string): string {
 }
 
 const TOOL_NAME_REPLACE_PATTERNS = Object.entries(TOOL_NAME_ALIAS_MAP)
-  .sort(([a], [b]) => b.length - a.length)
+  .toSorted(([a], [b]) => b.length - a.length)
   .map(([canonical, alias]) => ({
     pattern: new RegExp(`\\b${escapeRegex(canonical)}\\b`, "g"),
     alias,

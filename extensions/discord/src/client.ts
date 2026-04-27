@@ -1,9 +1,9 @@
 import { RequestClient } from "@buape/carbon";
-import { requireRuntimeConfig, type OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { RetryConfig, RetryRunner } from "openclaw/plugin-sdk/retry-runtime";
-import { normalizeAccountId } from "openclaw/plugin-sdk/routing";
-import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
-import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+import { requireRuntimeConfig, type CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { RetryConfig, RetryRunner } from "carlito/plugin-sdk/retry-runtime";
+import { normalizeAccountId } from "carlito/plugin-sdk/routing";
+import type { RuntimeEnv } from "carlito/plugin-sdk/runtime-env";
+import { normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import {
   mergeDiscordAccountConfig,
   resolveDiscordAccount,
@@ -16,7 +16,7 @@ import type { DiscordRuntimeAccountContext } from "./send.types.js";
 import { normalizeDiscordToken } from "./token.js";
 
 export type DiscordClientOpts = {
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   token?: string;
   accountId?: string;
   rest?: RequestClient;
@@ -25,7 +25,7 @@ export type DiscordClientOpts = {
 };
 
 export function createDiscordRuntimeAccountContext(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
 }): DiscordRuntimeAccountContext {
   return {
@@ -36,7 +36,7 @@ export function createDiscordRuntimeAccountContext(params: {
 
 export function resolveDiscordClientAccountContext(
   opts: Pick<DiscordClientOpts, "cfg" | "accountId">,
-  cfg?: OpenClawConfig,
+  cfg?: CarlitoConfig,
   runtime?: Pick<RuntimeEnv, "error">,
 ) {
   const config = opts.cfg ?? cfg;
@@ -69,7 +69,7 @@ function resolveToken(params: { accountId: string; fallbackToken?: string }) {
 
 export function resolveDiscordProxyFetch(
   opts: Pick<DiscordClientOpts, "cfg" | "accountId">,
-  cfg?: OpenClawConfig,
+  cfg?: CarlitoConfig,
   runtime?: Pick<RuntimeEnv, "error">,
 ): typeof fetch | undefined {
   return resolveDiscordClientAccountContext(opts, cfg, runtime).proxyFetch;
@@ -78,7 +78,7 @@ export function resolveDiscordProxyFetch(
 function resolveRest(
   token: string,
   account: ResolvedDiscordAccount,
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   rest?: RequestClient,
   proxyFetch?: typeof fetch,
 ) {
@@ -93,7 +93,7 @@ function resolveRest(
 }
 
 function resolveAccountWithoutToken(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string;
 }): ResolvedDiscordAccount {
   const accountId = normalizeAccountId(params.accountId);
@@ -110,7 +110,7 @@ function resolveAccountWithoutToken(params: {
   };
 }
 
-export function createDiscordRestClient(opts: DiscordClientOpts, cfg?: OpenClawConfig) {
+export function createDiscordRestClient(opts: DiscordClientOpts, cfg?: CarlitoConfig) {
   const explicitToken = normalizeDiscordToken(opts.token, "channels.discord.token");
   const proxyContext = resolveDiscordClientAccountContext(opts, cfg);
   const resolvedCfg = proxyContext.cfg;
@@ -129,7 +129,7 @@ export function createDiscordRestClient(opts: DiscordClientOpts, cfg?: OpenClawC
 
 export function createDiscordClient(
   opts: DiscordClientOpts,
-  cfg?: OpenClawConfig,
+  cfg?: CarlitoConfig,
 ): { token: string; rest: RequestClient; request: RetryRunner } {
   const { token, rest, account } = createDiscordRestClient(opts, opts.cfg ?? cfg);
   const request = createDiscordRetryRunner({

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import { loadSessionStore } from "../../config/sessions.js";
 import type { EmbeddedPiRunResult } from "../pi-embedded.js";
@@ -10,7 +10,7 @@ import { clearCliSessionInStore, updateSessionStoreAfterAgentRun } from "./sessi
 import { resolveSession } from "./session.js";
 
 vi.mock("../model-selection.js", () => ({
-  isCliProvider: (provider: string, cfg?: OpenClawConfig) =>
+  isCliProvider: (provider: string, cfg?: CarlitoConfig) =>
     Object.hasOwn(cfg?.agents?.defaults?.cliBackends ?? {}, provider),
   normalizeProviderId: (provider: string) => provider.trim().toLowerCase(),
 }));
@@ -135,7 +135,7 @@ function acpMeta() {
 async function withTempSessionStore<T>(
   run: (params: { dir: string; storePath: string }) => Promise<T>,
 ): Promise<T> {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-session-store-"));
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-session-store-"));
   try {
     return await run({ dir, storePath: path.join(dir, "sessions.json") });
   } finally {
@@ -146,7 +146,7 @@ async function withTempSessionStore<T>(
 describe("updateSessionStoreAfterAgentRun", () => {
   it("persists the selected embedded harness id on the session", async () => {
     await withTempSessionStore(async ({ storePath }) => {
-      const cfg = {} as OpenClawConfig;
+      const cfg = {} as CarlitoConfig;
       const sessionKey = "agent:main:explicit:test-harness-pin";
       const sessionId = "test-harness-pin-session";
       const sessionStore: Record<string, SessionEntry> = {
@@ -197,7 +197,7 @@ describe("updateSessionStoreAfterAgentRun", () => {
             },
           },
         },
-      } as OpenClawConfig;
+      } as CarlitoConfig;
       const sessionKey = "agent:main:explicit:test-harness-pin-cli";
       const sessionId = "test-harness-pin-cli-session";
       const sessionStore: Record<string, SessionEntry> = {
@@ -249,9 +249,9 @@ describe("updateSessionStoreAfterAgentRun", () => {
             },
           },
         },
-      } as OpenClawConfig;
+      } as CarlitoConfig;
       const sessionKey = "agent:main:explicit:test-claude-cli";
-      const sessionId = "test-openclaw-session";
+      const sessionId = "test-carlito-session";
       const sessionStore: Record<string, SessionEntry> = {
         [sessionKey]: {
           sessionId,
@@ -478,7 +478,7 @@ describe("updateSessionStoreAfterAgentRun", () => {
 
   it("preserves previous totalTokens when provider returns no usage data (#67667)", async () => {
     await withTempSessionStore(async ({ storePath }) => {
-      const cfg = {} as OpenClawConfig;
+      const cfg = {} as CarlitoConfig;
       const sessionKey = "agent:main:explicit:test-no-usage";
       const sessionId = "test-session";
 
@@ -543,7 +543,7 @@ describe("updateSessionStoreAfterAgentRun", () => {
             },
           },
         },
-      } as unknown as OpenClawConfig;
+      } as unknown as CarlitoConfig;
       const sessionKey = "agent:main:explicit:test-cost-snapshot";
       const sessionId = "test-cost-snapshot-session";
 
@@ -614,7 +614,7 @@ describe("clearCliSessionInStore", () => {
     await withTempSessionStore(async ({ storePath }) => {
       const sessionKey = "agent:main:explicit:test-clear-claude-cli";
       const entry: SessionEntry = {
-        sessionId: "openclaw-session-1",
+        sessionId: "carlito-session-1",
         updatedAt: 1,
         cliSessionBindings: {
           "claude-cli": {
@@ -666,7 +666,7 @@ describe("clearCliSessionInStore", () => {
       const existingKey = "agent:main:explicit:existing";
       const sessionStore: Record<string, SessionEntry> = {
         [existingKey]: {
-          sessionId: "openclaw-session-1",
+          sessionId: "carlito-session-1",
           updatedAt: 1,
           claudeCliSessionId: "claude-session-1",
         },

@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import type { PulsecheckRunner } from "../infra/pulsecheck-runner.js";
 import type { ChannelHealthMonitor } from "./channel-health-monitor.js";
 
@@ -42,7 +42,7 @@ export function createGatewayServerMutableState(): GatewayServerMutableState {
     mediaCleanup: null as ReturnType<typeof setInterval> | null,
     pulsecheckRunner: {
       stop: () => {},
-      updateConfig: (_cfg: OpenClawConfig) => {},
+      updateConfig: (_cfg: CarlitoConfig) => {},
     } satisfies PulsecheckRunner,
     stopGatewayUpdateCheck: () => {},
     tailscaleCleanup: null as (() => Promise<void>) | null,

@@ -1,6 +1,6 @@
-import { resolvePluginConfigObject } from "openclaw/plugin-sdk/config-runtime";
-import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
-import { buildProviderToolCompatFamilyHooks } from "openclaw/plugin-sdk/provider-tools";
+import { resolvePluginConfigObject } from "carlito/plugin-sdk/config-runtime";
+import { definePluginEntry } from "carlito/plugin-sdk/plugin-entry";
+import { buildProviderToolCompatFamilyHooks } from "carlito/plugin-sdk/provider-tools";
 import { buildOpenAICodexCliBackend } from "./cli-backend.js";
 import { buildOpenAIImageGenerationProvider } from "./image-generation-provider.js";
 import {

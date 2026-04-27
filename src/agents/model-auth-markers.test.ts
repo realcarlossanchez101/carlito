@@ -2,22 +2,22 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { captureEnv, withEnvAsync } from "../test-utils/env.js";
 
 const PLUGIN_MANIFEST_ENV_KEYS = [
-  "OPENCLAW_BUNDLED_PLUGINS_DIR",
-  "OPENCLAW_DISABLE_BUNDLED_PLUGINS",
-  "OPENCLAW_SKIP_PROVIDERS",
-  "OPENCLAW_SKIP_CHANNELS",
-  "OPENCLAW_SKIP_CRON",
-  "OPENCLAW_TEST_MINIMAL_GATEWAY",
+  "CARLITO_BUNDLED_PLUGINS_DIR",
+  "CARLITO_DISABLE_BUNDLED_PLUGINS",
+  "CARLITO_SKIP_PROVIDERS",
+  "CARLITO_SKIP_CHANNELS",
+  "CARLITO_SKIP_CRON",
+  "CARLITO_TEST_MINIMAL_GATEWAY",
 ] as const;
 
 function cleanPluginManifestEnv(): Record<(typeof PLUGIN_MANIFEST_ENV_KEYS)[number], undefined> {
   return {
-    OPENCLAW_BUNDLED_PLUGINS_DIR: undefined,
-    OPENCLAW_DISABLE_BUNDLED_PLUGINS: undefined,
-    OPENCLAW_SKIP_PROVIDERS: undefined,
-    OPENCLAW_SKIP_CHANNELS: undefined,
-    OPENCLAW_SKIP_CRON: undefined,
-    OPENCLAW_TEST_MINIMAL_GATEWAY: undefined,
+    CARLITO_BUNDLED_PLUGINS_DIR: undefined,
+    CARLITO_DISABLE_BUNDLED_PLUGINS: undefined,
+    CARLITO_SKIP_PROVIDERS: undefined,
+    CARLITO_SKIP_CHANNELS: undefined,
+    CARLITO_SKIP_CRON: undefined,
+    CARLITO_TEST_MINIMAL_GATEWAY: undefined,
   };
 }
 

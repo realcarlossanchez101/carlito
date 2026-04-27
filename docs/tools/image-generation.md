@@ -31,7 +31,7 @@ The tool only appears when at least one image generation provider is available. 
 ```
 
 Codex OAuth uses the same `openai/gpt-image-2` model ref. When an
-`openai-codex` OAuth profile is configured, OpenClaw routes image requests
+`openai-codex` OAuth profile is configured, Carlito routes image requests
 through that same OAuth profile instead of first trying `OPENAI_API_KEY`.
 Explicit custom `models.providers.openai` image config, such as an API key or
 custom/Azure base URL, opts back into the direct OpenAI Images API route.
@@ -121,9 +121,9 @@ Output filename hint.
 OpenAI-only hints: `background`, `moderation`, `outputCompression`, and `user`.
 </ParamField>
 
-Not all providers support all parameters. When a fallback provider supports a nearby geometry option instead of the exact requested one, OpenClaw remaps to the closest supported size, aspect ratio, or resolution before submission. Unsupported output hints such as `quality` or `outputFormat` are dropped for providers that do not declare support and are reported in the tool result.
+Not all providers support all parameters. When a fallback provider supports a nearby geometry option instead of the exact requested one, Carlito remaps to the closest supported size, aspect ratio, or resolution before submission. Unsupported output hints such as `quality` or `outputFormat` are dropped for providers that do not declare support and are reported in the tool result.
 
-Tool results report the applied settings. When OpenClaw remaps geometry during provider fallback, the returned `size`, `aspectRatio`, and `resolution` values reflect what was actually sent, and `details.normalization` captures the requested-to-applied translation.
+Tool results report the applied settings. When Carlito remaps geometry during provider fallback, the returned `size`, `aspectRatio`, and `resolution` values reflect what was actually sent, and `details.normalization` captures the requested-to-applied translation.
 
 ## Configuration
 
@@ -148,7 +148,7 @@ Tool results report the applied settings. When OpenClaw remaps geometry during p
 
 ### Provider selection order
 
-When generating an image, OpenClaw tries providers in this order:
+When generating an image, Carlito tries providers in this order:
 
 1. **`model` parameter** from the tool call (if the agent specifies one)
 2. **`imageGenerationModel.primary`** from config
@@ -162,7 +162,7 @@ If a provider fails (auth error, rate limit, etc.), the next candidate is tried 
 Notes:
 
 - Auto-detection is auth-aware. A provider default only enters the candidate list
-  when OpenClaw can actually authenticate that provider.
+  when Carlito can actually authenticate that provider.
 - Auto-detection is enabled by default. Set
   `agents.defaults.mediaGenerationAutoProviderFallback: false` if you want image
   generation to use only the explicit `model`, `primary`, and `fallbacks`
@@ -196,12 +196,12 @@ OpenRouter image generation uses the same `OPENROUTER_API_KEY` and routes throug
 }
 ```
 
-OpenClaw forwards `prompt`, `count`, reference images, and Gemini-compatible `aspectRatio` / `resolution` hints to OpenRouter. Current built-in OpenRouter image model shortcuts include `google/gemini-3.1-flash-image-preview`, `google/gemini-3-pro-image-preview`, and `openai/gpt-5.4-image-2`; use `action: "list"` to see what your configured plugin exposes.
+Carlito forwards `prompt`, `count`, reference images, and Gemini-compatible `aspectRatio` / `resolution` hints to OpenRouter. Current built-in OpenRouter image model shortcuts include `google/gemini-3.1-flash-image-preview`, `google/gemini-3-pro-image-preview`, and `openai/gpt-5.4-image-2`; use `action: "list"` to see what your configured plugin exposes.
 
 ### OpenAI `gpt-image-2`
 
 OpenAI image generation defaults to `openai/gpt-image-2`. If an
-`openai-codex` OAuth profile is configured, OpenClaw reuses the same OAuth
+`openai-codex` OAuth profile is configured, Carlito reuses the same OAuth
 profile used by Codex subscription chat models and sends the image request
 through the Codex Responses backend; it does not silently fall back to
 `OPENAI_API_KEY` for that request. To force direct OpenAI Images API routing,
@@ -211,10 +211,10 @@ or Azure endpoint. The older
 image-generation and image-editing requests should use `gpt-image-2`.
 
 `gpt-image-2` supports both text-to-image generation and reference-image
-editing through the same `image_generate` tool. OpenClaw forwards `prompt`,
+editing through the same `image_generate` tool. Carlito forwards `prompt`,
 `count`, `size`, `quality`, `outputFormat`, and reference images to OpenAI.
 OpenAI does not receive `aspectRatio` or `resolution` directly; when possible
-OpenClaw maps those into a supported `size`, otherwise the tool reports them as
+Carlito maps those into a supported `size`, otherwise the tool reports them as
 ignored overrides.
 
 OpenAI-specific options live under the `openai` object:
@@ -239,7 +239,7 @@ applies to JPEG/WebP outputs.
 Generate one 4K landscape image:
 
 ```
-/tool image_generate action=generate model=openai/gpt-image-2 prompt="A clean editorial poster for OpenClaw image generation" size=3840x2160 count=1
+/tool image_generate action=generate model=openai/gpt-image-2 prompt="A clean editorial poster for Carlito image generation" size=3840x2160 count=1
 ```
 
 Generate two square images:
@@ -289,9 +289,9 @@ and `/v1/images/edits` when `image` or `images` is present.
 - References: one `image` or up to five `images`
 - Aspect ratios: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2:3`, `3:2`
 - Resolutions: `1K`, `2K`
-- Outputs: returned as OpenClaw-managed image attachments
+- Outputs: returned as Carlito-managed image attachments
 
-OpenClaw intentionally does not expose xAI-native `quality`, `mask`, `user`, or
+Carlito intentionally does not expose xAI-native `quality`, `mask`, `user`, or
 extra native-only aspect ratios until those controls exist in the shared
 cross-provider `image_generate` contract.
 

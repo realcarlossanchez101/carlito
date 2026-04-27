@@ -13,7 +13,7 @@ import { getChannelPlugin } from "../../channels/plugins/index.js";
 import { normalizeChannelId } from "../../channels/registry.js";
 import { isModelsWriteEnabled } from "../../config/commands.flags.js";
 import type { SessionEntry } from "../../config/sessions.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import {
   normalizeLowercaseStringOrEmpty,
   normalizeOptionalString,
@@ -59,7 +59,7 @@ type ParsedModelsCommand =
     };
 
 export async function buildModelsProviderData(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId?: string,
 ): Promise<ModelsProviderData> {
   const resolvedDefault = resolveDefaultModelForAgent({
@@ -227,7 +227,7 @@ function parseModelsArgs(raw: string): ParsedModelsCommand {
 
 function resolveProviderLabel(params: {
   provider: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentDir?: string;
   sessionEntry?: ModelsCommandSessionEntry;
 }): string {
@@ -246,7 +246,7 @@ function resolveProviderLabel(params: {
 export function formatModelsAvailableHeader(params: {
   provider: string;
   total: number;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentDir?: string;
   sessionEntry?: ModelsCommandSessionEntry;
 }): string {
@@ -304,7 +304,7 @@ function buildAddExamples(addableProviders: readonly string[]): string[] {
 }
 
 function resolveWriteProvider(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   parsed: ParsedModelsCommand;
 }): string | undefined {
   if (params.parsed.action !== "add") {
@@ -324,7 +324,7 @@ function buildProviderInfos(params: {
 }
 
 export async function resolveModelsCommandReply(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   commandBodyNormalized: string;
   surface?: string;
   currentModel?: string;
@@ -421,7 +421,7 @@ export async function resolveModelsCommandReply(params: {
             `/model ${validatedProvider.knownProvider}/<modelId>`,
             "",
             "To configure providers or auth, run:",
-            "openclaw configure",
+            "carlito configure",
           ].join("\n"),
         };
       }

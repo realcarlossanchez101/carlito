@@ -2,13 +2,13 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { captureEnv } from "../test-utils/env.js";
 import { resolveSandboxContext } from "./sandbox/context.js";
 import { writeSkill } from "./skills.e2e-test-helpers.js";
 
 vi.mock("./sandbox/docker.js", () => ({
-  ensureSandboxContainer: vi.fn(async () => "openclaw-sbx-test"),
+  ensureSandboxContainer: vi.fn(async () => "carlito-sbx-test"),
 }));
 
 vi.mock("./sandbox/browser.js", () => ({
@@ -24,11 +24,11 @@ describe("sandbox skill mirroring", () => {
   let tempRoot = "";
 
   beforeAll(async () => {
-    tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-sandbox-skills-"));
+    tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-sandbox-skills-"));
   });
 
   beforeEach(() => {
-    envSnapshot = captureEnv(["OPENCLAW_BUNDLED_SKILLS_DIR"]);
+    envSnapshot = captureEnv(["CARLITO_BUNDLED_SKILLS_DIR"]);
   });
 
   afterEach(() => {
@@ -45,7 +45,7 @@ describe("sandbox skill mirroring", () => {
     const bundledDir = await fs.mkdtemp(path.join(tempRoot, "bundled-"));
     await fs.mkdir(bundledDir, { recursive: true });
 
-    process.env.OPENCLAW_BUNDLED_SKILLS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_SKILLS_DIR = bundledDir;
 
     const workspaceDir = await fs.mkdtemp(path.join(tempRoot, "workspace-"));
     await writeSkill({
@@ -54,7 +54,7 @@ describe("sandbox skill mirroring", () => {
       description: "Demo skill",
     });
 
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           sandbox: {

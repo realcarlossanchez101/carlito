@@ -1,17 +1,17 @@
-import { resolveApprovalApprovers } from "openclaw/plugin-sdk/approval-auth-runtime";
+import { resolveApprovalApprovers } from "carlito/plugin-sdk/approval-auth-runtime";
 import {
   createChannelExecApprovalProfile,
   getExecApprovalReplyMetadata,
   isChannelExecApprovalClientEnabledFromConfig,
   isChannelExecApprovalTargetRecipient,
   matchesApprovalRequestFilters,
-} from "openclaw/plugin-sdk/approval-client-runtime";
-import { resolveApprovalRequestChannelAccountId } from "openclaw/plugin-sdk/approval-native-runtime";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { ExecApprovalRequest, PluginApprovalRequest } from "openclaw/plugin-sdk/infra-runtime";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
-import { normalizeAccountId } from "openclaw/plugin-sdk/routing";
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/string-coerce-runtime";
+} from "carlito/plugin-sdk/approval-client-runtime";
+import { resolveApprovalRequestChannelAccountId } from "carlito/plugin-sdk/approval-native-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { ExecApprovalRequest, PluginApprovalRequest } from "carlito/plugin-sdk/infra-runtime";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-runtime";
+import { normalizeAccountId } from "carlito/plugin-sdk/routing";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/string-coerce-runtime";
 import { getMatrixApprovalAuthApprovers } from "./approval-auth.js";
 import { normalizeMatrixApproverId } from "./approval-ids.js";
 import { listMatrixAccountIds, resolveMatrixAccount } from "./matrix/accounts.js";
@@ -28,7 +28,7 @@ function normalizeMatrixExecApproverId(value: string | number): string | undefin
 }
 
 function resolveMatrixExecApprovalConfig(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
 }) {
   const account = resolveMatrixAccount(params);
@@ -43,7 +43,7 @@ function resolveMatrixExecApprovalConfig(params: {
 }
 
 function countMatrixExecApprovalEligibleAccounts(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   request: ApprovalRequest;
   approvalKind: ApprovalKind;
 }): number {
@@ -84,7 +84,7 @@ function countMatrixExecApprovalEligibleAccounts(params: {
 }
 
 function matchesMatrixRequestAccount(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   request: ApprovalRequest;
   approvalKind: ApprovalKind;
@@ -114,7 +114,7 @@ function matchesMatrixRequestAccount(params: {
 }
 
 export function getMatrixExecApprovalApprovers(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
 }): string[] {
   const account = resolveMatrixAccount(params).config;
@@ -130,7 +130,7 @@ function resolveMatrixApprovalKind(request: ApprovalRequest): ApprovalKind {
 }
 
 export function getMatrixApprovalApprovers(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   approvalKind: ApprovalKind;
 }): string[] {
@@ -144,7 +144,7 @@ export function getMatrixApprovalApprovers(params: {
 }
 
 export function isMatrixExecApprovalTargetRecipient(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   senderId?: string | null;
   accountId?: string | null;
 }): boolean {
@@ -176,7 +176,7 @@ export const resolveMatrixExecApprovalTarget = matrixExecApprovalProfile.resolve
 export const shouldHandleMatrixExecApprovalRequest = matrixExecApprovalProfile.shouldHandleRequest;
 
 export function isMatrixApprovalClientEnabled(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   approvalKind: ApprovalKind;
 }): boolean {
@@ -191,7 +191,7 @@ export function isMatrixApprovalClientEnabled(params: {
 }
 
 export function isMatrixAnyApprovalClientEnabled(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
 }): boolean {
   return (
@@ -207,7 +207,7 @@ export function isMatrixAnyApprovalClientEnabled(params: {
 }
 
 export function shouldHandleMatrixApprovalRequest(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   request: ApprovalRequest;
 }): boolean {
@@ -268,7 +268,7 @@ function buildFilterCheckRequest(params: {
 }
 
 export function shouldSuppressLocalMatrixExecApprovalPrompt(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   payload: ReplyPayload;
 }): boolean {

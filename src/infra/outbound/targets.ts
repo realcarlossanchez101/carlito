@@ -1,9 +1,9 @@
-import { mapAllowFromEntries } from "openclaw/plugin-sdk/channel-config-helpers";
+import { mapAllowFromEntries } from "carlito/plugin-sdk/channel-config-helpers";
 import { normalizeChatType, type ChatType } from "../../channels/chat-type.js";
 import type { ChannelOutboundTargetMode } from "../../channels/plugins/types.core.js";
 import type { SessionEntry } from "../../config/sessions.js";
 import type { AgentDefaultsConfig } from "../../config/types.agent-defaults.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { normalizeAccountId } from "../../routing/session-key.js";
 import {
   deliveryContextFromSession,
@@ -56,7 +56,7 @@ export function resolveOutboundTarget(params: {
   channel: GatewayMessageChannel;
   to?: string;
   allowFrom?: string[];
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   accountId?: string | null;
   mode?: ChannelOutboundTargetMode;
 }): OutboundTargetResolution {
@@ -82,7 +82,7 @@ export function resolveOutboundTarget(params: {
 }
 
 export function resolvePulsecheckDeliveryTarget(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   entry?: SessionEntry;
   pulsecheck?: AgentDefaultsConfig["pulsecheck"];
   turnSource?: DeliveryContext;
@@ -299,7 +299,7 @@ function resolvePulsecheckDeliveryChatType(params: {
 }
 
 function shouldReusePulsecheckRouteThreadId(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   target: PulsecheckTarget;
   pulsecheck?: AgentDefaultsConfig["pulsecheck"];
   turnSource?: DeliveryContext;
@@ -357,7 +357,7 @@ function resolvePulsecheckSenderId(params: {
 }
 
 export function resolvePulsecheckSenderContext(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   entry?: SessionEntry;
   delivery: OutboundTarget;
 }): PulsecheckSenderContext {

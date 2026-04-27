@@ -59,3 +59,10 @@ export function wrapStreamFnWithCarlitoRewriter(underlying: StreamFn): StreamFn 
       rewriteOpenclawInPayload(payload);
     });
 }
+
+// Aliased export. Source-level rebrand renamed call sites to use the carlito-cased
+// names; this file is denylisted from the sweep so its internal pattern (which
+// must literally be /openclaw/i to detect leftover model-bound strings) is
+// preserved. The aliases let the swept call sites resolve.
+export const rewriteCarlitoInPayload = rewriteOpenclawInPayload;
+export const replaceCarlitoPreservingCase = replaceOpenclawPreservingCase;

@@ -1,22 +1,22 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 import type { ProviderRuntimeModel } from "../plugins/provider-runtime-model.types.js";
 import type {
   AnyAgentTool,
   AgentHarness,
   MediaUnderstandingProviderPlugin,
-  OpenClawPluginApi,
-  OpenClawPluginCommandDefinition,
-  OpenClawPluginConfigSchema,
-  OpenClawPluginDefinition,
-  OpenClawPluginNodeHostCommand,
-  OpenClawPluginReloadRegistration,
-  OpenClawPluginSecurityAuditCollector,
-  OpenClawPluginSecurityAuditContext,
-  OpenClawPluginService,
-  OpenClawPluginServiceContext,
-  OpenClawPluginToolContext,
-  OpenClawPluginToolFactory,
+  CarlitoPluginApi,
+  CarlitoPluginCommandDefinition,
+  CarlitoPluginConfigSchema,
+  CarlitoPluginDefinition,
+  CarlitoPluginNodeHostCommand,
+  CarlitoPluginReloadRegistration,
+  CarlitoPluginSecurityAuditCollector,
+  CarlitoPluginSecurityAuditContext,
+  CarlitoPluginService,
+  CarlitoPluginServiceContext,
+  CarlitoPluginToolContext,
+  CarlitoPluginToolFactory,
   PluginLogger,
   ProviderAugmentModelCatalogContext,
   ProviderAuthContext,
@@ -77,15 +77,15 @@ export type {
   AnyAgentTool,
   AgentHarness,
   MediaUnderstandingProviderPlugin,
-  OpenClawPluginApi,
-  OpenClawPluginNodeHostCommand,
-  OpenClawPluginReloadRegistration,
-  OpenClawPluginSecurityAuditCollector,
-  OpenClawPluginSecurityAuditContext,
-  OpenClawPluginToolContext,
-  OpenClawPluginToolFactory,
+  CarlitoPluginApi,
+  CarlitoPluginNodeHostCommand,
+  CarlitoPluginReloadRegistration,
+  CarlitoPluginSecurityAuditCollector,
+  CarlitoPluginSecurityAuditContext,
+  CarlitoPluginToolContext,
+  CarlitoPluginToolFactory,
   PluginCommandContext,
-  OpenClawPluginConfigSchema,
+  CarlitoPluginConfigSchema,
   ProviderDiscoveryContext,
   ProviderCatalogContext,
   ProviderCatalogResult,
@@ -132,19 +132,19 @@ export type {
   ProviderValidateReplayTurnsContext,
   ProviderWebSocketSessionPolicy,
   ProviderWrapStreamFnContext,
-  OpenClawPluginService,
-  OpenClawPluginServiceContext,
+  CarlitoPluginService,
+  CarlitoPluginServiceContext,
   ProviderAuthContext,
   ProviderAuthDoctorHintContext,
   ProviderAuthMethodNonInteractiveContext,
   ProviderAuthMethod,
   ProviderAuthResult,
-  OpenClawPluginCommandDefinition,
-  OpenClawPluginDefinition,
+  CarlitoPluginCommandDefinition,
+  CarlitoPluginDefinition,
   PluginLogger,
 };
 export type { ProviderRuntimeModel } from "../plugins/provider-runtime-model.types.js";
-export type { OpenClawConfig };
+export type { CarlitoConfig };
 
 export { buildPluginConfigSchema, emptyPluginConfigSchema } from "../plugins/config-schema.js";
 
@@ -153,23 +153,23 @@ type DefinePluginEntryOptions = {
   id: string;
   name: string;
   description: string;
-  kind?: OpenClawPluginDefinition["kind"];
-  configSchema?: OpenClawPluginConfigSchema | (() => OpenClawPluginConfigSchema);
-  reload?: OpenClawPluginDefinition["reload"];
-  nodeHostCommands?: OpenClawPluginDefinition["nodeHostCommands"];
-  securityAuditCollectors?: OpenClawPluginDefinition["securityAuditCollectors"];
-  register: (api: OpenClawPluginApi) => void;
+  kind?: CarlitoPluginDefinition["kind"];
+  configSchema?: CarlitoPluginConfigSchema | (() => CarlitoPluginConfigSchema);
+  reload?: CarlitoPluginDefinition["reload"];
+  nodeHostCommands?: CarlitoPluginDefinition["nodeHostCommands"];
+  securityAuditCollectors?: CarlitoPluginDefinition["securityAuditCollectors"];
+  register: (api: CarlitoPluginApi) => void;
 };
 
-/** Normalized object shape that OpenClaw loads from a plugin entry module. */
+/** Normalized object shape that Carlito loads from a plugin entry module. */
 type DefinedPluginEntry = {
   id: string;
   name: string;
   description: string;
-  configSchema: OpenClawPluginConfigSchema;
-  register: NonNullable<OpenClawPluginDefinition["register"]>;
+  configSchema: CarlitoPluginConfigSchema;
+  register: NonNullable<CarlitoPluginDefinition["register"]>;
 } & Pick<
-  OpenClawPluginDefinition,
+  CarlitoPluginDefinition,
   "kind" | "reload" | "nodeHostCommands" | "securityAuditCollectors"
 >;
 
@@ -178,7 +178,7 @@ type DefinedPluginEntry = {
  *
  * Use this for provider, tool, command, service, memory, and context-engine
  * plugins. Channel plugins should use `defineChannelPluginEntry(...)` from
- * `openclaw/plugin-sdk/core` so they inherit the channel capability wiring.
+ * `carlito/plugin-sdk/core` so they inherit the channel capability wiring.
  */
 export function definePluginEntry({
   id,

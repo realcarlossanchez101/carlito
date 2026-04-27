@@ -31,10 +31,10 @@ function readEntrypoints() {
 }
 
 function parsePluginSdkSubpath(specifier) {
-  if (!specifier.startsWith("openclaw/plugin-sdk/")) {
+  if (!specifier.startsWith("carlito/plugin-sdk/")) {
     return null;
   }
-  const subpath = specifier.slice("openclaw/plugin-sdk/".length);
+  const subpath = specifier.slice("carlito/plugin-sdk/".length);
   return subpath || null;
 }
 
@@ -105,12 +105,12 @@ async function collectViolations() {
 async function main() {
   const violations = await collectViolations();
   if (violations.length === 0) {
-    console.log("OK: all referenced openclaw/plugin-sdk/<subpath> imports are exported.");
+    console.log("OK: all referenced carlito/plugin-sdk/<subpath> imports are exported.");
     return;
   }
 
   console.error(
-    "Rule: every referenced openclaw/plugin-sdk/<subpath> must exist in the public package exports.",
+    "Rule: every referenced carlito/plugin-sdk/<subpath> must exist in the public package exports.",
   );
   for (const violation of violations) {
     console.error(

@@ -512,7 +512,7 @@ describe("sanitizeToolCallInputs", () => {
                 {
                   name: "snapshot.txt",
                   mimeType: "text/plain",
-                  content: "__OPENCLAW_REDACTED__",
+                  content: "__CARLITO_REDACTED__",
                 },
               ],
             },

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import {
   getProviderRegistryAllowlistMocks,
   installProviderRegistryAllowlistMockDefaults,
@@ -22,8 +22,8 @@ describe("image-generation provider registry allowlist fallback", () => {
       contractKey: "imageGenerationProviders",
     });
 
-    expect(listImageGenerationProviders(cfg as OpenClawConfig)).toEqual([]);
-    expect(getImageGenerationProvider("openai", cfg as OpenClawConfig)).toBeUndefined();
+    expect(listImageGenerationProviders(cfg as CarlitoConfig)).toEqual([]);
+    expect(getImageGenerationProvider("openai", cfg as CarlitoConfig)).toBeUndefined();
     expect(mocks.resolveRuntimePluginRegistry).toHaveBeenCalledWith({
       config: compatConfig,
     });

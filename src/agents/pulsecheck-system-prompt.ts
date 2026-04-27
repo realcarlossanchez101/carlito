@@ -4,7 +4,7 @@ import {
 } from "../auto-reply/pulsecheck.js";
 import { parseDurationMs } from "../cli/parse-duration.js";
 import type { AgentDefaultsConfig } from "../config/types.agent-defaults.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { normalizeOptionalString } from "../shared/string-coerce.js";
 import { listAgentEntries, resolveAgentConfig, resolveDefaultAgentId } from "./agent-scope.js";
@@ -12,7 +12,7 @@ import { listAgentEntries, resolveAgentConfig, resolveDefaultAgentId } from "./a
 type PulsecheckConfig = AgentDefaultsConfig["pulsecheck"];
 
 function resolvePulsecheckConfigForSystemPrompt(
-  config?: OpenClawConfig,
+  config?: CarlitoConfig,
   agentId?: string,
 ): PulsecheckConfig | undefined {
   const defaults = config?.agents?.defaults?.pulsecheck;
@@ -26,7 +26,7 @@ function resolvePulsecheckConfigForSystemPrompt(
   return { ...defaults, ...overrides };
 }
 
-function isPulsecheckEnabledByAgentPolicy(config: OpenClawConfig, agentId: string): boolean {
+function isPulsecheckEnabledByAgentPolicy(config: CarlitoConfig, agentId: string): boolean {
   const resolvedAgentId = normalizeAgentId(agentId);
   const agents = listAgentEntries(config);
   const hasExplicitPulsecheckAgents = agents.some((entry) => Boolean(entry?.pulsecheck));
@@ -52,7 +52,7 @@ function isPulsecheckCadenceEnabled(pulsecheck?: PulsecheckConfig): boolean {
 }
 
 export function shouldIncludePulsecheckGuidanceForSystemPrompt(params: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentId?: string;
   defaultAgentId?: string;
 }): boolean {
@@ -72,7 +72,7 @@ export function shouldIncludePulsecheckGuidanceForSystemPrompt(params: {
 }
 
 export function resolvePulsecheckPromptForSystemPrompt(params: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentId?: string;
   defaultAgentId?: string;
 }): string | undefined {

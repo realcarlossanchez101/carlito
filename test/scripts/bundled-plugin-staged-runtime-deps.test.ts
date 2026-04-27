@@ -14,14 +14,14 @@ function writeJson(root: string, relativePath: string, value: unknown) {
 
 describe("collectBuiltBundledPluginStagedRuntimeDependencyErrors", () => {
   it("flags built staged plugins whose dist node_modules are missing runtime deps", () => {
-    const repoRoot = createTempDir("openclaw-runtime-contracts-");
+    const repoRoot = createTempDir("carlito-runtime-contracts-");
 
     writeJson(repoRoot, "dist/extensions/diffs/package.json", {
-      name: "@openclaw/diffs",
+      name: "@realcarlossanchez101/diffs",
       dependencies: {
         "@pierre/diffs": "^0.1.0",
       },
-      openclaw: {
+      carlito: {
         bundle: {
           stageRuntimeDependencies: true,
         },
@@ -38,14 +38,14 @@ describe("collectBuiltBundledPluginStagedRuntimeDependencyErrors", () => {
   });
 
   it("accepts built staged plugins when their staged runtime deps are present", () => {
-    const repoRoot = createTempDir("openclaw-runtime-contracts-");
+    const repoRoot = createTempDir("carlito-runtime-contracts-");
 
     writeJson(repoRoot, "dist/extensions/diffs/package.json", {
-      name: "@openclaw/diffs",
+      name: "@realcarlossanchez101/diffs",
       dependencies: {
         "@pierre/diffs": "^0.1.0",
       },
-      openclaw: {
+      carlito: {
         bundle: {
           stageRuntimeDependencies: true,
         },
@@ -68,7 +68,7 @@ describe("collectBuiltBundledPluginStagedRuntimeDependencyErrors", () => {
       fs.readFileSync(path.join(process.cwd(), "extensions/whatsapp/package.json"), "utf8"),
     ) as {
       dependencies?: Record<string, string>;
-      openclaw?: {
+      carlito?: {
         bundle?: {
           stageRuntimeDependencies?: boolean;
         };
@@ -76,6 +76,6 @@ describe("collectBuiltBundledPluginStagedRuntimeDependencyErrors", () => {
     };
 
     expect(packageJson.dependencies?.["@whiskeysockets/baileys"]).toBe("7.0.0-rc.9");
-    expect(packageJson.openclaw?.bundle?.stageRuntimeDependencies).toBe(true);
+    expect(packageJson.carlito?.bundle?.stageRuntimeDependencies).toBe(true);
   });
 });

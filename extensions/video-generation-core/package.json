@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/video-generation-core",
+  "name": "@realcarlossanchez101/video-generation-core",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw video generation runtime package",
+  "description": "Carlito video generation runtime package",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   }
 }

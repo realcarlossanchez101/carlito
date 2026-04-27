@@ -1,5 +1,5 @@
 import { runChannelPluginStartupMaintenance } from "../channels/plugins/lifecycle-startup.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 
 type DoctorStartupMaintenanceRuntime = {
   error: (message: string) => void;
@@ -7,7 +7,7 @@ type DoctorStartupMaintenanceRuntime = {
 };
 
 export async function maybeRunDoctorStartupChannelMaintenance(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   env?: NodeJS.ProcessEnv;
   runtime: DoctorStartupMaintenanceRuntime;
   shouldRepair: boolean;

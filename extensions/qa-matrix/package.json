@@ -1,26 +1,26 @@
 {
-  "name": "@openclaw/qa-matrix",
+  "name": "@realcarlossanchez101/qa-matrix",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Matrix QA runner plugin",
+  "description": "Carlito Matrix QA runner plugin",
   "type": "module",
   "dependencies": {
     "undici": "8.1.0"
   },
   "devDependencies": {
-    "@openclaw/matrix": "workspace:*",
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/matrix": "workspace:*",
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],

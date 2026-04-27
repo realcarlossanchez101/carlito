@@ -1,5 +1,5 @@
+import { requireRuntimeConfig } from "carlito/plugin-sdk/config-runtime";
 import { Routes } from "discord-api-types/v10";
-import { requireRuntimeConfig } from "openclaw/plugin-sdk/config-runtime";
 import {
   buildReactionIdentifier,
   createDiscordClient,

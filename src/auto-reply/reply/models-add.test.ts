@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { addModelToConfig, listAddableProviders, validateAddProvider } from "./models-add.js";
 
 const configMocks = vi.hoisted(() => ({
@@ -181,7 +181,7 @@ describe("models-add", () => {
           lmstudio: { baseUrl: "http://localhost:1234/v1", api: "openai-completions", models: [] },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     expect(
       listAddableProviders({
         cfg,
@@ -191,7 +191,7 @@ describe("models-add", () => {
   });
 
   it("validates add providers against addable providers", () => {
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
     expect(validateAddProvider({ cfg, provider: "ollama", discoveredProviders: [] })).toEqual({
       ok: true,
       provider: "ollama",
@@ -203,7 +203,7 @@ describe("models-add", () => {
   });
 
   it("only bootstraps openai-codex when the provider is discovered", () => {
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
 
     expect(validateAddProvider({ cfg, provider: "openai-codex", discoveredProviders: [] })).toEqual(
       {
@@ -224,7 +224,7 @@ describe("models-add", () => {
   });
 
   it("rejects discovered providers that are not configured for custom models", () => {
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
 
     expect(
       validateAddProvider({
@@ -258,7 +258,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -267,7 +267,7 @@ describe("models-add", () => {
       contextWindow: 202752,
       capabilities: ["thinking", "tools"],
     });
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));
@@ -285,7 +285,7 @@ describe("models-add", () => {
     expect(result.result.existed).toBe(false);
     expect(result.result.allowlistAdded).toBe(true);
     expect(configMocks.replaceConfigFile).toHaveBeenCalledTimes(1);
-    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as OpenClawConfig;
+    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as CarlitoConfig;
     expect(written.models?.providers?.ollama?.models).toEqual([
       expect.objectContaining({
         id: "glm-5.1:cloud",
@@ -315,7 +315,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -324,7 +324,7 @@ describe("models-add", () => {
       contextWindow: 202752,
       capabilities: ["thinking"],
     });
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));
@@ -339,7 +339,7 @@ describe("models-add", () => {
     if (!result.ok) {
       return;
     }
-    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as OpenClawConfig;
+    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as CarlitoConfig;
     expect(written.models?.providers?.Ollama?.models).toEqual([
       expect.objectContaining({
         id: "glm-5.1:cloud",
@@ -374,7 +374,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -403,7 +403,7 @@ describe("models-add", () => {
     const cfg = {
       agents: { defaults: { model: { primary: "anthropic/claude-opus-4-5" } } },
       models: { providers: {} },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -425,7 +425,7 @@ describe("models-add", () => {
         },
       ],
     });
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));
@@ -437,7 +437,7 @@ describe("models-add", () => {
     });
 
     expect(result.ok).toBe(true);
-    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as OpenClawConfig;
+    const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as CarlitoConfig;
     expect(written.models?.providers?.lmstudio?.baseUrl).toBe("http://127.0.0.1:1234/v1");
     expect(written.models?.providers?.lmstudio?.api).toBe("openai-completions");
     expect(written.models?.providers?.lmstudio?.models).toEqual([
@@ -483,12 +483,12 @@ describe("models-add", () => {
           },
         },
         models: { providers: {} },
-      } as OpenClawConfig;
+      } as CarlitoConfig;
       configMocks.readConfigFileSnapshot.mockResolvedValue({
         valid: true,
         parsed: cfg,
       });
-      configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+      configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
         ok: true,
         config,
       }));
@@ -507,8 +507,7 @@ describe("models-add", () => {
       expect(result.result.warnings).toEqual([
         "OpenAI Codex model metadata was saved from provider defaults; provider availability still depends on your Codex account.",
       ]);
-      const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]
-        ?.nextConfig as OpenClawConfig;
+      const written = configMocks.replaceConfigFile.mock.calls[0]?.[0]?.nextConfig as CarlitoConfig;
       expect(written.models?.providers?.["openai-codex"]).toMatchObject({
         baseUrl: "https://chatgpt.com/backend-api",
         api: "openai-codex-responses",
@@ -542,7 +541,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -579,12 +578,12 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
     });
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));
@@ -617,7 +616,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -629,7 +628,7 @@ describe("models-add", () => {
     lmstudioRuntimeMocks.fetchLmstudioModels.mockRejectedValue(
       new Error("connect ECONNREFUSED http://127.0.0.1:1234/v1/api/v1/models"),
     );
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));
@@ -662,7 +661,7 @@ describe("models-add", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     configMocks.readConfigFileSnapshot.mockResolvedValue({
       valid: true,
       parsed: cfg,
@@ -672,7 +671,7 @@ describe("models-add", () => {
       contextWindow: 202752,
       capabilities: ["thinking"],
     });
-    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: OpenClawConfig) => ({
+    configMocks.validateConfigObjectWithPlugins.mockImplementation((config: CarlitoConfig) => ({
       ok: true,
       config,
     }));

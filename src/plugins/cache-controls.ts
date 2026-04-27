@@ -4,17 +4,17 @@ export const DEFAULT_PLUGIN_DISCOVERY_CACHE_MS = 1000;
 export const DEFAULT_PLUGIN_MANIFEST_CACHE_MS = 1000;
 
 export function shouldUsePluginSnapshotCache(env: NodeJS.ProcessEnv): boolean {
-  if (normalizeOptionalString(env.OPENCLAW_DISABLE_PLUGIN_DISCOVERY_CACHE)) {
+  if (normalizeOptionalString(env.CARLITO_DISABLE_PLUGIN_DISCOVERY_CACHE)) {
     return false;
   }
-  if (normalizeOptionalString(env.OPENCLAW_DISABLE_PLUGIN_MANIFEST_CACHE)) {
+  if (normalizeOptionalString(env.CARLITO_DISABLE_PLUGIN_MANIFEST_CACHE)) {
     return false;
   }
-  const discoveryCacheMs = normalizeOptionalString(env.OPENCLAW_PLUGIN_DISCOVERY_CACHE_MS);
+  const discoveryCacheMs = normalizeOptionalString(env.CARLITO_PLUGIN_DISCOVERY_CACHE_MS);
   if (discoveryCacheMs === "0") {
     return false;
   }
-  const manifestCacheMs = normalizeOptionalString(env.OPENCLAW_PLUGIN_MANIFEST_CACHE_MS);
+  const manifestCacheMs = normalizeOptionalString(env.CARLITO_PLUGIN_MANIFEST_CACHE_MS);
   if (manifestCacheMs === "0") {
     return false;
   }
@@ -38,11 +38,11 @@ export function resolvePluginCacheMs(rawValue: string | undefined, defaultMs: nu
 
 export function resolvePluginSnapshotCacheTtlMs(env: NodeJS.ProcessEnv): number {
   const discoveryCacheMs = resolvePluginCacheMs(
-    env.OPENCLAW_PLUGIN_DISCOVERY_CACHE_MS,
+    env.CARLITO_PLUGIN_DISCOVERY_CACHE_MS,
     DEFAULT_PLUGIN_DISCOVERY_CACHE_MS,
   );
   const manifestCacheMs = resolvePluginCacheMs(
-    env.OPENCLAW_PLUGIN_MANIFEST_CACHE_MS,
+    env.CARLITO_PLUGIN_MANIFEST_CACHE_MS,
     DEFAULT_PLUGIN_MANIFEST_CACHE_MS,
   );
   return Math.min(discoveryCacheMs, manifestCacheMs);
@@ -50,14 +50,14 @@ export function resolvePluginSnapshotCacheTtlMs(env: NodeJS.ProcessEnv): number 
 
 export function buildPluginSnapshotCacheEnvKey(env: NodeJS.ProcessEnv): string {
   return JSON.stringify({
-    OPENCLAW_BUNDLED_PLUGINS_DIR: env.OPENCLAW_BUNDLED_PLUGINS_DIR ?? "",
-    OPENCLAW_DISABLE_PLUGIN_DISCOVERY_CACHE: env.OPENCLAW_DISABLE_PLUGIN_DISCOVERY_CACHE ?? "",
-    OPENCLAW_DISABLE_PLUGIN_MANIFEST_CACHE: env.OPENCLAW_DISABLE_PLUGIN_MANIFEST_CACHE ?? "",
-    OPENCLAW_PLUGIN_DISCOVERY_CACHE_MS: env.OPENCLAW_PLUGIN_DISCOVERY_CACHE_MS ?? "",
-    OPENCLAW_PLUGIN_MANIFEST_CACHE_MS: env.OPENCLAW_PLUGIN_MANIFEST_CACHE_MS ?? "",
-    OPENCLAW_HOME: env.OPENCLAW_HOME ?? "",
-    OPENCLAW_STATE_DIR: env.OPENCLAW_STATE_DIR ?? "",
-    OPENCLAW_CONFIG_PATH: env.OPENCLAW_CONFIG_PATH ?? "",
+    CARLITO_BUNDLED_PLUGINS_DIR: env.CARLITO_BUNDLED_PLUGINS_DIR ?? "",
+    CARLITO_DISABLE_PLUGIN_DISCOVERY_CACHE: env.CARLITO_DISABLE_PLUGIN_DISCOVERY_CACHE ?? "",
+    CARLITO_DISABLE_PLUGIN_MANIFEST_CACHE: env.CARLITO_DISABLE_PLUGIN_MANIFEST_CACHE ?? "",
+    CARLITO_PLUGIN_DISCOVERY_CACHE_MS: env.CARLITO_PLUGIN_DISCOVERY_CACHE_MS ?? "",
+    CARLITO_PLUGIN_MANIFEST_CACHE_MS: env.CARLITO_PLUGIN_MANIFEST_CACHE_MS ?? "",
+    CARLITO_HOME: env.CARLITO_HOME ?? "",
+    CARLITO_STATE_DIR: env.CARLITO_STATE_DIR ?? "",
+    CARLITO_CONFIG_PATH: env.CARLITO_CONFIG_PATH ?? "",
     HOME: env.HOME ?? "",
     USERPROFILE: env.USERPROFILE ?? "",
     VITEST: env.VITEST ?? "",

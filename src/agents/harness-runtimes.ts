@@ -1,9 +1,9 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizeOptionalLowercaseString } from "../shared/string-coerce.js";
 import { isRecord } from "../utils.js";
 
 export function collectConfiguredAgentHarnessRuntimes(
-  config: OpenClawConfig,
+  config: CarlitoConfig,
   env: NodeJS.ProcessEnv,
 ): string[] {
   const runtimes = new Set<string>();
@@ -27,7 +27,7 @@ export function collectConfiguredAgentHarnessRuntimes(
       pushRuntime((agent.embeddedHarness as Record<string, unknown> | undefined)?.runtime);
     }
   }
-  pushRuntime(env.OPENCLAW_AGENT_RUNTIME);
+  pushRuntime(env.CARLITO_AGENT_RUNTIME);
 
   return [...runtimes].toSorted((left, right) => left.localeCompare(right));
 }

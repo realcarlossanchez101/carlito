@@ -46,7 +46,7 @@ describe("config view", () => {
     borderRadius: 50,
     setBorderRadius: vi.fn(),
     gatewayUrl: "",
-    assistantName: "OpenClaw",
+    assistantName: "Carlito",
   });
 
   function findActionButtons(container: HTMLElement): {
@@ -394,7 +394,7 @@ describe("config view", () => {
     const secretRefValue = {
       channels: {
         discord: {
-          token: { source: "env", provider: "default", id: "__OPENCLAW_REDACTED__" },
+          token: { source: "env", provider: "default", id: "__CARLITO_REDACTED__" },
         },
       },
     };

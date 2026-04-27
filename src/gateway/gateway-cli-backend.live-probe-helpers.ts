@@ -12,7 +12,7 @@ import {
   assertLiveImageProbeReply,
   buildLiveCronProbeMessage,
   createLiveCronProbeSpec,
-  runOpenClawCliJson,
+  runCarlitoCliJson,
   type CronListJob,
 } from "./live-agent-probes.js";
 import { renderCatFacePngBase64 } from "./live-image-probe.js";
@@ -28,8 +28,8 @@ const CLI_CRON_MCP_PROBE_VERIFY_POLL_MS = 2_000;
 
 function shouldLogCliCronProbe(): boolean {
   return (
-    isTruthyEnvValue(process.env.OPENCLAW_LIVE_CLI_BACKEND_DEBUG) ||
-    isTruthyEnvValue(process.env.OPENCLAW_CLI_BACKEND_LOG_OUTPUT)
+    isTruthyEnvValue(process.env.CARLITO_LIVE_CLI_BACKEND_DEBUG) ||
+    isTruthyEnvValue(process.env.CARLITO_CLI_BACKEND_LOG_OUTPUT)
   );
 }
 
@@ -155,10 +155,10 @@ async function callLoopbackJsonRpc(params: {
     "x-session-key": params.sessionKey,
   };
   if (params.messageProvider) {
-    headers["x-openclaw-message-channel"] = params.messageProvider;
+    headers["x-carlito-message-channel"] = params.messageProvider;
   }
   if (params.accountId) {
-    headers["x-openclaw-account-id"] = params.accountId;
+    headers["x-carlito-account-id"] = params.accountId;
   }
   const response = await fetch(`http://127.0.0.1:${runtime.port}/mcp`, {
     method: "POST",
@@ -291,7 +291,7 @@ export async function verifyCliCronMcpLoopbackPreflight(params: {
     expectedSessionKey: params.sessionKey,
   });
   if (createdJob.id) {
-    await runOpenClawCliJson(
+    await runCarlitoCliJson(
       [
         "cron",
         "rm",
@@ -431,7 +431,7 @@ export async function verifyCliCronMcpProbe(params: {
     expectedSessionKey: params.sessionKey,
   });
   if (createdJob?.id) {
-    await runOpenClawCliJson(
+    await runCarlitoCliJson(
       [
         "cron",
         "rm",

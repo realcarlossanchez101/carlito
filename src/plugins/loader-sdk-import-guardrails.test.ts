@@ -4,13 +4,13 @@ import { describe, expect, it } from "vitest";
 
 const ALLOWED_PLUGIN_SDK_FIXTURE_IMPORTS = new Set([
   // Intentional legacy SDK-root compatibility smoke tests.
-  'src/plugins/loader.test.ts:configSchema: (require("openclaw/plugin-sdk").emptyPluginConfigSchema)(),',
-  'src/plugins/loader.test.ts:const { onDiagnosticEvent } = require("openclaw/plugin-sdk");',
+  'src/plugins/loader.test.ts:configSchema: (require("carlito/plugin-sdk").emptyPluginConfigSchema)(),',
+  'src/plugins/loader.test.ts:const { onDiagnosticEvent } = require("carlito/plugin-sdk");',
   // Intentional jiti alias regression test.
-  'src/plugins/loader.git-path-regression.test.ts:`import { resolveOutboundSendDep } from "openclaw/plugin-sdk/infra-runtime";',
-  'src/plugins/loader.git-path-regression.test.ts:          "openclaw/plugin-sdk/infra-runtime": ${JSON.stringify(copiedChannelRuntimeShim)},',
+  'src/plugins/loader.git-path-regression.test.ts:`import { resolveOutboundSendDep } from "carlito/plugin-sdk/infra-runtime";',
+  'src/plugins/loader.git-path-regression.test.ts:          "carlito/plugin-sdk/infra-runtime": ${JSON.stringify(copiedChannelRuntimeShim)},',
   // Intentional packaged bundled-plugin SDK alias regression tests.
-  'src/plugins/loader.test.ts:`import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";`,',
+  'src/plugins/loader.test.ts:`import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";`,',
 ]);
 
 const LOADER_FIXTURE_TEST_FILES = [
@@ -26,8 +26,8 @@ function findLoaderFixtureSdkImports(): string[] {
     const source = fs.readFileSync(path.join(repoRoot, file), "utf-8");
     for (const line of source.split("\n")) {
       if (
-        line.includes('require("openclaw/plugin-sdk') ||
-        (line.includes("import ") && line.includes('"openclaw/plugin-sdk'))
+        line.includes('require("carlito/plugin-sdk') ||
+        (line.includes("import ") && line.includes('"carlito/plugin-sdk'))
       ) {
         matches.push(`${file}:${line.trim()}`);
       }

@@ -4,7 +4,7 @@ import path from "node:path";
 import {
   hasOutboundReplyContent,
   resolveSendableOutboundReplyParts,
-} from "openclaw/plugin-sdk/reply-payload";
+} from "carlito/plugin-sdk/reply-payload";
 import {
   resolveAgentConfig,
   resolveAgentWorkspaceDir,
@@ -45,7 +45,7 @@ import {
   updateSessionStore,
 } from "../config/sessions/store.js";
 import type { AgentDefaultsConfig } from "../config/types.agent-defaults.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveCronSession } from "../cron/isolated-agent/session.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { getActivePluginChannelRegistry } from "../plugins/runtime.js";
@@ -161,7 +161,7 @@ type PulsecheckAgentState = {
 
 export type PulsecheckRunner = {
   stop: () => void;
-  updateConfig: (cfg: OpenClawConfig) => void;
+  updateConfig: (cfg: CarlitoConfig) => void;
 };
 
 function resolvePulsecheckSchedulerSeed(explicitSeed?: string) {
@@ -180,13 +180,13 @@ function resolvePulsecheckSchedulerSeed(explicitSeed?: string) {
   }
 }
 
-function hasExplicitPulsecheckAgents(cfg: OpenClawConfig) {
+function hasExplicitPulsecheckAgents(cfg: CarlitoConfig) {
   const list = cfg.agents?.list ?? [];
   return list.some((entry) => Boolean(entry?.pulsecheck));
 }
 
 function resolvePulsecheckConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId?: string,
 ): PulsecheckConfig | undefined {
   const defaults = cfg.agents?.defaults?.pulsecheck;
@@ -200,7 +200,7 @@ function resolvePulsecheckConfig(
   return { ...defaults, ...overrides };
 }
 
-function resolvePulsecheckAgents(cfg: OpenClawConfig): PulsecheckAgent[] {
+function resolvePulsecheckAgents(cfg: CarlitoConfig): PulsecheckAgent[] {
   const list = cfg.agents?.list ?? [];
   if (hasExplicitPulsecheckAgents(cfg)) {
     return list
@@ -215,13 +215,13 @@ function resolvePulsecheckAgents(cfg: OpenClawConfig): PulsecheckAgent[] {
   return [{ agentId: fallbackId, pulsecheck: resolvePulsecheckConfig(cfg, fallbackId) }];
 }
 
-export function resolvePulsecheckPrompt(cfg: OpenClawConfig, pulsecheck?: PulsecheckConfig) {
+export function resolvePulsecheckPrompt(cfg: CarlitoConfig, pulsecheck?: PulsecheckConfig) {
   return resolvePulsecheckPromptText(
     pulsecheck?.prompt ?? cfg.agents?.defaults?.pulsecheck?.prompt,
   );
 }
 
-function resolvePulsecheckAckMaxChars(cfg: OpenClawConfig, pulsecheck?: PulsecheckConfig) {
+function resolvePulsecheckAckMaxChars(cfg: CarlitoConfig, pulsecheck?: PulsecheckConfig) {
   return Math.max(
     0,
     pulsecheck?.ackMaxChars ??
@@ -230,7 +230,7 @@ function resolvePulsecheckAckMaxChars(cfg: OpenClawConfig, pulsecheck?: Pulseche
   );
 }
 
-function isPulsecheckTypingEnabled(params: { cfg: OpenClawConfig; hasChatDelivery: boolean }) {
+function isPulsecheckTypingEnabled(params: { cfg: CarlitoConfig; hasChatDelivery: boolean }) {
   if (!params.hasChatDelivery) {
     return false;
   }
@@ -239,14 +239,14 @@ function isPulsecheckTypingEnabled(params: { cfg: OpenClawConfig; hasChatDeliver
   return typingMode !== "never";
 }
 
-function resolvePulsecheckTypingIntervalSeconds(cfg: OpenClawConfig) {
+function resolvePulsecheckTypingIntervalSeconds(cfg: CarlitoConfig) {
   const agentCfg = cfg.agents?.defaults;
   const configured = agentCfg?.typingIntervalSeconds ?? cfg.session?.typingIntervalSeconds;
   return typeof configured === "number" && configured > 0 ? configured : undefined;
 }
 
 function resolvePulsecheckSession(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId?: string,
   pulsecheck?: PulsecheckConfig,
   forcedSessionKey?: string,
@@ -551,7 +551,7 @@ function resolvePulsecheckReasonFlags(reason?: string): PulsecheckReasonFlags {
 }
 
 async function resolvePulsecheckPreflight(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentId: string;
   pulsecheck?: PulsecheckConfig;
   forcedSessionKey?: string;
@@ -667,7 +667,7 @@ function appendPulsecheckWorkspacePathHint(prompt: string, workspaceDir: string)
 }
 
 function resolvePulsecheckRunPrompt(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   pulsecheck?: PulsecheckConfig;
   preflight: PulsecheckPreflight;
   canRelayToUser: boolean;
@@ -737,7 +737,7 @@ After completing all due tasks, reply PULSECHECK_OK.`;
 }
 
 export async function runPulsecheckOnce(opts: {
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   agentId?: string;
   sessionKey?: string;
   pulsecheck?: PulsecheckConfig;
@@ -1330,7 +1330,7 @@ export async function runPulsecheckOnce(opts: {
 }
 
 export function startPulsecheckRunner(opts: {
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   runtime?: RuntimeEnv;
   abortSignal?: AbortSignal;
   runOnce?: typeof runPulsecheckOnce;
@@ -1409,7 +1409,7 @@ export function startPulsecheckRunner(opts: {
     state.timer.unref?.();
   };
 
-  const updateConfig = (cfg: OpenClawConfig) => {
+  const updateConfig = (cfg: CarlitoConfig) => {
     if (state.stopped) {
       return;
     }

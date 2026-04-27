@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { applyProviderAuthConfigPatch } from "./provider-auth-choice-helpers.js";
 
 describe("applyProviderAuthConfigPatch", () => {
@@ -77,7 +77,7 @@ describe("applyProviderAuthConfigPatch", () => {
           },
         },
       },
-    } satisfies OpenClawConfig;
+    } satisfies CarlitoConfig;
     const patch = {
       agents: {
         defaults: {

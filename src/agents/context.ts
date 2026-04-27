@@ -3,11 +3,11 @@
 
 import path from "node:path";
 import { loadConfig } from "../config/config.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { computeBackoff, type BackoffPolicy } from "../infra/backoff.js";
 import { consumeRootOptionToken, FLAG_TERMINATOR } from "../infra/cli-root-options.js";
 import { normalizeLowercaseStringOrEmpty } from "../shared/string-coerce.js";
-import { resolveOpenClawAgentDir } from "./agent-paths.js";
+import { resolveCarlitoAgentDir } from "./agent-paths.js";
 import { lookupCachedContextTokens, MODEL_CONTEXT_TOKEN_CACHE } from "./context-cache.js";
 import { CONTEXT_WINDOW_RUNTIME_STATE } from "./context-runtime-state.js";
 import { normalizeProviderId } from "./model-selection.js";
@@ -96,11 +96,11 @@ function loadModelsConfigRuntime() {
   return CONTEXT_WINDOW_RUNTIME_STATE.modelsConfigRuntimePromise;
 }
 
-function isLikelyOpenClawCliProcess(argv: string[] = process.argv): boolean {
+function isLikelyCarlitoCliProcess(argv: string[] = process.argv): boolean {
   const entryBasename = normalizeLowercaseStringOrEmpty(path.basename(argv[1] ?? ""));
   return (
-    entryBasename === "openclaw" ||
-    entryBasename === "openclaw.mjs" ||
+    entryBasename === "carlito" ||
+    entryBasename === "carlito.mjs" ||
     entryBasename === "entry.js" ||
     entryBasename === "entry.mjs"
   );
@@ -150,21 +150,21 @@ const SKIP_EAGER_WARMUP_PRIMARY_COMMANDS = new Set([
 ]);
 
 export function shouldEagerWarmContextWindowCache(argv: string[] = process.argv): boolean {
-  // Keep this gate tied to the real OpenClaw CLI entrypoints.
+  // Keep this gate tied to the real Carlito CLI entrypoints.
   //
   // This module can also land inside shared dist chunks that are imported from
   // plugin-sdk/library surfaces during smoke tests and plugin loading. If we do
   // eager warmup for those generic Node script imports, merely importing the
-  // built plugin-sdk can call ensureOpenClawModelsJson(), which cascades into
+  // built plugin-sdk can call ensureCarlitoModelsJson(), which cascades into
   // plugin discovery and breaks dist/source singleton assumptions.
-  if (!isLikelyOpenClawCliProcess(argv)) {
+  if (!isLikelyCarlitoCliProcess(argv)) {
     return false;
   }
   const [primary] = getCommandPathFromArgv(argv);
   return Boolean(primary) && !SKIP_EAGER_WARMUP_PRIMARY_COMMANDS.has(primary);
 }
 
-function primeConfiguredContextWindows(): OpenClawConfig | undefined {
+function primeConfiguredContextWindows(): CarlitoConfig | undefined {
   if (CONTEXT_WINDOW_RUNTIME_STATE.configuredConfig) {
     applyConfiguredContextWindows({
       cache: MODEL_CONTEXT_TOKEN_CACHE,
@@ -211,7 +211,7 @@ function ensureContextWindowCacheLoaded(): Promise<void> {
 
   CONTEXT_WINDOW_RUNTIME_STATE.loadPromise = (async () => {
     try {
-      await (await loadModelsConfigRuntime()).ensureOpenClawModelsJson(cfg);
+      await (await loadModelsConfigRuntime()).ensureCarlitoModelsJson(cfg);
     } catch {
       // Continue with best-effort discovery/overrides.
     }
@@ -219,7 +219,7 @@ function ensureContextWindowCacheLoaded(): Promise<void> {
     try {
       const { discoverAuthStorage, discoverModels } =
         await import("./pi-model-discovery-runtime.js");
-      const agentDir = resolveOpenClawAgentDir();
+      const agentDir = resolveCarlitoAgentDir();
       const authStorage = discoverAuthStorage(agentDir);
       const modelRegistry = discoverModels(authStorage, agentDir) as unknown as ModelRegistryLike;
       const models =
@@ -269,7 +269,7 @@ if (shouldEagerWarmContextWindowCache()) {
 }
 
 function resolveConfiguredModelParams(
-  cfg: OpenClawConfig | undefined,
+  cfg: CarlitoConfig | undefined,
   provider: string,
   model: string,
 ): Record<string, unknown> | undefined {
@@ -321,7 +321,7 @@ function resolveProviderModelRef(params: {
 // keys overlap with raw slash-containing model IDs (e.g. OpenRouter's
 // "google/gemini-2.5-pro" stored as a raw catalog entry).
 function resolveConfiguredProviderContextTokens(
-  cfg: OpenClawConfig | undefined,
+  cfg: CarlitoConfig | undefined,
   provider: string,
   model: string,
 ): number | undefined {
@@ -416,7 +416,7 @@ function isClaudeOpus47Model(model: string): boolean {
 }
 
 export function resolveContextTokensForModel(params: {
-  cfg?: OpenClawConfig;
+  cfg?: CarlitoConfig;
   provider?: string;
   model?: string;
   contextTokensOverride?: number;

@@ -1,25 +1,25 @@
 {
-  "name": "@openclaw/line",
+  "name": "@realcarlossanchez101/line",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw LINE channel plugin",
+  "description": "Carlito LINE channel plugin",
   "type": "module",
   "dependencies": {
     "@line/bot-sdk": "^11.0.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],
@@ -37,7 +37,7 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@openclaw/line",
+      "npmSpec": "@realcarlossanchez101/line",
       "defaultChoice": "npm",
       "minHostVersion": ">=2026.4.10"
     }

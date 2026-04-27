@@ -1,13 +1,13 @@
 {
-  "name": "@openclaw/anthropic-vertex-provider",
+  "name": "@realcarlossanchez101/anthropic-vertex-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Anthropic Vertex provider plugin",
+  "description": "Carlito Anthropic Vertex provider plugin",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

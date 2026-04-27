@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { OpenClawConfig } from "../config/types.js";
+import type { CarlitoConfig } from "../config/types.js";
 import {
   getProviderRegistryAllowlistMocks,
   installProviderRegistryAllowlistMockDefaults,
@@ -22,7 +22,7 @@ describe("media-understanding provider registry allowlist fallback", () => {
       contractKey: "mediaUnderstandingProviders",
     });
 
-    const registry = buildMediaUnderstandingRegistry(undefined, cfg as OpenClawConfig);
+    const registry = buildMediaUnderstandingRegistry(undefined, cfg as CarlitoConfig);
 
     expect(getMediaUnderstandingProvider("openai", registry)).toBeUndefined();
     expect(mocks.resolveRuntimePluginRegistry).toHaveBeenCalledWith({

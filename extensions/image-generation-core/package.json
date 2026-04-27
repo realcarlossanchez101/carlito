@@ -1,10 +1,10 @@
 {
-  "name": "@openclaw/image-generation-core",
+  "name": "@realcarlossanchez101/image-generation-core",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw image generation runtime package",
+  "description": "Carlito image generation runtime package",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   }
 }

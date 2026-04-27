@@ -1,9 +1,9 @@
-import type { OpenClawPluginApi } from "../../../src/plugins/types.js";
+import type { CarlitoPluginApi } from "../../../src/plugins/types.js";
 import { loadBundledPluginPublicSurfaceSync } from "../../../src/test-utils/bundled-plugin-public-surface.js";
 
 type BundledPluginEntryModule = {
   default: {
-    register(api: OpenClawPluginApi): void;
+    register(api: CarlitoPluginApi): void;
   };
 };
 

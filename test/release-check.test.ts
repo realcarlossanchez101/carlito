@@ -78,7 +78,7 @@ describe("packed CLI smoke", () => {
           GITHUB_TOKEN: "redacted",
           OPENAI_API_KEY: "real-secret",
         },
-        { HOME: "/tmp/smoke-home", OPENCLAW_STATE_DIR: "/tmp/smoke-state" },
+        { HOME: "/tmp/smoke-home", CARLITO_STATE_DIR: "/tmp/smoke-state" },
       ),
     ).toEqual({
       PATH:
@@ -95,10 +95,10 @@ describe("packed CLI smoke", () => {
       AWS_CONFIG_FILE: "/tmp/smoke-home/.aws/config",
       TMPDIR: "/tmp/original-tmp",
       SystemRoot: "C:\\Windows",
-      OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
-      OPENCLAW_NO_ONBOARD: "1",
-      OPENCLAW_SUPPRESS_NOTES: "1",
-      OPENCLAW_STATE_DIR: "/tmp/smoke-state",
+      CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+      CARLITO_NO_ONBOARD: "1",
+      CARLITO_SUPPRESS_NOTES: "1",
+      CARLITO_STATE_DIR: "/tmp/smoke-state",
     });
   });
 });
@@ -110,14 +110,14 @@ describe("collectBundledExtensionManifestErrors", () => {
         {
           id: "broken",
           packageJson: {
-            openclaw: {
+            carlito: {
               install: { npmSpec: "   " },
             },
           },
         },
       ]),
     ).toEqual([
-      "bundled extension 'broken' manifest invalid | openclaw.install.npmSpec must be a non-empty string",
+      "bundled extension 'broken' manifest invalid | carlito.install.npmSpec must be a non-empty string",
     ]);
   });
 
@@ -127,14 +127,14 @@ describe("collectBundledExtensionManifestErrors", () => {
         {
           id: "broken",
           packageJson: {
-            openclaw: {
-              install: { npmSpec: "@openclaw/broken", minHostVersion: "2026.3.14" },
+            carlito: {
+              install: { npmSpec: "@realcarlossanchez101/broken", minHostVersion: "2026.3.14" },
             },
           },
         },
       ]),
     ).toEqual([
-      "bundled extension 'broken' manifest invalid | openclaw.install.minHostVersion must use a semver floor in the form \">=x.y.z\"",
+      "bundled extension 'broken' manifest invalid | carlito.install.minHostVersion must use a semver floor in the form \">=x.y.z\"",
     ]);
   });
 
@@ -144,7 +144,7 @@ describe("collectBundledExtensionManifestErrors", () => {
         {
           id: "irc",
           packageJson: {
-            openclaw: {
+            carlito: {
               install: { minHostVersion: ">=2026.3.14" },
             },
           },
@@ -159,13 +159,13 @@ describe("collectBundledExtensionManifestErrors", () => {
         {
           id: "broken",
           packageJson: {
-            openclaw: {
+            carlito: {
               install: 123,
             },
           },
         },
       ]),
-    ).toEqual(["bundled extension 'broken' manifest invalid | openclaw.install must be an object"]);
+    ).toEqual(["bundled extension 'broken' manifest invalid | carlito.install must be an object"]);
   });
 });
 
@@ -194,7 +194,7 @@ describe("bundled plugin root runtime mirrors", () => {
   });
 
   it("derives required root mirrors from built root dist imports", () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), "openclaw-root-mirror-"));
+    const tempRoot = mkdtempSync(join(tmpdir(), "carlito-root-mirror-"));
 
     try {
       const distDir = join(tempRoot, "dist");
@@ -254,7 +254,7 @@ describe("bundled plugin root runtime mirrors", () => {
   });
 
   it("does not derive root mirrors for root chunks sourced from the owning plugin", () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), "openclaw-root-mirror-owned-"));
+    const tempRoot = mkdtempSync(join(tmpdir(), "carlito-root-mirror-owned-"));
 
     try {
       const distDir = join(tempRoot, "dist");
@@ -343,12 +343,12 @@ describe("collectForbiddenPackPaths", () => {
         "dist/index.js",
         bundledDistPluginFile("discord", "node_modules/@buape/carbon/index.js"),
         bundledPluginFile("tlon", "node_modules/.bin/tlon"),
-        "node_modules/.bin/openclaw",
+        "node_modules/.bin/carlito",
       ]),
     ).toEqual([
       bundledDistPluginFile("discord", "node_modules/@buape/carbon/index.js"),
       bundledPluginFile("tlon", "node_modules/.bin/tlon"),
-      "node_modules/.bin/openclaw",
+      "node_modules/.bin/carlito",
     ]);
   });
 
@@ -375,12 +375,12 @@ describe("collectForbiddenPackPaths", () => {
     expect(
       collectForbiddenPackPaths([
         "dist/index.js",
-        "dist/extensions/codex/.openclaw-runtime-deps-backup-node_modules-old/zod/index.js",
-        "dist/extensions/discord/.openclaw-runtime-deps-stamp.json",
+        "dist/extensions/codex/.carlito-runtime-deps-backup-node_modules-old/zod/index.js",
+        "dist/extensions/discord/.carlito-runtime-deps-stamp.json",
       ]),
     ).toEqual([
-      "dist/extensions/codex/.openclaw-runtime-deps-backup-node_modules-old/zod/index.js",
-      "dist/extensions/discord/.openclaw-runtime-deps-stamp.json",
+      "dist/extensions/codex/.carlito-runtime-deps-backup-node_modules-old/zod/index.js",
+      "dist/extensions/discord/.carlito-runtime-deps-stamp.json",
     ]);
   });
 
@@ -408,7 +408,7 @@ describe("collectForbiddenPackPaths", () => {
   });
 
   it("blocks root dist chunks that still reference private qa lab sources", () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), "openclaw-release-private-qa-"));
+    const tempRoot = mkdtempSync(join(tmpdir(), "carlito-release-private-qa-"));
 
     try {
       mkdirSync(join(tempRoot, "dist"), { recursive: true });
@@ -428,7 +428,7 @@ describe("collectForbiddenPackPaths", () => {
   });
 
   it("allows legacy QA compatibility paths in the generated dist inventory", () => {
-    const tempRoot = mkdtempSync(join(tmpdir(), "openclaw-release-inventory-"));
+    const tempRoot = mkdtempSync(join(tmpdir(), "carlito-release-inventory-"));
 
     try {
       mkdirSync(join(tempRoot, "dist"), { recursive: true });
@@ -471,11 +471,11 @@ describe("collectMissingPackPaths", () => {
         bundledDistPluginFile("matrix", "helper-api.js"),
         bundledDistPluginFile("matrix", "runtime-api.js"),
         bundledDistPluginFile("matrix", "thread-bindings-runtime.js"),
-        bundledDistPluginFile("matrix", "openclaw.plugin.json"),
+        bundledDistPluginFile("matrix", "carlito.plugin.json"),
         bundledDistPluginFile("matrix", "package.json"),
         bundledDistPluginFile("whatsapp", "light-runtime-api.js"),
         bundledDistPluginFile("whatsapp", "runtime-api.js"),
-        bundledDistPluginFile("whatsapp", "openclaw.plugin.json"),
+        bundledDistPluginFile("whatsapp", "carlito.plugin.json"),
         bundledDistPluginFile("whatsapp", "package.json"),
       ]),
     );
@@ -519,23 +519,23 @@ describe("collectMissingPackPaths", () => {
 describe("collectPackUnpackedSizeErrors", () => {
   it("accepts pack results within the unpacked size budget", () => {
     expect(
-      collectPackUnpackedSizeErrors([makePackResult("openclaw-2026.3.14.tgz", 120_354_302)]),
+      collectPackUnpackedSizeErrors([makePackResult("carlito-2026.3.14.tgz", 120_354_302)]),
     ).toEqual([]);
   });
 
   it("flags oversized pack results that risk low-memory startup failures", () => {
     expect(
-      collectPackUnpackedSizeErrors([makePackResult("openclaw-2026.3.12.tgz", 224_002_564)]),
+      collectPackUnpackedSizeErrors([makePackResult("carlito-2026.3.12.tgz", 224_002_564)]),
     ).toEqual([
-      "openclaw-2026.3.12.tgz unpackedSize 224002564 bytes (213.6 MiB) exceeds budget 211812352 bytes (202.0 MiB). Investigate duplicate channel shims, copied extension trees, or other accidental pack bloat before release.",
+      "carlito-2026.3.12.tgz unpackedSize 224002564 bytes (213.6 MiB) exceeds budget 211812352 bytes (202.0 MiB). Investigate duplicate channel shims, copied extension trees, or other accidental pack bloat before release.",
     ]);
   });
 
   it("fails closed when npm pack output omits unpackedSize for every result", () => {
     expect(
       collectPackUnpackedSizeErrors([
-        { filename: "openclaw-2026.3.14.tgz" },
-        { filename: "openclaw-extra.tgz", unpackedSize: Number.NaN },
+        { filename: "carlito-2026.3.14.tgz" },
+        { filename: "carlito-extra.tgz", unpackedSize: Number.NaN },
       ]),
     ).toEqual([
       "npm pack --dry-run produced no unpackedSize data; pack size budget was not verified.",
@@ -547,7 +547,7 @@ describe("createPackedBundledPluginPostinstallEnv", () => {
   it("keeps packed postinstall on the lazy bundled dependency path", () => {
     expect(createPackedBundledPluginPostinstallEnv({ PATH: "/usr/bin" })).toEqual({
       PATH: "/usr/bin",
-      OPENCLAW_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
+      CARLITO_DISABLE_BUNDLED_ENTRY_SOURCE_FALLBACK: "1",
     });
   });
 });
@@ -582,13 +582,13 @@ describe("collectInstalledBundledPluginRuntimeDepErrors", () => {
     );
   }
 
-  it("returns no errors when declared deps are installed at the openclaw package root", () => {
+  it("returns no errors when declared deps are installed at the carlito package root", () => {
     const packageRoot = createPackageRoot();
     try {
       writeBundledPluginPackageJson(packageRoot, "whatsapp", {
-        name: "@openclaw/whatsapp",
+        name: "@realcarlossanchez101/whatsapp",
         dependencies: { "@whiskeysockets/baileys": "7.0.0-rc.9" },
-        openclaw: { bundle: { stageRuntimeDependencies: true } },
+        carlito: { bundle: { stageRuntimeDependencies: true } },
       });
       installRuntimeDependencyAtPackageRoot(packageRoot, "@whiskeysockets/baileys", "7.0.0-rc.9");
 
@@ -602,9 +602,9 @@ describe("collectInstalledBundledPluginRuntimeDepErrors", () => {
     const packageRoot = createPackageRoot();
     try {
       writeBundledPluginPackageJson(packageRoot, "whatsapp", {
-        name: "@openclaw/whatsapp",
+        name: "@realcarlossanchez101/whatsapp",
         dependencies: { "@whiskeysockets/baileys": "7.0.0-rc.9" },
-        openclaw: { bundle: { stageRuntimeDependencies: true } },
+        carlito: { bundle: { stageRuntimeDependencies: true } },
       });
 
       expect(collectInstalledBundledPluginRuntimeDepErrors(packageRoot)).toEqual([

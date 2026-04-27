@@ -1,7 +1,7 @@
 ---
-summary: "Shared Docker VM runtime steps for long-lived OpenClaw Gateway hosts"
+summary: "Shared Docker VM runtime steps for long-lived Carlito Gateway hosts"
 read_when:
-  - You are deploying OpenClaw on a cloud VM with Docker
+  - You are deploying Carlito on a cloud VM with Docker
   - You need the shared binary bake, persistence, and update flow
 title: "Docker VM runtime"
 ---
@@ -77,7 +77,7 @@ The download URLs above are for x86_64 (amd64). For ARM-based VMs (e.g. Hetzner 
 
 ```bash
 docker compose build
-docker compose up -d openclaw-gateway
+docker compose up -d carlito-gateway
 ```
 
 If build fails with `Killed` or `exit code 137` during `pnpm install --frozen-lockfile`, the VM is out of memory.
@@ -86,9 +86,9 @@ Use a larger machine class before retrying.
 Verify binaries:
 
 ```bash
-docker compose exec openclaw-gateway which gog
-docker compose exec openclaw-gateway which goplaces
-docker compose exec openclaw-gateway which wacli
+docker compose exec carlito-gateway which gog
+docker compose exec carlito-gateway which goplaces
+docker compose exec carlito-gateway which wacli
 ```
 
 Expected output:
@@ -102,7 +102,7 @@ Expected output:
 Verify Gateway:
 
 ```bash
-docker compose logs -f openclaw-gateway
+docker compose logs -f carlito-gateway
 ```
 
 Expected output:
@@ -113,25 +113,25 @@ Expected output:
 
 ## What persists where
 
-OpenClaw runs in Docker, but Docker is not the source of truth.
+Carlito runs in Docker, but Docker is not the source of truth.
 All long-lived state must survive restarts, rebuilds, and reboots.
 
-| Component           | Location                          | Persistence mechanism  | Notes                                                         |
-| ------------------- | --------------------------------- | ---------------------- | ------------------------------------------------------------- |
-| Gateway config      | `/home/node/.openclaw/`           | Host volume mount      | Includes `openclaw.json`, `.env`                              |
-| Model auth profiles | `/home/node/.openclaw/agents/`    | Host volume mount      | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
-| Skill configs       | `/home/node/.openclaw/skills/`    | Host volume mount      | Skill-level state                                             |
-| Agent workspace     | `/home/node/.openclaw/workspace/` | Host volume mount      | Code and agent artifacts                                      |
-| WhatsApp session    | `/home/node/.openclaw/`           | Host volume mount      | Preserves QR login                                            |
-| Gmail keyring       | `/home/node/.openclaw/`           | Host volume + password | Requires `GOG_KEYRING_PASSWORD`                               |
-| External binaries   | `/usr/local/bin/`                 | Docker image           | Must be baked at build time                                   |
-| Node runtime        | Container filesystem              | Docker image           | Rebuilt every image build                                     |
-| OS packages         | Container filesystem              | Docker image           | Do not install at runtime                                     |
-| Docker container    | Ephemeral                         | Restartable            | Safe to destroy                                               |
+| Component           | Location                         | Persistence mechanism  | Notes                                                         |
+| ------------------- | -------------------------------- | ---------------------- | ------------------------------------------------------------- |
+| Gateway config      | `/home/node/.carlito/`           | Host volume mount      | Includes `carlito.json`, `.env`                               |
+| Model auth profiles | `/home/node/.carlito/agents/`    | Host volume mount      | `agents/<agentId>/agent/auth-profiles.json` (OAuth, API keys) |
+| Skill configs       | `/home/node/.carlito/skills/`    | Host volume mount      | Skill-level state                                             |
+| Agent workspace     | `/home/node/.carlito/workspace/` | Host volume mount      | Code and agent artifacts                                      |
+| WhatsApp session    | `/home/node/.carlito/`           | Host volume mount      | Preserves QR login                                            |
+| Gmail keyring       | `/home/node/.carlito/`           | Host volume + password | Requires `GOG_KEYRING_PASSWORD`                               |
+| External binaries   | `/usr/local/bin/`                | Docker image           | Must be baked at build time                                   |
+| Node runtime        | Container filesystem             | Docker image           | Rebuilt every image build                                     |
+| OS packages         | Container filesystem             | Docker image           | Do not install at runtime                                     |
+| Docker container    | Ephemeral                        | Restartable            | Safe to destroy                                               |
 
 ## Updates
 
-To update OpenClaw on the VM:
+To update Carlito on the VM:
 
 ```bash
 git pull

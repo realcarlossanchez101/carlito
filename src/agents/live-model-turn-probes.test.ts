@@ -16,17 +16,17 @@ import {
 
 describe("live model turn probes", () => {
   it("defaults probes on and accepts common opt-out values", () => {
-    expect(isLiveModelProbeEnabled({}, "OPENCLAW_LIVE_MODEL_IMAGE_PROBE")).toBe(true);
+    expect(isLiveModelProbeEnabled({}, "CARLITO_LIVE_MODEL_IMAGE_PROBE")).toBe(true);
     expect(
       isLiveModelProbeEnabled(
-        { OPENCLAW_LIVE_MODEL_IMAGE_PROBE: "false" },
-        "OPENCLAW_LIVE_MODEL_IMAGE_PROBE",
+        { CARLITO_LIVE_MODEL_IMAGE_PROBE: "false" },
+        "CARLITO_LIVE_MODEL_IMAGE_PROBE",
       ),
     ).toBe(false);
     expect(
       isLiveModelProbeEnabled(
-        { OPENCLAW_LIVE_MODEL_IMAGE_PROBE: "1" },
-        "OPENCLAW_LIVE_MODEL_IMAGE_PROBE",
+        { CARLITO_LIVE_MODEL_IMAGE_PROBE: "1" },
+        "CARLITO_LIVE_MODEL_IMAGE_PROBE",
       ),
     ).toBe(true);
   });

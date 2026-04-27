@@ -1,27 +1,27 @@
 ---
-summary: "Updating OpenClaw safely (global install or source), plus rollback strategy"
+summary: "Updating Carlito safely (global install or source), plus rollback strategy"
 read_when:
-  - Updating OpenClaw
+  - Updating Carlito
   - Something breaks after an update
 title: "Updating"
 ---
 
-Keep OpenClaw up to date.
+Keep Carlito up to date.
 
-## Recommended: `openclaw update`
+## Recommended: `carlito update`
 
-The fastest way to update. It detects your install type (npm or git), fetches the latest version, runs `openclaw doctor`, and restarts the gateway.
+The fastest way to update. It detects your install type (npm or git), fetches the latest version, runs `carlito doctor`, and restarts the gateway.
 
 ```bash
-openclaw update
+carlito update
 ```
 
 To switch channels or target a specific version:
 
 ```bash
-openclaw update --channel beta
-openclaw update --tag main
-openclaw update --dry-run   # preview without applying
+carlito update --channel beta
+carlito update --tag main
+carlito update --dry-run   # preview without applying
 ```
 
 `--channel beta` prefers beta, but the runtime falls back to stable/latest when
@@ -33,7 +33,7 @@ See [Development channels](/install/development-channels) for channel semantics.
 ## Alternative: re-run the installer
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://carlito.ai/install.sh | bash
 ```
 
 Add `--no-onboard` to skip onboarding. For source installs, pass `--install-method git --no-onboard`.
@@ -41,21 +41,21 @@ Add `--no-onboard` to skip onboarding. For source installs, pass `--install-meth
 ## Alternative: manual npm, pnpm, or bun
 
 ```bash
-npm i -g openclaw@latest
+npm i -g carlito@latest
 ```
 
 ```bash
-pnpm add -g openclaw@latest
+pnpm add -g carlito@latest
 ```
 
 ```bash
-bun add -g openclaw@latest
+bun add -g carlito@latest
 ```
 
 ### Root-owned global npm installs
 
 Some Linux npm setups install global packages under root-owned directories such as
-`/usr/lib/node_modules/openclaw`. OpenClaw supports that layout: the installed
+`/usr/lib/node_modules/carlito`. Carlito supports that layout: the installed
 package is treated as read-only at runtime, and bundled plugin runtime
 dependencies are staged into a writable runtime directory instead of mutating the
 package tree.
@@ -64,16 +64,16 @@ For hardened systemd units, set a writable stage directory that is included in
 `ReadWritePaths`:
 
 ```ini
-Environment=OPENCLAW_PLUGIN_STAGE_DIR=/var/lib/openclaw/plugin-runtime-deps
-ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
+Environment=CARLITO_PLUGIN_STAGE_DIR=/var/lib/carlito/plugin-runtime-deps
+ReadWritePaths=/var/lib/carlito /home/carlito/.carlito /tmp
 ```
 
-If `OPENCLAW_PLUGIN_STAGE_DIR` is not set, OpenClaw uses `$STATE_DIRECTORY` when
-systemd provides it, then falls back to `~/.openclaw/plugin-runtime-deps`.
+If `CARLITO_PLUGIN_STAGE_DIR` is not set, Carlito uses `$STATE_DIRECTORY` when
+systemd provides it, then falls back to `~/.carlito/plugin-runtime-deps`.
 
 ## Auto-updater
 
-The auto-updater is off by default. Enable it in `~/.openclaw/openclaw.json`:
+The auto-updater is off by default. Enable it in `~/.carlito/carlito.json`:
 
 ```json5
 {
@@ -93,7 +93,7 @@ The auto-updater is off by default. Enable it in `~/.openclaw/openclaw.json`:
 | -------- | ------------------------------------------------------------------------------------------------------------- |
 | `stable` | Waits `stableDelayHours`, then applies with deterministic jitter across `stableJitterHours` (spread rollout). |
 | `beta`   | Checks every `betaCheckIntervalHours` (default: hourly) and applies immediately.                              |
-| `dev`    | No automatic apply. Use `openclaw update` manually.                                                           |
+| `dev`    | No automatic apply. Use `carlito update` manually.                                                            |
 
 The gateway also logs an update hint on startup (disable with `update.checkOnStart: false`).
 
@@ -104,7 +104,7 @@ The gateway also logs an update hint on startup (disable with `update.checkOnSta
 ### Run doctor
 
 ```bash
-openclaw doctor
+carlito doctor
 ```
 
 Migrates config, audits DM policies, and checks gateway health. Details: [Doctor](/gateway/doctor)
@@ -112,13 +112,13 @@ Migrates config, audits DM policies, and checks gateway health. Details: [Doctor
 ### Restart the gateway
 
 ```bash
-openclaw gateway restart
+carlito gateway restart
 ```
 
 ### Verify
 
 ```bash
-openclaw health
+carlito health
 ```
 
 </Steps>
@@ -128,12 +128,12 @@ openclaw health
 ### Pin a version (npm)
 
 ```bash
-npm i -g openclaw@<version>
-openclaw doctor
-openclaw gateway restart
+npm i -g carlito@<version>
+carlito doctor
+carlito gateway restart
 ```
 
-Tip: `npm view openclaw version` shows the current published version.
+Tip: `npm view carlito version` shows the current published version.
 
 ### Pin a commit (source)
 
@@ -141,15 +141,15 @@ Tip: `npm view openclaw version` shows the current published version.
 git fetch origin
 git checkout "$(git rev-list -n 1 --before=\"2026-01-01\" origin/main)"
 pnpm install && pnpm build
-openclaw gateway restart
+carlito gateway restart
 ```
 
 To return to latest: `git checkout main && git pull`.
 
 ## If you are stuck
 
-- Run `openclaw doctor` again and read the output carefully.
-- For `openclaw update --channel dev` on source checkouts, the updater auto-bootstraps `pnpm` when needed. If you see a pnpm/corepack bootstrap error, install `pnpm` manually (or re-enable `corepack`) and rerun the update.
+- Run `carlito doctor` again and read the output carefully.
+- For `carlito update --channel dev` on source checkouts, the updater auto-bootstraps `pnpm` when needed. If you see a pnpm/corepack bootstrap error, install `pnpm` manually (or re-enable `corepack`) and rerun the update.
 - Check: [Troubleshooting](/gateway/troubleshooting)
 - Ask in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
 

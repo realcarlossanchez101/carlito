@@ -24,7 +24,7 @@ function writeBundledChannelPlugin(root: string, id: string, dependencies: Recor
   writeJson(path.join(root, "dist", "extensions", id, "package.json"), {
     dependencies,
   });
-  writeJson(path.join(root, "dist", "extensions", id, "openclaw.plugin.json"), {
+  writeJson(path.join(root, "dist", "extensions", id, "carlito.plugin.json"), {
     id,
     channels: [id],
     configSchema: { type: "object" },
@@ -58,7 +58,7 @@ function createNonInteractivePrompter(
 
 describe("doctor bundled plugin runtime deps", () => {
   it("skips source checkouts", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
     fs.mkdirSync(path.join(root, ".git"));
     fs.mkdirSync(path.join(root, "src"));
     fs.mkdirSync(path.join(root, "extensions"));
@@ -74,15 +74,15 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("reports missing deps and conflicts", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
 
     writeJson(path.join(root, "dist", "extensions", "alpha", "package.json"), {
       dependencies: {
-        "@openclaw/plugin-sdk": "workspace:*",
+        "@realcarlossanchez101/plugin-sdk": "workspace:*",
         "dep-one": "1.0.0",
         "@scope/dep-two": "2.0.0",
-        openclaw: "workspace:*",
+        carlito: "workspace:*",
       },
       optionalDependencies: {
         "dep-opt": "3.0.0",
@@ -115,8 +115,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("limits configured scans to enabled bundled channel plugins", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
 
     writeBundledChannelPlugin(root, "discord", { "discord-only": "1.0.0" });
     writeBundledChannelPlugin(root, "whatsapp", { "whatsapp-only": "1.0.0" });
@@ -138,8 +138,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("does not report bundled channel deps when the channel is not enabled", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeBundledChannelPlugin(root, "discord", { "discord-only": "1.0.0" });
 
     const result = scanBundledPluginRuntimeDeps({
@@ -154,8 +154,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("can include disabled but configured bundled channel deps for doctor recovery", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeBundledChannelPlugin(root, "telegram", { "telegram-only": "1.0.0" });
 
     const result = scanBundledPluginRuntimeDeps({
@@ -176,14 +176,14 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("reports default-enabled bundled plugin deps", () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeJson(path.join(root, "dist", "extensions", "openai", "package.json"), {
       dependencies: {
         "openai-only": "1.0.0",
       },
     });
-    writeJson(path.join(root, "dist", "extensions", "openai", "openclaw.plugin.json"), {
+    writeJson(path.join(root, "dist", "extensions", "openai", "carlito.plugin.json"), {
       id: "openai",
       enabledByDefault: true,
       configSchema: { type: "object" },
@@ -203,8 +203,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("repairs missing deps during non-interactive doctor", async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeBundledChannelPlugin(root, "telegram", { grammy: "1.37.0" });
     const installed = createInstalledRuntimeDeps();
 
@@ -231,8 +231,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("repairs Feishu runtime deps from preserved source config", async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeBundledChannelPlugin(root, "feishu", { "@larksuiteoapi/node-sdk": "^1.61.0" });
     const installed = createInstalledRuntimeDeps();
 
@@ -260,11 +260,11 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("repairs missing deps into an external stage dir when configured", async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    const stageDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-stage-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw", version: "2026.4.22" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    const stageDir = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-stage-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito", version: "2026.4.22" });
     writeBundledChannelPlugin(root, "slack", { "@slack/web-api": "7.15.1" });
-    const env = { OPENCLAW_PLUGIN_STAGE_DIR: stageDir };
+    const env = { CARLITO_PLUGIN_STAGE_DIR: stageDir };
     const installed = createInstalledRuntimeDeps();
 
     await maybeRepairBundledPluginRuntimeDeps({
@@ -293,8 +293,8 @@ describe("doctor bundled plugin runtime deps", () => {
   });
 
   it("retains configured bundled deps when repairing a subset", async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-doctor-bundled-"));
-    writeJson(path.join(root, "package.json"), { name: "openclaw" });
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-doctor-bundled-"));
+    writeJson(path.join(root, "package.json"), { name: "carlito" });
     writeBundledChannelPlugin(root, "telegram", { grammy: "1.37.0" });
     writeBundledChannelPlugin(root, "slack", { "@slack/web-api": "7.15.1" });
     writeJson(path.join(root, "node_modules", "@slack", "web-api", "package.json"), {

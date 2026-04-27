@@ -35,8 +35,8 @@ const buildGatewayInstallPlan = vi.fn(
     programArguments: ["/bin/node", "cli", "gateway", "--port", String(params.port)],
     workingDirectory: process.cwd(),
     environment: {
-      OPENCLAW_GATEWAY_PORT: String(params.port),
-      ...(params.token ? { OPENCLAW_GATEWAY_TOKEN: params.token } : {}),
+      CARLITO_GATEWAY_PORT: String(params.port),
+      ...(params.token ? { CARLITO_GATEWAY_TOKEN: params.token } : {}),
     },
   }),
 );
@@ -143,15 +143,15 @@ describe("daemon-cli coverage", () => {
   beforeEach(() => {
     daemonProgram = createDaemonProgram();
     envSnapshot = captureEnv([
-      "OPENCLAW_STATE_DIR",
-      "OPENCLAW_CONFIG_PATH",
-      "OPENCLAW_GATEWAY_PORT",
-      "OPENCLAW_PROFILE",
+      "CARLITO_STATE_DIR",
+      "CARLITO_CONFIG_PATH",
+      "CARLITO_GATEWAY_PORT",
+      "CARLITO_PROFILE",
     ]);
-    process.env.OPENCLAW_STATE_DIR = "/tmp/openclaw-cli-state";
-    process.env.OPENCLAW_CONFIG_PATH = "/tmp/openclaw-cli-state/openclaw.json";
-    delete process.env.OPENCLAW_GATEWAY_PORT;
-    delete process.env.OPENCLAW_PROFILE;
+    process.env.CARLITO_STATE_DIR = "/tmp/carlito-cli-state";
+    process.env.CARLITO_CONFIG_PATH = "/tmp/carlito-cli-state/carlito.json";
+    delete process.env.CARLITO_GATEWAY_PORT;
+    delete process.env.CARLITO_PROFILE;
     serviceReadCommand.mockResolvedValue(null);
     resolveGatewayProbeAuthSafeWithSecretInputs.mockClear();
     findExtraGatewayServices.mockClear();
@@ -184,12 +184,12 @@ describe("daemon-cli coverage", () => {
     serviceReadCommand.mockResolvedValueOnce({
       programArguments: ["/bin/node", "cli", "gateway", "--port", "19001"],
       environment: {
-        OPENCLAW_PROFILE: "dev",
-        OPENCLAW_STATE_DIR: "/tmp/openclaw-daemon-state",
-        OPENCLAW_CONFIG_PATH: "/tmp/openclaw-daemon-state/openclaw.json",
-        OPENCLAW_GATEWAY_PORT: "19001",
+        CARLITO_PROFILE: "dev",
+        CARLITO_STATE_DIR: "/tmp/carlito-daemon-state",
+        CARLITO_CONFIG_PATH: "/tmp/carlito-daemon-state/carlito.json",
+        CARLITO_GATEWAY_PORT: "19001",
       },
-      sourcePath: "/tmp/ai.openclaw.gateway.plist",
+      sourcePath: "/tmp/ai.carlito.gateway.plist",
     });
 
     await runDaemonCommand(["daemon", "status", "--json"]);
@@ -261,7 +261,7 @@ describe("daemon-cli coverage", () => {
         GOPATH: "/Users/test/.local/gopath",
         GOBIN: "/Users/test/.local/gopath/bin",
       },
-      sourcePath: "/tmp/ai.openclaw.gateway.plist",
+      sourcePath: "/tmp/ai.carlito.gateway.plist",
     });
 
     await runDaemonCommand(["daemon", "install", "--force", "--json"]);

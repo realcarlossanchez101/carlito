@@ -1,10 +1,10 @@
 import {
   applyProviderConfigWithDefaultModelPreset,
   type ModelDefinitionConfig,
-  type OpenClawConfig,
+  type CarlitoConfig,
 } from "../../src/plugin-sdk/provider-onboard.ts";
 
-export type { OpenClawConfig };
+export type { CarlitoConfig };
 
 const DOCKER_OPENAI_MODEL_REF = "openai/gpt-5.4";
 const DOCKER_OPENAI_MODEL: ModelDefinitionConfig = {
@@ -24,9 +24,9 @@ const DOCKER_OPENAI_MODEL: ModelDefinitionConfig = {
 };
 
 export function applyDockerOpenAiProviderConfig(
-  config: OpenClawConfig,
+  config: CarlitoConfig,
   apiKey: string,
-): OpenClawConfig {
+): CarlitoConfig {
   const seededConfig = applyProviderConfigWithDefaultModelPreset(config, {
     providerId: "openai",
     api: "openai-responses",

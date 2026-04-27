@@ -1,5 +1,5 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { DiscordActionConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { DiscordActionConfig } from "carlito/plugin-sdk/config-runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { clearPresences, setPresence } from "../monitor/presence-cache.js";
 import { discordGuildActionRuntime, handleDiscordGuildAction } from "./runtime.guild.js";
@@ -83,7 +83,7 @@ const {
 } = discordSendMocks;
 
 const enableAllActions = () => true;
-const DISCORD_TEST_CFG = {} as OpenClawConfig;
+const DISCORD_TEST_CFG = {} as CarlitoConfig;
 
 function handleMessagingAction(
   action: string,
@@ -93,7 +93,7 @@ function handleMessagingAction(
     mediaLocalRoots?: readonly string[];
     mediaReadFile?: (filePath: string) => Promise<Buffer>;
   },
-  cfg: OpenClawConfig = DISCORD_TEST_CFG,
+  cfg: CarlitoConfig = DISCORD_TEST_CFG,
 ) {
   return handleDiscordMessagingAction(action, params, isActionEnabled, options, cfg);
 }
@@ -102,7 +102,7 @@ function handleGuildAction(
   action: string,
   params: Record<string, unknown>,
   isActionEnabled: (key: keyof DiscordActionConfig) => boolean,
-  cfg: OpenClawConfig = DISCORD_TEST_CFG,
+  cfg: CarlitoConfig = DISCORD_TEST_CFG,
   options?: { mediaLocalRoots?: readonly string[] },
 ) {
   return handleDiscordGuildAction(action, params, isActionEnabled, cfg, options);
@@ -112,7 +112,7 @@ function handleModerationAction(
   action: string,
   params: Record<string, unknown>,
   isActionEnabled: (key: keyof DiscordActionConfig, defaultValue?: boolean) => boolean,
-  cfg: OpenClawConfig = DISCORD_TEST_CFG,
+  cfg: CarlitoConfig = DISCORD_TEST_CFG,
 ) {
   return handleDiscordModerationAction(action, params, isActionEnabled, cfg);
 }
@@ -188,7 +188,7 @@ describe("handleDiscordMessagingAction", () => {
             },
           },
         },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
     );
 
     expect(reactMessageDiscord).toHaveBeenCalledWith(
@@ -362,7 +362,7 @@ describe("handleDiscordMessagingAction", () => {
           token: "token",
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     await handleMessagingAction("readMessages", { channelId: "C1" }, enableAllActions, {}, cfg);
     expect(readMessagesDiscord).toHaveBeenCalledWith("C1", expect.any(Object), { cfg });
   });
@@ -392,7 +392,7 @@ describe("handleDiscordMessagingAction", () => {
           token: "token",
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     await handleMessagingAction(
       "fetchMessage",
       { guildId: "G1", channelId: "C1", messageId: "M1" },
@@ -595,7 +595,7 @@ describe("handleDiscordGuildAction", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const result = await handleGuildAction(
       "memberInfo",
       {
@@ -927,7 +927,7 @@ describe("handleDiscordAction per-account gating", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     await handleDiscordAction(
       { action: "timeout", guildId: "G1", userId: "U1", durationMinutes: 5, accountId: "ops" },
@@ -948,7 +948,7 @@ describe("handleDiscordAction per-account gating", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     await expect(
       handleDiscordAction(
@@ -969,7 +969,7 @@ describe("handleDiscordAction per-account gating", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     await handleDiscordAction(
       { action: "kick", guildId: "G1", userId: "U1", accountId: "ops" },
@@ -988,7 +988,7 @@ describe("handleDiscordAction per-account gating", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     await expect(
       handleDiscordAction(
@@ -1011,7 +1011,7 @@ describe("handleDiscordAction per-account gating", () => {
           },
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     await handleDiscordAction(
       { action: "channelCreate", guildId: "G1", name: "alerts", accountId: "ops" },

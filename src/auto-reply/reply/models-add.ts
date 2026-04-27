@@ -15,8 +15,8 @@ import {
   replaceConfigFile,
   validateConfigObjectWithPlugins,
 } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import type { ModelDefinitionConfig, ModelProviderConfig } from "../../config/types.models.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
 import { formatErrorMessage } from "../../infra/errors.js";
 import { normalizeHostname } from "../../infra/net/hostname.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
@@ -43,9 +43,9 @@ import {
 export type ModelAddAdapter = {
   providerId: string;
   bootstrapMode?: "always" | "discovered";
-  bootstrapProviderConfig?: (cfg: OpenClawConfig) => ModelProviderConfig | null;
+  bootstrapProviderConfig?: (cfg: CarlitoConfig) => ModelProviderConfig | null;
   detect?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     providerConfig: ModelProviderConfig;
     modelId: string;
   }) => Promise<{
@@ -188,7 +188,7 @@ function buildOpenAICodexModelDefinition(modelId: string): ModelDefinitionConfig
 }
 
 function resolveConfiguredProvider(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   providerId: string,
 ): { providerKey: string; providerConfig: ModelProviderConfig } | undefined {
   const normalizedProviderId = normalizeProviderId(providerId);
@@ -342,7 +342,7 @@ const MODEL_ADD_ADAPTERS: Record<string, ModelAddAdapter> = {
 };
 
 function canAddProvider(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   allowDiscoveredBootstrap?: boolean;
 }): boolean {
@@ -364,7 +364,7 @@ function canAddProvider(params: {
 }
 
 export function listAddableProviders(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   discoveredProviders?: readonly string[];
 }): string[] {
   const providers = new Set<string>();
@@ -396,7 +396,7 @@ export function listAddableProviders(params: {
 }
 
 export function validateAddProvider(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   discoveredProviders?: readonly string[];
 }): ValidateAddProviderResult {
@@ -414,7 +414,7 @@ export function validateAddProvider(params: {
   return { ok: true, provider };
 }
 
-function ensureProviderConfig(params: { cfg: OpenClawConfig; provider: string }):
+function ensureProviderConfig(params: { cfg: CarlitoConfig; provider: string }):
   | {
       ok: true;
       providerKey: string;
@@ -444,7 +444,7 @@ function ensureProviderConfig(params: { cfg: OpenClawConfig; provider: string })
 }
 
 async function detectModelDefinition(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   providerConfig: ModelProviderConfig;
   modelId: string;
@@ -473,7 +473,7 @@ async function detectModelDefinition(params: {
 }
 
 export async function detectProviderModelDefinition(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   modelId: string;
 }): Promise<{
@@ -512,12 +512,12 @@ export async function detectProviderModelDefinition(params: {
 }
 
 function upsertModelEntry(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   providerKey: string;
   providerConfig: ModelProviderConfig;
   model: ModelDefinitionConfig;
-}): { nextConfig: OpenClawConfig; existed: boolean } {
+}): { nextConfig: CarlitoConfig; existed: boolean } {
   const nextConfig = structuredClone(params.cfg);
   nextConfig.models ??= {};
   nextConfig.models.providers ??= {};
@@ -546,10 +546,10 @@ function upsertModelEntry(params: {
 }
 
 function maybeAddAllowlistEntry(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   modelId: string;
-}): { nextConfig: OpenClawConfig; added: boolean } {
+}): { nextConfig: CarlitoConfig; added: boolean } {
   const allowlistKeys = buildConfiguredAllowlistKeys({
     cfg: params.cfg,
     defaultProvider: resolveDefaultModelForAgent({ cfg: params.cfg }).provider,
@@ -578,7 +578,7 @@ function maybeAddAllowlistEntry(params: {
 }
 
 export async function addModelToConfig(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   provider: string;
   modelId: string;
 }): Promise<{ ok: true; result: AddModelOutcome } | { ok: false; error: string }> {
@@ -593,7 +593,7 @@ export async function addModelToConfig(params: {
     return { ok: false, error: "Config file is invalid; fix it before using /models add." };
   }
 
-  const currentConfig = structuredClone(snapshot.parsed as OpenClawConfig);
+  const currentConfig = structuredClone(snapshot.parsed as CarlitoConfig);
   const providerResolution = ensureProviderConfig({
     cfg: currentConfig,
     provider,

@@ -1,5 +1,5 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { RuntimeEnv } from "carlito/plugin-sdk/runtime-env";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   __testing as threadBindingTesting,
@@ -54,9 +54,9 @@ vi.mock("../send.shared.js", () => ({
   sendDiscordText: (...args: unknown[]) => sendDiscordTextMock(...args),
 }));
 
-vi.mock("openclaw/plugin-sdk/retry-runtime", async () => {
-  const actual = await vi.importActual<typeof import("openclaw/plugin-sdk/retry-runtime")>(
-    "openclaw/plugin-sdk/retry-runtime",
+vi.mock("carlito/plugin-sdk/retry-runtime", async () => {
+  const actual = await vi.importActual<typeof import("carlito/plugin-sdk/retry-runtime")>(
+    "carlito/plugin-sdk/retry-runtime",
   );
   return {
     ...actual,
@@ -70,7 +70,7 @@ describe("deliverDiscordReply", () => {
   const runtime = {} as RuntimeEnv;
   const cfg = {
     channels: { discord: { token: "test-token" } },
-  } as OpenClawConfig;
+  } as CarlitoConfig;
   const expectBotSendRetrySuccess = async (status: number, message: string) => {
     sendMessageDiscordMock
       .mockRejectedValueOnce(Object.assign(new Error(message), { status }))

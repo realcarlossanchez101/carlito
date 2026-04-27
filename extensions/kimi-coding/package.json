@@ -1,16 +1,16 @@
 {
-  "name": "@openclaw/kimi-provider",
+  "name": "@realcarlossanchez101/kimi-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Kimi provider plugin",
+  "description": "Carlito Kimi provider plugin",
   "type": "module",
   "dependencies": {
     "@mariozechner/pi-ai": "0.70.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

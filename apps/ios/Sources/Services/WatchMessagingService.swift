@@ -1,5 +1,5 @@
 import Foundation
-import OpenClawKit
+import CarlitoKit
 
 enum WatchMessagingError: LocalizedError {
     case unsupported
@@ -13,7 +13,7 @@ enum WatchMessagingError: LocalizedError {
         case .notPaired:
             "WATCH_UNAVAILABLE: no paired Apple Watch"
         case .watchAppNotInstalled:
-            "WATCH_UNAVAILABLE: OpenClaw watch companion app is not installed"
+            "WATCH_UNAVAILABLE: Carlito watch companion app is not installed"
         }
     }
 }
@@ -97,35 +97,35 @@ final class WatchMessagingService: @preconcurrency WatchMessagingServicing {
 
     func sendNotification(
         id: String,
-        params: OpenClawWatchNotifyParams) async throws -> WatchNotificationSendResult
+        params: CarlitoWatchNotifyParams) async throws -> WatchNotificationSendResult
     {
         let payload = WatchMessagingPayloadCodec.encodeNotificationPayload(id: id, params: params)
         return try await self.transport.sendPayload(payload)
     }
 
     func sendExecApprovalPrompt(
-        _ message: OpenClawWatchExecApprovalPromptMessage) async throws -> WatchNotificationSendResult
+        _ message: CarlitoWatchExecApprovalPromptMessage) async throws -> WatchNotificationSendResult
     {
         try await self.transport.sendPayload(
             WatchMessagingPayloadCodec.encodeExecApprovalPromptPayload(message))
     }
 
     func sendExecApprovalResolved(
-        _ message: OpenClawWatchExecApprovalResolvedMessage) async throws -> WatchNotificationSendResult
+        _ message: CarlitoWatchExecApprovalResolvedMessage) async throws -> WatchNotificationSendResult
     {
         try await self.transport.sendPayload(
             WatchMessagingPayloadCodec.encodeExecApprovalResolvedPayload(message))
     }
 
     func sendExecApprovalExpired(
-        _ message: OpenClawWatchExecApprovalExpiredMessage) async throws -> WatchNotificationSendResult
+        _ message: CarlitoWatchExecApprovalExpiredMessage) async throws -> WatchNotificationSendResult
     {
         try await self.transport.sendPayload(
             WatchMessagingPayloadCodec.encodeExecApprovalExpiredPayload(message))
     }
 
     func syncExecApprovalSnapshot(
-        _ message: OpenClawWatchExecApprovalSnapshotMessage) async throws -> WatchNotificationSendResult
+        _ message: CarlitoWatchExecApprovalSnapshotMessage) async throws -> WatchNotificationSendResult
     {
         try await self.transport.sendSnapshotPayload(
             WatchMessagingPayloadCodec.encodeExecApprovalSnapshotPayload(message))

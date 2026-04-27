@@ -1,8 +1,5 @@
-import type {
-  OpenClawPluginCommandDefinition,
-  PluginCommandContext,
-} from "openclaw/plugin-sdk/core";
-import type { OpenClawConfig, OpenClawPluginApi } from "openclaw/plugin-sdk/memory-core";
+import type { CarlitoPluginCommandDefinition, PluginCommandContext } from "carlito/plugin-sdk/core";
+import type { CarlitoConfig, CarlitoPluginApi } from "carlito/plugin-sdk/memory-core";
 import { describe, expect, it, vi } from "vitest";
 import { registerDreamingCommand } from "./dreaming-command.js";
 
@@ -13,31 +10,31 @@ function asRecord(value: unknown): Record<string, unknown> | null {
   return value as Record<string, unknown>;
 }
 
-function resolveStoredDreaming(config: OpenClawConfig): Record<string, unknown> {
+function resolveStoredDreaming(config: CarlitoConfig): Record<string, unknown> {
   const entry = asRecord(config.plugins?.entries?.["memory-core"]);
   const pluginConfig = asRecord(entry?.config);
   return asRecord(pluginConfig?.dreaming) ?? {};
 }
 
-function createHarness(initialConfig: OpenClawConfig = {}) {
-  const registered: { command?: OpenClawPluginCommandDefinition } = {};
-  let runtimeConfig: OpenClawConfig = initialConfig;
+function createHarness(initialConfig: CarlitoConfig = {}) {
+  const registered: { command?: CarlitoPluginCommandDefinition } = {};
+  let runtimeConfig: CarlitoConfig = initialConfig;
 
   const runtime = {
     config: {
       loadConfig: vi.fn(() => runtimeConfig),
-      writeConfigFile: vi.fn(async (nextConfig: OpenClawConfig) => {
+      writeConfigFile: vi.fn(async (nextConfig: CarlitoConfig) => {
         runtimeConfig = nextConfig;
       }),
     },
-  } as unknown as OpenClawPluginApi["runtime"];
+  } as unknown as CarlitoPluginApi["runtime"];
 
   const api = {
     runtime,
-    registerCommand: vi.fn((definition: OpenClawPluginCommandDefinition) => {
+    registerCommand: vi.fn((definition: CarlitoPluginCommandDefinition) => {
       registered.command = definition;
     }),
-  } as unknown as OpenClawPluginApi;
+  } as unknown as CarlitoPluginApi;
 
   registerDreamingCommand(api);
 
@@ -225,7 +222,7 @@ describe("memory-core /dreaming command", () => {
     const text = result.text ?? "";
 
     expect(text).toContain(
-      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.carlito.ai/concepts/dreaming#troubleshooting',
     );
 
     const lines = text.split("\n");
@@ -256,7 +253,7 @@ describe("memory-core /dreaming command", () => {
 
     expect(text).toContain("Dreaming enabled.");
     expect(text).toContain(
-      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.openclaw.ai/concepts/dreaming#troubleshooting',
+      '- blocked: dreaming is enabled but will not run because pulsecheck is disabled for "main". See https://docs.carlito.ai/concepts/dreaming#troubleshooting',
     );
   });
 

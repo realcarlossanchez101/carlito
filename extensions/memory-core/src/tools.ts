@@ -1,19 +1,19 @@
-import { formatErrorMessage } from "openclaw/plugin-sdk/error-runtime";
+import { formatErrorMessage } from "carlito/plugin-sdk/error-runtime";
 import {
   asToolParamsRecord,
   jsonResult,
   readNumberParam,
   readStringParam,
-  type OpenClawConfig,
-} from "openclaw/plugin-sdk/memory-core-host-runtime-core";
+  type CarlitoConfig,
+} from "carlito/plugin-sdk/memory-core-host-runtime-core";
 import type {
   MemorySearchResult,
   MemorySearchRuntimeDebug,
-} from "openclaw/plugin-sdk/memory-core-host-runtime-files";
+} from "carlito/plugin-sdk/memory-core-host-runtime-files";
 import {
   resolveMemoryCorePluginConfig,
   resolveMemoryDeepDreamingConfig,
-} from "openclaw/plugin-sdk/memory-core-host-status";
+} from "carlito/plugin-sdk/memory-core-host-status";
 import { recordShortTermRecalls } from "./short-term-promotion.js";
 import {
   clampResultsByInjectedChars,
@@ -87,7 +87,7 @@ function isActiveMemorySessionKey(sessionKey?: string): boolean {
 }
 
 function resolveActiveMemoryQmdSearchModeOverride(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   sessionKey?: string,
 ): "search" | "vsearch" | "query" | undefined {
   if (!isActiveMemorySessionKey(sessionKey)) {
@@ -179,7 +179,7 @@ async function executeMemoryReadResult<T>(params: {
 }
 
 export function createMemorySearchTool(options: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentSessionKey?: string;
 }) {
   return createMemoryTool({
@@ -320,10 +320,7 @@ export function createMemorySearchTool(options: {
   });
 }
 
-export function createMemoryGetTool(options: {
-  config?: OpenClawConfig;
-  agentSessionKey?: string;
-}) {
+export function createMemoryGetTool(options: { config?: CarlitoConfig; agentSessionKey?: string }) {
   return createMemoryTool({
     options,
     label: "Memory Get",

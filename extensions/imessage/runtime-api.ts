@@ -1,24 +1,24 @@
-import type { OpenClawConfig as RuntimeApiOpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { CarlitoConfig as RuntimeApiCarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 
 export {
   DEFAULT_ACCOUNT_ID,
   getChatChannelMeta,
   type ChannelPlugin,
-  type OpenClawConfig,
-} from "openclaw/plugin-sdk/core";
+  type CarlitoConfig,
+} from "carlito/plugin-sdk/core";
 export { buildChannelConfigSchema, IMessageConfigSchema } from "./config-api.js";
-export { PAIRING_APPROVED_MESSAGE } from "openclaw/plugin-sdk/channel-status";
+export { PAIRING_APPROVED_MESSAGE } from "carlito/plugin-sdk/channel-status";
 export {
   buildComputedAccountStatusSnapshot,
   collectStatusIssuesFromLastError,
-} from "openclaw/plugin-sdk/status-helpers";
-export { formatTrimmedAllowFromEntries } from "openclaw/plugin-sdk/channel-config-helpers";
+} from "carlito/plugin-sdk/status-helpers";
+export { formatTrimmedAllowFromEntries } from "carlito/plugin-sdk/channel-config-helpers";
 export {
   resolveIMessageConfigAllowFrom,
   resolveIMessageConfigDefaultTo,
 } from "./src/config-accessors.js";
 export { looksLikeIMessageTargetId, normalizeIMessageMessagingTarget } from "./src/normalize.js";
-export { resolveChannelMediaMaxBytes } from "openclaw/plugin-sdk/media-runtime";
+export { resolveChannelMediaMaxBytes } from "carlito/plugin-sdk/media-runtime";
 export {
   resolveIMessageGroupRequireMention,
   resolveIMessageGroupToolPolicy,
@@ -32,6 +32,6 @@ export { sendMessageIMessage } from "./src/send.js";
 export { setIMessageRuntime } from "./src/runtime.js";
 export { chunkTextForOutbound } from "./src/channel-api.js";
 export type IMessageAccountConfig = Omit<
-  NonNullable<NonNullable<RuntimeApiOpenClawConfig["channels"]>["imessage"]>,
+  NonNullable<NonNullable<RuntimeApiCarlitoConfig["channels"]>["imessage"]>,
   "accounts" | "defaultAccount"
 >;

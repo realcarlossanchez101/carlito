@@ -2,7 +2,7 @@
 summary: "Scheduled jobs, webhooks, and Gmail PubSub triggers for the Gateway scheduler"
 read_when:
   - Scheduling background jobs or wakeups
-  - Wiring external triggers (webhooks, Gmail) into OpenClaw
+  - Wiring external triggers (webhooks, Gmail) into Carlito
   - Deciding between pulsecheck and cron for scheduled tasks
 title: "Scheduled tasks"
 ---
@@ -15,7 +15,7 @@ Cron is the Gateway's built-in scheduler. It persists jobs, wakes the agent at t
 
 ```bash
 # Add a one-shot reminder
-openclaw cron add \
+carlito cron add \
   --name "Reminder" \
   --at "2026-02-01T16:00:00Z" \
   --session main \
@@ -24,26 +24,26 @@ openclaw cron add \
   --delete-after-run
 
 # Check your jobs
-openclaw cron list
-openclaw cron show <job-id>
+carlito cron list
+carlito cron show <job-id>
 
 # See run history
-openclaw cron runs --id <job-id>
+carlito cron runs --id <job-id>
 ```
 
 ## How cron works
 
 - Cron runs **inside the Gateway** process (not inside the model).
-- Job definitions persist at `~/.openclaw/cron/jobs.json` so restarts do not lose schedules.
-- Runtime execution state persists next to it in `~/.openclaw/cron/jobs-state.json`. If you track cron definitions in git, track `jobs.json` and gitignore `jobs-state.json`.
-- After the split, older OpenClaw versions can read `jobs.json` but may treat jobs as fresh because runtime fields now live in `jobs-state.json`.
+- Job definitions persist at `~/.carlito/cron/jobs.json` so restarts do not lose schedules.
+- Runtime execution state persists next to it in `~/.carlito/cron/jobs-state.json`. If you track cron definitions in git, track `jobs.json` and gitignore `jobs-state.json`.
+- After the split, older Carlito versions can read `jobs.json` but may treat jobs as fresh because runtime fields now live in `jobs-state.json`.
 - All cron executions create [background task](/automation/tasks) records.
 - One-shot jobs (`--at`) auto-delete after success by default.
 - Isolated cron runs best-effort close tracked browser tabs/processes for their `cron:<jobId>` session when the run completes, so detached browser automation does not leave orphaned processes behind.
 - Isolated cron runs also guard against stale acknowledgement replies. If the
   first result is just an interim status update (`on it`, `pulling everything
 together`, and similar hints) and no descendant subagent run is still
-  responsible for the final answer, OpenClaw re-prompts once for the actual
+  responsible for the final answer, Carlito re-prompts once for the actual
   result before delivery.
 
 <a id="maintenance"></a>
@@ -75,7 +75,7 @@ Cron expressions are parsed by [croner](https://github.com/Hexagon/croner). When
 0 9 15 * 1
 ```
 
-This fires ~5–6 times per month instead of 0–1 times per month. OpenClaw uses Croner's default OR behavior here. To require both conditions, use Croner's `+` day-of-week modifier (`0 9 15 * +1`) or schedule on one field and guard the other in your job's prompt or command.
+This fires ~5–6 times per month instead of 0–1 times per month. Carlito uses Croner's default OR behavior here. To require both conditions, use Croner's `+` day-of-week modifier (`0 9 15 * +1`) or schedule on one field and guard the other in your job's prompt or command.
 
 ## Execution styles
 
@@ -94,7 +94,7 @@ Isolated cron runs also dispose any bundled MCP runtime instances created for th
 
 When isolated cron runs orchestrate subagents, delivery also prefers the final
 descendant output over stale parent interim text. If descendants are still
-running, OpenClaw suppresses that partial parent update instead of announcing it.
+running, Carlito suppresses that partial parent update instead of announcing it.
 
 ### Payload options for isolated jobs
 
@@ -138,7 +138,7 @@ Use `--announce --channel telegram --to "-1001234567890"` for channel delivery. 
 
 For isolated jobs, chat delivery is shared. If a chat route is available, the
 agent can use the `message` tool even when the job uses `--no-deliver`. If the
-agent sends to the configured/current target, OpenClaw skips the fallback
+agent sends to the configured/current target, Carlito skips the fallback
 announce. Otherwise `announce`, `webhook`, and `none` only control what the
 runner does with the final reply after the agent turn.
 
@@ -154,7 +154,7 @@ Failure notifications follow a separate destination path:
 One-shot reminder (main session):
 
 ```bash
-openclaw cron add \
+carlito cron add \
   --name "Calendar check" \
   --at "20m" \
   --session main \
@@ -165,7 +165,7 @@ openclaw cron add \
 Recurring isolated job with delivery:
 
 ```bash
-openclaw cron add \
+carlito cron add \
   --name "Morning brief" \
   --cron "0 7 * * *" \
   --tz "America/Los_Angeles" \
@@ -179,7 +179,7 @@ openclaw cron add \
 Isolated job with model and thinking override:
 
 ```bash
-openclaw cron add \
+carlito cron add \
   --name "Deep analysis" \
   --cron "0 6 * * 1" \
   --tz "America/Los_Angeles" \
@@ -209,7 +209,7 @@ Gateway can expose HTTP webhook endpoints for external triggers. Enable in confi
 Every request must include the hook token via header:
 
 - `Authorization: Bearer <token>` (recommended)
-- `x-openclaw-token: <token>`
+- `x-carlito-token: <token>`
 
 Query-string tokens are rejected.
 
@@ -256,21 +256,21 @@ Custom hook names are resolved via `hooks.mappings` in config. Mappings can tran
 
 ## Gmail PubSub integration
 
-Wire Gmail inbox triggers to OpenClaw via Google PubSub.
+Wire Gmail inbox triggers to Carlito via Google PubSub.
 
-**Prerequisites**: `gcloud` CLI, `gog` (gogcli), OpenClaw hooks enabled, Tailscale for the public HTTPS endpoint.
+**Prerequisites**: `gcloud` CLI, `gog` (gogcli), Carlito hooks enabled, Tailscale for the public HTTPS endpoint.
 
 ### Wizard setup (recommended)
 
 ```bash
-openclaw webhooks gmail setup --account openclaw@gmail.com
+carlito webhooks gmail setup --account carlito@gmail.com
 ```
 
 This writes `hooks.gmail` config, enables the Gmail preset, and uses Tailscale Funnel for the push endpoint.
 
 ### Gateway auto-start
 
-When `hooks.enabled=true` and `hooks.gmail.account` is set, the Gateway starts `gog gmail watch serve` on boot and auto-renews the watch. Set `OPENCLAW_SKIP_GMAIL_WATCHER=1` to opt out.
+When `hooks.enabled=true` and `hooks.gmail.account` is set, the Gateway starts `gog gmail watch serve` on boot and auto-renews the watch. Set `CARLITO_SKIP_GMAIL_WATCHER=1` to opt out.
 
 ### Manual one-time setup
 
@@ -295,7 +295,7 @@ gcloud pubsub topics add-iam-policy-binding gog-gmail-watch \
 
 ```bash
 gog gmail watch start \
-  --account openclaw@gmail.com \
+  --account carlito@gmail.com \
   --label INBOX \
   --topic projects/<project-id>/topics/gog-gmail-watch
 ```
@@ -317,34 +317,34 @@ gog gmail watch start \
 
 ```bash
 # List all jobs
-openclaw cron list
+carlito cron list
 
 # Show one job, including resolved delivery route
-openclaw cron show <jobId>
+carlito cron show <jobId>
 
 # Edit a job
-openclaw cron edit <jobId> --message "Updated prompt" --model "opus"
+carlito cron edit <jobId> --message "Updated prompt" --model "opus"
 
 # Force run a job now
-openclaw cron run <jobId>
+carlito cron run <jobId>
 
 # Run only if due
-openclaw cron run <jobId> --due
+carlito cron run <jobId> --due
 
 # View run history
-openclaw cron runs --id <jobId> --limit 50
+carlito cron runs --id <jobId> --limit 50
 
 # Delete a job
-openclaw cron remove <jobId>
+carlito cron remove <jobId>
 
 # Agent selection (multi-agent setups)
-openclaw cron add --name "Ops sweep" --cron "0 6 * * *" --session isolated --message "Check ops queue" --agent ops
-openclaw cron edit <jobId> --clear-agent
+carlito cron add --name "Ops sweep" --cron "0 6 * * *" --session isolated --message "Check ops queue" --agent ops
+carlito cron edit <jobId> --clear-agent
 ```
 
 Model override note:
 
-- `openclaw cron add|edit --model ...` changes the job's selected model.
+- `carlito cron add|edit --model ...` changes the job's selected model.
 - If the model is allowed, that exact provider/model reaches the isolated agent
   run.
 - If it is not allowed, cron warns and falls back to the job's agent/default
@@ -359,7 +359,7 @@ Model override note:
 {
   cron: {
     enabled: true,
-    store: "~/.openclaw/cron/jobs.json",
+    store: "~/.carlito/cron/jobs.json",
     maxConcurrentRuns: 1,
     retry: {
       maxAttempts: 3,
@@ -377,7 +377,7 @@ The runtime state sidecar is derived from `cron.store`: a `.json` store such as
 `~/clawd/cron/jobs.json` uses `~/clawd/cron/jobs-state.json`, while a store path
 without a `.json` suffix appends `-state.json`.
 
-Disable cron: `cron.enabled: false` or `OPENCLAW_SKIP_CRON=1`.
+Disable cron: `cron.enabled: false` or `CARLITO_SKIP_CRON=1`.
 
 **One-shot retry**: transient errors (rate limit, overload, network, server error) retry up to 3 times with exponential backoff. Permanent errors disable immediately.
 
@@ -390,22 +390,22 @@ Disable cron: `cron.enabled: false` or `OPENCLAW_SKIP_CRON=1`.
 ### Command ladder
 
 ```bash
-openclaw status
-openclaw gateway status
-openclaw cron status
-openclaw cron list
-openclaw cron runs --id <jobId> --limit 20
-openclaw system pulsecheck last
-openclaw logs --follow
-openclaw doctor
+carlito status
+carlito gateway status
+carlito cron status
+carlito cron list
+carlito cron runs --id <jobId> --limit 20
+carlito system pulsecheck last
+carlito logs --follow
+carlito doctor
 ```
 
 ### Cron not firing
 
-- Check `cron.enabled` and `OPENCLAW_SKIP_CRON` env var.
+- Check `cron.enabled` and `CARLITO_SKIP_CRON` env var.
 - Confirm the Gateway is running continuously.
 - For `cron` schedules, verify timezone (`--tz`) vs the host timezone.
-- `reason: not-due` in run output means manual run was checked with `openclaw cron run <jobId> --due` and the job was not due yet.
+- `reason: not-due` in run output means manual run was checked with `carlito cron run <jobId> --due` and the job was not due yet.
 
 ### Cron fired but no delivery
 
@@ -414,7 +414,7 @@ openclaw doctor
 - Delivery target missing/invalid (`channel`/`to`) means outbound was skipped.
 - Channel auth errors (`unauthorized`, `Forbidden`) mean delivery was blocked by credentials.
 - If the isolated run returns only the silent token (`NO_REPLY` / `no_reply`),
-  OpenClaw suppresses direct outbound delivery and also suppresses the fallback
+  Carlito suppresses direct outbound delivery and also suppresses the fallback
   queued summary path, so nothing is posted back to chat.
 - If the agent should message the user itself, check that the job has a usable
   route (`channel: "last"` with a previous chat, or an explicit channel/target).

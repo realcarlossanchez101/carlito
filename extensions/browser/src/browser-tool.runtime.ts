@@ -1,4 +1,4 @@
-export { loadConfig } from "openclaw/plugin-sdk/browser-config-runtime";
+export { loadConfig } from "carlito/plugin-sdk/browser-config-runtime";
 export {
   callGatewayTool,
   imageResultFromFile,
@@ -7,10 +7,10 @@ export {
   readStringParam,
   resolveNodeIdFromList,
   selectDefaultNodeFromList,
-} from "openclaw/plugin-sdk/browser-setup-tools";
-export type { AnyAgentTool, NodeListNode } from "openclaw/plugin-sdk/browser-setup-tools";
-export { wrapExternalContent } from "openclaw/plugin-sdk/browser-security-runtime";
-export { normalizeOptionalString, readStringValue } from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/browser-setup-tools";
+export type { AnyAgentTool, NodeListNode } from "carlito/plugin-sdk/browser-setup-tools";
+export { wrapExternalContent } from "carlito/plugin-sdk/browser-security-runtime";
+export { normalizeOptionalString, readStringValue } from "carlito/plugin-sdk/text-runtime";
 export { BrowserToolSchema } from "./browser-tool.schema.js";
 export {
   browserAct,

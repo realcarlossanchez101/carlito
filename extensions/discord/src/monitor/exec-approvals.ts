@@ -1,14 +1,14 @@
 import { Button, type ButtonInteraction, type ComponentData } from "@buape/carbon";
-import { ButtonStyle } from "discord-api-types/v10";
-import { resolveApprovalOverGateway } from "openclaw/plugin-sdk/approval-gateway-runtime";
-import type { DiscordExecApprovalConfig, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import { resolveApprovalOverGateway } from "carlito/plugin-sdk/approval-gateway-runtime";
+import type { DiscordExecApprovalConfig, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import type {
   ExecApprovalDecision,
   ExecApprovalRequest,
   ExecApprovalResolved,
   PluginApprovalRequest,
   PluginApprovalResolved,
-} from "openclaw/plugin-sdk/infra-runtime";
+} from "carlito/plugin-sdk/infra-runtime";
+import { ButtonStyle } from "discord-api-types/v10";
 export { buildExecApprovalCustomId } from "../approval-handler.runtime.js";
 import { getDiscordExecApprovalApprovers } from "../exec-approvals.js";
 
@@ -18,7 +18,7 @@ export type {
   ExecApprovalResolved,
   PluginApprovalRequest,
   PluginApprovalResolved,
-} from "openclaw/plugin-sdk/infra-runtime";
+} from "carlito/plugin-sdk/infra-runtime";
 
 function decodeCustomIdValue(value: string): string {
   try {
@@ -117,7 +117,7 @@ export function createExecApprovalButton(ctx: ExecApprovalButtonContext): Button
 }
 
 export function createDiscordExecApprovalButtonContext(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   config: DiscordExecApprovalConfig;
   gatewayUrl?: string;

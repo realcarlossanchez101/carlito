@@ -1,1 +1,1 @@
-export { resolveGatewayPort } from "openclaw/plugin-sdk/browser-config-support";
+export { resolveGatewayPort } from "carlito/plugin-sdk/browser-config-support";

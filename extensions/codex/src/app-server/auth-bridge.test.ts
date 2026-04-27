@@ -6,7 +6,7 @@ import { bridgeCodexAppServerStartOptions } from "./auth-bridge.js";
 
 describe("bridgeCodexAppServerStartOptions", () => {
   it("leaves Codex app-server start options unchanged", async () => {
-    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-codex-app-server-"));
+    const agentDir = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-codex-app-server-"));
     const startOptions = {
       transport: "stdio" as const,
       command: "codex",

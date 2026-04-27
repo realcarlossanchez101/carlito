@@ -1,1 +1,1 @@
-export { createWindowsCmdShimFixture } from "openclaw/plugin-sdk/testing";
+export { createWindowsCmdShimFixture } from "carlito/plugin-sdk/testing";

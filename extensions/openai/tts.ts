@@ -1,13 +1,13 @@
 import {
   captureHttpExchange,
   isDebugProxyGlobalFetchPatchInstalled,
-} from "openclaw/plugin-sdk/proxy-capture";
+} from "carlito/plugin-sdk/proxy-capture";
 import {
   asObject,
   readResponseTextLimited,
   trimToUndefined,
   truncateErrorDetail,
-} from "openclaw/plugin-sdk/speech";
+} from "carlito/plugin-sdk/speech";
 
 export const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
 

@@ -1,4 +1,4 @@
-import { buildCopilotDynamicHeaders } from "openclaw/plugin-sdk/provider-stream-shared";
+import { buildCopilotDynamicHeaders } from "carlito/plugin-sdk/provider-stream-shared";
 import { describe, expect, it, vi } from "vitest";
 import {
   wrapCopilotAnthropicStream,

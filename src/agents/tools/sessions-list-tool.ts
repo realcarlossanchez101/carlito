@@ -6,7 +6,7 @@ import {
   resolveSessionFilePathOptions,
   resolveStorePath,
 } from "../../config/sessions.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { callGateway } from "../../gateway/call.js";
 import { readSessionTitleFieldsFromTranscript } from "../../gateway/session-utils.fs.js";
 import { deriveSessionTitle } from "../../gateway/session-utils.js";
@@ -59,7 +59,7 @@ function readSessionRunStatus(value: unknown): SessionRunStatus | undefined {
 export function createSessionsListTool(opts?: {
   agentSessionKey?: string;
   sandboxed?: boolean;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   callGateway?: GatewayCaller;
 }): AnyAgentTool {
   return {

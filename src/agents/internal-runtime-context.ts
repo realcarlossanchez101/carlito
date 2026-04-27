@@ -4,14 +4,14 @@ export const INTERNAL_RUNTIME_CONTEXT_END = "<<<END_CARLITO_INTERNAL_CONTEXT>>>"
 const ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN = "[[CARLITO_INTERNAL_CONTEXT_BEGIN]]";
 const ESCAPED_INTERNAL_RUNTIME_CONTEXT_END = "[[CARLITO_INTERNAL_CONTEXT_END]]";
 
-const LEGACY_OPENCLAW_DELIMITED_BEGIN = "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>";
-const LEGACY_OPENCLAW_DELIMITED_END = "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>";
-const LEGACY_OPENCLAW_ESCAPED_BEGIN = "[[OPENCLAW_INTERNAL_CONTEXT_BEGIN]]";
-const LEGACY_OPENCLAW_ESCAPED_END = "[[OPENCLAW_INTERNAL_CONTEXT_END]]";
+const LEGACY_CARLITO_DELIMITED_BEGIN = "<<<BEGIN_CARLITO_INTERNAL_CONTEXT>>>";
+const LEGACY_CARLITO_DELIMITED_END = "<<<END_CARLITO_INTERNAL_CONTEXT>>>";
+const LEGACY_CARLITO_ESCAPED_BEGIN = "[[CARLITO_INTERNAL_CONTEXT_BEGIN]]";
+const LEGACY_CARLITO_ESCAPED_END = "[[CARLITO_INTERNAL_CONTEXT_END]]";
 
 const LEGACY_INTERNAL_CONTEXT_HEADER =
   [
-    "OpenClaw runtime context (internal):",
+    "Carlito runtime context (internal):",
     "This context is runtime-generated, not user-authored. Keep internal details private.",
     "",
   ].join("\n") + "\n";
@@ -25,8 +25,8 @@ export function escapeInternalRuntimeContextDelimiters(value: string): string {
   return value
     .replaceAll(INTERNAL_RUNTIME_CONTEXT_BEGIN, ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN)
     .replaceAll(INTERNAL_RUNTIME_CONTEXT_END, ESCAPED_INTERNAL_RUNTIME_CONTEXT_END)
-    .replaceAll(LEGACY_OPENCLAW_DELIMITED_BEGIN, LEGACY_OPENCLAW_ESCAPED_BEGIN)
-    .replaceAll(LEGACY_OPENCLAW_DELIMITED_END, LEGACY_OPENCLAW_ESCAPED_END);
+    .replaceAll(LEGACY_CARLITO_DELIMITED_BEGIN, LEGACY_CARLITO_ESCAPED_BEGIN)
+    .replaceAll(LEGACY_CARLITO_DELIMITED_END, LEGACY_CARLITO_ESCAPED_END);
 }
 
 function escapeRegExp(value: string): string {
@@ -172,8 +172,8 @@ export function stripInternalRuntimeContext(text: string): string {
   );
   const withoutLegacyBlocks = stripDelimitedBlock(
     withoutCurrentBlocks,
-    LEGACY_OPENCLAW_DELIMITED_BEGIN,
-    LEGACY_OPENCLAW_DELIMITED_END,
+    LEGACY_CARLITO_DELIMITED_BEGIN,
+    LEGACY_CARLITO_DELIMITED_END,
   );
   return stripLegacyInternalRuntimeContext(withoutLegacyBlocks);
 }
@@ -184,7 +184,7 @@ export function hasInternalRuntimeContext(text: string): boolean {
   }
   return (
     findDelimitedTokenIndex(text, INTERNAL_RUNTIME_CONTEXT_BEGIN, 0) !== -1 ||
-    findDelimitedTokenIndex(text, LEGACY_OPENCLAW_DELIMITED_BEGIN, 0) !== -1 ||
+    findDelimitedTokenIndex(text, LEGACY_CARLITO_DELIMITED_BEGIN, 0) !== -1 ||
     text.includes(LEGACY_INTERNAL_CONTEXT_HEADER)
   );
 }

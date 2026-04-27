@@ -1,17 +1,17 @@
 {
-  "name": "@openclaw/openai-provider",
+  "name": "@realcarlossanchez101/openai-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw OpenAI provider plugins",
+  "description": "Carlito OpenAI provider plugins",
   "type": "module",
   "dependencies": {
     "@mariozechner/pi-ai": "0.70.0",
     "ws": "^8.20.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

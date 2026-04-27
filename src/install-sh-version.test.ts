@@ -7,8 +7,8 @@ import { cleanupTempDirs, makeTempDir } from "../test/helpers/temp-dir.js";
 const tempRoots: string[] = [];
 
 function withFakeCli(versionOutput: string): { root: string; cliPath: string } {
-  const root = makeTempDir(tempRoots, "openclaw-install-sh-");
-  const cliPath = path.join(root, "openclaw");
+  const root = makeTempDir(tempRoots, "carlito-install-sh-");
+  const cliPath = path.join(root, "carlito");
   const escapedOutput = versionOutput.replace(/'/g, "'\\''");
   fs.writeFileSync(
     cliPath,
@@ -39,19 +39,19 @@ function resolveInstallerVersionCases(params: {
     [
       "-c",
       `${versionHelperSource}
-for openclaw_bin in "\${@:3}"; do
-  OPENCLAW_BIN="$openclaw_bin"
-  resolve_openclaw_version
+for carlito_bin in "\${@:3}"; do
+  CARLITO_BIN="$carlito_bin"
+  resolve_carlito_version
 done
 (
   cd "$2"
-  FAKE_OPENCLAW_BIN="\${@:1:1}" bash -s <<'OPENCLAW_STDIN_INSTALLER'
+  FAKE_CARLITO_BIN="\${@:1:1}" bash -s <<'CARLITO_STDIN_INSTALLER'
 ${versionHelperSource}
-OPENCLAW_BIN="$FAKE_OPENCLAW_BIN"
-resolve_openclaw_version
-OPENCLAW_STDIN_INSTALLER
+CARLITO_BIN="$FAKE_CARLITO_BIN"
+resolve_carlito_version
+CARLITO_STDIN_INSTALLER
 )`,
-      "openclaw-version-test",
+      "carlito-version-test",
       params.stdinCliPath,
       params.stdinCwd,
       ...params.cliPaths,
@@ -61,7 +61,7 @@ OPENCLAW_STDIN_INSTALLER
       encoding: "utf-8",
       env: {
         ...process.env,
-        OPENCLAW_INSTALL_SH_NO_RUN: "1",
+        CARLITO_INSTALL_SH_NO_RUN: "1",
       },
     },
   );
@@ -76,11 +76,11 @@ describe("install.sh version resolution", () => {
   it.runIf(process.platform !== "win32")(
     "parses CLI versions and keeps stdin helpers isolated from cwd",
     () => {
-      const decorated = withFakeCli("OpenClaw 2026.3.10 (abcdef0)");
-      const raw = withFakeCli("OpenClaw dev's build");
-      const stdinFixture = withFakeCli("OpenClaw 2026.3.10 (abcdef0)");
+      const decorated = withFakeCli("Carlito 2026.3.10 (abcdef0)");
+      const raw = withFakeCli("Carlito dev's build");
+      const stdinFixture = withFakeCli("Carlito 2026.3.10 (abcdef0)");
 
-      const hostileCwd = makeTempDir(tempRoots, "openclaw-install-stdin-");
+      const hostileCwd = makeTempDir(tempRoots, "carlito-install-stdin-");
       const hostileHelper = path.join(
         hostileCwd,
         "docker",
@@ -91,7 +91,7 @@ describe("install.sh version resolution", () => {
       fs.writeFileSync(
         hostileHelper,
         `#!/usr/bin/env bash
-extract_openclaw_semver() {
+extract_carlito_semver() {
   printf '%s' 'poisoned'
 }
 `,
@@ -104,7 +104,7 @@ extract_openclaw_semver() {
           stdinCliPath: stdinFixture.cliPath,
           stdinCwd: hostileCwd,
         }),
-      ).toEqual(["2026.3.10", "OpenClaw dev's build", "2026.3.10"]);
+      ).toEqual(["2026.3.10", "Carlito dev's build", "2026.3.10"]);
     },
   );
 });

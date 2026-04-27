@@ -1,18 +1,18 @@
 import type { HumanDelayConfig, IdentityConfig } from "../config/types.base.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveAgentConfig } from "./agent-scope.js";
 
 const DEFAULT_ACK_REACTION = "👀";
 
 export function resolveAgentIdentity(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
 ): IdentityConfig | undefined {
   return resolveAgentConfig(cfg, agentId)?.identity;
 }
 
 export function resolveAckReaction(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
   opts?: { channel?: string; accountId?: string },
 ): string {
@@ -46,10 +46,7 @@ export function resolveAckReaction(
   return emoji || DEFAULT_ACK_REACTION;
 }
 
-export function resolveIdentityNamePrefix(
-  cfg: OpenClawConfig,
-  agentId: string,
-): string | undefined {
+export function resolveIdentityNamePrefix(cfg: CarlitoConfig, agentId: string): string | undefined {
   const name = resolveAgentIdentity(cfg, agentId)?.name?.trim();
   if (!name) {
     return undefined;
@@ -58,7 +55,7 @@ export function resolveIdentityNamePrefix(
 }
 
 export function resolveMessagePrefix(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
   opts?: { configured?: string; hasAllowFrom?: boolean; fallback?: string },
 ): string {
@@ -77,7 +74,7 @@ export function resolveMessagePrefix(
 
 /** Helper to extract a channel config value by dynamic key. */
 function getChannelConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   channel: string,
 ): Record<string, unknown> | undefined {
   const channels = cfg.channels as Record<string, unknown> | undefined;
@@ -88,7 +85,7 @@ function getChannelConfig(
 }
 
 export function resolveResponsePrefix(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
   opts?: { channel?: string; accountId?: string },
 ): string | undefined {
@@ -129,7 +126,7 @@ export function resolveResponsePrefix(
 }
 
 export function resolveEffectiveMessagesConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
   opts?: {
     hasAllowFrom?: boolean;
@@ -151,7 +148,7 @@ export function resolveEffectiveMessagesConfig(
 }
 
 export function resolveHumanDelayConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   agentId: string,
 ): HumanDelayConfig | undefined {
   const defaults = cfg.agents?.defaults?.humanDelay;

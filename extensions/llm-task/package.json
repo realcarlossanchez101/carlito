@@ -1,17 +1,17 @@
 {
-  "name": "@openclaw/llm-task",
+  "name": "@realcarlossanchez101/llm-task",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw JSON-only LLM task plugin",
+  "description": "Carlito JSON-only LLM task plugin",
   "type": "module",
   "dependencies": {
     "ajv": "^8.18.0",
     "typebox": "1.1.28"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

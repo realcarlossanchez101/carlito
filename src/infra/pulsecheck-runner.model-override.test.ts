@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { resolveAgentMainSessionKey, resolveMainSessionKey } from "../config/sessions.js";
 import { runPulsecheckOnce } from "./pulsecheck-runner.js";
 import {
@@ -17,7 +17,7 @@ type SeedSessionInput = {
   lastTo: string;
   updatedAt?: number;
 };
-type AgentDefaultsConfig = NonNullable<NonNullable<OpenClawConfig["agents"]>["defaults"]>;
+type AgentDefaultsConfig = NonNullable<NonNullable<CarlitoConfig["agents"]>["defaults"]>;
 type PulsecheckConfig = NonNullable<AgentDefaultsConfig["pulsecheck"]>;
 
 async function withPulsecheckFixture(
@@ -40,7 +40,7 @@ async function withPulsecheckFixture(
       };
       return run({ tmpDir, storePath, replySpy, seedSession });
     },
-    { prefix: "openclaw-hb-model-" },
+    { prefix: "carlito-hb-model-" },
   );
 }
 
@@ -51,7 +51,7 @@ afterEach(() => {
 describe("runPulsecheckOnce – pulsecheck model override", () => {
   async function runPulsecheckWithSeed(params: {
     seedSession: (sessionKey: string, input: SeedSessionInput) => Promise<void>;
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     sessionKey: string;
     replySpy: PulsecheckReplySpy;
     agentId?: string;
@@ -86,7 +86,7 @@ describe("runPulsecheckOnce – pulsecheck model override", () => {
     isolatedSession?: boolean;
   }) {
     return withPulsecheckFixture(async ({ tmpDir, storePath, replySpy, seedSession }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,
@@ -121,7 +121,7 @@ describe("runPulsecheckOnce – pulsecheck model override", () => {
     pulsecheck: Partial<PulsecheckConfig>;
   }): Promise<void> {
     await withPulsecheckFixture(async ({ tmpDir, storePath, replySpy, seedSession }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             pulsecheck: {
@@ -208,7 +208,7 @@ describe("runPulsecheckOnce – pulsecheck model override", () => {
 
   it("uses isolated session key when isolatedSession is enabled", async () => {
     await withPulsecheckFixture(async ({ tmpDir, storePath, replySpy, seedSession }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,
@@ -237,7 +237,7 @@ describe("runPulsecheckOnce – pulsecheck model override", () => {
 
   it("uses main session key when isolatedSession is not set", async () => {
     await withPulsecheckFixture(async ({ tmpDir, storePath, replySpy, seedSession }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,

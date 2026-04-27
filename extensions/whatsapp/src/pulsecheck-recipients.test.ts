@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resolveWhatsAppPulsecheckRecipients } from "./pulsecheck-recipients.js";
-import type { OpenClawConfig } from "./runtime-api.js";
+import type { CarlitoConfig } from "./runtime-api.js";
 
 const loadSessionStoreMock = vi.hoisted(() => vi.fn());
 const readChannelAllowFromStoreSyncMock = vi.hoisted(() => vi.fn<() => string[]>(() => []));
@@ -23,12 +23,12 @@ vi.mock("./pulsecheck-recipients.runtime.js", () => ({
   },
 }));
 
-function makeCfg(overrides?: Partial<OpenClawConfig>): OpenClawConfig {
+function makeCfg(overrides?: Partial<CarlitoConfig>): CarlitoConfig {
   return {
     bindings: [],
     channels: {},
     ...overrides,
-  } as OpenClawConfig;
+  } as CarlitoConfig;
 }
 
 describe("resolveWhatsAppPulsecheckRecipients", () => {
@@ -41,7 +41,7 @@ describe("resolveWhatsAppPulsecheckRecipients", () => {
   }
 
   function resolveWith(
-    cfgOverrides: Partial<OpenClawConfig> = {},
+    cfgOverrides: Partial<CarlitoConfig> = {},
     opts?: Parameters<typeof resolveWhatsAppPulsecheckRecipients>[1],
   ) {
     return resolveWhatsAppPulsecheckRecipients(makeCfg(cfgOverrides), opts);
@@ -139,7 +139,7 @@ describe("resolveWhatsAppPulsecheckRecipients", () => {
       a: { lastChannel: "whatsapp", lastTo: "+15550000001", updatedAt: 2, sessionId: "a" },
     });
     const result = resolveWith({
-      session: { scope: "global" } as OpenClawConfig["session"],
+      session: { scope: "global" } as CarlitoConfig["session"],
       channels: { whatsapp: { allowFrom: ["*", "+15550000009"] } as never },
     });
     expect(result).toEqual({ recipients: ["+15550000009"], source: "allowFrom" });

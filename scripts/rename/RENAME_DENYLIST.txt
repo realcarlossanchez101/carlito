@@ -1,0 +1,72 @@
+# Paths whose content/name MUST NOT be touched by apply-rebrand.mjs.
+# Lines are globs matched against the path relative to repo root.
+# Comments start with `#`. Blank lines ignored.
+
+# Build outputs / generated content / VCS / package manager state.
+.git/**
+node_modules/**
+**/node_modules/**
+dist/**
+dist-runtime/**
+.tmp/**
+.artifacts/**
+.local/**
+.cache/**
+.turbo/**
+.next/**
+.pnpm-store/**
+build/**
+**/build/**
+**/.gradle/**
+**/.idea/**
+DerivedData/**
+**/DerivedData/**
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Legacy-name detection — these literal strings are load-bearing.
+src/config/paths.ts
+src/infra/state-migrations.ts
+src/infra/state-migrations.fs.ts
+src/compat/legacy-names.ts
+
+# Outbound rewriter is removed in Phase 9; until then the strings inside it
+# (CARLITO_PATTERN, etc.) are load-bearing.
+src/agents/carlito-outbound-rewriter.ts
+src/agents/carlito-outbound-rewriter.test.ts
+
+# Historical changelog and release feeds — never rewrite history.
+CHANGELOG.md
+appcast.xml
+**/appcast.xml
+
+# Secret scanning baselines — regenerated, not edited.
+.secrets.baseline
+.detect-secrets.cfg
+
+# Stray Windows-path-test cruft and temp dirs at repo root.
+# The user can decide to delete these later; the rebrand sweep skips them.
+C:\carlito
+C:\carlito/**
+carlito-path-alias-*
+carlito-path-alias-*/**
+
+# Tests that exercise legacy carlito env-var / config-key / state-dir
+# detection. They MUST keep their `carlito` literals.
+src/config/paths.test.ts
+src/infra/state-migrations.test.ts
+
+# Tests that explicitly verify the carlito-outbound-rewriter; tied to its
+# fixtures and removed alongside the rewriter in Phase 9.
+**/carlito-toolname-mask.test.ts
+
+# Test fixtures that capture leaked payloads or fixed-bytes scenarios — these
+# strings are part of the recorded fixture, not source.
+test/fixtures/extension-relative-outside-package-inventory.json
+test/fixtures/exec-allowlist-shell-parser-parity.json
+test/fixtures/cli-startup-bench.json
+
+# Scripts that grep for the legacy package name to validate releases — those
+# legacy-name literals stay until Phase 5 explicitly rewrites them.
+scripts/install.sh

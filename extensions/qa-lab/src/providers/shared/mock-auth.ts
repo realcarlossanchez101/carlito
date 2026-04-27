@@ -1,5 +1,5 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { applyAuthProfileConfig } from "openclaw/plugin-sdk/provider-auth-api-key";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { applyAuthProfileConfig } from "carlito/plugin-sdk/provider-auth-api-key";
 import { resolveQaAgentAuthDir, writeQaAuthProfiles } from "./auth-store.js";
 
 /** Providers the mock harness stages placeholder credentials for by default. */
@@ -32,11 +32,11 @@ export function buildQaMockProfileId(provider: string): string {
  * serializer; anything beyond that is ignored by the mock.
  */
 export async function stageQaMockAuthProfiles(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   stateDir: string;
   agentIds?: readonly string[];
   providers?: readonly string[];
-}): Promise<OpenClawConfig> {
+}): Promise<CarlitoConfig> {
   const agentIds = [...new Set(params.agentIds ?? QA_MOCK_AUTH_AGENT_IDS)];
   const providers = [...new Set(params.providers ?? QA_MOCK_AUTH_PROVIDERS)];
   let next = params.cfg;

@@ -12,7 +12,7 @@ import {
   type SessionEntry,
   type SessionMaintenanceApplyReport,
 } from "../config/sessions.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { type RuntimeEnv, writeRuntimeJson } from "../runtime.js";
 import { isRich, theme } from "../terminal/theme.js";
 import {
@@ -245,7 +245,7 @@ async function previewStoreCleanup(params: {
 }
 
 function renderStoreDryRunPlan(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   summary: SessionCleanupSummary;
   actionRows: SessionCleanupActionRow[];
   displayDefaults: ReturnType<typeof resolveSessionDisplayDefaults>;

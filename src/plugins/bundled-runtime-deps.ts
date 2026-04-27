@@ -5,10 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import { normalizeChatChannelId } from "../channels/ids.js";
 import { resolveStateDir } from "../config/paths.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveHomeRelativePath } from "../infra/home-dir.js";
 import { normalizeOptionalLowercaseString } from "../shared/string-coerce.js";
 import { normalizePluginsConfig } from "./config-state.js";
+import { PLUGIN_MANIFEST_FILENAMES } from "./manifest.js";
 import { satisfies, validRange, validSemver } from "./semver.runtime.js";
 
 export type RuntimeDepEntry = {
@@ -41,7 +42,7 @@ export type BundledRuntimeDepsInstallRoot = {
 };
 
 type JsonObject = Record<string, unknown>;
-const RETAINED_RUNTIME_DEPS_MANIFEST = ".openclaw-runtime-deps.json";
+const RETAINED_RUNTIME_DEPS_MANIFEST = ".carlito-runtime-deps.json";
 
 export type BundledRuntimeDepsNpmRunner = {
   command: string;
@@ -280,7 +281,7 @@ function shouldPersistRetainedRuntimeDepsManifest(params: {
 export function isWritableDirectory(dir: string): boolean {
   let probeDir: string | null = null;
   try {
-    probeDir = fs.mkdtempSync(path.join(dir, ".openclaw-write-probe-"));
+    probeDir = fs.mkdtempSync(path.join(dir, ".carlito-write-probe-"));
     fs.writeFileSync(path.join(probeDir, "probe"), "", "utf8");
     return true;
   } catch {
@@ -307,7 +308,7 @@ function resolveSystemdStateDirectory(env: NodeJS.ProcessEnv): string | null {
 }
 
 function resolveBundledRuntimeDepsExternalBaseDir(env: NodeJS.ProcessEnv): string {
-  const explicit = env.OPENCLAW_PLUGIN_STAGE_DIR?.trim();
+  const explicit = env.CARLITO_PLUGIN_STAGE_DIR?.trim();
   if (explicit) {
     return resolveHomeRelativePath(explicit, { env, homedir: os.homedir });
   }
@@ -324,7 +325,7 @@ function resolveExternalBundledRuntimeDepsInstallRoot(params: {
 }): string {
   const packageRoot = resolveBundledPluginPackageRoot(params.pluginRoot) ?? params.pluginRoot;
   const version = sanitizePathSegment(readPackageVersion(packageRoot));
-  const packageKey = `openclaw-${version}-${createPathHash(packageRoot)}`;
+  const packageKey = `carlito-${version}-${createPathHash(packageRoot)}`;
   return path.join(resolveBundledRuntimeDepsExternalBaseDir(params.env), packageKey);
 }
 
@@ -375,7 +376,7 @@ function hasDependencySentinel(
 
 function replaceNodeModulesDir(targetDir: string, sourceDir: string): void {
   const parentDir = path.dirname(targetDir);
-  const tempDir = fs.mkdtempSync(path.join(parentDir, ".openclaw-runtime-deps-copy-"));
+  const tempDir = fs.mkdtempSync(path.join(parentDir, ".carlito-runtime-deps-copy-"));
   const stagedDir = path.join(tempDir, "node_modules");
   try {
     fs.cpSync(sourceDir, stagedDir, { recursive: true });
@@ -530,8 +531,18 @@ export function resolveBundledRuntimeDepsNpmRunner(params: {
     },
   };
 }
+function readPluginManifestObject(pluginDir: string): Record<string, unknown> | null {
+  for (const name of PLUGIN_MANIFEST_FILENAMES) {
+    const manifest = readJsonObject(path.join(pluginDir, name));
+    if (manifest) {
+      return manifest;
+    }
+  }
+  return null;
+}
+
 function readBundledPluginChannels(pluginDir: string): string[] {
-  const manifest = readJsonObject(path.join(pluginDir, "openclaw.plugin.json"));
+  const manifest = readPluginManifestObject(pluginDir);
   const channels = manifest?.channels;
   if (!Array.isArray(channels)) {
     return [];
@@ -540,11 +551,11 @@ function readBundledPluginChannels(pluginDir: string): string[] {
 }
 
 function readBundledPluginEnabledByDefault(pluginDir: string): boolean {
-  return readJsonObject(path.join(pluginDir, "openclaw.plugin.json"))?.enabledByDefault === true;
+  return readPluginManifestObject(pluginDir)?.enabledByDefault === true;
 }
 
 function isBundledPluginConfiguredForRuntimeDeps(params: {
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   pluginId: string;
   pluginDir: string;
   includeConfiguredChannels?: boolean;
@@ -585,7 +596,7 @@ function isBundledPluginConfiguredForRuntimeDeps(params: {
 }
 
 function shouldIncludeBundledPluginRuntimeDeps(params: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   pluginIds?: ReadonlySet<string>;
   pluginId: string;
   pluginDir: string;
@@ -607,7 +618,7 @@ function shouldIncludeBundledPluginRuntimeDeps(params: {
 
 function collectBundledPluginRuntimeDeps(params: {
   extensionsDir: string;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   pluginIds?: ReadonlySet<string>;
   includeConfiguredChannels?: boolean;
 }): {
@@ -699,7 +710,7 @@ function normalizePluginIdSet(
 
 export function scanBundledPluginRuntimeDeps(params: {
   packageRoot: string;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   pluginIds?: readonly string[];
   includeConfiguredChannels?: boolean;
   env?: NodeJS.ProcessEnv;
@@ -746,7 +757,7 @@ export function resolveBundledRuntimeDependencyPackageInstallRoot(
   const env = options.env ?? process.env;
   if (
     options.forceExternal ||
-    env.OPENCLAW_PLUGIN_STAGE_DIR?.trim() ||
+    env.CARLITO_PLUGIN_STAGE_DIR?.trim() ||
     env.STATE_DIRECTORY?.trim()
   ) {
     return resolveExternalBundledRuntimeDepsInstallRoot({
@@ -769,7 +780,7 @@ export function resolveBundledRuntimeDependencyInstallRoot(
   const env = options.env ?? process.env;
   if (
     options.forceExternal ||
-    env.OPENCLAW_PLUGIN_STAGE_DIR?.trim() ||
+    env.CARLITO_PLUGIN_STAGE_DIR?.trim() ||
     env.STATE_DIRECTORY?.trim()
   ) {
     return resolveExternalBundledRuntimeDepsInstallRoot({ pluginRoot, env });
@@ -829,7 +840,7 @@ export function installBundledRuntimeDeps(params: {
   if (path.resolve(installExecutionRoot) !== path.resolve(params.installRoot)) {
     fs.writeFileSync(
       path.join(installExecutionRoot, "package.json"),
-      `${JSON.stringify({ name: "openclaw-runtime-deps-install", private: true }, null, 2)}\n`,
+      `${JSON.stringify({ name: "carlito-runtime-deps-install", private: true }, null, 2)}\n`,
       "utf8",
     );
   }
@@ -864,7 +875,7 @@ export function ensureBundledPluginRuntimeDeps(params: {
   pluginId: string;
   pluginRoot: string;
   env: NodeJS.ProcessEnv;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   retainSpecs?: readonly string[];
   installDeps?: (params: BundledRuntimeDepsInstallParams) => void;
 }): BundledRuntimeDepsEnsureResult {

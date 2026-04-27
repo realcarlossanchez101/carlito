@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import { describe, expect } from "vitest";
 import {
   installChannelActionsContractSuite,
@@ -22,7 +22,7 @@ describe("mattermost actions contract", () => {
               baseUrl: "https://chat.example.com",
             },
           },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         expectedActions: ["send", "react"],
         expectedCapabilities: ["presentation"],
       },
@@ -37,7 +37,7 @@ describe("mattermost actions contract", () => {
               actions: { reactions: false },
             },
           },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         expectedActions: ["send"],
         expectedCapabilities: ["presentation"],
       },
@@ -49,7 +49,7 @@ describe("mattermost actions contract", () => {
               enabled: true,
             },
           },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         expectedActions: [],
         expectedCapabilities: [],
       },
@@ -63,7 +63,7 @@ describe("mattermost setup contract", () => {
     cases: [
       {
         name: "default account stores token and normalized base URL",
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         input: {
           botToken: "test-token",
           httpUrl: "https://chat.example.com/",
@@ -77,7 +77,7 @@ describe("mattermost setup contract", () => {
       },
       {
         name: "missing credentials are rejected",
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         input: {
           httpUrl: "",
         },
@@ -102,7 +102,7 @@ describe("mattermost status contract", () => {
               baseUrl: "https://chat.example.com",
             },
           },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         runtime: {
           accountId: "default",
           connected: true,

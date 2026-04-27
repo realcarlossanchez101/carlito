@@ -1,16 +1,16 @@
 {
-  "name": "@openclaw/mistral-provider",
+  "name": "@realcarlossanchez101/mistral-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Mistral provider plugin",
+  "description": "Carlito Mistral provider plugin",
   "type": "module",
   "dependencies": {
     "ws": "^8.20.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

@@ -9,13 +9,13 @@ title: "Deepgram"
 
 # Deepgram (Audio Transcription)
 
-Deepgram is a speech-to-text API. In OpenClaw it is used for inbound
+Deepgram is a speech-to-text API. In Carlito it is used for inbound
 audio/voice-note transcription through `tools.media.audio` and for Voice Call
 streaming STT through `plugins.entries.voice-call.config.streaming`.
 
-For batch transcription, OpenClaw uploads the complete audio file to Deepgram
+For batch transcription, Carlito uploads the complete audio file to Deepgram
 and injects the transcript into the reply pipeline (`{{Transcript}}` +
-`[Audio]` block). For Voice Call streaming, OpenClaw forwards live G.711
+`[Audio]` block). For Voice Call streaming, Carlito forwards live G.711
 u-law frames over Deepgram's WebSocket `listen` endpoint and emits partial or
 final transcripts as Deepgram returns them.
 
@@ -52,7 +52,7 @@ final transcripts as Deepgram returns them.
     ```
   </Step>
   <Step title="Send a voice note">
-    Send an audio message through any connected channel. OpenClaw transcribes it
+    Send an audio message through any connected channel. Carlito transcribes it
     via Deepgram and injects the transcript into the reply pipeline.
   </Step>
 </Steps>
@@ -181,6 +181,6 @@ Twilio media frames can be forwarded directly.
     Common issues and debugging steps.
   </Card>
   <Card title="FAQ" href="/help/faq" icon="circle-question">
-    Frequently asked questions about OpenClaw setup.
+    Frequently asked questions about Carlito setup.
   </Card>
 </CardGroup>

@@ -52,12 +52,12 @@ function stripInlineLeakedInternalContext(value: string): string {
     beginIndex !== -1 &&
     (value.includes(INTERNAL_RUNTIME_CONTEXT_END) ||
       value.includes("Carlito runtime context (internal):") ||
-      value.includes("OpenClaw runtime context (internal):") ||
+      value.includes("Carlito runtime context (internal):") ||
       value.includes("[Internal task completion event]"))
   ) {
     return value.slice(0, beginIndex);
   }
-  const inlineHeaderIndex = value.search(/(?:Carlito|OpenClaw) runtime context \(internal\):/);
+  const inlineHeaderIndex = value.search(/(?:Carlito|Carlito) runtime context \(internal\):/);
   if (
     inlineHeaderIndex !== -1 &&
     (value.includes("Keep internal details private.") ||

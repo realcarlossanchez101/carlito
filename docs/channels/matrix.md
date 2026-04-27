@@ -1,17 +1,17 @@
 ---
 summary: "Matrix support status, setup, and configuration examples"
 read_when:
-  - Setting up Matrix in OpenClaw
+  - Setting up Matrix in Carlito
   - Configuring Matrix E2EE and verification
 title: "Matrix"
 ---
 
-Matrix is a bundled channel plugin for OpenClaw.
+Matrix is a bundled channel plugin for Carlito.
 It uses the official `matrix-js-sdk` and supports DMs, rooms, threads, media, reactions, polls, location, and E2EE.
 
 ## Bundled plugin
 
-Matrix ships as a bundled plugin in current OpenClaw releases, so normal
+Matrix ships as a bundled plugin in current Carlito releases, so normal
 packaged builds do not need a separate install.
 
 If you are on an older build or a custom install that excludes Matrix, install
@@ -20,13 +20,13 @@ it manually:
 Install from npm:
 
 ```bash
-openclaw plugins install @openclaw/matrix
+carlito plugins install @realcarlossanchez101/matrix
 ```
 
 Install from a local checkout:
 
 ```bash
-openclaw plugins install ./path/to/local/matrix-plugin
+carlito plugins install ./path/to/local/matrix-plugin
 ```
 
 See [Plugins](/tools/plugin) for plugin behavior and install rules.
@@ -34,7 +34,7 @@ See [Plugins](/tools/plugin) for plugin behavior and install rules.
 ## Setup
 
 1. Ensure the Matrix plugin is available.
-   - Current packaged OpenClaw releases already bundle it.
+   - Current packaged Carlito releases already bundle it.
    - Older/custom installs can add it manually with the commands above.
 2. Create a Matrix account on your homeserver.
 3. Configure `channels.matrix` with either:
@@ -47,8 +47,8 @@ See [Plugins](/tools/plugin) for plugin behavior and install rules.
 Interactive setup paths:
 
 ```bash
-openclaw channels add
-openclaw configure --section channels
+carlito channels add
+carlito configure --section channels
 ```
 
 The Matrix wizard asks for:
@@ -67,7 +67,7 @@ Key wizard behaviors:
 - DM allowlist entries accept `@user:server` directly; display names only work when live directory lookup finds one exact match.
 - Room allowlist entries accept room IDs and aliases directly. Prefer `!room:server` or `#alias:server`; unresolved names are ignored at runtime by allowlist resolution.
 - In invite auto-join allowlist mode, use only stable invite targets: `!roomId:server`, `#alias:server`, or `*`. Plain room names are rejected.
-- To resolve room names before saving, use `openclaw channels resolve --channel matrix "Project Room"`.
+- To resolve room names before saving, use `carlito channels resolve --channel matrix "Project Room"`.
 
 <Warning>
 `channels.matrix.autoJoin` defaults to `off`.
@@ -134,15 +134,15 @@ Password-based setup (token is cached after login):
       homeserver: "https://matrix.example.org",
       userId: "@bot:example.org",
       password: "replace-me", // pragma: allowlist secret
-      deviceName: "OpenClaw Gateway",
+      deviceName: "Carlito Gateway",
     },
   },
 }
 ```
 
-Matrix stores cached credentials in `~/.openclaw/credentials/matrix/`.
+Matrix stores cached credentials in `~/.carlito/credentials/matrix/`.
 The default account uses `credentials.json`; named accounts use `credentials-<account>.json`.
-When cached credentials exist there, OpenClaw treats Matrix as configured for setup, doctor, and channel-status discovery even if current auth is not set directly in config.
+When cached credentials exist there, Carlito treats Matrix as configured for setup, doctor, and channel-status discovery even if current auth is not set directly in config.
 
 Environment variable equivalents (used when the config key is not set):
 
@@ -216,7 +216,7 @@ This is a practical baseline config with DM pairing, room allowlist, and E2EE en
 }
 ```
 
-`autoJoin` applies to all Matrix invites, including DM-style invites. OpenClaw cannot reliably
+`autoJoin` applies to all Matrix invites, including DM-style invites. Carlito cannot reliably
 classify an invited room as a DM or group at invite time, so all invites go through `autoJoin`
 first. `dm.policy` applies after the bot has joined and the room is classified as a DM.
 
@@ -224,7 +224,7 @@ first. `dm.policy` applies after the bot has joined and the room is classified a
 
 Matrix reply streaming is opt-in.
 
-Set `channels.matrix.streaming` to `"partial"` when you want OpenClaw to send a single live preview
+Set `channels.matrix.streaming` to `"partial"` when you want Carlito to send a single live preview
 reply, edit that preview in place while the model is generating text, and then finalize it when the
 reply is done:
 
@@ -238,13 +238,13 @@ reply is done:
 }
 ```
 
-- `streaming: "off"` is the default. OpenClaw waits for the final reply and sends it once.
+- `streaming: "off"` is the default. Carlito waits for the final reply and sends it once.
 - `streaming: "partial"` creates one editable preview message for the current assistant block using normal Matrix text messages. This preserves Matrix's legacy preview-first notification behavior, so stock clients may notify on the first streamed preview text instead of the finished block.
 - `streaming: "quiet"` creates one editable quiet preview notice for the current assistant block. Use this only when you also configure recipient push rules for finalized preview edits.
 - `blockStreaming: true` enables separate Matrix progress messages. With preview streaming enabled, Matrix keeps the live draft for the current block and preserves completed blocks as separate messages.
 - When preview streaming is on and `blockStreaming` is off, Matrix edits the live draft in place and finalizes that same event when the block or turn finishes.
-- If the preview no longer fits in one Matrix event, OpenClaw stops preview streaming and falls back to normal final delivery.
-- Media replies still send attachments normally. If a stale preview can no longer be reused safely, OpenClaw redacts it before sending the final media reply.
+- If the preview no longer fits in one Matrix event, Carlito stops preview streaming and falls back to normal final delivery.
+- Media replies still send attachments normally. If a stale preview can no longer be reused safely, Carlito redacts it before sending the final media reply.
 - Preview edits cost extra Matrix API calls. Leave streaming off if you want the most conservative rate-limit behavior.
 
 `blockStreaming` does not enable draft previews by itself.
@@ -261,7 +261,7 @@ Quiet streaming (`streaming: "quiet"`) only notifies recipients once a block or 
 
 ## Bot-to-bot rooms
 
-By default, Matrix messages from other configured OpenClaw Matrix accounts are ignored.
+By default, Matrix messages from other configured Carlito Matrix accounts are ignored.
 
 Use `allowBots` when you intentionally want inter-agent Matrix traffic:
 
@@ -283,8 +283,8 @@ Use `allowBots` when you intentionally want inter-agent Matrix traffic:
 - `allowBots: true` accepts messages from other configured Matrix bot accounts in allowed rooms and DMs.
 - `allowBots: "mentions"` accepts those messages only when they visibly mention this bot in rooms. DMs are still allowed.
 - `groups.<room>.allowBots` overrides the account-level setting for one room.
-- OpenClaw still ignores messages from the same Matrix user ID to avoid self-reply loops.
-- Matrix does not expose a native bot flag here; OpenClaw treats "bot-authored" as "sent by another configured Matrix account on this OpenClaw gateway".
+- Carlito still ignores messages from the same Matrix user ID to avoid self-reply loops.
+- Matrix does not expose a native bot flag here; Carlito treats "bot-authored" as "sent by another configured Matrix account on this Carlito gateway".
 
 Use strict room allowlists and mention requirements when enabling bot-to-bot traffic in shared rooms.
 
@@ -310,32 +310,32 @@ Enable encryption:
 
 Verification commands (all take `--verbose` for diagnostics and `--json` for machine-readable output):
 
-| Command                                                        | Purpose                                                                             |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `openclaw matrix verify status`                                | Check cross-signing and device verification state                                   |
-| `openclaw matrix verify status --include-recovery-key --json`  | Include the stored recovery key                                                     |
-| `openclaw matrix verify bootstrap`                             | Bootstrap cross-signing and verification (see below)                                |
-| `openclaw matrix verify bootstrap --force-reset-cross-signing` | Discard the current cross-signing identity and create a new one                     |
-| `openclaw matrix verify device "<recovery-key>"`               | Verify this device with a recovery key                                              |
-| `openclaw matrix verify backup status`                         | Check room-key backup health                                                        |
-| `openclaw matrix verify backup restore`                        | Restore room keys from server backup                                                |
-| `openclaw matrix verify backup reset --yes`                    | Delete the current backup and create a fresh baseline (may recreate secret storage) |
+| Command                                                       | Purpose                                                                             |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `carlito matrix verify status`                                | Check cross-signing and device verification state                                   |
+| `carlito matrix verify status --include-recovery-key --json`  | Include the stored recovery key                                                     |
+| `carlito matrix verify bootstrap`                             | Bootstrap cross-signing and verification (see below)                                |
+| `carlito matrix verify bootstrap --force-reset-cross-signing` | Discard the current cross-signing identity and create a new one                     |
+| `carlito matrix verify device "<recovery-key>"`               | Verify this device with a recovery key                                              |
+| `carlito matrix verify backup status`                         | Check room-key backup health                                                        |
+| `carlito matrix verify backup restore`                        | Restore room keys from server backup                                                |
+| `carlito matrix verify backup reset --yes`                    | Delete the current backup and create a fresh baseline (may recreate secret storage) |
 
 In multi-account setups, Matrix CLI commands use the implicit Matrix default account unless you pass `--account <id>`.
 If you configure multiple named accounts, set `channels.matrix.defaultAccount` first or those implicit CLI operations will stop and ask you to choose an account explicitly.
 Use `--account` whenever you want verification or device operations to target a named account explicitly:
 
 ```bash
-openclaw matrix verify status --account assistant
-openclaw matrix verify backup restore --account assistant
-openclaw matrix devices list --account assistant
+carlito matrix verify status --account assistant
+carlito matrix verify backup restore --account assistant
+carlito matrix devices list --account assistant
 ```
 
 When encryption is disabled or unavailable for a named account, Matrix warnings and verification errors point at that account's config key, for example `channels.matrix.accounts.assistant.encryption`.
 
 <AccordionGroup>
   <Accordion title="What verified means">
-    OpenClaw treats a device as verified only when your own cross-signing identity signs it. `verify status --verbose` exposes three trust signals:
+    Carlito treats a device as verified only when your own cross-signing identity signs it. `verify status --verbose` exposes three trust signals:
 
     - `Locally trusted`: trusted by this client only
     - `Cross-signing verified`: the SDK reports verification via cross-signing
@@ -353,7 +353,7 @@ When encryption is disabled or unavailable for a named account, Matrix warnings 
     - marks and cross-signs the current device
     - creates a server-side room-key backup if one does not already exist
 
-    If the homeserver requires UIA to upload cross-signing keys, OpenClaw tries no-auth first, then `m.login.dummy`, then `m.login.password` (requires `channels.matrix.password`). Use `--force-reset-cross-signing` only when intentionally discarding the current identity.
+    If the homeserver requires UIA to upload cross-signing keys, Carlito tries no-auth first, then `m.login.dummy`, then `m.login.password` (requires `channels.matrix.password`). Use `--force-reset-cross-signing` only when intentionally discarding the current identity.
 
   </Accordion>
 
@@ -361,9 +361,9 @@ When encryption is disabled or unavailable for a named account, Matrix warnings 
     If you want to keep future encrypted messages working and accept losing unrecoverable old history:
 
 ```bash
-openclaw matrix verify backup reset --yes
-openclaw matrix verify backup status --verbose
-openclaw matrix verify status
+carlito matrix verify backup reset --yes
+carlito matrix verify backup status --verbose
+carlito matrix verify status
 ```
 
     Add `--account <id>` to target a named account. This can also recreate secret storage if the current backup secret cannot be loaded safely.
@@ -373,7 +373,7 @@ openclaw matrix verify status
   <Accordion title="Startup behavior">
     With `encryption: true`, `startupVerification` defaults to `"if-unverified"`. On startup an unverified device requests self-verification in another Matrix client, skipping duplicates and applying a cooldown. Tune with `startupVerificationCooldownHours` or disable with `startupVerification: "off"`.
 
-    Startup also runs a conservative crypto bootstrap pass that reuses the current secret storage and cross-signing identity. If bootstrap state is broken, OpenClaw attempts a guarded repair even without `channels.matrix.password`; if the homeserver requires password UIA, startup logs a warning and stays non-fatal. Already-owner-signed devices are preserved.
+    Startup also runs a conservative crypto bootstrap pass that reuses the current secret storage and cross-signing identity. If bootstrap state is broken, Carlito attempts a guarded repair even without `channels.matrix.password`; if the homeserver requires password UIA, startup logs a warning and stays non-fatal. Already-owner-signed devices are preserved.
 
     See [Matrix migration](/install/migrating-matrix) for the full upgrade flow.
 
@@ -382,18 +382,18 @@ openclaw matrix verify status
   <Accordion title="Verification notices">
     Matrix posts verification lifecycle notices into the strict DM verification room as `m.notice` messages: request, ready (with "Verify by emoji" guidance), start/completion, and SAS (emoji/decimal) details when available.
 
-    Incoming requests from another Matrix client are tracked and auto-accepted. For self-verification, OpenClaw starts the SAS flow automatically and confirms its own side once emoji verification is available — you still need to compare and confirm "They match" in your Matrix client.
+    Incoming requests from another Matrix client are tracked and auto-accepted. For self-verification, Carlito starts the SAS flow automatically and confirms its own side once emoji verification is available — you still need to compare and confirm "They match" in your Matrix client.
 
     Verification system notices are not forwarded to the agent chat pipeline.
 
   </Accordion>
 
   <Accordion title="Device hygiene">
-    Old OpenClaw-managed devices can accumulate. List and prune:
+    Old Carlito-managed devices can accumulate. List and prune:
 
 ```bash
-openclaw matrix devices list
-openclaw matrix devices prune-stale
+carlito matrix devices list
+carlito matrix devices prune-stale
 ```
 
   </Accordion>
@@ -401,7 +401,7 @@ openclaw matrix devices prune-stale
   <Accordion title="Crypto store">
     Matrix E2EE uses the official `matrix-js-sdk` Rust crypto path with `fake-indexeddb` as the IndexedDB shim. Crypto state persists to `crypto-idb-snapshot.json` (restrictive file permissions).
 
-    Encrypted runtime state lives under `~/.openclaw/matrix/accounts/<account>/<homeserver>__<user>/<token-hash>/` and includes the sync store, crypto store, recovery key, IDB snapshot, thread bindings, and startup verification state. When the token changes but the account identity stays the same, OpenClaw reuses the best existing root so prior state remains visible.
+    Encrypted runtime state lives under `~/.carlito/matrix/accounts/<account>/<homeserver>__<user>/<token-hash>/` and includes the sync store, crypto store, recovery key, IDB snapshot, thread bindings, and startup verification state. When the token changes but the account identity stays the same, Carlito reuses the best existing root so prior state remains visible.
 
   </Accordion>
 </AccordionGroup>
@@ -411,13 +411,13 @@ openclaw matrix devices prune-stale
 Update the Matrix self-profile for the selected account with:
 
 ```bash
-openclaw matrix profile set --name "OpenClaw Assistant"
-openclaw matrix profile set --avatar-url https://cdn.example.org/avatar.png
+carlito matrix profile set --name "Carlito Assistant"
+carlito matrix profile set --avatar-url https://cdn.example.org/avatar.png
 ```
 
 Add `--account <id>` when you want to target a named Matrix account explicitly.
 
-Matrix accepts `mxc://` avatar URLs directly. When you pass an `http://` or `https://` avatar URL, OpenClaw uploads it to Matrix first and stores the resolved `mxc://` URL back into `channels.matrix.avatarUrl` (or the selected account override).
+Matrix accepts `mxc://` avatar URLs directly. When you pass an `http://` or `https://` avatar URL, Carlito uploads it to Matrix first and stores the resolved `mxc://` URL back into `channels.matrix.avatarUrl` (or the selected account override).
 
 ## Threads
 
@@ -432,8 +432,8 @@ Matrix supports native Matrix threads for both automatic replies and message-too
 - `dm.threadReplies` overrides the top-level setting for DMs only. For example, you can keep room threads isolated while keeping DMs flat.
 - Inbound threaded messages include the thread root message as extra agent context.
 - Message-tool sends auto-inherit the current Matrix thread when the target is the same room, or the same DM user target, unless an explicit `threadId` is provided.
-- Same-session DM user-target reuse only kicks in when the current session metadata proves the same DM peer on the same Matrix account; otherwise OpenClaw falls back to normal user-scoped routing.
-- When OpenClaw sees a Matrix DM room collide with another DM room on the same shared Matrix DM session, it posts a one-time `m.notice` in that room with the `/focus` escape hatch when thread bindings are enabled and the `dm.sessionScope` hint.
+- Same-session DM user-target reuse only kicks in when the current session metadata proves the same DM peer on the same Matrix account; otherwise Carlito falls back to normal user-scoped routing.
+- When Carlito sees a Matrix DM room collide with another DM room on the same shared Matrix DM session, it posts a one-time `m.notice` in that room with the `/focus` escape hatch when thread bindings are enabled and the `dm.sessionScope` hint.
 - Runtime thread bindings are supported for Matrix. `/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`, and thread-bound `/acp spawn` work in Matrix rooms and DMs.
 - Top-level Matrix room/DM `/focus` creates a new Matrix thread and binds it to the target session when `threadBindings.spawnSubagentSessions=true`.
 - Running `/focus` or `/acp spawn --thread here` inside an existing Matrix thread binds that current thread instead.
@@ -453,7 +453,7 @@ Fast operator flow:
 Notes:
 
 - `--bind here` does not create a child Matrix thread.
-- `threadBindings.spawnAcpSessions` is only required for `/acp spawn --thread auto|here`, where OpenClaw needs to create or bind a child Matrix thread.
+- `threadBindings.spawnAcpSessions` is only required for `/acp spawn --thread auto|here`, where Carlito needs to create or bind a child Matrix thread.
 
 ### Thread binding config
 
@@ -480,7 +480,7 @@ Matrix supports outbound reaction actions, inbound reaction notifications, and i
 - `emoji=""` removes the bot account's own reactions on that event.
 - `remove: true` removes only the specified emoji reaction from the bot account.
 
-Ack reactions use the standard OpenClaw resolution order:
+Ack reactions use the standard Carlito resolution order:
 
 - `channels["matrix"].accounts.<accountId>.ackReaction`
 - `channels["matrix"].ackReaction`
@@ -509,7 +509,7 @@ Behavior:
 
 - `channels.matrix.historyLimit` controls how many recent room messages are included as `InboundHistory` when a Matrix room message triggers the agent. Falls back to `messages.groupChat.historyLimit`; if both are unset, the effective default is `0`. Set `0` to disable.
 - Matrix room history is room-only. DMs keep using normal session history.
-- Matrix room history is pending-only: OpenClaw buffers room messages that did not trigger a reply yet, then snapshots that window when a mention or other trigger arrives.
+- Matrix room history is pending-only: Carlito buffers room messages that did not trigger a reply yet, then snapshots that window when a mention or other trigger arrives.
 - The current trigger message is not included in `InboundHistory`; it stays in the main inbound body for that turn.
 - Retries of the same Matrix event reuse the original history snapshot instead of drifting forward to newer room messages.
 
@@ -552,26 +552,26 @@ See [Groups](/channels/groups) for mention-gating and allowlist behavior.
 Pairing example for Matrix DMs:
 
 ```bash
-openclaw pairing list matrix
-openclaw pairing approve matrix <CODE>
+carlito pairing list matrix
+carlito pairing approve matrix <CODE>
 ```
 
-If an unapproved Matrix user keeps messaging you before approval, OpenClaw reuses the same pending pairing code and may send a reminder reply again after a short cooldown instead of minting a new code.
+If an unapproved Matrix user keeps messaging you before approval, Carlito reuses the same pending pairing code and may send a reminder reply again after a short cooldown instead of minting a new code.
 
 See [Pairing](/channels/pairing) for the shared DM pairing flow and storage layout.
 
 ## Direct room repair
 
-If direct-message state gets out of sync, OpenClaw can end up with stale `m.direct` mappings that point at old solo rooms instead of the live DM. Inspect the current mapping for a peer with:
+If direct-message state gets out of sync, Carlito can end up with stale `m.direct` mappings that point at old solo rooms instead of the live DM. Inspect the current mapping for a peer with:
 
 ```bash
-openclaw matrix direct inspect --user-id @alice:example.org
+carlito matrix direct inspect --user-id @alice:example.org
 ```
 
 Repair it with:
 
 ```bash
-openclaw matrix direct repair --user-id @alice:example.org
+carlito matrix direct repair --user-id @alice:example.org
 ```
 
 The repair flow:
@@ -626,7 +626,7 @@ Related docs: [Exec approvals](/tools/exec-approvals)
 
 ## Slash commands
 
-Matrix slash commands (for example `/new`, `/reset`, `/model`) work directly in DMs. In rooms, OpenClaw also recognizes slash commands that are prefixed with the bot's own Matrix mention, so `@bot:server /new` triggers the command path without needing a custom mention regex. This keeps the bot responsive to room-style `@mention /command` posts that Element and similar clients emit when a user tab-completes the bot before typing the command.
+Matrix slash commands (for example `/new`, `/reset`, `/model`) work directly in DMs. In rooms, Carlito also recognizes slash commands that are prefixed with the bot's own Matrix mention, so `@bot:server /new` triggers the command path without needing a custom mention regex. This keeps the bot responsive to room-style `@mention /command` posts that Element and similar clients emit when a user tab-completes the bot before typing the command.
 
 Authorization rules still apply: command senders must satisfy DM or room allowlist/owner policies just like plain messages.
 
@@ -663,18 +663,18 @@ Authorization rules still apply: command senders must satisfy DM or room allowli
 Top-level `channels.matrix` values act as defaults for named accounts unless an account overrides them.
 You can scope inherited room entries to one Matrix account with `groups.<room>.account`.
 Entries without `account` stay shared across all Matrix accounts, and entries with `account: "default"` still work when the default account is configured directly on top-level `channels.matrix.*`.
-Partial shared auth defaults do not create a separate implicit default account by themselves. OpenClaw only synthesizes the top-level `default` account when that default has fresh auth (`homeserver` plus `accessToken`, or `homeserver` plus `userId` and `password`); named accounts can still stay discoverable from `homeserver` plus `userId` when cached credentials satisfy auth later.
+Partial shared auth defaults do not create a separate implicit default account by themselves. Carlito only synthesizes the top-level `default` account when that default has fresh auth (`homeserver` plus `accessToken`, or `homeserver` plus `userId` and `password`); named accounts can still stay discoverable from `homeserver` plus `userId` when cached credentials satisfy auth later.
 If Matrix already has exactly one named account, or `defaultAccount` points at an existing named account key, single-account-to-multi-account repair/setup promotion preserves that account instead of creating a fresh `accounts.default` entry. Only Matrix auth/bootstrap keys move into that promoted account; shared delivery-policy keys stay at the top level.
-Set `defaultAccount` when you want OpenClaw to prefer one named Matrix account for implicit routing, probing, and CLI operations.
-If multiple Matrix accounts are configured and one account id is `default`, OpenClaw uses that account implicitly even when `defaultAccount` is unset.
+Set `defaultAccount` when you want Carlito to prefer one named Matrix account for implicit routing, probing, and CLI operations.
+If multiple Matrix accounts are configured and one account id is `default`, Carlito uses that account implicitly even when `defaultAccount` is unset.
 If you configure multiple named accounts, set `defaultAccount` or pass `--account <id>` for CLI commands that rely on implicit account selection.
-Pass `--account <id>` to `openclaw matrix verify ...` and `openclaw matrix devices ...` when you want to override that implicit selection for one command.
+Pass `--account <id>` to `carlito matrix verify ...` and `carlito matrix devices ...` when you want to override that implicit selection for one command.
 
 See [Configuration reference](/gateway/configuration-reference#multi-account-all-channels) for the shared multi-account pattern.
 
 ## Private/LAN homeservers
 
-By default, OpenClaw blocks private/internal Matrix homeservers for SSRF protection unless you
+By default, Carlito blocks private/internal Matrix homeservers for SSRF protection unless you
 explicitly opt in per account.
 
 If your homeserver runs on localhost, a LAN/Tailscale IP, or an internal hostname, enable
@@ -697,7 +697,7 @@ If your homeserver runs on localhost, a LAN/Tailscale IP, or an internal hostnam
 CLI setup example:
 
 ```bash
-openclaw matrix account add \
+carlito matrix account add \
   --account ops \
   --homeserver http://matrix-synapse:8008 \
   --allow-private-network \
@@ -724,11 +724,11 @@ If your Matrix deployment needs an explicit outbound HTTP(S) proxy, set `channel
 ```
 
 Named accounts can override the top-level default with `channels.matrix.accounts.<id>.proxy`.
-OpenClaw uses the same proxy setting for runtime Matrix traffic and account status probes.
+Carlito uses the same proxy setting for runtime Matrix traffic and account status probes.
 
 ## Target resolution
 
-Matrix accepts these target forms anywhere OpenClaw asks you for a room or user target:
+Matrix accepts these target forms anywhere Carlito asks you for a room or user target:
 
 - Users: `@user:server`, `user:@user:server`, or `matrix:user:@user:server`
 - Rooms: `!room:server`, `room:!room:server`, or `matrix:room:!room:server`
@@ -757,7 +757,7 @@ Live directory lookup uses the logged-in Matrix account:
 - `initialSyncLimit`: maximum number of events fetched during startup sync.
 - `encryption`: enable E2EE.
 - `allowlistOnly`: when `true`, upgrades `open` room policy to `allowlist`, and forces all active DM policies except `disabled` (including `pairing` and `open`) to `allowlist`. Does not affect `disabled` policies.
-- `allowBots`: allow messages from other configured OpenClaw Matrix accounts (`true` or `"mentions"`).
+- `allowBots`: allow messages from other configured Carlito Matrix accounts (`true` or `"mentions"`).
 - `groupPolicy`: `open`, `allowlist`, or `disabled`.
 - `contextVisibility`: supplemental room-context visibility mode (`all`, `allowlist`, `allowlist_quote`).
 - `groupAllowFrom`: allowlist of user IDs for room traffic. Full Matrix user IDs are safest; exact directory matches are resolved at startup and when the allowlist changes while the monitor is running. Unresolved names are ignored.
@@ -778,9 +778,9 @@ Live directory lookup uses the logged-in Matrix account:
 - `reactionNotifications`: inbound reaction notification mode (`own`, `off`).
 - `mediaMaxMb`: media size cap in MB for outbound sends and inbound media processing.
 - `autoJoin`: invite auto-join policy (`always`, `allowlist`, `off`). Default: `off`. Applies to all Matrix invites, including DM-style invites.
-- `autoJoinAllowlist`: rooms/aliases allowed when `autoJoin` is `allowlist`. Alias entries are resolved to room IDs during invite handling; OpenClaw does not trust alias state claimed by the invited room.
+- `autoJoinAllowlist`: rooms/aliases allowed when `autoJoin` is `allowlist`. Alias entries are resolved to room IDs during invite handling; Carlito does not trust alias state claimed by the invited room.
 - `dm`: DM policy block (`enabled`, `policy`, `allowFrom`, `sessionScope`, `threadReplies`).
-- `dm.policy`: controls DM access after OpenClaw has joined the room and classified it as a DM. It does not change whether an invite is auto-joined.
+- `dm.policy`: controls DM access after Carlito has joined the room and classified it as a DM. It does not change whether an invite is auto-joined.
 - `dm.allowFrom`: allowlist of user IDs for DM traffic. Full Matrix user IDs are safest; exact directory matches are resolved at startup and when the allowlist changes while the monitor is running. Unresolved names are ignored.
 - `dm.sessionScope`: `per-user` (default) or `per-room`. Use `per-room` when you want each Matrix DM room to keep separate context even if the peer is the same.
 - `dm.threadReplies`: DM-only thread policy override (`off`, `inbound`, `always`). It overrides the top-level `threadReplies` setting for both reply placement and session isolation in DMs.

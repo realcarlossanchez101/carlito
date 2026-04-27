@@ -1,4 +1,4 @@
-import { normalizeAccountId } from "openclaw/plugin-sdk/routing";
+import { normalizeAccountId } from "carlito/plugin-sdk/routing";
 import {
   BINDINGS_BY_THREAD_ID,
   ensureBindingsLoaded,

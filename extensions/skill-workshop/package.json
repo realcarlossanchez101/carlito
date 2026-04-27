@@ -1,16 +1,16 @@
 {
-  "name": "@openclaw/skill-workshop",
+  "name": "@realcarlossanchez101/skill-workshop",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw skill workshop plugin",
+  "description": "Carlito skill workshop plugin",
   "type": "module",
   "dependencies": {
     "typebox": "1.1.28"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

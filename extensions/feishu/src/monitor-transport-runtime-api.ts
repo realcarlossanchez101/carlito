@@ -1,7 +1,7 @@
 export type { RuntimeEnv } from "../runtime-api.js";
-export { safeEqualSecret } from "openclaw/plugin-sdk/browser-security-runtime";
-export { applyBasicWebhookRequestGuards } from "openclaw/plugin-sdk/webhook-ingress";
+export { safeEqualSecret } from "carlito/plugin-sdk/browser-security-runtime";
+export { applyBasicWebhookRequestGuards } from "carlito/plugin-sdk/webhook-ingress";
 export {
   installRequestBodyLimitGuard,
   readWebhookBodyOrReject,
-} from "openclaw/plugin-sdk/webhook-request-guards";
+} from "carlito/plugin-sdk/webhook-request-guards";

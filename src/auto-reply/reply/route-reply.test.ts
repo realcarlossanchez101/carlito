@@ -4,7 +4,7 @@ import type {
   ChannelPlugin,
   ChannelThreadingAdapter,
 } from "../../channels/plugins/types.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import { setActivePluginRegistry } from "../../plugins/runtime.js";
 import {
   createChannelTestPluginBase,
@@ -236,7 +236,7 @@ describe("routeReply", () => {
           },
         },
       },
-    } as unknown as OpenClawConfig;
+    } as unknown as CarlitoConfig;
 
     const res = await routeReply({
       payload: { text: "native command response" },
@@ -259,8 +259,8 @@ describe("routeReply", () => {
 
   it("applies responsePrefix when routing", async () => {
     const cfg = {
-      messages: { responsePrefix: "[openclaw]" },
-    } as unknown as OpenClawConfig;
+      messages: { responsePrefix: "[carlito]" },
+    } as unknown as CarlitoConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "slack",
@@ -268,7 +268,7 @@ describe("routeReply", () => {
       cfg,
     });
     expectLastDelivery({
-      payloads: [expect.objectContaining({ text: "[openclaw] hi" })],
+      payloads: [expect.objectContaining({ text: "[carlito] hi" })],
     });
   });
 
@@ -279,7 +279,7 @@ describe("routeReply", () => {
           capabilities: { interactiveReplies: true },
         },
       },
-    } as unknown as OpenClawConfig;
+    } as unknown as CarlitoConfig;
     await routeReply({
       payload: { text: "[[slack_select: Choose one | Alpha:alpha]]" },
       channel: "slack",
@@ -317,7 +317,7 @@ describe("routeReply", () => {
         ],
       },
       messages: {},
-    } as unknown as OpenClawConfig;
+    } as unknown as CarlitoConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "slack",
@@ -464,7 +464,7 @@ describe("routeReply", () => {
             baseUrl: "https://chat.example.com",
           },
         },
-      } as unknown as OpenClawConfig,
+      } as unknown as CarlitoConfig,
     });
     expectLastDelivery({
       channel: "mattermost",
@@ -514,7 +514,7 @@ describe("routeReply", () => {
           enabled: true,
         },
       },
-    } as unknown as OpenClawConfig;
+    } as unknown as CarlitoConfig;
     await routeReply({
       payload: { text: "hi" },
       channel: "msteams",

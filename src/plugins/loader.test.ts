@@ -32,7 +32,7 @@ import {
 import {
   __testing,
   clearPluginLoaderCache,
-  loadOpenClawPlugins,
+  loadCarlitoPlugins,
   PluginLoadReentryError,
   resolveRuntimePluginRegistry,
 } from "./loader.js";
@@ -144,7 +144,7 @@ function writeBundledPlugin(params: {
     filename: params.filename ?? "index.cjs",
     body: params.body ?? simplePluginBody(params.id),
   });
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+  process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
   return { bundledDir, plugin };
 }
 
@@ -155,7 +155,7 @@ function writeWorkspacePlugin(params: {
   workspaceDir?: string;
 }) {
   const workspaceDir = params.workspaceDir ?? makeTempDir();
-  const workspacePluginDir = path.join(workspaceDir, ".openclaw", "extensions", params.id);
+  const workspacePluginDir = path.join(workspaceDir, ".carlito", "extensions", params.id);
   mkdirSafe(workspacePluginDir);
   const plugin = writePlugin({
     id: params.id,
@@ -168,7 +168,7 @@ function writeWorkspacePlugin(params: {
 
 function withStateDir<T>(run: (stateDir: string) => T) {
   const stateDir = makeTempDir();
-  return withEnv({ OPENCLAW_STATE_DIR: stateDir }, () => run(stateDir));
+  return withEnv({ CARLITO_STATE_DIR: stateDir }, () => run(stateDir));
 }
 
 function loadBundledMemoryPluginRegistry(options?: {
@@ -177,8 +177,8 @@ function loadBundledMemoryPluginRegistry(options?: {
   pluginFilename?: string;
 }) {
   if (!options && cachedBundledMemoryDir) {
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = cachedBundledMemoryDir;
-    return loadOpenClawPlugins({
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = cachedBundledMemoryDir;
+    return loadCarlitoPlugins({
       cache: false,
       workspaceDir: cachedBundledMemoryDir,
       config: {
@@ -206,7 +206,7 @@ function loadBundledMemoryPluginRegistry(options?: {
           name: options.packageMeta.name,
           version: options.packageMeta.version,
           description: options.packageMeta.description,
-          openclaw: { extensions: [`./${pluginFilename}`] },
+          carlito: { extensions: [`./${pluginFilename}`] },
         },
         null,
         2,
@@ -226,9 +226,9 @@ function loadBundledMemoryPluginRegistry(options?: {
   if (!options) {
     cachedBundledMemoryDir = bundledDir;
   }
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+  process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-  return loadOpenClawPlugins({
+  return loadCarlitoPlugins({
     cache: false,
     workspaceDir: bundledDir,
     config: {
@@ -251,10 +251,10 @@ function setupBundledTelegramPlugin() {
       filename: "telegram.cjs",
     });
   }
-  process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = cachedBundledTelegramDir;
+  process.env.CARLITO_BUNDLED_PLUGINS_DIR = cachedBundledTelegramDir;
 }
 
-function expectTelegramLoaded(registry: ReturnType<typeof loadOpenClawPlugins>) {
+function expectTelegramLoaded(registry: ReturnType<typeof loadCarlitoPlugins>) {
   const telegram = registry.plugins.find((entry) => entry.id === "telegram");
   expect(telegram?.status).toBe("loaded");
   expect(registry.channels.some((entry) => entry.plugin.id === "telegram")).toBe(true);
@@ -264,10 +264,10 @@ function loadRegistryFromSinglePlugin(params: {
   plugin: TempPlugin;
   pluginConfig?: Record<string, unknown>;
   includeWorkspaceDir?: boolean;
-  options?: Omit<Parameters<typeof loadOpenClawPlugins>[0], "cache" | "workspaceDir" | "config">;
+  options?: Omit<Parameters<typeof loadCarlitoPlugins>[0], "cache" | "workspaceDir" | "config">;
 }) {
   const pluginConfig = params.pluginConfig ?? {};
-  return loadOpenClawPlugins({
+  return loadCarlitoPlugins({
     cache: false,
     ...(params.includeWorkspaceDir === false ? {} : { workspaceDir: params.plugin.dir }),
     ...params.options,
@@ -282,9 +282,9 @@ function loadRegistryFromSinglePlugin(params: {
 
 function loadRegistryFromAllowedPlugins(
   plugins: TempPlugin[],
-  options?: Omit<Parameters<typeof loadOpenClawPlugins>[0], "cache" | "config">,
+  options?: Omit<Parameters<typeof loadCarlitoPlugins>[0], "cache" | "config">,
 ) {
-  return loadOpenClawPlugins({
+  return loadCarlitoPlugins({
     cache: false,
     ...options,
     config: {
@@ -506,7 +506,7 @@ function createEscapingEntryFixture(params: { id: string; sourceBody: string }) 
   const linkedEntry = path.join(pluginDir, "entry.cjs");
   fs.writeFileSync(outsideEntry, params.sourceBody, "utf-8");
   fs.writeFileSync(
-    path.join(pluginDir, "openclaw.plugin.json"),
+    path.join(pluginDir, "carlito.plugin.json"),
     JSON.stringify(
       {
         id: params.id,
@@ -521,7 +521,7 @@ function createEscapingEntryFixture(params: { id: string; sourceBody: string }) 
 }
 
 function resolveLoadedPluginSource(
-  registry: ReturnType<typeof loadOpenClawPlugins>,
+  registry: ReturnType<typeof loadCarlitoPlugins>,
   pluginId: string,
 ) {
   return fs.realpathSync(registry.plugins.find((entry) => entry.id === pluginId)?.source ?? "");
@@ -529,8 +529,8 @@ function resolveLoadedPluginSource(
 
 function expectCachePartitionByPluginSource(params: {
   pluginId: string;
-  loadFirst: () => ReturnType<typeof loadOpenClawPlugins>;
-  loadSecond: () => ReturnType<typeof loadOpenClawPlugins>;
+  loadFirst: () => ReturnType<typeof loadCarlitoPlugins>;
+  loadSecond: () => ReturnType<typeof loadCarlitoPlugins>;
   expectedFirstSource: string;
   expectedSecondSource: string;
 }) {
@@ -547,8 +547,8 @@ function expectCachePartitionByPluginSource(params: {
 }
 
 function expectCacheMissThenHit(params: {
-  loadFirst: () => ReturnType<typeof loadOpenClawPlugins>;
-  loadVariant: () => ReturnType<typeof loadOpenClawPlugins>;
+  loadFirst: () => ReturnType<typeof loadCarlitoPlugins>;
+  loadVariant: () => ReturnType<typeof loadCarlitoPlugins>;
 }) {
   const first = params.loadFirst();
   const second = params.loadVariant();
@@ -590,7 +590,7 @@ function createSetupEntryChannelPluginFixture(params: {
     JSON.stringify(
       {
         name: params.packageName,
-        openclaw: {
+        carlito: {
           extensions: ["./index.cjs"],
           setupEntry: "./setup-entry.cjs",
           ...(params.startupDeferConfiguredChannelFullLoadUntilAfterListen
@@ -608,7 +608,7 @@ function createSetupEntryChannelPluginFixture(params: {
     "utf-8",
   );
   fs.writeFileSync(
-    path.join(pluginDir, "openclaw.plugin.json"),
+    path.join(pluginDir, "carlito.plugin.json"),
     JSON.stringify(
       {
         id: params.id,
@@ -762,10 +762,10 @@ module.exports = {
 
 function createEnvResolvedPluginFixture(pluginId: string) {
   useNoBundledPlugins();
-  const openclawHome = makeTempDir();
+  const carlitoHome = makeTempDir();
   const ignoredHome = makeTempDir();
   const stateDir = makeTempDir();
-  const pluginDir = path.join(openclawHome, "plugins", pluginId);
+  const pluginDir = path.join(carlitoHome, "plugins", pluginId);
   mkdirSafe(pluginDir);
   const plugin = writePlugin({
     id: pluginId,
@@ -775,10 +775,10 @@ function createEnvResolvedPluginFixture(pluginId: string) {
   });
   const env = {
     ...process.env,
-    OPENCLAW_HOME: openclawHome,
+    CARLITO_HOME: carlitoHome,
     HOME: ignoredHome,
-    OPENCLAW_STATE_DIR: stateDir,
-    OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
+    CARLITO_STATE_DIR: stateDir,
+    CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
   };
   return { plugin, env };
 }
@@ -809,7 +809,7 @@ function expectEscapingEntryRejected(params: {
     throw err;
   }
 
-  const registry = loadOpenClawPlugins({
+  const registry = loadCarlitoPlugins({
     cache: false,
     config: {
       plugins: {
@@ -836,7 +836,7 @@ afterAll(() => {
   cachedBundledMemoryDir = "";
 });
 
-describe("loadOpenClawPlugins", () => {
+describe("loadCarlitoPlugins", () => {
   it("disables bundled plugins by default", () => {
     const bundledDir = makeTempDir();
     writePlugin({
@@ -845,9 +845,9 @@ describe("loadOpenClawPlugins", () => {
       dir: bundledDir,
       filename: "bundled.cjs",
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -876,17 +876,17 @@ module.exports = {
   },
 };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/discord",
+          name: "@realcarlossanchez101/discord",
           version: "1.0.0",
           dependencies: {
             "discord-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -894,7 +894,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "discord",
@@ -908,7 +908,7 @@ module.exports = {
     );
     const installedSpecs: string[] = [];
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -946,17 +946,17 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "discord", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/discord",
+          name: "@realcarlossanchez101/discord",
           version: "1.0.0",
           dependencies: {
             "discord-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -964,7 +964,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "discord",
@@ -983,7 +983,7 @@ module.exports = {
       debug: vi.fn(),
     };
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       activate: false,
       logger,
@@ -1018,17 +1018,17 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "discord", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/discord",
+          name: "@realcarlossanchez101/discord",
           version: "1.0.0",
           dependencies: {
             "discord-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -1036,7 +1036,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1059,17 +1059,17 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "feishu", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/feishu",
+          name: "@realcarlossanchez101/feishu",
           version: "1.0.0",
           dependencies: {
             "feishu-runtime": "1.0.0",
           },
-          openclaw: {
+          carlito: {
             extensions: ["./index.cjs"],
             setupEntry: "./setup-entry.cjs",
           },
@@ -1080,7 +1080,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "feishu",
@@ -1116,7 +1116,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1145,17 +1145,17 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "feishu", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/feishu",
+          name: "@realcarlossanchez101/feishu",
           version: "1.0.0",
           dependencies: {
             "feishu-runtime": "1.0.0",
           },
-          openclaw: {
+          carlito: {
             extensions: ["./index.cjs"],
             setupEntry: "./setup-entry.cjs",
           },
@@ -1166,7 +1166,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "feishu",
@@ -1204,7 +1204,7 @@ module.exports = {
     );
     const installedSpecs: string[] = [];
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1246,17 +1246,17 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "openai", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/openai",
+          name: "@realcarlossanchez101/openai",
           version: "1.0.0",
           dependencies: {
             "openai-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -1264,7 +1264,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "openai",
@@ -1278,7 +1278,7 @@ module.exports = {
     );
     const installedSpecs: string[] = [];
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1308,7 +1308,7 @@ module.exports = {
       filename: "index.cjs",
       body: `module.exports = { id: "beta", register() {} };`,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     for (const [plugin, depName] of [
       [alpha, "alpha-runtime"],
       [beta, "beta-runtime"],
@@ -1317,12 +1317,12 @@ module.exports = {
         path.join(plugin.dir, "package.json"),
         JSON.stringify(
           {
-            name: `@openclaw/${plugin.id}`,
+            name: `@carlito/${plugin.id}`,
             version: "1.0.0",
             dependencies: {
               [depName]: "1.0.0",
             },
-            openclaw: { extensions: ["./index.cjs"] },
+            carlito: { extensions: ["./index.cjs"] },
           },
           null,
           2,
@@ -1330,7 +1330,7 @@ module.exports = {
         "utf-8",
       );
       fs.writeFileSync(
-        path.join(plugin.dir, "openclaw.plugin.json"),
+        path.join(plugin.dir, "carlito.plugin.json"),
         JSON.stringify(
           {
             id: plugin.id,
@@ -1345,7 +1345,7 @@ module.exports = {
     }
     const calls: Array<{ missingSpecs: string[]; installSpecs: string[] | undefined }> = [];
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1396,18 +1396,18 @@ module.exports = {
         };
       `,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
-    process.env.OPENCLAW_PLUGIN_STAGE_DIR = stageDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_PLUGIN_STAGE_DIR = stageDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/alpha",
+          name: "@realcarlossanchez101/alpha",
           version: "1.0.0",
           dependencies: {
             "external-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -1415,7 +1415,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "alpha",
@@ -1428,7 +1428,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1463,7 +1463,7 @@ module.exports = {
     fs.mkdirSync(pluginRoot, { recursive: true });
     fs.writeFileSync(
       path.join(packageRoot, "package.json"),
-      JSON.stringify({ name: "openclaw", version: "2026.4.22", type: "module" }),
+      JSON.stringify({ name: "carlito", version: "2026.4.22", type: "module" }),
       "utf-8",
     );
     fs.writeFileSync(
@@ -1480,7 +1480,7 @@ module.exports = {
       path.join(pluginRoot, "index.js"),
       [
         `import runtimeDep from "external-runtime";`,
-        `import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";`,
+        `import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";`,
         `export default {`,
         `  id: "telegram",`,
         `  register(api) {`,
@@ -1498,13 +1498,13 @@ module.exports = {
       path.join(pluginRoot, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/telegram",
+          name: "@realcarlossanchez101/telegram",
           version: "1.0.0",
           type: "module",
           dependencies: {
             "external-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.js"] },
+          carlito: { extensions: ["./index.js"] },
         },
         null,
         2,
@@ -1512,7 +1512,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginRoot, "openclaw.plugin.json"),
+      path.join(pluginRoot, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "telegram",
@@ -1524,10 +1524,10 @@ module.exports = {
       ),
       "utf-8",
     );
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
-    process.env.OPENCLAW_PLUGIN_STAGE_DIR = stageDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_PLUGIN_STAGE_DIR = stageDir;
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1566,7 +1566,7 @@ module.exports = {
     fs.mkdirSync(pluginRoot, { recursive: true });
     fs.writeFileSync(
       path.join(packageRoot, "package.json"),
-      JSON.stringify({ name: "openclaw", version: "2026.4.22", type: "module" }),
+      JSON.stringify({ name: "carlito", version: "2026.4.22", type: "module" }),
       "utf-8",
     );
     fs.writeFileSync(
@@ -1577,7 +1577,7 @@ module.exports = {
     fs.writeFileSync(
       path.join(pluginRoot, "index.js"),
       [
-        `import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";`,
+        `import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";`,
         `export default {`,
         `  id: "discord",`,
         `  register(api) {`,
@@ -1592,10 +1592,10 @@ module.exports = {
       path.join(pluginRoot, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/discord",
+          name: "@realcarlossanchez101/discord",
           version: "1.0.0",
           type: "module",
-          openclaw: { extensions: ["./index.js"] },
+          carlito: { extensions: ["./index.js"] },
         },
         null,
         2,
@@ -1603,7 +1603,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginRoot, "openclaw.plugin.json"),
+      path.join(pluginRoot, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "discord",
@@ -1615,9 +1615,9 @@ module.exports = {
       ),
       "utf-8",
     );
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1670,19 +1670,19 @@ module.exports = {
       ].join("\n"),
       "utf-8",
     );
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
-    process.env.OPENCLAW_PLUGIN_STAGE_DIR = stageDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_PLUGIN_STAGE_DIR = stageDir;
     fs.writeFileSync(
       path.join(pluginRoot, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/acpx",
+          name: "@realcarlossanchez101/acpx",
           version: "1.0.0",
           type: "module",
           dependencies: {
             "external-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.js"] },
+          carlito: { extensions: ["./index.js"] },
         },
         null,
         2,
@@ -1690,7 +1690,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginRoot, "openclaw.plugin.json"),
+      path.join(pluginRoot, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "acpx",
@@ -1703,7 +1703,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1753,17 +1753,17 @@ module.exports = {
         };
       `,
     });
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
     fs.writeFileSync(
       path.join(plugin.dir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/tokenjuice",
+          name: "@realcarlossanchez101/tokenjuice",
           version: "1.0.0",
           dependencies: {
             "external-runtime": "1.0.0",
           },
-          openclaw: { extensions: ["./index.cjs"] },
+          carlito: { extensions: ["./index.cjs"] },
         },
         null,
         2,
@@ -1771,7 +1771,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "tokenjuice",
@@ -1785,7 +1785,7 @@ module.exports = {
     );
 
     const installRoots: string[] = [];
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -1858,7 +1858,7 @@ module.exports = {
           },
         },
       } satisfies PluginLoadConfig,
-      assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+      assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
         expectTelegramLoaded(registry);
       },
     },
@@ -1874,7 +1874,7 @@ module.exports = {
           enabled: true,
         },
       } satisfies PluginLoadConfig,
-      assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+      assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
         expectTelegramLoaded(registry);
       },
     },
@@ -1890,7 +1890,7 @@ module.exports = {
           allow: ["browser"],
         },
       } satisfies PluginLoadConfig,
-      assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+      assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
         const telegram = registry.plugins.find((entry) => entry.id === "telegram");
         expect(telegram?.status).toBe("loaded");
         expect(telegram?.error).toBeUndefined();
@@ -1911,7 +1911,7 @@ module.exports = {
           },
         },
       } satisfies PluginLoadConfig,
-      assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+      assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
         const telegram = registry.plugins.find((entry) => entry.id === "telegram");
         expect(telegram?.status).toBe("disabled");
         expect(telegram?.error).toBe("disabled in config");
@@ -1921,7 +1921,7 @@ module.exports = {
     "handles bundled telegram plugin enablement and override rules: $name",
     ({ config, assert }) => {
       setupBundledTelegramPlugin();
-      const registry = loadOpenClawPlugins({
+      const registry = loadCarlitoPlugins({
         cache: false,
         workspaceDir: cachedBundledTelegramDir,
         config,
@@ -1947,7 +1947,7 @@ module.exports = {
       env: {},
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: cachedBundledTelegramDir,
       config: autoEnabled.config,
@@ -1980,7 +1980,7 @@ module.exports = {
       env: {},
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: cachedBundledTelegramDir,
       config: autoEnabled.config,
@@ -2013,7 +2013,7 @@ module.exports = {
       },
     } satisfies PluginLoadConfig;
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: cachedBundledTelegramDir,
       config: {
@@ -2055,7 +2055,7 @@ module.exports = {
       },
     } satisfies PluginLoadConfig;
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: bundledDir,
       config,
@@ -2073,7 +2073,7 @@ module.exports = {
   it("preserves package.json metadata for bundled memory plugins", () => {
     const registry = loadBundledMemoryPluginRegistry({
       packageMeta: {
-        name: "@openclaw/memory-core",
+        name: "@realcarlossanchez101/memory-core",
         version: "1.2.3",
         description: "Memory plugin package",
       },
@@ -2091,7 +2091,7 @@ module.exports = {
     {
       label: "loads plugins from config paths",
       run: () => {
-        process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+        process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
         const plugin = writePlugin({
           id: "allowed-config-path",
           filename: "allowed-config-path.cjs",
@@ -2103,7 +2103,7 @@ module.exports = {
 };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           workspaceDir: plugin.dir,
           config: {
@@ -2138,7 +2138,7 @@ module.exports = {
 };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           workspaceDir: plugin.dir,
           config: {
@@ -2176,7 +2176,7 @@ module.exports = {
 };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -2210,7 +2210,7 @@ module.exports = {
 module.exports = { id: "skipped-scoped-only", register() { throw new Error("skipped plugin should not load"); } };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -2237,7 +2237,7 @@ module.exports = { id: "skipped-scoped-only", register() { throw new Error("skip
 module.exports = { id: "manifest-only-plugin", register() { throw new Error("manifest-only snapshot should not register"); } };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           activate: false,
           loadModules: false,
@@ -2277,7 +2277,7 @@ module.exports = { id: "manifest-only-plugin", register() { throw new Error("man
 };`,
         });
         fs.writeFileSync(
-          path.join(memoryPlugin.dir, "openclaw.plugin.json"),
+          path.join(memoryPlugin.dir, "carlito.plugin.json"),
           JSON.stringify(
             {
               id: "memory-demo",
@@ -2290,7 +2290,7 @@ module.exports = { id: "manifest-only-plugin", register() { throw new Error("man
           "utf-8",
         );
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           activate: false,
           loadModules: false,
@@ -2326,7 +2326,7 @@ module.exports = { id: "manifest-only-plugin", register() { throw new Error("man
       label: "tracks plugins as imported when module evaluation throws after top-level execution",
       run: () => {
         useNoBundledPlugins();
-        const importMarker = "__openclaw_loader_import_throw_marker";
+        const importMarker = "__carlito_loader_import_throw_marker";
         Reflect.deleteProperty(globalThis, importMarker);
 
         const plugin = writePlugin({
@@ -2337,7 +2337,7 @@ throw new Error("boom after import");
 module.exports = { id: "throws-after-import", register() {} };`,
         });
 
-        const registry = loadOpenClawPlugins({
+        const registry = loadCarlitoPlugins({
           cache: false,
           activate: false,
           config: {
@@ -2368,13 +2368,13 @@ module.exports = { id: "throws-after-import", register() {} };`,
       label: "fails loudly when a plugin reenters the same snapshot load during register",
       run: () => {
         useNoBundledPlugins();
-        const marker = "__openclaw_loader_reentry_error";
-        const reenterFnMarker = "__openclaw_loader_reentry_fn";
+        const marker = "__carlito_loader_reentry_error";
+        const reenterFnMarker = "__carlito_loader_reentry_fn";
         Reflect.deleteProperty(globalThis, marker);
         Reflect.set(
           globalThis,
           reenterFnMarker,
-          (options: Parameters<typeof loadOpenClawPlugins>[0]) => loadOpenClawPlugins(options),
+          (options: Parameters<typeof loadCarlitoPlugins>[0]) => loadCarlitoPlugins(options),
         );
         const pluginDir = makeTempDir();
         const pluginFile = path.join(pluginDir, "reentrant-snapshot.cjs");
@@ -2388,7 +2388,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
               allow: ["reentrant-snapshot"],
             },
           },
-        } satisfies Parameters<typeof loadOpenClawPlugins>[0];
+        } satisfies Parameters<typeof loadCarlitoPlugins>[0];
         writePlugin({
           id: "reentrant-snapshot",
           dir: pluginDir,
@@ -2409,7 +2409,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 };`,
         });
 
-        const registry = loadOpenClawPlugins(nestedOptions);
+        const registry = loadCarlitoPlugins(nestedOptions);
 
         try {
           expect(Reflect.get(globalThis, marker)).toMatchObject({
@@ -2433,8 +2433,8 @@ module.exports = { id: "throws-after-import", register() {} };`,
       label: "lets resolveRuntimePluginRegistry short-circuit during same snapshot load",
       run: () => {
         useNoBundledPlugins();
-        const marker = "__openclaw_runtime_registry_reentry_marker";
-        const resolverMarker = "__openclaw_runtime_registry_reentry_fn";
+        const marker = "__carlito_runtime_registry_reentry_marker";
+        const resolverMarker = "__carlito_runtime_registry_reentry_fn";
         Reflect.deleteProperty(globalThis, marker);
         Reflect.set(
           globalThis,
@@ -2454,7 +2454,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
               allow: ["runtime-registry-reentry"],
             },
           },
-        } satisfies Parameters<typeof loadOpenClawPlugins>[0];
+        } satisfies Parameters<typeof loadCarlitoPlugins>[0];
         writePlugin({
           id: "runtime-registry-reentry",
           dir: pluginDir,
@@ -2468,7 +2468,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 };`,
         });
 
-        const registry = loadOpenClawPlugins(nestedOptions);
+        const registry = loadCarlitoPlugins(nestedOptions);
 
         try {
           expect(Reflect.get(globalThis, marker)).toBe("undefined");
@@ -2506,12 +2506,12 @@ module.exports = { id: "throws-after-import", register() {} };`,
           },
         };
 
-        const full = loadOpenClawPlugins(options);
-        const scoped = loadOpenClawPlugins({
+        const full = loadCarlitoPlugins(options);
+        const scoped = loadCarlitoPlugins({
           ...options,
           onlyPluginIds: ["allowed-cache-scope"],
         });
-        const scopedAgain = loadOpenClawPlugins({
+        const scopedAgain = loadCarlitoPlugins({
           ...options,
           onlyPluginIds: ["allowed-cache-scope"],
         });
@@ -2538,7 +2538,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         setActivePluginRegistry(previousRegistry, "existing-registry");
         resetGlobalHookRunner();
 
-        const scoped = loadOpenClawPlugins({
+        const scoped = loadCarlitoPlugins({
           cache: false,
           activate: false,
           workspaceDir: plugin.dir,
@@ -2574,7 +2574,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       body: `module.exports = { id: "extra-empty-scope", register() {} };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       activate: false,
       config: {
@@ -2608,7 +2608,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     });
     clearPluginCommands();
 
-    const scoped = loadOpenClawPlugins({
+    const scoped = loadCarlitoPlugins({
       cache: false,
       activate: false,
       workspaceDir: plugin.dir,
@@ -2625,7 +2625,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     expect(scoped.commands.map((entry) => entry.command.name)).toEqual(["pair"]);
     expect(getPluginCommandSpecs("telegram")).toEqual([]);
 
-    const active = loadOpenClawPlugins({
+    const active = loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -2667,7 +2667,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       };`,
     });
 
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -2680,7 +2680,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     });
     expect(listAgentHarnessIds()).toEqual(["codex"]);
 
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       cache: false,
       workspaceDir: makeTempDir(),
       config: {
@@ -2706,7 +2706,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     });
 
     clearInternalHooks();
-    const scoped = loadOpenClawPlugins({
+    const scoped = loadCarlitoPlugins({
       cache: false,
       activate: false,
       workspaceDir: plugin.dir,
@@ -2761,8 +2761,8 @@ module.exports = { id: "throws-after-import", register() {} };`,
       onlyPluginIds: ["internal-hook-reload"],
     };
 
-    loadOpenClawPlugins(loadOptions);
-    loadOpenClawPlugins(loadOptions);
+    loadCarlitoPlugins(loadOptions);
+    loadCarlitoPlugins(loadOptions);
 
     const event = createInternalHookEvent("gateway", "startup", "gateway:startup");
     await triggerInternalHook(event);
@@ -2822,7 +2822,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     clearPluginCommands();
     clearPluginInteractiveHandlers();
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -2856,7 +2856,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
   });
 
   it("can scope bundled provider loads to deepseek without hanging", () => {
-    const scoped = loadOpenClawPlugins({
+    const scoped = loadCarlitoPlugins({
       cache: false,
       activate: false,
       pluginSdkResolution: "dist",
@@ -2935,7 +2935,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       };`,
     });
 
-    const scoped = loadOpenClawPlugins({
+    const scoped = loadCarlitoPlugins({
       cache: false,
       activate: false,
       workspaceDir: plugin.dir,
@@ -3000,7 +3000,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -3046,7 +3046,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       };`,
     });
 
-    const scoped = loadOpenClawPlugins({
+    const scoped = loadCarlitoPlugins({
       cache: false,
       activate: false,
       workspaceDir: plugin.dir,
@@ -3091,7 +3091,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {
@@ -3140,15 +3140,15 @@ module.exports = { id: "throws-after-import", register() {} };`,
         },
       },
       onlyPluginIds: ["cached-detached-runtime"],
-    } satisfies Parameters<typeof loadOpenClawPlugins>[0];
+    } satisfies Parameters<typeof loadCarlitoPlugins>[0];
 
-    loadOpenClawPlugins(loadOptions);
+    loadCarlitoPlugins(loadOptions);
     expect(getDetachedTaskLifecycleRuntimeRegistration()?.pluginId).toBe("cached-detached-runtime");
 
     clearDetachedTaskLifecycleRuntimeRegistration();
     expect(getDetachedTaskLifecycleRuntimeRegistration()).toBeUndefined();
 
-    loadOpenClawPlugins(loadOptions);
+    loadCarlitoPlugins(loadOptions);
 
     expect(getDetachedTaskLifecycleRuntimeRegistration()?.pluginId).toBe("cached-detached-runtime");
   });
@@ -3157,7 +3157,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     useNoBundledPlugins();
     registerDetachedTaskLifecycleRuntime("stale-runtime", createDetachedTaskRuntimeStub("stale"));
 
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -3223,14 +3223,14 @@ module.exports = { id: "throws-after-import", register() {} };`,
       },
     ];
 
-    const first = loadOpenClawPlugins(options);
+    const first = loadCarlitoPlugins(options);
     await expect(listActiveMemoryPublicArtifacts({ cfg: {} as never })).resolves.toEqual(
       expectedArtifacts,
     );
 
     clearMemoryPluginState();
 
-    const second = loadOpenClawPlugins(options);
+    const second = loadCarlitoPlugins(options);
     expect(second).toBe(first);
     await expect(listActiveMemoryPublicArtifacts({ cfg: {} as never })).resolves.toEqual(
       expectedArtifacts,
@@ -3282,7 +3282,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         slots: { memory: "capability-survives-memory" },
       },
     };
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       cache: false,
       workspaceDir: memoryPlugin.dir,
       config: activateConfig,
@@ -3306,7 +3306,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     // Simulate what resolvePluginWebSearchProviders and similar read-only paths do:
     // load plugins again with activate:false. Each per-plugin snapshot/rollback must
     // preserve the previously registered memory capability.
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       cache: false,
       activate: false,
       workspaceDir: memoryPlugin.dir,
@@ -3319,16 +3319,16 @@ module.exports = { id: "throws-after-import", register() {} };`,
   });
 
   it("throws when activate:false is used without cache:false", () => {
-    expect(() => loadOpenClawPlugins({ activate: false })).toThrow(
+    expect(() => loadCarlitoPlugins({ activate: false })).toThrow(
       "activate:false requires cache:false",
     );
-    expect(() => loadOpenClawPlugins({ activate: false, cache: true })).toThrow(
+    expect(() => loadCarlitoPlugins({ activate: false, cache: true })).toThrow(
       "activate:false requires cache:false",
     );
   });
 
   it("re-initializes global hook runner when serving registry from cache", () => {
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
     const plugin = writePlugin({
       id: "cache-hook-runner",
       filename: "cache-hook-runner.cjs",
@@ -3345,13 +3345,13 @@ module.exports = { id: "throws-after-import", register() {} };`,
       },
     };
 
-    const first = loadOpenClawPlugins(options);
+    const first = loadCarlitoPlugins(options);
     expect(getGlobalHookRunner()).not.toBeNull();
 
     resetGlobalHookRunner();
     expect(getGlobalHookRunner()).toBeNull();
 
-    const second = loadOpenClawPlugins(options);
+    const second = loadCarlitoPlugins(options);
     expect(second).toBe(first);
     expect(getGlobalHookRunner()).not.toBeNull();
 
@@ -3393,19 +3393,19 @@ module.exports = { id: "throws-after-import", register() {} };`,
           expectedFirstSource: pluginA.file,
           expectedSecondSource: pluginB.file,
           loadFirst: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: bundledA,
+                CARLITO_BUNDLED_PLUGINS_DIR: bundledA,
               },
             }),
           loadSecond: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: bundledB,
+                CARLITO_BUNDLED_PLUGINS_DIR: bundledB,
               },
             }),
         };
@@ -3450,25 +3450,25 @@ module.exports = { id: "throws-after-import", register() {} };`,
           expectedFirstSource: pluginA.file,
           expectedSecondSource: pluginB.file,
           loadFirst: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
                 HOME: homeA,
-                OPENCLAW_HOME: undefined,
-                OPENCLAW_STATE_DIR: stateDir,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: bundledDir,
+                CARLITO_HOME: undefined,
+                CARLITO_STATE_DIR: stateDir,
+                CARLITO_BUNDLED_PLUGINS_DIR: bundledDir,
               },
             }),
           loadSecond: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
                 HOME: homeB,
-                OPENCLAW_HOME: undefined,
-                OPENCLAW_STATE_DIR: stateDir,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: bundledDir,
+                CARLITO_HOME: undefined,
+                CARLITO_STATE_DIR: stateDir,
+                CARLITO_BUNDLED_PLUGINS_DIR: bundledDir,
               },
             }),
         };
@@ -3490,10 +3490,10 @@ module.exports = { id: "throws-after-import", register() {} };`,
       name: "does not reuse cached registries when env-resolved install paths change",
       setup: () => {
         useNoBundledPlugins();
-        const openclawHome = makeTempDir();
+        const carlitoHome = makeTempDir();
         const ignoredHome = makeTempDir();
         const stateDir = makeTempDir();
-        const pluginDir = path.join(openclawHome, "plugins", "tracked-install-cache");
+        const pluginDir = path.join(carlitoHome, "plugins", "tracked-install-cache");
         mkdirSafe(pluginDir);
         const plugin = writePlugin({
           id: "tracked-install-cache",
@@ -3521,25 +3521,25 @@ module.exports = { id: "throws-after-import", register() {} };`,
         const secondHome = makeTempDir();
         return {
           loadFirst: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
-                OPENCLAW_HOME: openclawHome,
+                CARLITO_HOME: carlitoHome,
                 HOME: ignoredHome,
-                OPENCLAW_STATE_DIR: stateDir,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
+                CARLITO_STATE_DIR: stateDir,
+                CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
               },
             }),
           loadVariant: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               env: {
                 ...process.env,
-                OPENCLAW_HOME: secondHome,
+                CARLITO_HOME: secondHome,
                 HOME: ignoredHome,
-                OPENCLAW_STATE_DIR: stateDir,
-                OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
+                CARLITO_STATE_DIR: stateDir,
+                CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
               },
             }),
         };
@@ -3568,9 +3568,9 @@ module.exports = { id: "throws-after-import", register() {} };`,
         };
 
         return {
-          loadFirst: () => loadOpenClawPlugins(options),
+          loadFirst: () => loadCarlitoPlugins(options),
           loadVariant: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               pluginSdkResolution: "workspace" as PluginSdkResolutionPreference,
             }),
@@ -3600,9 +3600,9 @@ module.exports = { id: "throws-after-import", register() {} };`,
         };
 
         return {
-          loadFirst: () => loadOpenClawPlugins(options),
+          loadFirst: () => loadCarlitoPlugins(options),
           loadVariant: () =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               ...options,
               runtimeOptions: {
                 allowGatewaySubagentBinding: true,
@@ -3629,11 +3629,11 @@ module.exports = { id: "throws-after-import", register() {} };`,
     );
 
     const loadWithStateDir = (stateDir: string) =>
-      loadOpenClawPlugins({
+      loadCarlitoPlugins({
         env: {
           ...process.env,
-          OPENCLAW_STATE_DIR: stateDir,
-          OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
+          CARLITO_STATE_DIR: stateDir,
+          CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins",
         },
         config: {
           plugins: {
@@ -3673,12 +3673,12 @@ module.exports = { id: "throws-after-import", register() {} };`,
       body: `module.exports = { id: "tilde-bundled", register() {} };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       env: {
         ...process.env,
         HOME: homeDir,
-        OPENCLAW_HOME: undefined,
-        OPENCLAW_BUNDLED_PLUGINS_DIR: override,
+        CARLITO_HOME: undefined,
+        CARLITO_BUNDLED_PLUGINS_DIR: override,
       },
       config: {
         plugins: {
@@ -3695,34 +3695,34 @@ module.exports = { id: "throws-after-import", register() {} };`,
     ).toBe(fs.realpathSync(plugin.file));
   });
 
-  it("prefers OPENCLAW_HOME over HOME for env-expanded load paths", () => {
+  it("prefers CARLITO_HOME over HOME for env-expanded load paths", () => {
     const ignoredHome = makeTempDir();
-    const openclawHome = makeTempDir();
+    const carlitoHome = makeTempDir();
     const stateDir = makeTempDir();
     const bundledDir = makeTempDir();
     const plugin = writePlugin({
-      id: "openclaw-home-demo",
-      dir: path.join(openclawHome, "plugins", "openclaw-home-demo"),
+      id: "carlito-home-demo",
+      dir: path.join(carlitoHome, "plugins", "carlito-home-demo"),
       filename: "index.cjs",
-      body: `module.exports = { id: "openclaw-home-demo", register() {} };`,
+      body: `module.exports = { id: "carlito-home-demo", register() {} };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       env: {
         ...process.env,
         HOME: ignoredHome,
-        OPENCLAW_HOME: openclawHome,
-        OPENCLAW_STATE_DIR: stateDir,
-        OPENCLAW_BUNDLED_PLUGINS_DIR: bundledDir,
+        CARLITO_HOME: carlitoHome,
+        CARLITO_STATE_DIR: stateDir,
+        CARLITO_BUNDLED_PLUGINS_DIR: bundledDir,
       },
       config: {
         plugins: {
-          allow: ["openclaw-home-demo"],
+          allow: ["carlito-home-demo"],
           entries: {
-            "openclaw-home-demo": { enabled: true },
+            "carlito-home-demo": { enabled: true },
           },
           load: {
-            paths: ["~/plugins/openclaw-home-demo"],
+            paths: ["~/plugins/carlito-home-demo"],
           },
         },
       },
@@ -3730,7 +3730,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 
     expect(
       fs.realpathSync(
-        registry.plugins.find((entry) => entry.id === "openclaw-home-demo")?.source ?? "",
+        registry.plugins.find((entry) => entry.id === "carlito-home-demo")?.source ?? "",
       ),
     ).toBe(fs.realpathSync(plugin.file));
   });
@@ -3856,7 +3856,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     });
 
     expect(() =>
-      loadOpenClawPlugins({
+      loadCarlitoPlugins({
         cache: false,
         throwOnLoadError: true,
         config: {
@@ -3915,7 +3915,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       body: `module.exports = { default: { default: { id: "missing-register-shape" } } };`,
     });
 
-    const registry = withEnv({ OPENCLAW_PLUGIN_LOAD_DEBUG: "1" }, () =>
+    const registry = withEnv({ CARLITO_PLUGIN_LOAD_DEBUG: "1" }, () =>
       loadRegistryFromSinglePlugin({
         plugin,
         pluginConfig: {
@@ -3958,7 +3958,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     }
   });
 } };`,
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const channel = registry.channels.find((entry) => entry.plugin.id === "demo");
           expect(channel).toBeDefined();
         },
@@ -4004,7 +4004,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
     }
   });
 } };`,
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expect(registry.channels.filter((entry) => entry.plugin.id === "demo")).toHaveLength(1);
           expectRegistryErrorDiagnostic({
             registry,
@@ -4019,7 +4019,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         body: `module.exports = { id: "context-engine-core-collision", register(api) {
   api.registerContextEngine("legacy", () => ({}));
 } };`,
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expectRegistryErrorDiagnostic({
             registry,
             pluginId: "context-engine-core-collision",
@@ -4033,7 +4033,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         body: `module.exports = { id: "cli-missing-metadata", register(api) {
   api.registerCli(() => {});
 } };`,
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expect(registry.cliRegistrars).toHaveLength(0);
           expectRegistryErrorDiagnostic({
             registry,
@@ -4093,7 +4093,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         buildBody: (ownerId: string) => `module.exports = { id: "${ownerId}", register(api) {
   api.registerHook("gateway:startup", () => {}, { name: "shared-hook" });
 } };`,
-        selectCount: (registry: ReturnType<typeof loadOpenClawPlugins>) =>
+        selectCount: (registry: ReturnType<typeof loadCarlitoPlugins>) =>
           registry.hooks.filter((entry) => entry.entry.hook.name === "shared-hook").length,
         duplicateMessage: "hook already registered: shared-hook (hook-owner-a)",
         assert: expectDuplicateRegistrationResult,
@@ -4105,7 +4105,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         buildBody: (ownerId: string) => `module.exports = { id: "${ownerId}", register(api) {
   api.registerService({ id: "shared-service", start() {} });
 } };`,
-        selectCount: (registry: ReturnType<typeof loadOpenClawPlugins>) =>
+        selectCount: (registry: ReturnType<typeof loadCarlitoPlugins>) =>
           registry.services.filter((entry) => entry.service.id === "shared-service").length,
         duplicateMessage: "service already registered: shared-service (service-owner-a)",
         assert: expectDuplicateRegistrationResult,
@@ -4120,7 +4120,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
         selectCount: () => 1,
         duplicateMessage:
           "context engine already registered: shared-context-engine-loader-test (plugin:context-engine-owner-a)",
-        assertPrimaryOwner: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assertPrimaryOwner: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expect(
             registry.plugins.find((entry) => entry.id === "context-engine-owner-a")
               ?.contextEngineIds,
@@ -4135,10 +4135,10 @@ module.exports = { id: "throws-after-import", register() {} };`,
         buildBody: (ownerId: string) => `module.exports = { id: "${ownerId}", register(api) {
   api.registerCli(() => {}, { commands: ["shared-cli"] });
 } };`,
-        selectCount: (registry: ReturnType<typeof loadOpenClawPlugins>) =>
+        selectCount: (registry: ReturnType<typeof loadCarlitoPlugins>) =>
           registry.cliRegistrars.length,
         duplicateMessage: "cli command already registered: shared-cli (cli-owner-a)",
-        assertPrimaryOwner: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assertPrimaryOwner: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expect(registry.cliRegistrars[0]?.pluginId).toBe("cli-owner-a");
         },
         assert: expectDuplicateRegistrationResult,
@@ -4261,7 +4261,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 } };`,
           }),
         ],
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expect(
             registry.httpRoutes.find((entry) => entry.pluginId === "http-route-missing-auth"),
           ).toBeUndefined();
@@ -4284,7 +4284,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 } };`,
           }),
         ],
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const routes = registry.httpRoutes.filter(
             (entry) => entry.pluginId === "http-route-replace-self",
           );
@@ -4311,7 +4311,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 } };`,
           }),
         ],
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const route = registry.httpRoutes.find((entry) => entry.path === "/demo");
           expect(route?.pluginId).toBe("http-route-owner-a");
           expect(
@@ -4333,7 +4333,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 } };`,
           }),
         ],
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const routes = registry.httpRoutes.filter(
             (entry) => entry.pluginId === "http-route-overlap",
           );
@@ -4358,7 +4358,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
 } };`,
           }),
         ],
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const routes = registry.httpRoutes.filter(
             (entry) => entry.pluginId === "http-route-overlap-same-auth",
           );
@@ -4374,13 +4374,13 @@ module.exports = { id: "throws-after-import", register() {} };`,
   });
 
   it("respects explicit disable in config", () => {
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
     const plugin = writePlugin({
       id: "config-disable",
       body: `module.exports = { id: "config-disable", register() {} };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -4405,8 +4405,8 @@ module.exports = { id: "throws-after-import", register() {} };`,
       path.join(pluginDir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/nested-default-channel",
-          openclaw: {
+          name: "@realcarlossanchez101/nested-default-channel",
+          carlito: {
             extensions: ["./index.cjs"],
           },
         },
@@ -4416,7 +4416,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginDir, "openclaw.plugin.json"),
+      path.join(pluginDir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "nested-default-channel",
@@ -4464,7 +4464,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         channels: {
@@ -4502,7 +4502,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       body: `module.exports = { id: "unrelated-plugin", register() { throw new Error("unrelated plugin should not load"); } };`,
     });
     fs.writeFileSync(
-      path.join(unrelated.dir, "openclaw.plugin.json"),
+      path.join(unrelated.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "unrelated-plugin",
@@ -4515,7 +4515,7 @@ module.exports = { id: "throws-after-import", register() {} };`,
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -4565,7 +4565,7 @@ module.exports = {
 };`,
     });
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "lazy-channel-plugin",
@@ -4587,7 +4587,7 @@ module.exports = {
       },
     };
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config,
     });
@@ -4598,7 +4598,7 @@ module.exports = {
       "disabled",
     );
 
-    const broadSetupRegistry = loadOpenClawPlugins({
+    const broadSetupRegistry = loadCarlitoPlugins({
       cache: false,
       config,
       includeSetupOnlyChannelPlugins: true,
@@ -4611,7 +4611,7 @@ module.exports = {
       broadSetupRegistry.plugins.find((entry) => entry.id === "lazy-channel-plugin")?.status,
     ).toBe("disabled");
 
-    const scopedSetupRegistry = loadOpenClawPlugins({
+    const scopedSetupRegistry = loadCarlitoPlugins({
       cache: false,
       config,
       includeSetupOnlyChannelPlugins: true,
@@ -4632,13 +4632,13 @@ module.exports = {
       fixture: {
         id: "setup-entry-test",
         label: "Setup Entry Test",
-        packageName: "@openclaw/setup-entry-test",
+        packageName: "@realcarlossanchez101/setup-entry-test",
         fullBlurb: "full entry should not run in setup-only mode",
         setupBlurb: "setup entry",
         configured: false,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4661,14 +4661,14 @@ module.exports = {
       fixture: {
         id: "setup-only-bundled-contract-test",
         label: "Setup Only Bundled Contract Test",
-        packageName: "@openclaw/setup-only-bundled-contract-test",
+        packageName: "@realcarlossanchez101/setup-only-bundled-contract-test",
         fullBlurb: "full entry should not run in setup-only mode",
         setupBlurb: "setup-only bundled contract",
         configured: false,
         useBundledSetupEntryContract: true,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4691,13 +4691,13 @@ module.exports = {
       fixture: {
         id: "setup-runtime-test",
         label: "Setup Runtime Test",
-        packageName: "@openclaw/setup-runtime-test",
+        packageName: "@realcarlossanchez101/setup-runtime-test",
         fullBlurb: "full entry should not run while unconfigured",
         setupBlurb: "setup runtime",
         configured: false,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4715,14 +4715,14 @@ module.exports = {
       fixture: {
         id: "setup-runtime-bundled-contract-test",
         label: "Setup Runtime Bundled Contract Test",
-        packageName: "@openclaw/setup-runtime-bundled-contract-test",
+        packageName: "@realcarlossanchez101/setup-runtime-bundled-contract-test",
         fullBlurb: "full entry should not run while unconfigured",
         setupBlurb: "setup runtime bundled contract",
         configured: false,
         useBundledSetupEntryContract: true,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4740,7 +4740,7 @@ module.exports = {
       fixture: {
         id: "setup-runtime-bundled-contract-secrets-test",
         label: "Setup Runtime Bundled Contract Secrets Test",
-        packageName: "@openclaw/setup-runtime-bundled-contract-secrets-test",
+        packageName: "@realcarlossanchez101/setup-runtime-bundled-contract-secrets-test",
         fullBlurb: "full entry should not run while unconfigured",
         setupBlurb: "setup runtime bundled contract secrets",
         configured: false,
@@ -4748,7 +4748,7 @@ module.exports = {
         splitBundledSetupSecrets: true,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4767,7 +4767,7 @@ module.exports = {
       fixture: {
         id: "setup-runtime-bundled-contract-runtime-test",
         label: "Setup Runtime Bundled Contract Runtime Test",
-        packageName: "@openclaw/setup-runtime-bundled-contract-runtime-test",
+        packageName: "@realcarlossanchez101/setup-runtime-bundled-contract-runtime-test",
         fullBlurb: "full entry should not run while unconfigured",
         setupBlurb: "setup runtime bundled contract runtime",
         configured: false,
@@ -4775,7 +4775,7 @@ module.exports = {
         bundledSetupRuntimeMarker: path.join(makeTempDir(), "setup-runtime-applied.txt"),
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4794,7 +4794,7 @@ module.exports = {
       fixture: {
         id: "setup-runtime-bundled-runtime-merge-test",
         label: "Setup Runtime Bundled Runtime Merge Test",
-        packageName: "@openclaw/setup-runtime-bundled-runtime-merge-test",
+        packageName: "@realcarlossanchez101/setup-runtime-bundled-runtime-merge-test",
         fullBlurb: "full runtime plugin",
         setupBlurb: "setup runtime override",
         configured: false,
@@ -4803,7 +4803,7 @@ module.exports = {
         bundledFullRuntimeMarker: path.join(makeTempDir(), "bundled-runtime-applied.txt"),
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           config: {
             plugins: {
@@ -4822,13 +4822,13 @@ module.exports = {
       fixture: {
         id: "setup-runtime-not-preferred-test",
         label: "Setup Runtime Not Preferred Test",
-        packageName: "@openclaw/setup-runtime-not-preferred-test",
+        packageName: "@realcarlossanchez101/setup-runtime-not-preferred-test",
         fullBlurb: "full entry should still load without explicit startup opt-in",
         setupBlurb: "setup runtime not preferred",
         configured: true,
       },
       load: ({ pluginDir }: { pluginDir: string }) =>
-        loadOpenClawPlugins({
+        loadCarlitoPlugins({
           cache: false,
           preferSetupRuntimeForChannelPlugins: true,
           config: {
@@ -4901,7 +4901,7 @@ module.exports = {
     const built = createSetupEntryChannelPluginFixture({
       id: "setup-runtime-order-test",
       label: "Setup Runtime Order Test",
-      packageName: "@openclaw/setup-runtime-order-test",
+      packageName: "@realcarlossanchez101/setup-runtime-order-test",
       fullBlurb: "full runtime plugin",
       setupBlurb: "setup runtime override",
       configured: false,
@@ -4911,7 +4911,7 @@ module.exports = {
       requireBundledFullRuntimeBeforeLoad: true,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -4931,7 +4931,7 @@ module.exports = {
     const built = createSetupEntryChannelPluginFixture({
       id: "setup-runtime-error-test",
       label: "Setup Runtime Error Test",
-      packageName: "@openclaw/setup-runtime-error-test",
+      packageName: "@realcarlossanchez101/setup-runtime-error-test",
       fullBlurb: "full runtime plugin",
       setupBlurb: "setup runtime override",
       configured: false,
@@ -4944,7 +4944,7 @@ module.exports = {
       body: `module.exports = { id: "setup-runtime-helper-test", register() {} };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -4971,7 +4971,7 @@ module.exports = {
       id: "setup-runtime-mismatch-test",
       bundledFullEntryId: "wrong-runtime-id",
       label: "Setup Runtime Mismatch Test",
-      packageName: "@openclaw/setup-runtime-mismatch-test",
+      packageName: "@realcarlossanchez101/setup-runtime-mismatch-test",
       fullBlurb: "full runtime plugin",
       setupBlurb: "setup runtime override",
       configured: false,
@@ -4980,7 +4980,7 @@ module.exports = {
       bundledFullRuntimeMarker: runtimeMarker,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -5006,7 +5006,7 @@ module.exports = {
       id: "setup-export-mismatch-test",
       bundledSetupEntryId: "wrong-setup-id",
       label: "Setup Export Mismatch Test",
-      packageName: "@openclaw/setup-export-mismatch-test",
+      packageName: "@realcarlossanchez101/setup-export-mismatch-test",
       fullBlurb: "full runtime plugin",
       setupBlurb: "setup runtime override",
       configured: false,
@@ -5015,7 +5015,7 @@ module.exports = {
       bundledFullRuntimeMarker: runtimeMarker,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -5045,8 +5045,8 @@ module.exports = {
       path.join(pluginDir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/setup-entry-throws-test",
-          openclaw: {
+          name: "@realcarlossanchez101/setup-entry-throws-test",
+          carlito: {
             extensions: ["./index.cjs"],
             setupEntry: "./setup-entry.cjs",
           },
@@ -5057,7 +5057,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(pluginDir, "openclaw.plugin.json"),
+      path.join(pluginDir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "setup-entry-throws-test",
@@ -5085,7 +5085,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -5113,8 +5113,8 @@ module.exports = {
       path.join(brokenDir, "package.json"),
       JSON.stringify(
         {
-          name: "@openclaw/setup-entry-throws-sibling-test",
-          openclaw: {
+          name: "@realcarlossanchez101/setup-entry-throws-sibling-test",
+          carlito: {
             extensions: ["./index.cjs"],
             setupEntry: "./setup-entry.cjs",
           },
@@ -5125,7 +5125,7 @@ module.exports = {
       "utf-8",
     );
     fs.writeFileSync(
-      path.join(brokenDir, "openclaw.plugin.json"),
+      path.join(brokenDir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "setup-entry-throws-sibling-test",
@@ -5176,7 +5176,7 @@ module.exports = {
 } };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -5406,7 +5406,7 @@ module.exports = {
       {
         label: "enforces memory slot selection",
         loadRegistry: () => {
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
           const memoryA = writePlugin({
             id: "memory-a",
             body: memoryPluginBody("memory-a"),
@@ -5416,7 +5416,7 @@ module.exports = {
             body: memoryPluginBody("memory-b"),
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5426,7 +5426,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const a = registry.plugins.find((entry) => entry.id === "memory-a");
           const b = registry.plugins.find((entry) => entry.id === "memory-b");
           expect(b?.status).toBe("loaded");
@@ -5454,7 +5454,7 @@ module.exports = {
             body: memoryPluginBody("memory-b"),
           });
           fs.writeFileSync(
-            path.join(memoryADir, "openclaw.plugin.json"),
+            path.join(memoryADir, "carlito.plugin.json"),
             JSON.stringify(
               {
                 id: "memory-a",
@@ -5467,7 +5467,7 @@ module.exports = {
             "utf-8",
           );
           fs.writeFileSync(
-            path.join(memoryBDir, "openclaw.plugin.json"),
+            path.join(memoryBDir, "carlito.plugin.json"),
             JSON.stringify(
               {
                 id: "memory-b",
@@ -5479,9 +5479,9 @@ module.exports = {
             ),
             "utf-8",
           );
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5495,7 +5495,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const a = registry.plugins.find((entry) => entry.id === "memory-a");
           const b = registry.plugins.find((entry) => entry.id === "memory-b");
           expect(a?.status).toBe("disabled");
@@ -5526,7 +5526,7 @@ module.exports = {
           });
           const openSchema = { type: "object", additionalProperties: true };
           fs.writeFileSync(
-            path.join(memoryCoreDir, "openclaw.plugin.json"),
+            path.join(memoryCoreDir, "carlito.plugin.json"),
             JSON.stringify(
               { id: "memory-core", kind: "memory", configSchema: EMPTY_PLUGIN_SCHEMA },
               null,
@@ -5535,7 +5535,7 @@ module.exports = {
             "utf-8",
           );
           fs.writeFileSync(
-            path.join(memoryLanceDir, "openclaw.plugin.json"),
+            path.join(memoryLanceDir, "carlito.plugin.json"),
             JSON.stringify(
               { id: "memory-lancedb", kind: "memory", configSchema: openSchema },
               null,
@@ -5543,9 +5543,9 @@ module.exports = {
             ),
             "utf-8",
           );
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5559,7 +5559,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const core = registry.plugins.find((entry) => entry.id === "memory-core");
           const lance = registry.plugins.find((entry) => entry.id === "memory-lancedb");
           expect(core?.status).toBe("loaded");
@@ -5589,7 +5589,7 @@ module.exports = {
             body: memoryPluginBody("memory-lancedb"),
           });
           fs.writeFileSync(
-            path.join(memoryCoreDir, "openclaw.plugin.json"),
+            path.join(memoryCoreDir, "carlito.plugin.json"),
             JSON.stringify(
               { id: "memory-core", kind: "memory", configSchema: EMPTY_PLUGIN_SCHEMA },
               null,
@@ -5598,7 +5598,7 @@ module.exports = {
             "utf-8",
           );
           fs.writeFileSync(
-            path.join(memoryLanceDir, "openclaw.plugin.json"),
+            path.join(memoryLanceDir, "carlito.plugin.json"),
             JSON.stringify(
               { id: "memory-lancedb", kind: "memory", configSchema: EMPTY_PLUGIN_SCHEMA },
               null,
@@ -5606,9 +5606,9 @@ module.exports = {
             ),
             "utf-8",
           );
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5622,7 +5622,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const core = registry.plugins.find((entry) => entry.id === "memory-core");
           const lance = registry.plugins.find((entry) => entry.id === "memory-lancedb");
           expect(core?.status).toBe("disabled");
@@ -5642,7 +5642,7 @@ module.exports = {
             body: `throw new Error("memory-core should not load when memory slot is none");`,
           });
           fs.writeFileSync(
-            path.join(memoryCoreDir, "openclaw.plugin.json"),
+            path.join(memoryCoreDir, "carlito.plugin.json"),
             JSON.stringify(
               { id: "memory-core", kind: "memory", configSchema: EMPTY_PLUGIN_SCHEMA },
               null,
@@ -5650,9 +5650,9 @@ module.exports = {
             ),
             "utf-8",
           );
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5665,7 +5665,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const core = registry.plugins.find((entry) => entry.id === "memory-core");
           expect(core?.status).toBe("disabled");
         },
@@ -5673,13 +5673,13 @@ module.exports = {
       {
         label: "disables memory plugins when slot is none",
         loadRegistry: () => {
-          process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+          process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
           const memory = writePlugin({
             id: "memory-off",
             body: memoryPluginBody("memory-off"),
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5689,7 +5689,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           const entry = registry.plugins.find((item) => item.id === "memory-off");
           expect(entry?.status).toBe("disabled");
         },
@@ -5717,7 +5717,7 @@ module.exports = {
             body: simplePluginBody("shadow"),
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             config: {
               plugins: {
@@ -5752,7 +5752,7 @@ module.exports = {
               filename: "index.cjs",
             });
 
-            return loadOpenClawPlugins({
+            return loadCarlitoPlugins({
               cache: false,
               config: {
                 plugins: {
@@ -5789,7 +5789,7 @@ module.exports = {
               filename: "index.cjs",
             });
 
-            return loadOpenClawPlugins({
+            return loadCarlitoPlugins({
               cache: false,
               config: {
                 plugins: {
@@ -5832,7 +5832,7 @@ module.exports = {
             id: "warn-open-allow-config",
             body: simplePluginBody("warn-open-allow-config"),
           });
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             logger: createWarningLogger(warnings),
             config: {
@@ -5853,7 +5853,7 @@ module.exports = {
             id: "warn-open-allow-workspace",
           });
           return (warnings: string[]) =>
-            loadOpenClawPlugins({
+            loadCarlitoPlugins({
               cache: false,
               workspaceDir,
               logger: createWarningLogger(warnings),
@@ -5894,7 +5894,7 @@ module.exports = {
             id: "workspace-helper",
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             workspaceDir,
             config: {
@@ -5904,7 +5904,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expectPluginOriginAndStatus({
             registry,
             pluginId: "workspace-helper",
@@ -5923,7 +5923,7 @@ module.exports = {
             id: "workspace-helper",
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             workspaceDir,
             config: {
@@ -5934,7 +5934,7 @@ module.exports = {
             },
           });
         },
-        assert: (registry: ReturnType<typeof loadOpenClawPlugins>) => {
+        assert: (registry: ReturnType<typeof loadCarlitoPlugins>) => {
           expectPluginOriginAndStatus({
             registry,
             pluginId: "workspace-helper",
@@ -5958,7 +5958,7 @@ module.exports = {
             id: "shadowed",
           });
 
-          return loadOpenClawPlugins({
+          return loadCarlitoPlugins({
             cache: false,
             workspaceDir,
             config: {
@@ -5993,7 +5993,7 @@ module.exports = {
       body: simplePluginBody("profile-aware"),
     });
     fs.writeFileSync(
-      path.join(plugin.dir, "openclaw.plugin.json"),
+      path.join(plugin.dir, "carlito.plugin.json"),
       JSON.stringify(
         {
           id: "profile-aware",
@@ -6006,7 +6006,7 @@ module.exports = {
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: bundledDir,
       config: {
@@ -6034,7 +6034,7 @@ module.exports = {
       filename: "unscoped.cjs",
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       config: {
         plugins: {
@@ -6068,7 +6068,7 @@ module.exports = {
             });
 
             const warnings: string[] = [];
-            const registry = loadOpenClawPlugins({
+            const registry = loadCarlitoPlugins({
               cache: false,
               logger: createWarningLogger(warnings),
               config: {
@@ -6086,7 +6086,7 @@ module.exports = {
         label: "warns when loaded non-bundled plugin has no provenance and no allowlist is set",
         loadRegistry: () => {
           const stateDir = makeTempDir();
-          return withEnv({ OPENCLAW_STATE_DIR: stateDir }, () => {
+          return withEnv({ CARLITO_STATE_DIR: stateDir }, () => {
             const globalDir = path.join(stateDir, "extensions", "rogue");
             mkdirSafe(globalDir);
             writePlugin({
@@ -6097,7 +6097,7 @@ module.exports = {
             });
 
             const warnings: string[] = [];
-            const registry = loadOpenClawPlugins({
+            const registry = loadCarlitoPlugins({
               cache: false,
               logger: createWarningLogger(warnings),
               config: {
@@ -6116,7 +6116,7 @@ module.exports = {
         loadRegistry: () => {
           const { plugin, env } = createEnvResolvedPluginFixture("tracked-load-path");
           const warnings: string[] = [];
-          const registry = loadOpenClawPlugins({
+          const registry = loadCarlitoPlugins({
             cache: false,
             logger: createWarningLogger(warnings),
             env,
@@ -6142,7 +6142,7 @@ module.exports = {
         loadRegistry: () => {
           const { plugin, env } = createEnvResolvedPluginFixture("tracked-install-path");
           const warnings: string[] = [];
-          const registry = loadOpenClawPlugins({
+          const registry = loadCarlitoPlugins({
             cache: false,
             logger: createWarningLogger(warnings),
             env,
@@ -6189,7 +6189,7 @@ module.exports = {
   it("uses the source runtime snapshot allowlist for plugin trust checks", () => {
     useNoBundledPlugins();
     const stateDir = makeTempDir();
-    withEnv({ OPENCLAW_STATE_DIR: stateDir }, () => {
+    withEnv({ CARLITO_STATE_DIR: stateDir }, () => {
       const globalDir = path.join(stateDir, "extensions", "trusted-plugin");
       mkdirSafe(globalDir);
       writePlugin({
@@ -6221,7 +6221,7 @@ module.exports = {
       setRuntimeConfigSnapshot(runtimeConfig, sourceConfig);
 
       const warnings: string[] = [];
-      const registry = loadOpenClawPlugins({
+      const registry = loadCarlitoPlugins({
         cache: false,
         logger: createWarningLogger(warnings),
         config: runtimeConfig,
@@ -6299,8 +6299,8 @@ module.exports = {
       throw err;
     }
 
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledDir;
-    const registry = loadOpenClawPlugins({
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = bundledDir;
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: bundledDir,
       config: {
@@ -6341,7 +6341,7 @@ module.exports = {
 } };`,
     });
 
-    const registry = withEnv({ OPENCLAW_STATE_DIR: stateDir }, () =>
+    const registry = withEnv({ CARLITO_STATE_DIR: stateDir }, () =>
       loadRegistryFromSinglePlugin({
         plugin,
         pluginConfig: {
@@ -6364,13 +6364,13 @@ module.exports = {
       filename: "legacy-root-import.cjs",
       body: `module.exports = {
   id: "legacy-root-import",
-  configSchema: (require("openclaw/plugin-sdk").emptyPluginConfigSchema)(),
+  configSchema: (require("carlito/plugin-sdk").emptyPluginConfigSchema)(),
         register() {},
       };`,
     });
 
-    const registry = withEnv({ OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins" }, () =>
-      loadOpenClawPlugins({
+    const registry = withEnv({ CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins" }, () =>
+      loadCarlitoPlugins({
         cache: false,
         workspaceDir: plugin.dir,
         config: {
@@ -6387,7 +6387,7 @@ module.exports = {
 
   it("supports legacy plugins subscribing to diagnostic events from the root sdk", async () => {
     useNoBundledPlugins();
-    const seenKey = "__openclawLegacyRootDiagnosticSeen";
+    const seenKey = "__carlitoLegacyRootDiagnosticSeen";
     delete (globalThis as Record<string, unknown>)[seenKey];
 
     const plugin = writePlugin({
@@ -6395,9 +6395,9 @@ module.exports = {
       filename: "legacy-root-diagnostic-listener.cjs",
       body: `module.exports = {
   id: "legacy-root-diagnostic-listener",
-  configSchema: (require("openclaw/plugin-sdk").emptyPluginConfigSchema)(),
+  configSchema: (require("carlito/plugin-sdk").emptyPluginConfigSchema)(),
   register() {
-    const { onDiagnosticEvent } = require("openclaw/plugin-sdk");
+    const { onDiagnosticEvent } = require("carlito/plugin-sdk");
     if (typeof onDiagnosticEvent !== "function") {
       throw new Error("missing onDiagnosticEvent root export");
     }
@@ -6414,9 +6414,9 @@ module.exports = {
 
     try {
       const registry = withEnv(
-        { OPENCLAW_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins" },
+        { CARLITO_BUNDLED_PLUGINS_DIR: "/nonexistent/bundled/plugins" },
         () =>
-          loadOpenClawPlugins({
+          loadCarlitoPlugins({
             cache: false,
             workspaceDir: plugin.dir,
             config: {
@@ -6452,7 +6452,7 @@ module.exports = {
   it("suppresses trust warning logs for non-activating snapshot loads", () => {
     useNoBundledPlugins();
     const stateDir = makeTempDir();
-    withEnv({ OPENCLAW_STATE_DIR: stateDir }, () => {
+    withEnv({ CARLITO_STATE_DIR: stateDir }, () => {
       const globalDir = path.join(stateDir, "extensions", "rogue");
       mkdirSafe(globalDir);
       writePlugin({
@@ -6463,7 +6463,7 @@ module.exports = {
       });
 
       const warnings: string[] = [];
-      const registry = loadOpenClawPlugins({
+      const registry = loadCarlitoPlugins({
         activate: false,
         cache: false,
         logger: createWarningLogger(warnings),
@@ -6510,7 +6510,7 @@ export const runtimeValue = helperValue;`,
       "utf-8",
     );
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       cache: false,
       workspaceDir: plugin.dir,
       config: {

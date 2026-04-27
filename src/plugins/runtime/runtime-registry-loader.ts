@@ -1,10 +1,10 @@
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { withActivatedPluginIds } from "../activation-context.js";
 import {
   resolveChannelPluginIds,
   resolveConfiguredChannelPluginIds,
 } from "../channel-plugin-ids.js";
-import { loadOpenClawPlugins } from "../loader.js";
+import { loadCarlitoPlugins } from "../loader.js";
 import {
   hasExplicitPluginIdScope,
   hasNonEmptyPluginIdScope,
@@ -75,8 +75,8 @@ function shouldForwardChannelScope(params: {
 
 export function ensurePluginRegistryLoaded(options?: {
   scope?: PluginRegistryScope;
-  config?: OpenClawConfig;
-  activationSourceConfig?: OpenClawConfig;
+  config?: CarlitoConfig;
+  activationSourceConfig?: CarlitoConfig;
   env?: NodeJS.ProcessEnv;
   workspaceDir?: string;
   onlyPluginIds?: string[];
@@ -132,7 +132,7 @@ export function ensurePluginRegistryLoaded(options?: {
           pluginIds: expectedChannelPluginIds,
         }) ?? context.activationSourceConfig)
       : context.activationSourceConfig;
-  loadOpenClawPlugins(
+  loadCarlitoPlugins(
     buildPluginRuntimeLoadOptionsFromValues(
       {
         ...context,

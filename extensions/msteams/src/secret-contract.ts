@@ -4,13 +4,13 @@ import {
   type ResolverContext,
   type SecretDefaults,
   type SecretTargetRegistryEntry,
-} from "openclaw/plugin-sdk/channel-secret-basic-runtime";
+} from "carlito/plugin-sdk/channel-secret-basic-runtime";
 
 export const secretTargetRegistryEntries = [
   {
     id: "channels.msteams.appPassword",
     targetType: "channels.msteams.appPassword",
-    configFile: "openclaw.json",
+    configFile: "carlito.json",
     pathPattern: "channels.msteams.appPassword",
     secretShape: "secret_input",
     expectedResolvedValue: "string",

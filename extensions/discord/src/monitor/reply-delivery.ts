@@ -1,23 +1,23 @@
 import type { RequestClient } from "@buape/carbon";
-import { resolveAgentAvatar } from "openclaw/plugin-sdk/agent-runtime";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { MarkdownTableMode, ReplyToMode } from "openclaw/plugin-sdk/config-runtime";
-import type { ChunkMode } from "openclaw/plugin-sdk/reply-chunking";
-import type { ReplyPayload } from "openclaw/plugin-sdk/reply-dispatch-runtime";
+import { resolveAgentAvatar } from "carlito/plugin-sdk/agent-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import type { MarkdownTableMode, ReplyToMode } from "carlito/plugin-sdk/config-runtime";
+import type { ChunkMode } from "carlito/plugin-sdk/reply-chunking";
+import type { ReplyPayload } from "carlito/plugin-sdk/reply-dispatch-runtime";
 import {
   resolveSendableOutboundReplyParts,
   resolveTextChunksWithFallback,
   sendMediaWithLeadingCaption,
-} from "openclaw/plugin-sdk/reply-payload";
-import { isSingleUseReplyToMode } from "openclaw/plugin-sdk/reply-reference";
+} from "carlito/plugin-sdk/reply-payload";
+import { isSingleUseReplyToMode } from "carlito/plugin-sdk/reply-reference";
 import {
   resolveRetryConfig,
   retryAsync,
   type RetryConfig,
   type RetryRunner,
-} from "openclaw/plugin-sdk/retry-runtime";
-import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
-import { convertMarkdownTables, normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/retry-runtime";
+import type { RuntimeEnv } from "carlito/plugin-sdk/runtime-env";
+import { convertMarkdownTables, normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
 import { resolveDiscordAccount } from "../accounts.js";
 import { chunkDiscordTextWithMode } from "../chunk.js";
 import { isLikelyDiscordVideoMedia } from "../media-detection.js";
@@ -89,7 +89,7 @@ async function sendWithRetry(
 
 async function sendDiscordMediaOnly(params: {
   target: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   token: string;
   rest?: RequestClient;
   mediaUrl: string;
@@ -115,7 +115,7 @@ async function sendDiscordMediaOnly(params: {
 
 async function sendDiscordMediaBatch(params: {
   target: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   token: string;
   rest?: RequestClient;
   mediaUrls: string[];
@@ -144,7 +144,7 @@ async function sendDiscordMediaBatch(params: {
 }
 
 async function sendDiscordPayloadText(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   target: string;
   text: string;
   token: string;
@@ -251,7 +251,7 @@ function createPayloadReplyToResolver(params: {
 }
 
 function resolveBindingPersona(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   binding: DiscordThreadBindingLookupRecord | undefined,
 ): {
   username?: string;
@@ -276,7 +276,7 @@ function resolveBindingPersona(
 }
 
 async function sendDiscordChunkWithFallback(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   target: string;
   text: string;
   token: string;
@@ -363,7 +363,7 @@ async function sendDiscordChunkWithFallback(params: {
 }
 
 export async function deliverDiscordReply(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   replies: ReplyPayload[];
   target: string;
   token: string;

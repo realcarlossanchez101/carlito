@@ -3,8 +3,8 @@ import {
   normalizeChannelSlug,
   resolveChannelEntryMatchWithFallback,
   resolveNestedAllowlistDecision,
-} from "openclaw/plugin-sdk/channel-targets";
-import { evaluateMatchedGroupAccessForPolicy } from "openclaw/plugin-sdk/group-access";
+} from "carlito/plugin-sdk/channel-targets";
+import { evaluateMatchedGroupAccessForPolicy } from "carlito/plugin-sdk/group-access";
 import type {
   AllowlistMatch,
   ChannelGroupContext,

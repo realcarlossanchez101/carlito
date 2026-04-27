@@ -2,7 +2,7 @@
 summary: "Compact noisy exec and bash tool results with an optional bundled plugin"
 title: "Tokenjuice"
 read_when:
-  - You want shorter `exec` or `bash` tool results in OpenClaw
+  - You want shorter `exec` or `bash` tool results in Carlito
   - You want to enable the bundled tokenjuice plugin
   - You need to understand what tokenjuice changes and what it leaves raw
 ---
@@ -21,17 +21,17 @@ Today this applies to Pi embedded runs, where tokenjuice hooks the embedded
 Fast path:
 
 ```bash
-openclaw config set plugins.entries.tokenjuice.enabled true
+carlito config set plugins.entries.tokenjuice.enabled true
 ```
 
 Equivalent:
 
 ```bash
-openclaw plugins enable tokenjuice
+carlito plugins enable tokenjuice
 ```
 
-OpenClaw already ships the plugin. There is no separate `plugins install`
-or `tokenjuice install openclaw` step.
+Carlito already ships the plugin. There is no separate `plugins install`
+or `tokenjuice install carlito` step.
 
 If you prefer editing config directly:
 
@@ -64,13 +64,13 @@ If you prefer editing config directly:
 ## Disable the plugin
 
 ```bash
-openclaw config set plugins.entries.tokenjuice.enabled false
+carlito config set plugins.entries.tokenjuice.enabled false
 ```
 
 Or:
 
 ```bash
-openclaw plugins disable tokenjuice
+carlito plugins disable tokenjuice
 ```
 
 ## Related

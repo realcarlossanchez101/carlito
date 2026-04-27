@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { ChannelType } from "discord-api-types/v10";
-import { getSessionBindingService } from "openclaw/plugin-sdk/conversation-runtime";
+import { getSessionBindingService } from "carlito/plugin-sdk/conversation-runtime";
 import {
   clearRuntimeConfigSnapshot,
   setRuntimeConfigSnapshot,
-  type OpenClawConfig,
-} from "openclaw/plugin-sdk/runtime-config-snapshot";
+  type CarlitoConfig,
+} from "carlito/plugin-sdk/runtime-config-snapshot";
+import { ChannelType } from "discord-api-types/v10";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hoisted = vi.hoisted(() => {
@@ -68,7 +68,7 @@ const { resolveThreadBindingInactivityExpiresAt, resolveThreadBindingMaxAgeExpir
 const { resolveThreadBindingIntroText } = await import("./thread-bindings.messages.js");
 const discordClientModule = await import("../client.js");
 const discordThreadBindingApi = await import("./thread-bindings.discord-api.js");
-const acpRuntime = await import("openclaw/plugin-sdk/acp-runtime");
+const acpRuntime = await import("carlito/plugin-sdk/acp-runtime");
 
 describe("thread binding lifecycle", () => {
   beforeEach(() => {
@@ -259,7 +259,7 @@ describe("thread binding lifecycle", () => {
     try {
       const manager = createThreadBindingManager({
         accountId: "default",
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         persist: false,
         enableSweeper: false,
         idleTimeoutMs: 60_000,
@@ -299,7 +299,7 @@ describe("thread binding lifecycle", () => {
     try {
       const manager = createThreadBindingManager({
         accountId: "default",
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         persist: false,
         enableSweeper: false,
         idleTimeoutMs: 0,
@@ -661,9 +661,9 @@ describe("thread binding lifecycle", () => {
 
   it("persists touched activity timestamps across restart when persistence is enabled", async () => {
     vi.useFakeTimers();
-    const previousStateDir = process.env.OPENCLAW_STATE_DIR;
-    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-thread-bindings-"));
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    const previousStateDir = process.env.CARLITO_STATE_DIR;
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-thread-bindings-"));
+    process.env.CARLITO_STATE_DIR = stateDir;
     try {
       __testing.resetThreadBindingsForTests();
       vi.setSystemTime(new Date("2026-02-20T00:00:00.000Z"));
@@ -709,9 +709,9 @@ describe("thread binding lifecycle", () => {
     } finally {
       __testing.resetThreadBindingsForTests();
       if (previousStateDir === undefined) {
-        delete process.env.OPENCLAW_STATE_DIR;
+        delete process.env.CARLITO_STATE_DIR;
       } else {
-        process.env.OPENCLAW_STATE_DIR = previousStateDir;
+        process.env.CARLITO_STATE_DIR = previousStateDir;
       }
       fs.rmSync(stateDir, { recursive: true, force: true });
       vi.useRealTimers();
@@ -835,7 +835,7 @@ describe("thread binding lifecycle", () => {
   it("passes manager token when resolving parent channels for auto-bind", async () => {
     const cfg = {
       channels: { discord: { token: "tok" } },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     createThreadBindingManager({
       accountId: "runtime",
       token: "runtime-token",
@@ -888,10 +888,10 @@ describe("thread binding lifecycle", () => {
   it("uses the active runtime snapshot cfg for manager operations", async () => {
     const startupCfg = {
       channels: { discord: { token: "startup-token" } },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const refreshedCfg = {
       channels: { discord: { token: "refreshed-token" } },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const manager = createThreadBindingManager({
       accountId: "runtime",
       token: "runtime-token",
@@ -1096,7 +1096,7 @@ describe("thread binding lifecycle", () => {
     hoisted.restPost.mockClear();
 
     const bound = await getSessionBindingService().bind({
-      targetSessionKey: "plugin-binding:openclaw-codex-app-server:dm",
+      targetSessionKey: "plugin-binding:carlito-codex-app-server:dm",
       targetKind: "session",
       conversation: {
         channel: "discord",
@@ -1106,8 +1106,8 @@ describe("thread binding lifecycle", () => {
       placement: "current",
       metadata: {
         pluginBindingOwner: "plugin",
-        pluginId: "openclaw-codex-app-server",
-        pluginRoot: "/Users/huntharo/github/openclaw-app-server",
+        pluginId: "carlito-codex-app-server",
+        pluginRoot: "/Users/huntharo/github/carlito-app-server",
       },
     });
 
@@ -1144,7 +1144,7 @@ describe("thread binding lifecycle", () => {
     });
 
     await getSessionBindingService().bind({
-      targetSessionKey: "plugin-binding:openclaw-codex-app-server:dm",
+      targetSessionKey: "plugin-binding:carlito-codex-app-server:dm",
       targetKind: "session",
       conversation: {
         channel: "discord",
@@ -1154,15 +1154,15 @@ describe("thread binding lifecycle", () => {
       placement: "current",
       metadata: {
         pluginBindingOwner: "plugin",
-        pluginId: "openclaw-codex-app-server",
-        pluginRoot: "/Users/huntharo/github/openclaw-app-server",
+        pluginId: "carlito-codex-app-server",
+        pluginRoot: "/Users/huntharo/github/carlito-app-server",
         agentId: "codex",
         boundBy: "system",
       },
     });
 
     await getSessionBindingService().bind({
-      targetSessionKey: "plugin-binding:openclaw-codex-app-server:dm",
+      targetSessionKey: "plugin-binding:carlito-codex-app-server:dm",
       targetKind: "session",
       conversation: {
         channel: "discord",
@@ -1184,8 +1184,8 @@ describe("thread binding lifecycle", () => {
     ).toMatchObject({
       metadata: expect.objectContaining({
         pluginBindingOwner: "plugin",
-        pluginId: "openclaw-codex-app-server",
-        pluginRoot: "/Users/huntharo/github/openclaw-app-server",
+        pluginId: "carlito-codex-app-server",
+        pluginRoot: "/Users/huntharo/github/carlito-app-server",
         agentId: "codex",
         boundBy: "system",
         label: "codex-dm",
@@ -1301,7 +1301,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
     });
 
@@ -1345,7 +1345,7 @@ describe("thread binding lifecycle", () => {
     hoisted.readAcpSessionEntry.mockReturnValue({
       sessionKey: "agent:codex:acp:uncertain",
       storeSessionKey: "agent:codex:acp:uncertain",
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       storePath: "/tmp/mock-sessions.json",
       storeReadFailed: true,
       entry: undefined,
@@ -1353,7 +1353,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
     });
 
@@ -1380,19 +1380,19 @@ describe("thread binding lifecycle", () => {
       threadId: "user:1177378744822943744",
       channelId: "user:1177378744822943744",
       targetKind: "acp",
-      targetSessionKey: "plugin-binding:openclaw-codex-app-server:dm",
+      targetSessionKey: "plugin-binding:carlito-codex-app-server:dm",
       agentId: "codex",
       metadata: {
         pluginBindingOwner: "plugin",
-        pluginId: "openclaw-codex-app-server",
-        pluginRoot: "/Users/huntharo/github/openclaw-app-server",
+        pluginId: "carlito-codex-app-server",
+        pluginRoot: "/Users/huntharo/github/carlito-app-server",
       },
     });
 
     hoisted.readAcpSessionEntry.mockReturnValue(null);
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
     });
 
@@ -1403,7 +1403,7 @@ describe("thread binding lifecycle", () => {
       threadId: "user:1177378744822943744",
       metadata: {
         pluginBindingOwner: "plugin",
-        pluginId: "openclaw-codex-app-server",
+        pluginId: "carlito-codex-app-server",
       },
     });
   });
@@ -1441,7 +1441,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
       healthProbe: async () => ({ status: "stale", reason: "status-timeout-running-stale" }),
     });
@@ -1485,7 +1485,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
       healthProbe: async () => ({ status: "uncertain", reason: "status-timeout" }),
     });
@@ -1533,7 +1533,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const result = await reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
     });
 
@@ -1599,7 +1599,7 @@ describe("thread binding lifecycle", () => {
     let secondProbeStartedBeforeFirstResolved = false;
 
     const reconcilePromise = reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
       healthProbe: async () => {
         probeCallCount += 1;
@@ -1671,7 +1671,7 @@ describe("thread binding lifecycle", () => {
     });
 
     const reconcilePromise = reconcileAcpThreadBindingsOnStartup({
-      cfg: {} as OpenClawConfig,
+      cfg: {} as CarlitoConfig,
       accountId: "default",
       healthProbe: async () => {
         probeCalls += 1;
@@ -1698,9 +1698,9 @@ describe("thread binding lifecycle", () => {
   });
 
   it("migrates legacy expiresAt bindings to idle/max-age semantics", () => {
-    const previousStateDir = process.env.OPENCLAW_STATE_DIR;
-    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-thread-bindings-"));
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    const previousStateDir = process.env.CARLITO_STATE_DIR;
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-thread-bindings-"));
+    process.env.CARLITO_STATE_DIR = stateDir;
     try {
       __testing.resetThreadBindingsForTests();
       const bindingsPath = __testing.resolveThreadBindingsPath();
@@ -1791,18 +1791,18 @@ describe("thread binding lifecycle", () => {
     } finally {
       __testing.resetThreadBindingsForTests();
       if (previousStateDir === undefined) {
-        delete process.env.OPENCLAW_STATE_DIR;
+        delete process.env.CARLITO_STATE_DIR;
       } else {
-        process.env.OPENCLAW_STATE_DIR = previousStateDir;
+        process.env.CARLITO_STATE_DIR = previousStateDir;
       }
       fs.rmSync(stateDir, { recursive: true, force: true });
     }
   });
 
   it("persists unbinds even when no manager is active", () => {
-    const previousStateDir = process.env.OPENCLAW_STATE_DIR;
-    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "openclaw-thread-bindings-"));
-    process.env.OPENCLAW_STATE_DIR = stateDir;
+    const previousStateDir = process.env.CARLITO_STATE_DIR;
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "carlito-thread-bindings-"));
+    process.env.CARLITO_STATE_DIR = stateDir;
     try {
       __testing.resetThreadBindingsForTests();
       const bindingsPath = __testing.resolveThreadBindingsPath();
@@ -1847,9 +1847,9 @@ describe("thread binding lifecycle", () => {
     } finally {
       __testing.resetThreadBindingsForTests();
       if (previousStateDir === undefined) {
-        delete process.env.OPENCLAW_STATE_DIR;
+        delete process.env.CARLITO_STATE_DIR;
       } else {
-        process.env.OPENCLAW_STATE_DIR = previousStateDir;
+        process.env.CARLITO_STATE_DIR = previousStateDir;
       }
       fs.rmSync(stateDir, { recursive: true, force: true });
     }

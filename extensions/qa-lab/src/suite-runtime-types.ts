@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import type { QaProviderMode } from "./model-selection.js";
 import type { QaTransportActionName, QaTransportAdapter } from "./qa-transport.js";
 
@@ -28,7 +28,7 @@ export type QaSuiteRuntimeEnv = {
   mock: {
     baseUrl: string;
   } | null;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
 };
 
 export type QaSkillStatusEntry = {

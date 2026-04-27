@@ -2,12 +2,18 @@ import {
   type ImagesDescriptionRequest,
   type ImagesDescriptionResult,
   type MediaUnderstandingProvider,
-} from "openclaw/plugin-sdk/media-understanding";
+} from "carlito/plugin-sdk/media-understanding";
 import { CODEX_PROVIDER_ID, FALLBACK_CODEX_MODELS } from "./provider-catalog.js";
 import { type CodexAppServerClientFactory } from "./src/app-server/client-factory.js";
 import type { CodexAppServerClient } from "./src/app-server/client.js";
 import { resolveCodexAppServerRuntimeOptions } from "./src/app-server/config.js";
 import { readModelListResult } from "./src/app-server/models.js";
+import {
+  assertCodexThreadStartResponse,
+  assertCodexTurnStartResponse,
+  readCodexErrorNotification,
+  readCodexTurnCompletedNotification,
+} from "./src/app-server/protocol-validators.js";
 import {
   isJsonObject,
   type CodexServerNotification,
@@ -17,12 +23,6 @@ import {
   type CodexTurnStartParams,
   type JsonObject,
 } from "./src/app-server/protocol.js";
-import {
-  assertCodexThreadStartResponse,
-  assertCodexTurnStartResponse,
-  readCodexErrorNotification,
-  readCodexTurnCompletedNotification,
-} from "./src/app-server/protocol-validators.js";
 import { createIsolatedCodexAppServerClient } from "./src/app-server/shared-client.js";
 
 const DEFAULT_CODEX_IMAGE_MODEL =
@@ -108,9 +108,9 @@ async function describeCodexImages(
           cwd: req.agentDir || process.cwd(),
           approvalPolicy: "never",
           sandbox: "read-only",
-          serviceName: "OpenClaw",
+          serviceName: "Carlito",
           developerInstructions:
-            "You are OpenClaw's bounded image-understanding worker. Describe only the provided image content. Do not call tools, edit files, or ask follow-up questions.",
+            "You are Carlito's bounded image-understanding worker. Describe only the provided image content. Do not call tools, edit files, or ask follow-up questions.",
           dynamicTools: [],
           experimentalRawEvents: true,
           persistExtendedHistory: false,
@@ -229,7 +229,8 @@ function createCodexImageTurnCollector(threadId: string) {
       return;
     }
     if (notification.method === "turn/completed") {
-      completedTurn = readCodexTurnCompletedNotification(notification.params)?.turn ?? completedTurn;
+      completedTurn =
+        readCodexTurnCompletedNotification(notification.params)?.turn ?? completedTurn;
       resolveCompletion?.();
       return;
     }

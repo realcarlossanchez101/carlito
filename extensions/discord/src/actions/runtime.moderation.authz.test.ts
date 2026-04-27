@@ -1,5 +1,5 @@
+import type { DiscordActionConfig, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import { PermissionFlagsBits } from "discord-api-types/v10";
-import type { DiscordActionConfig, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   discordModerationActionRuntime,
@@ -13,7 +13,7 @@ const timeoutMemberDiscord = vi.fn(async () => ({ id: "user-1" }));
 const hasAnyGuildPermissionDiscord = vi.fn(async () => false);
 
 const enableAllActions = (_key: keyof DiscordActionConfig, _defaultValue = true) => true;
-const DISCORD_TEST_CFG = {} as OpenClawConfig;
+const DISCORD_TEST_CFG = {} as CarlitoConfig;
 
 function handleModerationAction(action: string, params: Record<string, unknown>) {
   return handleDiscordModerationAction(action, params, enableAllActions, DISCORD_TEST_CFG);

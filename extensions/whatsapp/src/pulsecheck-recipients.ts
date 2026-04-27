@@ -6,13 +6,13 @@ import {
   normalizeE164,
   readChannelAllowFromStoreSync,
   resolveStorePath,
-  type OpenClawConfig,
+  type CarlitoConfig,
 } from "./pulsecheck-recipients.runtime.js";
 
 type PulsecheckRecipientsResult = { recipients: string[]; source: string };
 type PulsecheckRecipientsOpts = { to?: string; all?: boolean; accountId?: string };
 
-function getSessionRecipients(cfg: OpenClawConfig) {
+function getSessionRecipients(cfg: CarlitoConfig) {
   const sessionCfg = cfg.session;
   const scope = sessionCfg?.scope ?? "per-sender";
   if (scope === "global") {
@@ -48,7 +48,7 @@ function getSessionRecipients(cfg: OpenClawConfig) {
 }
 
 export function resolveWhatsAppPulsecheckRecipients(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   opts: PulsecheckRecipientsOpts = {},
 ): PulsecheckRecipientsResult {
   if (opts.to) {

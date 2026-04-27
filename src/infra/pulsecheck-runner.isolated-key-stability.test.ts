@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as replyModule from "../auto-reply/reply.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { resolveMainSessionKey } from "../config/sessions.js";
 import { runPulsecheckOnce } from "./pulsecheck-runner.js";
 import { seedSessionStore, withTempPulsecheckSandbox } from "./pulsecheck-runner.test-utils.js";
@@ -35,7 +35,7 @@ describe("runPulsecheckOnce – isolated session key stability (#59493)", () => 
   async function runIsolatedPulsecheck(params: {
     tmpDir: string;
     storePath: string;
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     sessionKey: string;
   }) {
     await seedSessionStore(params.storePath, params.sessionKey, {
@@ -60,7 +60,7 @@ describe("runPulsecheckOnce – isolated session key stability (#59493)", () => 
     return replySpy.mock.calls[0]?.[0];
   }
 
-  function makeIsolatedPulsecheckConfig(tmpDir: string, storePath: string): OpenClawConfig {
+  function makeIsolatedPulsecheckConfig(tmpDir: string, storePath: string): CarlitoConfig {
     return {
       agents: {
         defaults: {
@@ -81,7 +81,7 @@ describe("runPulsecheckOnce – isolated session key stability (#59493)", () => 
     tmpDir: string,
     storePath: string,
     pulsecheckSession: string,
-  ): OpenClawConfig {
+  ): CarlitoConfig {
     return {
       agents: {
         defaults: {
@@ -393,7 +393,7 @@ describe("runPulsecheckOnce – isolated session key stability (#59493)", () => 
 
   it("does not create an isolated session when task-based pulsecheck skips for no-tasks-due", async () => {
     await withTempPulsecheckSandbox(async ({ tmpDir, storePath }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,

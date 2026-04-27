@@ -1,2 +1,2 @@
-export { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
-export type { OpenClawPluginApi } from "openclaw/plugin-sdk/core";
+export { definePluginEntry } from "carlito/plugin-sdk/plugin-entry";
+export type { CarlitoPluginApi } from "carlito/plugin-sdk/core";

@@ -9,7 +9,7 @@ import {
   getOrCreateSessionMcpRuntime,
 } from "../../src/agents/pi-bundle-mcp-runtime.ts";
 import { applyFinalEffectiveToolPolicy } from "../../src/agents/pi-embedded-runner/effective-tool-policy.ts";
-import type { OpenClawConfig } from "../../src/config/types.openclaw.ts";
+import type { CarlitoConfig } from "../../src/config/types.carlito.ts";
 import { getPluginToolMeta } from "../../src/plugins/tools.ts";
 
 const require = createRequire(import.meta.url);
@@ -42,7 +42,7 @@ await server.connect(new StdioServerTransport());
 
 function applyPolicy(params: {
   tools: Awaited<ReturnType<typeof materializeBundleMcpToolsForRun>>["tools"];
-  config: OpenClawConfig;
+  config: CarlitoConfig;
 }) {
   const warnings: string[] = [];
   return {
@@ -62,14 +62,14 @@ function applyPolicy(params: {
 
 async function main() {
   const stateDir =
-    process.env.OPENCLAW_STATE_DIR?.trim() ||
-    path.join(os.tmpdir(), `openclaw-pi-bundle-mcp-${process.pid}`);
+    process.env.CARLITO_STATE_DIR?.trim() ||
+    path.join(os.tmpdir(), `carlito-pi-bundle-mcp-${process.pid}`);
   const probeDir = path.join(stateDir, "pi-bundle-mcp-tools");
   const serverPath = path.join(probeDir, "probe-server.mjs");
   await fs.mkdir(probeDir, { recursive: true });
   await writeProbeServer(serverPath);
 
-  const cfg: OpenClawConfig = {
+  const cfg: CarlitoConfig = {
     tools: {
       profile: "coding",
     },

@@ -1,4 +1,4 @@
-import { GoogleChatConfigSchema } from "openclaw/plugin-sdk/googlechat";
+import { GoogleChatConfigSchema } from "carlito/plugin-sdk/googlechat";
 import { describe, expect, it } from "vitest";
 
 describe("googlechat config schema", () => {

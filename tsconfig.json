@@ -19,13 +19,13 @@
     "types": ["node"],
     "useDefineForClassFields": false,
     "paths": {
-      "openclaw/extension-api": ["./src/extensionAPI.ts"],
-      "openclaw/plugin-sdk": ["./src/plugin-sdk/index.ts"],
-      "openclaw/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
-      "@openclaw/plugin-sdk": ["./src/plugin-sdk/index.ts"],
-      "@openclaw/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
-      "openclaw/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
-      "@openclaw/*": ["./extensions/*"]
+      "carlito/extension-api": ["./src/extensionAPI.ts"],
+      "carlito/plugin-sdk": ["./src/plugin-sdk/index.ts"],
+      "carlito/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
+      "@realcarlossanchez101/plugin-sdk": ["./src/plugin-sdk/index.ts"],
+      "@realcarlossanchez101/plugin-sdk/*": ["./src/plugin-sdk/*.ts"],
+      "carlito/plugin-sdk/account-id": ["./src/plugin-sdk/account-id.ts"],
+      "@realcarlossanchez101/*": ["./extensions/*"]
     }
   },
   "include": ["src/**/*", "ui/**/*", "extensions/**/*", "packages/**/*"],

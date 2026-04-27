@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { normalizePluginsConfig, resolveEffectiveEnableState } from "../plugins/config-state.js";
 import { resolveProviderInstallCatalogEntries } from "../plugins/provider-install-catalog.js";
 import {
@@ -47,7 +47,7 @@ function includesProviderFlowScope(
 }
 
 function resolveProviderDocsById(params?: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
 }): Map<string, string> {
@@ -66,7 +66,7 @@ function resolveProviderDocsById(params?: {
 }
 
 function resolveInstallCatalogProviderSetupFlowContributions(params?: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
   scope?: ProviderFlowScope;
@@ -122,7 +122,7 @@ function resolveInstallCatalogProviderSetupFlowContributions(params?: {
 }
 
 export function resolveProviderSetupFlowContributions(params?: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
   scope?: ProviderFlowScope;
@@ -173,7 +173,7 @@ export function resolveProviderSetupFlowContributions(params?: {
 }
 
 export function resolveProviderModelPickerFlowEntries(params?: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
 }): ProviderModelPickerFlowEntry[] {
@@ -183,7 +183,7 @@ export function resolveProviderModelPickerFlowEntries(params?: {
 }
 
 export function resolveProviderModelPickerFlowContributions(params?: {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   workspaceDir?: string;
   env?: NodeJS.ProcessEnv;
 }): ProviderModelPickerFlowContribution[] {

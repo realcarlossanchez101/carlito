@@ -3,7 +3,7 @@ import type { TSchema } from "typebox";
 import type { ReplyPayload } from "../../auto-reply/reply-payload.js";
 import type { MsgContext } from "../../auto-reply/templating.js";
 import type { MarkdownTableMode } from "../../config/types.base.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import type { GatewayClientMode, GatewayClientName } from "../../gateway/protocol/client-info.js";
 import type { MessagePresentation } from "../../interactive/payload.js";
 import type { OutboundMediaAccess } from "../../media/load-options.js";
@@ -29,7 +29,7 @@ export type ChannelAgentTool = AgentTool<TSchema, unknown> & {
 };
 
 /** Lazy agent-tool factory used when tool availability depends on config. */
-export type ChannelAgentToolFactory = (params: { cfg?: OpenClawConfig }) => ChannelAgentTool[];
+export type ChannelAgentToolFactory = (params: { cfg?: CarlitoConfig }) => ChannelAgentTool[];
 
 /**
  * Discovery-time inputs passed to channel action adapters when the core is
@@ -38,7 +38,7 @@ export type ChannelAgentToolFactory = (params: { cfg?: OpenClawConfig }) => Chan
  * tool params or runtime handles.
  */
 export type ChannelMessageActionDiscoveryContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   currentChannelId?: string | null;
   currentChannelProvider?: string | null;
   currentThreadTs?: string | null;
@@ -251,7 +251,7 @@ export type ChannelLogSink = {
 };
 
 export type ChannelGroupContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   groupId?: string | null;
   /** Human label for channel-like group conversations (e.g. #general). */
   groupChannel?: string | null;
@@ -289,7 +289,7 @@ export type ChannelSecurityDmPolicy = {
 };
 
 export type ChannelSecurityContext<ResolvedAccount = unknown> = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
   account: ResolvedAccount;
 };
@@ -297,18 +297,18 @@ export type ChannelSecurityContext<ResolvedAccount = unknown> = {
 export type ChannelMentionAdapter = {
   stripRegexes?: (params: {
     ctx: MsgContext;
-    cfg: OpenClawConfig | undefined;
+    cfg: CarlitoConfig | undefined;
     agentId?: string;
   }) => RegExp[];
   stripPatterns?: (params: {
     ctx: MsgContext;
-    cfg: OpenClawConfig | undefined;
+    cfg: CarlitoConfig | undefined;
     agentId?: string;
   }) => string[];
   stripMentions?: (params: {
     text: string;
     ctx: MsgContext;
-    cfg: OpenClawConfig | undefined;
+    cfg: CarlitoConfig | undefined;
     agentId?: string;
   }) => string;
 };
@@ -327,7 +327,7 @@ export type ChannelStructuredComponents = unknown[];
 export type ChannelCrossContextPresentationFactory = (params: {
   originLabel: string;
   message: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId?: string | null;
 }) => MessagePresentation;
 
@@ -358,7 +358,7 @@ export type ChannelOutboundSessionRoute = {
 
 export type ChannelThreadingAdapter = {
   resolveReplyToMode?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
     chatType?: string | null;
   }) => "off" | "first" | "all" | "batched";
@@ -374,13 +374,13 @@ export type ChannelThreadingAdapter = {
    */
   allowTagsWhenOff?: boolean;
   buildToolContext?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
     context: ChannelThreadingContext;
     hasRepliedRef?: { value: boolean };
   }) => ChannelThreadingToolContext | undefined;
   resolveAutoThreadId?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
     to: string;
     toolContext?: ChannelThreadingToolContext;
@@ -391,13 +391,13 @@ export type ChannelThreadingAdapter = {
     threadId?: string | number | null;
   }) => string | undefined;
   resolveReplyTransport?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
     threadId?: string | number | null;
     replyToId?: string | null;
   }) => ChannelReplyTransport | null;
   resolveFocusedBinding?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
     context: ChannelThreadingContext;
   }) => ChannelFocusedBindingContext | null;
@@ -454,11 +454,11 @@ export type ChannelMessagingAdapter = {
     chatType: "group" | "channel";
   } | null;
   resolveInboundAttachmentRoots?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
   }) => string[];
   resolveRemoteInboundAttachmentRoots?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
   }) => string[];
   /**
@@ -529,13 +529,10 @@ export type ChannelMessagingAdapter = {
   buildCrossContextPresentation?: ChannelCrossContextPresentationFactory;
   transformReplyPayload?: (params: {
     payload: ReplyPayload;
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
   }) => ReplyPayload | null;
-  enableInteractiveReplies?: (params: {
-    cfg: OpenClawConfig;
-    accountId?: string | null;
-  }) => boolean;
+  enableInteractiveReplies?: (params: { cfg: CarlitoConfig; accountId?: string | null }) => boolean;
   hasStructuredReplyPayload?: (params: { payload: ReplyPayload }) => boolean;
   targetResolver?: {
     looksLikeId?: (raw: string, normalized?: string) => boolean;
@@ -545,7 +542,7 @@ export type ChannelMessagingAdapter = {
      * resolution. This should complement directory lookup, not duplicate it.
      */
     resolveTarget?: (params: {
-      cfg: OpenClawConfig;
+      cfg: CarlitoConfig;
       accountId?: string | null;
       input: string;
       normalized: string;
@@ -567,7 +564,7 @@ export type ChannelMessagingAdapter = {
    * Keep session-key orchestration in core and channel-native routing rules here.
    */
   resolveOutboundSessionRoute?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     agentId: string;
     accountId?: string | null;
     target: string;
@@ -584,9 +581,9 @@ export type ChannelMessagingAdapter = {
 };
 
 export type ChannelAgentPromptAdapter = {
-  messageToolHints?: (params: { cfg: OpenClawConfig; accountId?: string | null }) => string[];
+  messageToolHints?: (params: { cfg: CarlitoConfig; accountId?: string | null }) => string[];
   messageToolCapabilities?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
   }) => string[] | undefined;
   inboundFormattingHints?: (params: { accountId?: string | null }) =>
@@ -596,7 +593,7 @@ export type ChannelAgentPromptAdapter = {
       }
     | undefined;
   reactionGuidance?: (params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId?: string | null;
   }) => { level: "minimal" | "extensive"; channelLabel?: string } | undefined;
 };
@@ -619,7 +616,7 @@ export type ChannelMessageActionName = ChannelMessageActionNameFromList;
 export type ChannelMessageActionContext = {
   channel: ChannelId;
   action: ChannelMessageActionName;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   params: Record<string, unknown>;
   mediaAccess?: OutboundMediaAccess;
   mediaLocalRoots?: readonly string[];
@@ -702,7 +699,7 @@ export type ChannelPollResult = {
 
 /** Shared poll input after core has normalized the common poll model. */
 export type ChannelPollContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   to: string;
   poll: PollInput;
   accountId?: string | null;

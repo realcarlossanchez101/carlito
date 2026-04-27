@@ -1,19 +1,19 @@
-import { resolveApiKeyForProvider } from "openclaw/plugin-sdk/agent-runtime";
-import type { ModelCatalogEntry } from "openclaw/plugin-sdk/agent-runtime";
+import { resolveApiKeyForProvider } from "carlito/plugin-sdk/agent-runtime";
+import type { ModelCatalogEntry } from "carlito/plugin-sdk/agent-runtime";
 import {
   findModelInCatalog,
   loadModelCatalog,
   modelSupportsVision,
-} from "openclaw/plugin-sdk/agent-runtime";
-import { resolveDefaultModelForAgent } from "openclaw/plugin-sdk/agent-runtime";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { resolveAutoImageModel } from "openclaw/plugin-sdk/media-runtime";
+} from "carlito/plugin-sdk/agent-runtime";
+import { resolveDefaultModelForAgent } from "carlito/plugin-sdk/agent-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { resolveAutoImageModel } from "carlito/plugin-sdk/media-runtime";
 import {
   resolveAutoMediaKeyProviders,
   resolveDefaultMediaModel,
-} from "openclaw/plugin-sdk/media-runtime";
-import { logVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/media-runtime";
+import { logVerbose } from "carlito/plugin-sdk/runtime-env";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 import { getTelegramRuntime } from "./runtime.js";
 export {
   cacheSticker,
@@ -29,7 +29,7 @@ const STICKER_DESCRIPTION_PROMPT =
 
 export interface DescribeStickerParams {
   imagePath: string;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentDir?: string;
   agentId?: string;
 }

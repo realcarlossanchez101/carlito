@@ -1,6 +1,6 @@
-import { createOpencodeCatalogApiKeyAuthMethod } from "openclaw/plugin-sdk/opencode";
-import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
-import { PASSTHROUGH_GEMINI_REPLAY_HOOKS } from "openclaw/plugin-sdk/provider-model-shared";
+import { createOpencodeCatalogApiKeyAuthMethod } from "carlito/plugin-sdk/opencode";
+import { definePluginEntry } from "carlito/plugin-sdk/plugin-entry";
+import { PASSTHROUGH_GEMINI_REPLAY_HOOKS } from "carlito/plugin-sdk/provider-model-shared";
 import { applyOpencodeGoConfig, OPENCODE_GO_DEFAULT_MODEL_REF } from "./api.js";
 import { normalizeOpencodeGoBaseUrl } from "./provider-catalog.js";
 

@@ -46,7 +46,7 @@ afterEach(() => {
 
 describe("scripts/changed-lanes", () => {
   it("includes untracked worktree files in the default local diff", () => {
-    const dir = makeTempRepoRoot(tempDirs, "openclaw-changed-lanes-");
+    const dir = makeTempRepoRoot(tempDirs, "carlito-changed-lanes-");
     git(dir, ["init", "-q", "--initial-branch=main"]);
     writeFileSync(path.join(dir, "README.md"), "initial\n", "utf8");
     git(dir, ["add", "README.md"]);
@@ -199,7 +199,7 @@ describe("scripts/changed-lanes", () => {
       "apps/ios/Config/Version.xcconfig",
       "apps/ios/fastlane/metadata/en-US/release_notes.txt",
       "apps/ios/version.json",
-      "apps/macos/Sources/OpenClaw/Resources/Info.plist",
+      "apps/macos/Sources/Carlito/Resources/Info.plist",
       "docs/.generated/config-baseline.sha256",
       "package.json",
       "src/config/schema.base.generated.ts",
@@ -224,7 +224,7 @@ describe("scripts/changed-lanes", () => {
   });
 
   it("guards release metadata package changes to the top-level version field", () => {
-    const dir = makeTempRepoRoot(tempDirs, "openclaw-release-metadata-");
+    const dir = makeTempRepoRoot(tempDirs, "carlito-release-metadata-");
     git(dir, ["init", "-q", "--initial-branch=main"]);
     writeFileSync(
       path.join(dir, "package.json"),
@@ -368,18 +368,18 @@ describe("scripts/changed-lanes", () => {
     expect(CHANGED_CHECK_VITEST_NO_OUTPUT_TIMEOUT_MS).toBe("600000");
     expect(createChangedCheckVitestEnv({ PATH: "/usr/bin" })).toMatchObject({
       PATH: "/usr/bin",
-      OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS: CHANGED_CHECK_VITEST_NO_OUTPUT_TIMEOUT_MS,
-      OPENCLAW_VITEST_NO_OUTPUT_RETRY: "0",
+      CARLITO_VITEST_NO_OUTPUT_TIMEOUT_MS: CHANGED_CHECK_VITEST_NO_OUTPUT_TIMEOUT_MS,
+      CARLITO_VITEST_NO_OUTPUT_RETRY: "0",
     });
 
     expect(
       createChangedCheckVitestEnv({
-        OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS: "45000",
-        OPENCLAW_VITEST_NO_OUTPUT_RETRY: "1",
+        CARLITO_VITEST_NO_OUTPUT_TIMEOUT_MS: "45000",
+        CARLITO_VITEST_NO_OUTPUT_RETRY: "1",
       }),
     ).toMatchObject({
-      OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS: "45000",
-      OPENCLAW_VITEST_NO_OUTPUT_RETRY: "1",
+      CARLITO_VITEST_NO_OUTPUT_TIMEOUT_MS: "45000",
+      CARLITO_VITEST_NO_OUTPUT_RETRY: "1",
     });
   });
 });

@@ -1,13 +1,13 @@
 import type {
-  OpenClawPluginCommandDefinition,
+  CarlitoPluginCommandDefinition,
   PluginCommandContext,
-} from "openclaw/plugin-sdk/plugin-entry";
+} from "carlito/plugin-sdk/plugin-entry";
 import type { CodexCommandDeps } from "./command-handlers.js";
 
 export function createCodexCommand(options: {
   pluginConfig?: unknown;
   deps?: Partial<CodexCommandDeps>;
-}): OpenClawPluginCommandDefinition {
+}): CarlitoPluginCommandDefinition {
   return {
     name: "codex",
     description: "Inspect and control the Codex app-server harness",

@@ -1,2 +1,2 @@
-/** Root OpenClaw configuration Zod schema — the full `openclaw.json` shape. */
-export { OpenClawSchema } from "../config/zod-schema.js";
+/** Root Carlito configuration Zod schema — the full `carlito.json` shape. */
+export { CarlitoSchema } from "../config/zod-schema.js";

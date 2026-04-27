@@ -1,6 +1,6 @@
-import OpenClawKit
+import CarlitoKit
 import Testing
-@testable import OpenClaw
+@testable import Carlito
 
 @Suite struct GatewayStatusBuilderTests {
     @Test func pausedProblemKeepsErrorStatus() {

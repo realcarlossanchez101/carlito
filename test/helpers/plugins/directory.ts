@@ -1,4 +1,4 @@
-import type { ChannelDirectoryAdapter } from "openclaw/plugin-sdk/channel-contract";
+import type { ChannelDirectoryAdapter } from "carlito/plugin-sdk/channel-contract";
 
 type DirectorySurface = {
   listPeers: NonNullable<ChannelDirectoryAdapter["listPeers"]>;

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 
 const resolveDefaultAgentId = vi.hoisted(() => vi.fn(() => "main"));
 const resolveAgentWorkspaceDir = vi.hoisted(() =>
-  vi.fn((_cfg: OpenClawConfig, agentId: string) => `/workspace/${agentId}`),
+  vi.fn((_cfg: CarlitoConfig, agentId: string) => `/workspace/${agentId}`),
 );
 
 vi.mock("../agents/agent-scope.js", () => ({
@@ -71,7 +71,7 @@ describe("memory dreaming host helpers", () => {
           userTimezone: "America/Los_Angeles",
         },
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     const resolved = resolveMemoryDreamingConfig({
       pluginConfig: {},
@@ -132,7 +132,7 @@ describe("memory dreaming host helpers", () => {
   });
 
   it("dedupes shared workspaces across all configured agents", () => {
-    resolveAgentWorkspaceDir.mockImplementation((_cfg: OpenClawConfig, agentId: string) => {
+    resolveAgentWorkspaceDir.mockImplementation((_cfg: CarlitoConfig, agentId: string) => {
       if (agentId === "alpha") {
         return "/workspace/shared";
       }
@@ -146,7 +146,7 @@ describe("memory dreaming host helpers", () => {
       agents: {
         list: [{ id: "alpha" }, { id: "beta" }, { id: "gamma" }],
       },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(resolveMemoryDreamingWorkspaces(cfg)).toEqual([
       {
@@ -162,7 +162,7 @@ describe("memory dreaming host helpers", () => {
 
   it("uses default agent fallback and timezone-aware day helpers", () => {
     resolveDefaultAgentId.mockReturnValue("fallback");
-    const cfg = {} as OpenClawConfig;
+    const cfg = {} as CarlitoConfig;
 
     expect(resolveMemoryDreamingWorkspaces(cfg)).toEqual([
       {
@@ -188,11 +188,11 @@ describe("memory dreaming host helpers", () => {
       resolveMemoryDreamingPluginId({
         plugins: {
           slots: {
-            memory: "memos-local-openclaw-plugin",
+            memory: "memos-local-carlito-plugin",
           },
         },
-      } as OpenClawConfig),
-    ).toBe("memos-local-openclaw-plugin");
+      } as CarlitoConfig),
+    ).toBe("memos-local-carlito-plugin");
   });
 
   it("reads dreaming config from the configured memory-slot owner", () => {
@@ -200,10 +200,10 @@ describe("memory dreaming host helpers", () => {
       resolveMemoryDreamingPluginConfig({
         plugins: {
           slots: {
-            memory: "memos-local-openclaw-plugin",
+            memory: "memos-local-carlito-plugin",
           },
           entries: {
-            "memos-local-openclaw-plugin": {
+            "memos-local-carlito-plugin": {
               config: {
                 dreaming: {
                   enabled: true,
@@ -212,7 +212,7 @@ describe("memory dreaming host helpers", () => {
             },
           },
         },
-      } as OpenClawConfig),
+      } as CarlitoConfig),
     ).toEqual({
       dreaming: {
         enabled: true,
@@ -238,7 +238,7 @@ describe("memory dreaming host helpers", () => {
             },
           },
         },
-      } as OpenClawConfig),
+      } as CarlitoConfig),
     ).toEqual({
       dreaming: {
         enabled: true,
@@ -261,7 +261,7 @@ describe("memory dreaming host helpers", () => {
             },
           },
         },
-      } as OpenClawConfig),
+      } as CarlitoConfig),
     ).toEqual({
       dreaming: {
         enabled: true,
@@ -277,7 +277,7 @@ describe("memory dreaming host helpers", () => {
             memory: "none",
           },
         },
-      } as OpenClawConfig),
+      } as CarlitoConfig),
     ).toBe("memory-core");
 
     expect(
@@ -296,7 +296,7 @@ describe("memory dreaming host helpers", () => {
             },
           },
         },
-      } as OpenClawConfig),
+      } as CarlitoConfig),
     ).toEqual({
       dreaming: {
         enabled: true,

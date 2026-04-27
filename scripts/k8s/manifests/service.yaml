@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: openclaw
+  name: carlito
   labels:
-    app: openclaw
+    app: carlito
 spec:
   type: ClusterIP
   selector:
-    app: openclaw
+    app: carlito
   ports:
     - name: gateway
       port: 18789

@@ -9,7 +9,7 @@ Status: bundled plugin (webhook bot). Direct messages, rooms, reactions, and mar
 
 ## Bundled plugin
 
-Nextcloud Talk ships as a bundled plugin in current OpenClaw releases, so
+Nextcloud Talk ships as a bundled plugin in current Carlito releases, so
 normal packaged builds do not need a separate install.
 
 If you are on an older build or a custom install that excludes Nextcloud Talk,
@@ -18,13 +18,13 @@ install it manually:
 Install via CLI (npm registry):
 
 ```bash
-openclaw plugins install @openclaw/nextcloud-talk
+carlito plugins install @realcarlossanchez101/nextcloud-talk
 ```
 
 Local checkout (when running from a git repo):
 
 ```bash
-openclaw plugins install ./path/to/local/nextcloud-talk-plugin
+carlito plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
 Details: [Plugins](/tools/plugin)
@@ -32,16 +32,16 @@ Details: [Plugins](/tools/plugin)
 ## Quick setup (beginner)
 
 1. Ensure the Nextcloud Talk plugin is available.
-   - Current packaged OpenClaw releases already bundle it.
+   - Current packaged Carlito releases already bundle it.
    - Older/custom installs can add it manually with the commands above.
 2. On your Nextcloud server, create a bot:
 
    ```bash
-   ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
+   ./occ talk:bot:install "Carlito" "<shared-secret>" "<webhook-url>" --feature reaction
    ```
 
 3. Enable the bot in the target room settings.
-4. Configure OpenClaw:
+4. Configure Carlito:
    - Config: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
    - Or env: `NEXTCLOUD_TALK_BOT_SECRET` (default account only)
 5. Restart the gateway (or finish setup).
@@ -72,8 +72,8 @@ Minimal config:
 
 - Default: `channels.nextcloud-talk.dmPolicy = "pairing"`. Unknown senders get a pairing code.
 - Approve via:
-  - `openclaw pairing list nextcloud-talk`
-  - `openclaw pairing approve nextcloud-talk <CODE>`
+  - `carlito pairing list nextcloud-talk`
+  - `carlito pairing approve nextcloud-talk <CODE>`
 - Public DMs: `channels.nextcloud-talk.dmPolicy="open"` plus `channels.nextcloud-talk.allowFrom=["*"]`.
 - `allowFrom` matches Nextcloud user IDs only; display names are ignored.
 

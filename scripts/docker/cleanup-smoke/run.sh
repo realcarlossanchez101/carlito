@@ -3,42 +3,42 @@ set -euo pipefail
 
 cd /repo
 
-export OPENCLAW_STATE_DIR="/tmp/openclaw-test"
-export OPENCLAW_CONFIG_PATH="${OPENCLAW_STATE_DIR}/openclaw.json"
+export CARLITO_STATE_DIR="/tmp/carlito-test"
+export CARLITO_CONFIG_PATH="${CARLITO_STATE_DIR}/carlito.json"
 
 echo "==> Build"
-if ! pnpm build >/tmp/openclaw-cleanup-build.log 2>&1; then
-  cat /tmp/openclaw-cleanup-build.log
+if ! pnpm build >/tmp/carlito-cleanup-build.log 2>&1; then
+  cat /tmp/carlito-cleanup-build.log
   exit 1
 fi
 
 echo "==> Seed state"
-mkdir -p "${OPENCLAW_STATE_DIR}/credentials"
-mkdir -p "${OPENCLAW_STATE_DIR}/agents/main/sessions"
-echo '{}' >"${OPENCLAW_CONFIG_PATH}"
-echo 'creds' >"${OPENCLAW_STATE_DIR}/credentials/marker.txt"
-echo 'session' >"${OPENCLAW_STATE_DIR}/agents/main/sessions/sessions.json"
+mkdir -p "${CARLITO_STATE_DIR}/credentials"
+mkdir -p "${CARLITO_STATE_DIR}/agents/main/sessions"
+echo '{}' >"${CARLITO_CONFIG_PATH}"
+echo 'creds' >"${CARLITO_STATE_DIR}/credentials/marker.txt"
+echo 'session' >"${CARLITO_STATE_DIR}/agents/main/sessions/sessions.json"
 
 echo "==> Reset (config+creds+sessions)"
-if ! pnpm openclaw reset --scope config+creds+sessions --yes --non-interactive >/tmp/openclaw-cleanup-reset.log 2>&1; then
-  cat /tmp/openclaw-cleanup-reset.log
+if ! pnpm carlito reset --scope config+creds+sessions --yes --non-interactive >/tmp/carlito-cleanup-reset.log 2>&1; then
+  cat /tmp/carlito-cleanup-reset.log
   exit 1
 fi
 
-test ! -f "${OPENCLAW_CONFIG_PATH}"
-test ! -d "${OPENCLAW_STATE_DIR}/credentials"
-test ! -d "${OPENCLAW_STATE_DIR}/agents/main/sessions"
+test ! -f "${CARLITO_CONFIG_PATH}"
+test ! -d "${CARLITO_STATE_DIR}/credentials"
+test ! -d "${CARLITO_STATE_DIR}/agents/main/sessions"
 
 echo "==> Recreate minimal config"
-mkdir -p "${OPENCLAW_STATE_DIR}/credentials"
-echo '{}' >"${OPENCLAW_CONFIG_PATH}"
+mkdir -p "${CARLITO_STATE_DIR}/credentials"
+echo '{}' >"${CARLITO_CONFIG_PATH}"
 
 echo "==> Uninstall (state only)"
-if ! pnpm openclaw uninstall --state --yes --non-interactive >/tmp/openclaw-cleanup-uninstall.log 2>&1; then
-  cat /tmp/openclaw-cleanup-uninstall.log
+if ! pnpm carlito uninstall --state --yes --non-interactive >/tmp/carlito-cleanup-uninstall.log 2>&1; then
+  cat /tmp/carlito-cleanup-uninstall.log
   exit 1
 fi
 
-test ! -d "${OPENCLAW_STATE_DIR}"
+test ! -d "${CARLITO_STATE_DIR}"
 
 echo "OK"

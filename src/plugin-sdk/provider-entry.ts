@@ -8,9 +8,9 @@ import type {
 } from "../plugins/types.js";
 import { definePluginEntry } from "./plugin-entry.js";
 import type {
-  OpenClawPluginApi,
-  OpenClawPluginConfigSchema,
-  OpenClawPluginDefinition,
+  CarlitoPluginApi,
+  CarlitoPluginConfigSchema,
+  CarlitoPluginDefinition,
 } from "./plugin-entry.js";
 import { buildSingleProviderApiKeyCatalog } from "./provider-catalog-shared.js";
 
@@ -46,8 +46,8 @@ export type SingleProviderPluginOptions = {
   id: string;
   name: string;
   description: string;
-  kind?: OpenClawPluginDefinition["kind"];
-  configSchema?: OpenClawPluginConfigSchema | (() => OpenClawPluginConfigSchema);
+  kind?: CarlitoPluginDefinition["kind"];
+  configSchema?: CarlitoPluginConfigSchema | (() => CarlitoPluginConfigSchema);
   provider?: {
     id?: string;
     label: string;
@@ -60,7 +60,7 @@ export type SingleProviderPluginOptions = {
     ProviderPlugin,
     "id" | "label" | "docsPath" | "aliases" | "envVars" | "auth" | "catalog" | "staticCatalog"
   >;
-  register?: (api: OpenClawPluginApi) => void;
+  register?: (api: CarlitoPluginApi) => void;
 };
 
 function resolveWizardSetup(params: {

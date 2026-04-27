@@ -1,7 +1,7 @@
 import { getAgentRuntimeCommandSecretTargetIds } from "../cli/command-secret-targets.js";
 import { loadConfig, readConfigFileSnapshotForWrite } from "../config/io.js";
 import { setRuntimeConfigSnapshot } from "../config/runtime-snapshot.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { isSecretRef } from "../config/types.secrets.js";
 import type { RuntimeEnv } from "../runtime.js";
 
@@ -9,9 +9,9 @@ export async function resolveAgentRuntimeConfig(
   runtime: RuntimeEnv,
   params?: { runtimeTargetsChannelSecrets?: boolean },
 ): Promise<{
-  loadedRaw: OpenClawConfig;
-  sourceConfig: OpenClawConfig;
-  cfg: OpenClawConfig;
+  loadedRaw: CarlitoConfig;
+  sourceConfig: CarlitoConfig;
+  cfg: CarlitoConfig;
 }> {
   const loadedRaw = loadConfig();
   const sourceConfig = await (async () => {
@@ -61,7 +61,7 @@ function hasNestedSecretRef(value: unknown): boolean {
 }
 
 function hasAgentRuntimeSecretRefs(params: {
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   includeChannelTargets: boolean;
 }): boolean {
   const { config } = params;

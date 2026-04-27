@@ -79,7 +79,7 @@ let randomIntSpy: MockInstance<RandomIntSync>;
 let nextRandomInt = 0;
 
 beforeAll(async () => {
-  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-pairing-"));
+  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-pairing-"));
 });
 
 afterAll(async () => {
@@ -111,7 +111,7 @@ function setDefaultRandomIntMock() {
 async function withTempStateDir<T>(fn: (stateDir: string) => Promise<T>) {
   const dir = path.join(fixtureRoot, `case-${caseId++}`);
   await fs.mkdir(dir, { recursive: true });
-  return await withEnvAsync({ OPENCLAW_STATE_DIR: dir }, async () => await fn(dir));
+  return await withEnvAsync({ CARLITO_STATE_DIR: dir }, async () => await fn(dir));
 }
 
 async function writeJsonFixture(filePath: string, value: unknown) {

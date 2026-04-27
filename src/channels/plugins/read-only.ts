@@ -1,10 +1,10 @@
 import { resolveAgentWorkspaceDir, resolveDefaultAgentId } from "../../agents/agent-scope.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import {
   listConfiguredChannelIdsForReadOnlyScope,
   resolveDiscoverableScopedChannelPluginIds,
 } from "../../plugins/channel-plugin-ids.js";
-import { loadOpenClawPlugins } from "../../plugins/loader.js";
+import { loadCarlitoPlugins } from "../../plugins/loader.js";
 import {
   loadPluginManifestRegistry,
   type PluginManifestRecord,
@@ -16,7 +16,7 @@ import type { ChannelPlugin } from "./types.plugin.js";
 type ReadOnlyChannelPluginOptions = {
   env?: NodeJS.ProcessEnv;
   workspaceDir?: string;
-  activationSourceConfig?: OpenClawConfig;
+  activationSourceConfig?: CarlitoConfig;
   includePersistedAuthState?: boolean;
   cache?: boolean;
 };
@@ -65,10 +65,10 @@ function rebindChannelScopedString(
 }
 
 function rebindChannelConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   sourceChannelId: string,
   targetChannelId: string,
-): OpenClawConfig {
+): CarlitoConfig {
   if (sourceChannelId === targetChannelId || !cfg.channels) {
     return cfg;
   }
@@ -82,11 +82,11 @@ function rebindChannelConfig(
 }
 
 function restoreReboundChannelConfig(params: {
-  original: OpenClawConfig;
-  updated: OpenClawConfig;
+  original: CarlitoConfig;
+  updated: CarlitoConfig;
   sourceChannelId: string;
   targetChannelId: string;
-}): OpenClawConfig {
+}): CarlitoConfig {
   if (params.sourceChannelId === params.targetChannelId || !params.updated.channels) {
     return params.updated;
   }
@@ -115,8 +115,7 @@ function rebindChannelPluginConfig(
   sourceChannelId: string,
   targetChannelId: string,
 ): ChannelPlugin["config"] {
-  const rebind = (cfg: OpenClawConfig) =>
-    rebindChannelConfig(cfg, sourceChannelId, targetChannelId);
+  const rebind = (cfg: CarlitoConfig) => rebindChannelConfig(cfg, sourceChannelId, targetChannelId);
   return {
     ...config,
     listAccountIds: (cfg) => config.listAccountIds(rebind(cfg)),
@@ -284,7 +283,7 @@ function addSetupChannelPlugins(
 }
 
 function resolveReadOnlyWorkspaceDir(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   options: ReadOnlyChannelPluginOptions,
 ): string | undefined {
   return options.workspaceDir ?? resolveAgentWorkspaceDir(cfg, resolveDefaultAgentId(cfg));
@@ -297,8 +296,8 @@ function listExternalChannelManifestRecords(
 }
 
 function resolveExternalReadOnlyChannelPluginIds(params: {
-  cfg: OpenClawConfig;
-  activationSourceConfig?: OpenClawConfig;
+  cfg: CarlitoConfig;
+  activationSourceConfig?: CarlitoConfig;
   channelIds: readonly string[];
   records: readonly PluginManifestRecord[];
   workspaceDir?: string;
@@ -333,14 +332,14 @@ function resolveExternalReadOnlyChannelPluginIds(params: {
 }
 
 export function listReadOnlyChannelPluginsForConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   options?: ReadOnlyChannelPluginOptions,
 ): ChannelPlugin[] {
   return resolveReadOnlyChannelPluginsForConfig(cfg, options).plugins;
 }
 
 export function resolveReadOnlyChannelPluginsForConfig(
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   options: ReadOnlyChannelPluginOptions = {},
 ): ReadOnlyChannelPluginResolution {
   const env = options.env ?? process.env;
@@ -402,7 +401,7 @@ export function resolveReadOnlyChannelPluginsForConfig(
           [pluginId, channelIds.filter((channelId) => missingChannelIdSet.has(channelId))] as const,
       ),
     );
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       config: cfg,
       activationSourceConfig: options.activationSourceConfig ?? cfg,
       env,

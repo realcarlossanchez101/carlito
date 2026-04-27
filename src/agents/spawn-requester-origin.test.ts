@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AgentBindingMatch } from "../config/types.agents.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import { resolveRequesterOriginForChild } from "./spawn-requester-origin.js";
 
 describe("resolveRequesterOriginForChild", () => {
@@ -9,7 +9,7 @@ describe("resolveRequesterOriginForChild", () => {
   }
 
   function resolveAccount(params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     targetAgentId?: string;
     requesterAgentId?: string;
     requesterChannel: string;
@@ -44,7 +44,7 @@ describe("resolveRequesterOriginForChild", () => {
             accountId: "bot-alpha-qa",
           }),
         ],
-      } as OpenClawConfig;
+      } as CarlitoConfig;
 
       expect(
         resolveRequesterOriginForChild({
@@ -185,7 +185,7 @@ describe("resolveRequesterOriginForChild", () => {
   ] as const)("selects target account: $name", (scenario) => {
     expect(
       resolveAccount({
-        cfg: { bindings: [...scenario.bindings] } as OpenClawConfig,
+        cfg: { bindings: [...scenario.bindings] } as CarlitoConfig,
         requesterChannel: scenario.requesterChannel,
         requesterAccountId: scenario.requesterAccountId,
         requesterAgentId: scenario.requesterAgentId,
@@ -211,7 +211,7 @@ describe("resolveRequesterOriginForChild", () => {
           accountId: "bot-alpha-teams",
         }),
       ],
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(
       resolveRequesterOriginForChild({
@@ -242,7 +242,7 @@ describe("resolveRequesterOriginForChild", () => {
           accountId: "bot-alpha-qa",
         }),
       ],
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(
       resolveRequesterOriginForChild({
@@ -283,7 +283,7 @@ describe("resolveRequesterOriginForChild", () => {
           accountId: "bot-alpha-current-guild",
         }),
       ],
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(
       resolveRequesterOriginForChild({
@@ -315,7 +315,7 @@ describe("resolveRequesterOriginForChild", () => {
           accountId: "bot-alpha-line",
         }),
       ],
-    } as OpenClawConfig;
+    } as CarlitoConfig;
 
     expect(
       resolveRequesterOriginForChild({

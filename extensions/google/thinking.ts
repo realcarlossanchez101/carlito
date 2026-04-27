@@ -10,4 +10,4 @@ export {
   stripInvalidGoogleThinkingBudget,
   type GoogleThinkingInputLevel,
   type GoogleThinkingLevel,
-} from "openclaw/plugin-sdk/provider-stream-shared";
+} from "carlito/plugin-sdk/provider-stream-shared";

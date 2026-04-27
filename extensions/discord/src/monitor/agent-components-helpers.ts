@@ -8,15 +8,15 @@ import {
   type StringSelectMenuInteraction,
   type UserSelectMenuInteraction,
 } from "@buape/carbon";
+import { createChannelPairingChallengeIssuer } from "carlito/plugin-sdk/channel-pairing";
+import { resolveCommandAuthorizedFromAuthorizers } from "carlito/plugin-sdk/command-auth-native";
+import type { DiscordAccountConfig, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { isDangerousNameMatchingEnabled } from "carlito/plugin-sdk/dangerous-name-runtime";
+import { resolveAgentRoute } from "carlito/plugin-sdk/routing";
+import { logVerbose } from "carlito/plugin-sdk/runtime-env";
+import { resolveOpenProviderRuntimeGroupPolicy } from "carlito/plugin-sdk/runtime-group-policy";
+import { logError } from "carlito/plugin-sdk/text-runtime";
 import { ChannelType } from "discord-api-types/v10";
-import { createChannelPairingChallengeIssuer } from "openclaw/plugin-sdk/channel-pairing";
-import { resolveCommandAuthorizedFromAuthorizers } from "openclaw/plugin-sdk/command-auth-native";
-import type { DiscordAccountConfig, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { isDangerousNameMatchingEnabled } from "openclaw/plugin-sdk/dangerous-name-runtime";
-import { resolveAgentRoute } from "openclaw/plugin-sdk/routing";
-import { logVerbose } from "openclaw/plugin-sdk/runtime-env";
-import { resolveOpenProviderRuntimeGroupPolicy } from "openclaw/plugin-sdk/runtime-group-policy";
-import { logError } from "openclaw/plugin-sdk/text-runtime";
 import {
   parseDiscordComponentCustomId,
   parseDiscordModalCustomId,
@@ -68,10 +68,10 @@ export type DiscordChannelContext = {
 };
 
 export type AgentComponentContext = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   discordConfig?: DiscordAccountConfig;
-  runtime?: import("openclaw/plugin-sdk/runtime-env").RuntimeEnv;
+  runtime?: import("carlito/plugin-sdk/runtime-env").RuntimeEnv;
   token?: string;
   guildEntries?: Record<string, DiscordGuildEntryResolved>;
   allowFrom?: string[];

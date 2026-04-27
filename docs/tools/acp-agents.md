@@ -1,5 +1,5 @@
 ---
-summary: "Use ACP runtime sessions for Codex, Claude Code, Cursor, Gemini CLI, OpenClaw ACP, and other harness agents"
+summary: "Use ACP runtime sessions for Codex, Claude Code, Cursor, Gemini CLI, Carlito ACP, and other harness agents"
 read_when:
   - Running coding harnesses through ACP
   - Setting up conversation-bound ACP sessions on messaging channels
@@ -10,27 +10,27 @@ read_when:
 title: "ACP agents"
 ---
 
-[Agent Client Protocol (ACP)](https://agentclientprotocol.com/) sessions let OpenClaw run external coding harnesses (for example Pi, Claude Code, Codex, Cursor, Copilot, OpenClaw ACP, OpenCode, Gemini CLI, and other supported ACPX harnesses) through an ACP backend plugin.
+[Agent Client Protocol (ACP)](https://agentclientprotocol.com/) sessions let Carlito run external coding harnesses (for example Pi, Claude Code, Codex, Cursor, Copilot, Carlito ACP, OpenCode, Gemini CLI, and other supported ACPX harnesses) through an ACP backend plugin.
 
-If you ask OpenClaw in plain language to "run this in Codex" or "start Claude Code in a thread", OpenClaw should route that request to the ACP runtime (not the native sub-agent runtime). Each ACP session spawn is tracked as a [background task](/automation/tasks).
+If you ask Carlito in plain language to "run this in Codex" or "start Claude Code in a thread", Carlito should route that request to the ACP runtime (not the native sub-agent runtime). Each ACP session spawn is tracked as a [background task](/automation/tasks).
 
 If you want Codex or Claude Code to connect as an external MCP client directly
-to existing OpenClaw channel conversations, use [`openclaw mcp serve`](/cli/mcp)
+to existing Carlito channel conversations, use [`carlito mcp serve`](/cli/mcp)
 instead of ACP.
 
 ## Which page do I want?
 
 There are three nearby surfaces that are easy to confuse:
 
-| You want to...                                                                     | Use this                              | Notes                                                                                                       |
-| ---------------------------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Run Codex, Claude Code, Gemini CLI, or another external harness _through_ OpenClaw | This page: ACP agents                 | Chat-bound sessions, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, background tasks, runtime controls |
-| Expose an OpenClaw Gateway session _as_ an ACP server for an editor or client      | [`openclaw acp`](/cli/acp)            | Bridge mode. IDE/client talks ACP to OpenClaw over stdio/WebSocket                                          |
-| Reuse a local AI CLI as a text-only fallback model                                 | [CLI Backends](/gateway/cli-backends) | Not ACP. No OpenClaw tools, no ACP controls, no harness runtime                                             |
+| You want to...                                                                    | Use this                              | Notes                                                                                                       |
+| --------------------------------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Run Codex, Claude Code, Gemini CLI, or another external harness _through_ Carlito | This page: ACP agents                 | Chat-bound sessions, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, background tasks, runtime controls |
+| Expose an Carlito Gateway session _as_ an ACP server for an editor or client      | [`carlito acp`](/cli/acp)             | Bridge mode. IDE/client talks ACP to Carlito over stdio/WebSocket                                           |
+| Reuse a local AI CLI as a text-only fallback model                                | [CLI Backends](/gateway/cli-backends) | Not ACP. No Carlito tools, no ACP controls, no harness runtime                                              |
 
 ## Does this work out of the box?
 
-Usually, yes. Fresh installs ship the bundled `acpx` runtime plugin enabled by default, with a plugin-local pinned `acpx` binary that OpenClaw probes and self-repairs on startup. Run `/acp doctor` for a readiness check.
+Usually, yes. Fresh installs ship the bundled `acpx` runtime plugin enabled by default, with a plugin-local pinned `acpx` binary that Carlito probes and self-repairs on startup. Run `/acp doctor` for a readiness check.
 
 First-run gotchas:
 
@@ -56,15 +56,15 @@ Natural-language triggers that should route to the ACP runtime:
 - "Run this as a one-shot Claude Code ACP session and summarize the result."
 - "Use Gemini CLI for this task in a thread, then keep follow-ups in that same thread."
 
-OpenClaw picks `runtime: "acp"`, resolves the harness `agentId`, binds to the current conversation or thread when supported, and routes follow-ups to that session until close/expiry.
+Carlito picks `runtime: "acp"`, resolves the harness `agentId`, binds to the current conversation or thread when supported, and routes follow-ups to that session until close/expiry.
 
 ## ACP versus sub-agents
 
-Use ACP when you want an external harness runtime. Use sub-agents when you want OpenClaw-native delegated runs.
+Use ACP when you want an external harness runtime. Use sub-agents when you want Carlito-native delegated runs.
 
 | Area          | ACP session                           | Sub-agent run                      |
 | ------------- | ------------------------------------- | ---------------------------------- |
-| Runtime       | ACP backend plugin (for example acpx) | OpenClaw native sub-agent runtime  |
+| Runtime       | ACP backend plugin (for example acpx) | Carlito native sub-agent runtime   |
 | Session key   | `agent:<agentId>:acp:<uuid>`          | `agent:<agentId>:subagent:<uuid>`  |
 | Main commands | `/acp ...`                            | `/subagents ...`                   |
 | Spawn tool    | `sessions_spawn` with `runtime:"acp"` | `sessions_spawn` (default runtime) |
@@ -75,7 +75,7 @@ See also [Sub-agents](/tools/subagents).
 
 For Claude Code through ACP, the stack is:
 
-1. OpenClaw ACP session control plane
+1. Carlito ACP session control plane
 2. bundled `acpx` runtime plugin
 3. Claude ACP adapter
 4. Claude-side runtime/session machinery
@@ -94,38 +94,38 @@ For operators, the practical rule is:
 
 ### Current-conversation binds
 
-`/acp spawn <harness> --bind here` pins the current conversation to the spawned ACP session — no child thread, same chat surface. OpenClaw keeps owning transport, auth, safety, and delivery; follow-up messages in that conversation route to the same session; `/new` and `/reset` reset the session in place; `/acp close` removes the binding.
+`/acp spawn <harness> --bind here` pins the current conversation to the spawned ACP session — no child thread, same chat surface. Carlito keeps owning transport, auth, safety, and delivery; follow-up messages in that conversation route to the same session; `/new` and `/reset` reset the session in place; `/acp close` removes the binding.
 
 Mental model:
 
 - **chat surface** — where people keep talking (Discord channel, Telegram topic, iMessage chat).
-- **ACP session** — the durable Codex/Claude/Gemini runtime state OpenClaw routes to.
+- **ACP session** — the durable Codex/Claude/Gemini runtime state Carlito routes to.
 - **child thread/topic** — an optional extra messaging surface created only by `--thread ...`.
 - **runtime workspace** — the filesystem location (`cwd`, repo checkout, backend workspace) where the harness runs. Independent of the chat surface.
 
 Examples:
 
 - `/acp spawn codex --bind here` — keep this chat, spawn or attach Codex, route future messages here.
-- `/acp spawn codex --thread auto` — OpenClaw may create a child thread/topic and bind there.
+- `/acp spawn codex --thread auto` — Carlito may create a child thread/topic and bind there.
 - `/acp spawn codex --bind here --cwd /workspace/repo` — same chat binding, Codex runs in `/workspace/repo`.
 
 Notes:
 
 - `--bind here` and `--thread ...` are mutually exclusive.
-- `--bind here` only works on channels that advertise current-conversation binding; OpenClaw returns a clear unsupported message otherwise. Bindings persist across gateway restarts.
-- On Discord, `spawnAcpSessions` is only required when OpenClaw needs to create a child thread for `--thread auto|here` — not for `--bind here`.
-- If you spawn to a different ACP agent without `--cwd`, OpenClaw inherits the **target agent's** workspace by default. Missing inherited paths (`ENOENT`/`ENOTDIR`) fall back to the backend default; other access errors (e.g. `EACCES`) surface as spawn errors.
+- `--bind here` only works on channels that advertise current-conversation binding; Carlito returns a clear unsupported message otherwise. Bindings persist across gateway restarts.
+- On Discord, `spawnAcpSessions` is only required when Carlito needs to create a child thread for `--thread auto|here` — not for `--bind here`.
+- If you spawn to a different ACP agent without `--cwd`, Carlito inherits the **target agent's** workspace by default. Missing inherited paths (`ENOENT`/`ENOTDIR`) fall back to the backend default; other access errors (e.g. `EACCES`) surface as spawn errors.
 
 ### Thread-bound sessions
 
 When thread bindings are enabled for a channel adapter, ACP sessions can be bound to threads:
 
-- OpenClaw binds a thread to a target ACP session.
+- Carlito binds a thread to a target ACP session.
 - Follow-up messages in that thread route to the bound ACP session.
 - ACP output is delivered back to the same thread.
 - Unfocus/close/archive/idle-timeout or max-age expiry removes the binding.
 
-Thread binding support is adapter-specific. If the active channel adapter does not support thread bindings, OpenClaw returns a clear unsupported/unavailable message.
+Thread binding support is adapter-specific. If the active channel adapter does not support thread bindings, Carlito returns a clear unsupported/unavailable message.
 
 Required feature flags for thread-bound ACP:
 
@@ -157,7 +157,7 @@ For non-ephemeral workflows, configure persistent ACP bindings in top-level `bin
     Prefer `chat_id:*` or `chat_identifier:*` for stable group bindings.
   - iMessage DM/group chat: `match.channel="imessage"` + `match.peer.id="<handle|chat_id:*|chat_guid:*|chat_identifier:*>"`
     Prefer `chat_id:*` for stable group bindings.
-- `bindings[].agentId` is the owning OpenClaw agent id.
+- `bindings[].agentId` is the owning Carlito agent id.
 - Optional ACP overrides live under `bindings[].acp`:
   - `mode` (`persistent` or `oneshot`)
   - `label`
@@ -194,7 +194,7 @@ Example:
             agent: "codex",
             backend: "acpx",
             mode: "persistent",
-            cwd: "/workspace/openclaw",
+            cwd: "/workspace/carlito",
           },
         },
       },
@@ -262,11 +262,11 @@ Example:
 
 Behavior:
 
-- OpenClaw ensures the configured ACP session exists before use.
+- Carlito ensures the configured ACP session exists before use.
 - Messages in that channel or topic route to the configured ACP session.
 - In bound conversations, `/new` and `/reset` reset the same ACP session key in place.
 - Temporary runtime bindings (for example created by thread-focus flows) still apply where present.
-- For cross-agent ACP spawns without an explicit `cwd`, OpenClaw inherits the target agent workspace from agent config.
+- For cross-agent ACP spawns without an explicit `cwd`, Carlito inherits the target agent workspace from agent config.
 - Missing inherited workspace paths fall back to the backend default cwd; non-missing access failures surface as spawn errors.
 
 ## Start ACP sessions (interfaces)
@@ -288,7 +288,7 @@ Use `runtime: "acp"` to start an ACP session from an agent turn or tool call.
 Notes:
 
 - `runtime` defaults to `subagent`, so set `runtime: "acp"` explicitly for ACP sessions.
-- If `agentId` is omitted, OpenClaw uses `acp.defaultAgent` when configured.
+- If `agentId` is omitted, Carlito uses `acp.defaultAgent` when configured.
 - `mode: "session"` requires `thread: true` to keep a persistent bound conversation.
 
 Interface details:
@@ -299,7 +299,7 @@ Interface details:
 - `thread` (optional, default `false`): request thread binding flow where supported.
 - `mode` (optional): `run` (one-shot) or `session` (persistent).
   - default is `run`
-  - if `thread: true` and mode omitted, OpenClaw may default to persistent behavior per runtime path
+  - if `thread: true` and mode omitted, Carlito may default to persistent behavior per runtime path
   - `mode: "session"` requires `thread: true`
 - `cwd` (optional): requested runtime working directory (validated by backend/runtime policy). If omitted, ACP spawn inherits the target agent workspace when configured; missing inherited paths fall back to backend defaults, while real access errors are returned.
 - `label` (optional): operator-facing label used in session/banner text.
@@ -335,7 +335,7 @@ Do not treat this path as a peer-to-peer chat between parent and child. The chil
 
 ### `sessions_send` and A2A delivery
 
-`sessions_send` can target another session after spawn. For normal peer sessions, OpenClaw uses an agent-to-agent (A2A) follow-up path after injecting the message:
+`sessions_send` can target another session after spawn. For normal peer sessions, Carlito uses an agent-to-agent (A2A) follow-up path after injecting the message:
 
 - wait for the target session's reply
 - optionally let requester and target exchange a bounded number of follow-up turns
@@ -344,7 +344,7 @@ Do not treat this path as a peer-to-peer chat between parent and child. The chil
 
 That A2A path is a fallback for peer sends where the sender needs a visible follow-up. It stays enabled when an unrelated session can see and message an ACP target, for example under broad `tools.sessions.visibility` settings.
 
-OpenClaw skips the A2A follow-up only when the requester is the parent of its own parent-owned one-shot ACP child. In that case, running A2A on top of task completion can wake the parent with the child's result, forward the parent's reply back into the child, and create a parent/child echo loop. The `sessions_send` result reports `delivery.status="skipped"` for that owned-child case because the completion path is already responsible for the result.
+Carlito skips the A2A follow-up only when the requester is the parent of its own parent-owned one-shot ACP child. In that case, running A2A on top of task completion can wake the parent with the child's result, forward the parent's reply back into the child, and create a parent/child echo loop. The `sessions_send` result reports `delivery.status="skipped"` for that owned-child case because the completion path is already responsible for the result.
 
 ### Resume an existing session
 
@@ -368,7 +368,7 @@ Common use cases:
 Notes:
 
 - `resumeSessionId` requires `runtime: "acp"` — returns an error if used with the sub-agent runtime.
-- `resumeSessionId` restores the upstream ACP conversation history; `thread` and `mode` still apply normally to the new OpenClaw session you are creating, so `mode: "session"` still requires `thread: true`.
+- `resumeSessionId` restores the upstream ACP conversation history; `thread` and `mode` still apply normally to the new Carlito session you are creating, so `mode: "session"` still requires `thread: true`.
 - The target agent must support `session/load` (Codex and Claude Code do).
 - If the session ID isn't found, the spawn fails with a clear error — no silent fallback to a new session.
 
@@ -388,7 +388,7 @@ Keep the gate on `mode: "run"` and skip `streamTo: "parent"` — thread-bound `m
 
 ## Sandbox compatibility
 
-ACP sessions currently run on the host runtime, not inside the OpenClaw sandbox.
+ACP sessions currently run on the host runtime, not inside the Carlito sandbox.
 
 Current limitations:
 
@@ -435,7 +435,7 @@ Resolution order:
 
 Current-conversation bindings and thread bindings both participate in step 2.
 
-If no target resolves, OpenClaw returns a clear error (`Unable to resolve session target: ...`).
+If no target resolves, Carlito returns a clear error (`Unable to resolve session target: ...`).
 
 ## Spawn bind modes
 
@@ -521,15 +521,15 @@ Current acpx built-in harness aliases:
 - `kilocode`
 - `kimi`
 - `kiro`
-- `openclaw`
+- `carlito`
 - `opencode`
 - `pi`
 - `qwen`
 
-When OpenClaw uses the acpx backend, prefer these values for `agentId` unless your acpx config defines custom agent aliases.
+When Carlito uses the acpx backend, prefer these values for `agentId` unless your acpx config defines custom agent aliases.
 If your local Cursor install still exposes ACP as `agent acp`, override the `cursor` agent command in your acpx config instead of changing the built-in default.
 
-Direct acpx CLI usage can also target arbitrary adapters via `--agent <command>`, but that raw escape hatch is an acpx CLI feature (not the normal OpenClaw `agentId` path).
+Direct acpx CLI usage can also target arbitrary adapters via `--agent <command>`, but that raw escape hatch is an acpx CLI feature (not the normal Carlito `agentId` path).
 
 ## Required config
 
@@ -554,7 +554,7 @@ Core ACP baseline:
       "kilocode",
       "kimi",
       "kiro",
-      "openclaw",
+      "carlito",
       "opencode",
       "pi",
       "qwen",
@@ -616,14 +616,14 @@ If you disabled `acpx`, denied it via `plugins.allow` / `plugins.deny`, or want
 to switch to a local development checkout, use the explicit plugin path:
 
 ```bash
-openclaw plugins install acpx
-openclaw config set plugins.entries.acpx.enabled true
+carlito plugins install acpx
+carlito config set plugins.entries.acpx.enabled true
 ```
 
 Local workspace install during development:
 
 ```bash
-openclaw plugins install ./path/to/local/acpx-plugin
+carlito plugins install ./path/to/local/acpx-plugin
 ```
 
 Then verify backend health:
@@ -654,7 +654,7 @@ Override the command or version in plugin config:
 }
 ```
 
-- `command` accepts an absolute path, relative path (resolved from the OpenClaw workspace), or command name.
+- `command` accepts an absolute path, relative path (resolved from the Carlito workspace), or command name.
 - `expectedVersion: "any"` disables strict version matching.
 - Custom `command` paths disable plugin-local auto-install.
 
@@ -662,28 +662,28 @@ See [Plugins](/tools/plugin).
 
 ### Automatic dependency install
 
-When you install OpenClaw globally with `npm install -g openclaw`, the acpx
+When you install Carlito globally with `npm install -g carlito`, the acpx
 runtime dependencies (platform-specific binaries) are installed automatically
 via a postinstall hook. If the automatic install fails, the gateway still starts
-normally and reports the missing dependency through `openclaw acp doctor`.
+normally and reports the missing dependency through `carlito acp doctor`.
 
 ### Plugin tools MCP bridge
 
-By default, ACPX sessions do **not** expose OpenClaw plugin-registered tools to
+By default, ACPX sessions do **not** expose Carlito plugin-registered tools to
 the ACP harness.
 
 If you want ACP agents such as Codex or Claude Code to call installed
-OpenClaw plugin tools such as memory recall/store, enable the dedicated bridge:
+Carlito plugin tools such as memory recall/store, enable the dedicated bridge:
 
 ```bash
-openclaw config set plugins.entries.acpx.config.pluginToolsMcpBridge true
+carlito config set plugins.entries.acpx.config.pluginToolsMcpBridge true
 ```
 
 What this does:
 
-- Injects a built-in MCP server named `openclaw-plugin-tools` into ACPX session
+- Injects a built-in MCP server named `carlito-plugin-tools` into ACPX session
   bootstrap.
-- Exposes plugin tools already registered by installed and enabled OpenClaw
+- Exposes plugin tools already registered by installed and enabled Carlito
   plugins.
 - Keeps the feature explicit and default-off.
 
@@ -692,27 +692,27 @@ Security and trust notes:
 - This expands the ACP harness tool surface.
 - ACP agents get access only to plugin tools already active in the gateway.
 - Treat this as the same trust boundary as letting those plugins execute in
-  OpenClaw itself.
+  Carlito itself.
 - Review installed plugins before enabling it.
 
 Custom `mcpServers` still work as before. The built-in plugin-tools bridge is an
 additional opt-in convenience, not a replacement for generic MCP server config.
 
-### OpenClaw tools MCP bridge
+### Carlito tools MCP bridge
 
-By default, ACPX sessions also do **not** expose built-in OpenClaw tools through
+By default, ACPX sessions also do **not** expose built-in Carlito tools through
 MCP. Enable the separate core-tools bridge when an ACP agent needs selected
 built-in tools such as `cron`:
 
 ```bash
-openclaw config set plugins.entries.acpx.config.openClawToolsMcpBridge true
+carlito config set plugins.entries.acpx.config.carlitoToolsMcpBridge true
 ```
 
 What this does:
 
-- Injects a built-in MCP server named `openclaw-tools` into ACPX session
+- Injects a built-in MCP server named `carlito-tools` into ACPX session
   bootstrap.
-- Exposes selected built-in OpenClaw tools. The initial server exposes `cron`.
+- Exposes selected built-in Carlito tools. The initial server exposes `cron`.
 - Keeps core-tool exposure explicit and default-off.
 
 ### Runtime timeout configuration
@@ -723,7 +723,7 @@ ACP startup and initialization. Override it if your host needs a different
 runtime limit:
 
 ```bash
-openclaw config set plugins.entries.acpx.config.timeoutSeconds 180
+carlito config set plugins.entries.acpx.config.timeoutSeconds 180
 ```
 
 Restart the gateway after changing this value.
@@ -735,7 +735,7 @@ embedded runtime backend is ready. It defaults to `codex`. If your deployment
 uses a different default ACP agent, set the probe agent to the same id:
 
 ```bash
-openclaw config set plugins.entries.acpx.config.probeAgent claude
+carlito config set plugins.entries.acpx.config.probeAgent claude
 ```
 
 Restart the gateway after changing this value.
@@ -744,7 +744,7 @@ Restart the gateway after changing this value.
 
 ACP sessions run non-interactively — there is no TTY to approve or deny file-write and shell-exec permission prompts. The acpx plugin provides two config keys that control how permissions are handled:
 
-These ACPX harness permissions are separate from OpenClaw exec approvals and separate from CLI-backend vendor bypass flags such as Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` is the harness-level break-glass switch for ACP sessions.
+These ACPX harness permissions are separate from Carlito exec approvals and separate from CLI-backend vendor bypass flags such as Claude CLI `--permission-mode bypassPermissions`. ACPX `approve-all` is the harness-level break-glass switch for ACP sessions.
 
 ### `permissionMode`
 
@@ -770,13 +770,13 @@ Controls what happens when a permission prompt would be shown but no interactive
 Set via plugin config:
 
 ```bash
-openclaw config set plugins.entries.acpx.config.permissionMode approve-all
-openclaw config set plugins.entries.acpx.config.nonInteractivePermissions fail
+carlito config set plugins.entries.acpx.config.permissionMode approve-all
+carlito config set plugins.entries.acpx.config.nonInteractivePermissions fail
 ```
 
 Restart the gateway after changing these values.
 
-> **Important:** OpenClaw currently defaults to `permissionMode=approve-reads` and `nonInteractivePermissions=fail`. In non-interactive ACP sessions, any write or exec that triggers a permission prompt can fail with `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
+> **Important:** Carlito currently defaults to `permissionMode=approve-reads` and `nonInteractivePermissions=fail`. In non-interactive ACP sessions, any write or exec that triggers a permission prompt can fail with `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`.
 >
 > If you need to restrict permissions, set `nonInteractivePermissions` to `deny` so sessions degrade gracefully instead of crashing.
 

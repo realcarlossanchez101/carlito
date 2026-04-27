@@ -2,30 +2,30 @@ import fs from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestPluginApi } from "../../test/helpers/plugins/plugin-api.js";
 
-const { tokenjuiceFactory, createTokenjuiceOpenClawEmbeddedExtension } = vi.hoisted(() => {
+const { tokenjuiceFactory, createTokenjuiceCarlitoEmbeddedExtension } = vi.hoisted(() => {
   const tokenjuiceFactory = vi.fn();
-  const createTokenjuiceOpenClawEmbeddedExtension = vi.fn(() => tokenjuiceFactory);
+  const createTokenjuiceCarlitoEmbeddedExtension = vi.fn(() => tokenjuiceFactory);
   return {
     tokenjuiceFactory,
-    createTokenjuiceOpenClawEmbeddedExtension,
+    createTokenjuiceCarlitoEmbeddedExtension,
   };
 });
 
 vi.mock("./runtime-api.js", () => ({
-  createTokenjuiceOpenClawEmbeddedExtension,
+  createTokenjuiceCarlitoEmbeddedExtension,
 }));
 
 import plugin from "./index.js";
 
 describe("tokenjuice bundled plugin", () => {
   beforeEach(() => {
-    createTokenjuiceOpenClawEmbeddedExtension.mockClear();
+    createTokenjuiceCarlitoEmbeddedExtension.mockClear();
     tokenjuiceFactory.mockClear();
   });
 
   it("is opt-in by default", () => {
     const manifest = JSON.parse(
-      fs.readFileSync(new URL("./openclaw.plugin.json", import.meta.url), "utf8"),
+      fs.readFileSync(new URL("./carlito.plugin.json", import.meta.url), "utf8"),
     ) as { enabledByDefault?: unknown };
 
     expect(manifest.enabledByDefault).toBeUndefined();
@@ -46,7 +46,7 @@ describe("tokenjuice bundled plugin", () => {
       }),
     );
 
-    expect(createTokenjuiceOpenClawEmbeddedExtension).toHaveBeenCalledTimes(1);
+    expect(createTokenjuiceCarlitoEmbeddedExtension).toHaveBeenCalledTimes(1);
     expect(registerEmbeddedExtensionFactory).toHaveBeenCalledWith(tokenjuiceFactory);
   });
 });

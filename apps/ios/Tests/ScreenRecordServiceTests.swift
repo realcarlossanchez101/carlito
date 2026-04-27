@@ -1,5 +1,5 @@
 import Testing
-@testable import OpenClaw
+@testable import Carlito
 
 @Suite(.serialized) struct ScreenRecordServiceTests {
     @Test func clampDefaultsAndBounds() {

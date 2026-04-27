@@ -5,9 +5,9 @@ import {
   GroupPolicySchema,
   MarkdownConfigSchema,
   ToolPolicySchema,
-} from "openclaw/plugin-sdk/channel-config-schema";
-import { buildSecretInputSchema } from "openclaw/plugin-sdk/secret-input";
-import { z } from "openclaw/plugin-sdk/zod";
+} from "carlito/plugin-sdk/channel-config-schema";
+import { buildSecretInputSchema } from "carlito/plugin-sdk/secret-input";
+import { z } from "carlito/plugin-sdk/zod";
 
 const matrixActionSchema = z
   .object({

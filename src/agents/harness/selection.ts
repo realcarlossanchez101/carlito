@@ -1,5 +1,5 @@
 import type { AgentEmbeddedHarnessConfig } from "../../config/types.agents-shared.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import { formatErrorMessage } from "../../infra/errors.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import { normalizeAgentId } from "../../routing/session-key.js";
@@ -71,7 +71,7 @@ function compareHarnessSupport(
 export function selectAgentHarness(params: {
   provider: string;
   modelId?: string;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentId?: string;
   sessionKey?: string;
   agentHarnessId?: string;
@@ -82,7 +82,7 @@ export function selectAgentHarness(params: {
 function selectAgentHarnessDecision(params: {
   provider: string;
   modelId?: string;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentId?: string;
   sessionKey?: string;
   agentHarnessId?: string;
@@ -299,7 +299,7 @@ export async function maybeCompactAgentHarnessSession(
 export function resolveAgentHarnessPolicy(params: {
   provider?: string;
   modelId?: string;
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
   agentId?: string;
   sessionKey?: string;
   env?: NodeJS.ProcessEnv;
@@ -312,7 +312,7 @@ export function resolveAgentHarnessPolicy(params: {
     sessionKey: params.sessionKey,
   });
   const defaultsPolicy = params.config?.agents?.defaults?.embeddedHarness;
-  const runtime = env.OPENCLAW_AGENT_RUNTIME?.trim()
+  const runtime = env.CARLITO_AGENT_RUNTIME?.trim()
     ? resolveEmbeddedAgentRuntime(env)
     : normalizeEmbeddedAgentRuntime(agentPolicy?.runtime ?? defaultsPolicy?.runtime);
   return {
@@ -324,7 +324,7 @@ export function resolveAgentHarnessPolicy(params: {
 }
 
 function resolveAgentEmbeddedHarnessConfig(
-  config: OpenClawConfig | undefined,
+  config: CarlitoConfig | undefined,
   params: { agentId?: string; sessionKey?: string },
 ): AgentEmbeddedHarnessConfig | undefined {
   if (!config) {

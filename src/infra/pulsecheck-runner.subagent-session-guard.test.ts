@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { resolveMainSessionKey } from "../config/sessions.js";
 import { runPulsecheckOnce } from "./pulsecheck-runner.js";
 import { installPulsecheckRunnerTestRuntime } from "./pulsecheck-runner.test-harness.js";
@@ -11,7 +11,7 @@ installPulsecheckRunnerTestRuntime();
 describe("runPulsecheckOnce", () => {
   it("falls back to the main session when a subagent session key is forced", async () => {
     await withTempPulsecheckSandbox(async ({ tmpDir, storePath, replySpy }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,

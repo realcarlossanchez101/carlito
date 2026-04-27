@@ -31,7 +31,7 @@ function startCompaction(sessionFile: string, options: { currentTokenCount?: num
 
 describe("maybeCompactCodexAppServerSession", () => {
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-codex-compact-"));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-codex-compact-"));
   });
 
   afterEach(async () => {

@@ -1,11 +1,11 @@
 ---
-summary: "CLI reference for `openclaw pairing` (approve/list pairing requests)"
+summary: "CLI reference for `carlito pairing` (approve/list pairing requests)"
 read_when:
   - You’re using pairing-mode DMs and need to approve senders
 title: "Pairing"
 ---
 
-# `openclaw pairing`
+# `carlito pairing`
 
 Approve or inspect DM pairing requests (for channels that support pairing).
 
@@ -16,13 +16,13 @@ Related:
 ## Commands
 
 ```bash
-openclaw pairing list telegram
-openclaw pairing list --channel telegram --account work
-openclaw pairing list telegram --json
+carlito pairing list telegram
+carlito pairing list --channel telegram --account work
+carlito pairing list telegram --json
 
-openclaw pairing approve <code>
-openclaw pairing approve telegram <code>
-openclaw pairing approve --channel telegram --account work <code> --notify
+carlito pairing approve <code>
+carlito pairing approve telegram <code>
+carlito pairing approve --channel telegram --account work <code> --notify
 ```
 
 ## `pairing list`
@@ -47,9 +47,9 @@ Approve a pending pairing code and allow that sender.
 
 Usage:
 
-- `openclaw pairing approve <channel> <code>`
-- `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` when exactly one pairing-capable channel is configured
+- `carlito pairing approve <channel> <code>`
+- `carlito pairing approve --channel <channel> <code>`
+- `carlito pairing approve <code>` when exactly one pairing-capable channel is configured
 
 Options:
 

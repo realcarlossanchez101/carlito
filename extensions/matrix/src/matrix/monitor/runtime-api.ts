@@ -2,11 +2,11 @@
 // Keep monitor internals off the broad package runtime-api barrel so monitor
 // tests and shared workers do not pull unrelated Matrix helper surfaces.
 
-export type { NormalizedLocation } from "openclaw/plugin-sdk/channel-location";
-export type { PluginRuntime, RuntimeLogger } from "openclaw/plugin-sdk/plugin-runtime";
-export type { BlockReplyContext, ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
-export type { MarkdownTableMode, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-export type { RuntimeEnv } from "openclaw/plugin-sdk/runtime";
+export type { NormalizedLocation } from "carlito/plugin-sdk/channel-location";
+export type { PluginRuntime, RuntimeLogger } from "carlito/plugin-sdk/plugin-runtime";
+export type { BlockReplyContext, ReplyPayload } from "carlito/plugin-sdk/reply-runtime";
+export type { MarkdownTableMode, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+export type { RuntimeEnv } from "carlito/plugin-sdk/runtime";
 export {
   addAllowlistUserEntriesFromConfigEntry,
   buildAllowlistResolutionSummary,
@@ -14,16 +14,16 @@ export {
   formatAllowlistMatchMeta,
   patchAllowlistUsersInConfigEntries,
   summarizeMapping,
-} from "openclaw/plugin-sdk/allow-from";
+} from "carlito/plugin-sdk/allow-from";
 export {
   createReplyPrefixOptions,
   createTypingCallbacks,
-} from "openclaw/plugin-sdk/channel-reply-options-runtime";
-export { formatLocationText, toLocationContext } from "openclaw/plugin-sdk/channel-location";
-export { getAgentScopedMediaLocalRoots } from "openclaw/plugin-sdk/agent-media-payload";
-export { logInboundDrop, logTypingFailure } from "openclaw/plugin-sdk/channel-logging";
-export { resolveAckReaction } from "openclaw/plugin-sdk/channel-feedback";
+} from "carlito/plugin-sdk/channel-reply-options-runtime";
+export { formatLocationText, toLocationContext } from "carlito/plugin-sdk/channel-location";
+export { getAgentScopedMediaLocalRoots } from "carlito/plugin-sdk/agent-media-payload";
+export { logInboundDrop, logTypingFailure } from "carlito/plugin-sdk/channel-logging";
+export { resolveAckReaction } from "carlito/plugin-sdk/channel-feedback";
 export {
   buildChannelKeyCandidates,
   resolveChannelEntryMatch,
-} from "openclaw/plugin-sdk/channel-targets";
+} from "carlito/plugin-sdk/channel-targets";

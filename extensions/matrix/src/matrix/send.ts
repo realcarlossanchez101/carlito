@@ -1,5 +1,5 @@
-import { requireRuntimeConfig } from "openclaw/plugin-sdk/config-runtime";
-import type { MarkdownTableMode } from "openclaw/plugin-sdk/markdown-table-runtime";
+import { requireRuntimeConfig } from "carlito/plugin-sdk/config-runtime";
+import type { MarkdownTableMode } from "carlito/plugin-sdk/markdown-table-runtime";
 import type { PollInput } from "../runtime-api.js";
 import { getMatrixRuntime } from "../runtime.js";
 import type { CoreConfig } from "../types.js";

@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import type { ResolvedBrowserProfile } from "../config.js";
 import { resolveSnapshotPlan } from "./agent.snapshot.plan.js";
 
-function profile(driver: "existing-session" | "openclaw"): ResolvedBrowserProfile {
+function profile(driver: "existing-session" | "carlito"): ResolvedBrowserProfile {
   return {
-    name: driver === "existing-session" ? "user" : "openclaw",
+    name: driver === "existing-session" ? "user" : "carlito",
     driver,
     cdpPort: driver === "existing-session" ? 0 : 18792,
     cdpUrl: driver === "existing-session" ? "" : "http://127.0.0.1:18792",
@@ -28,7 +28,7 @@ describe("resolveSnapshotPlan", () => {
 
   it("keeps ai snapshots for managed browsers when Playwright is available", () => {
     const plan = resolveSnapshotPlan({
-      profile: profile("openclaw"),
+      profile: profile("carlito"),
       query: {},
       hasPlaywright: true,
     });

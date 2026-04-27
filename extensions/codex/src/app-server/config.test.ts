@@ -23,8 +23,8 @@ describe("Codex app-server config", () => {
         },
       },
       env: {
-        OPENCLAW_CODEX_APP_SERVER_APPROVAL_POLICY: "never",
-        OPENCLAW_CODEX_APP_SERVER_SANDBOX: "read-only",
+        CARLITO_CODEX_APP_SERVER_APPROVAL_POLICY: "never",
+        CARLITO_CODEX_APP_SERVER_SANDBOX: "read-only",
       },
     });
 
@@ -122,7 +122,7 @@ describe("Codex app-server config", () => {
   it("allows environment mode fallback to opt in to guardian-reviewed local execution", () => {
     const runtime = resolveCodexAppServerRuntimeOptions({
       pluginConfig: {},
-      env: { OPENCLAW_CODEX_APP_SERVER_MODE: "guardian" },
+      env: { CARLITO_CODEX_APP_SERVER_MODE: "guardian" },
     });
 
     expect(runtime).toEqual(
@@ -134,10 +134,10 @@ describe("Codex app-server config", () => {
     );
   });
 
-  it("ignores removed OPENCLAW_CODEX_APP_SERVER_GUARDIAN fallback", () => {
+  it("ignores removed CARLITO_CODEX_APP_SERVER_GUARDIAN fallback", () => {
     const runtime = resolveCodexAppServerRuntimeOptions({
       pluginConfig: {},
-      env: { OPENCLAW_CODEX_APP_SERVER_GUARDIAN: "1" },
+      env: { CARLITO_CODEX_APP_SERVER_GUARDIAN: "1" },
     });
 
     expect(runtime).toEqual(
@@ -196,7 +196,7 @@ describe("Codex app-server config", () => {
 
   it("keeps runtime config keys aligned with manifest schema and UI hints", async () => {
     const manifest = JSON.parse(
-      await fs.readFile(new URL("../../openclaw.plugin.json", import.meta.url), "utf8"),
+      await fs.readFile(new URL("../../carlito.plugin.json", import.meta.url), "utf8"),
     ) as {
       configSchema: {
         properties: {
@@ -217,7 +217,7 @@ describe("Codex app-server config", () => {
 
   it("does not schema-default mode-derived policy fields", async () => {
     const manifest = JSON.parse(
-      await fs.readFile(new URL("../../openclaw.plugin.json", import.meta.url), "utf8"),
+      await fs.readFile(new URL("../../carlito.plugin.json", import.meta.url), "utf8"),
     ) as {
       configSchema: {
         properties: {

@@ -73,7 +73,7 @@ describe("deliverReplies identity passthrough", () => {
         elements: [
           {
             type: "button",
-            action_id: "openclaw:reply_button",
+            action_id: "carlito:reply_button",
             text: { type: "plain_text", text: "Option A" },
             value: "reply_1_option_a",
           },
@@ -136,7 +136,7 @@ describe("deliverReplies identity passthrough", () => {
           type: "actions",
           elements: [
             expect.objectContaining({
-              action_id: "openclaw:reply_button:1:1",
+              action_id: "carlito:reply_button:1:1",
               style: "primary",
               value: "approve",
             }),

@@ -1,5 +1,5 @@
 ---
-summary: "CLI reference for `openclaw system` (system events, pulsecheck, presence)"
+summary: "CLI reference for `carlito system` (system events, pulsecheck, presence)"
 read_when:
   - You want to enqueue a system event without creating a cron job
   - You need to enable or disable pulsechecks
@@ -7,7 +7,7 @@ read_when:
 title: "System"
 ---
 
-# `openclaw system`
+# `carlito system`
 
 System-level helpers for the Gateway: enqueue system events, control pulsechecks,
 and view presence.
@@ -22,11 +22,11 @@ All `system` subcommands use Gateway RPC and accept the shared client flags:
 ## Common commands
 
 ```bash
-openclaw system event --text "Check for urgent follow-ups" --mode now
-openclaw system event --text "Check for urgent follow-ups" --url ws://127.0.0.1:18789 --token "$OPENCLAW_GATEWAY_TOKEN"
-openclaw system pulsecheck enable
-openclaw system pulsecheck last
-openclaw system presence
+carlito system event --text "Check for urgent follow-ups" --mode now
+carlito system event --text "Check for urgent follow-ups" --url ws://127.0.0.1:18789 --token "$CARLITO_GATEWAY_TOKEN"
+carlito system pulsecheck enable
+carlito system pulsecheck last
+carlito system presence
 ```
 
 ## `system event`

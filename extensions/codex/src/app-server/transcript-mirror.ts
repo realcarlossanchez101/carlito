@@ -6,7 +6,7 @@ import {
   acquireSessionWriteLock,
   emitSessionTranscriptUpdate,
   runAgentHarnessBeforeMessageWriteHook,
-} from "openclaw/plugin-sdk/agent-harness-runtime";
+} from "carlito/plugin-sdk/agent-harness-runtime";
 
 export async function mirrorCodexAppServerTranscript(params: {
   sessionFile: string;

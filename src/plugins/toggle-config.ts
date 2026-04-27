@@ -1,15 +1,15 @@
 import { normalizeChatChannelId } from "../channels/ids.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 
 export function setPluginEnabledInConfig(
-  config: OpenClawConfig,
+  config: CarlitoConfig,
   pluginId: string,
   enabled: boolean,
-): OpenClawConfig {
+): CarlitoConfig {
   const builtInChannelId = normalizeChatChannelId(pluginId);
   const resolvedId = builtInChannelId ?? pluginId;
 
-  const next: OpenClawConfig = {
+  const next: CarlitoConfig = {
     ...config,
     plugins: {
       ...config.plugins,

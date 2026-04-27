@@ -8,16 +8,18 @@ import {
 
 describe("gh-read helpers", () => {
   it("finds repo from gh args", () => {
-    expect(parseRepoArg(["pr", "view", "42", "-R", "openclaw/openclaw"])).toBe("openclaw/openclaw");
-    expect(parseRepoArg(["run", "list", "--repo=openclaw/docs"])).toBe("openclaw/docs");
+    expect(parseRepoArg(["pr", "view", "42", "-R", "carlito/carlito"])).toBe("carlito/carlito");
+    expect(parseRepoArg(["run", "list", "--repo=carlito/docs"])).toBe("carlito/docs");
     expect(parseRepoArg(["pr", "view", "42"])).toBeNull();
   });
 
   it("normalizes repo strings from common git formats", () => {
-    expect(normalizeRepo("openclaw/openclaw")).toBe("openclaw/openclaw");
-    expect(normalizeRepo("github.com/openclaw/openclaw")).toBe("openclaw/openclaw");
-    expect(normalizeRepo("https://github.com/openclaw/openclaw.git")).toBe("openclaw/openclaw");
-    expect(normalizeRepo("git@github.com:openclaw/openclaw.git")).toBe("openclaw/openclaw");
+    expect(normalizeRepo("carlito/carlito")).toBe("carlito/carlito");
+    expect(normalizeRepo("github.com/realcarlossanchez101/carlito")).toBe("carlito/carlito");
+    expect(normalizeRepo("https://github.com/realcarlossanchez101/carlito.git")).toBe(
+      "carlito/carlito",
+    );
+    expect(normalizeRepo("git@github.com:carlito/carlito.git")).toBe("carlito/carlito");
     expect(normalizeRepo("invalid")).toBeNull();
   });
 

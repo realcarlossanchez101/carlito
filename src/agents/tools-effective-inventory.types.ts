@@ -1,4 +1,4 @@
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 
 export type EffectiveToolSource = "core" | "plugin" | "channel";
 
@@ -26,7 +26,7 @@ export type EffectiveToolInventoryResult = {
 };
 
 export type ResolveEffectiveToolInventoryParams = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentId?: string;
   sessionKey?: string;
   workspaceDir?: string;

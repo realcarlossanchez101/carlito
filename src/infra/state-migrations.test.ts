@@ -2,7 +2,7 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { resolveChannelAllowFromPath } from "../pairing/pairing-store.js";
 import { createTrackedTempDirs } from "../test-utils/tracked-temp-dirs.js";
 import { detectLegacyStateMigrations, runLegacyStateMigrations } from "./state-migrations.js";
@@ -16,7 +16,7 @@ vi.mock("../channels/plugins/bundled.js", () => {
     }
   }
 
-  function resolveChatAppAccountId(cfg: OpenClawConfig): string {
+  function resolveChatAppAccountId(cfg: CarlitoConfig): string {
     const channel = (cfg.channels as Record<string, { defaultAccount?: string }> | undefined)
       ?.chatapp;
     return channel?.defaultAccount ?? "default";
@@ -58,7 +58,7 @@ vi.mock("../channels/plugins/bundled.js", () => {
               ];
         });
       },
-      ({ cfg, env }: { cfg: OpenClawConfig; env: NodeJS.ProcessEnv }) => {
+      ({ cfg, env }: { cfg: CarlitoConfig; env: NodeJS.ProcessEnv }) => {
         const root = env.OPENCLAW_STATE_DIR;
         if (!root) {
           return [];
@@ -80,7 +80,7 @@ vi.mock("../channels/plugins/bundled.js", () => {
 const tempDirs = createTrackedTempDirs();
 const createTempDir = () => tempDirs.make("openclaw-state-migrations-test-");
 
-function createConfig(): OpenClawConfig {
+function createConfig(): CarlitoConfig {
   return {
     agents: {
       list: [{ id: "worker-1", default: true }],
@@ -97,7 +97,7 @@ function createConfig(): OpenClawConfig {
         },
       },
     },
-  } as OpenClawConfig;
+  } as CarlitoConfig;
 }
 
 function createEnv(stateDir: string): NodeJS.ProcessEnv {

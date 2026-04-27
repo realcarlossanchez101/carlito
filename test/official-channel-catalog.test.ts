@@ -25,12 +25,12 @@ afterEach(() => {
 
 describe("buildOfficialChannelCatalog", () => {
   it("includes publishable official channel plugins and skips non-publishable entries", () => {
-    const repoRoot = makeRepoRoot("openclaw-official-channel-catalog-");
+    const repoRoot = makeRepoRoot("carlito-official-channel-catalog-");
     writeJson(path.join(repoRoot, "extensions", "whatsapp", "package.json"), {
-      name: "@openclaw/whatsapp",
+      name: "@realcarlossanchez101/whatsapp",
       version: "2026.3.23",
-      description: "OpenClaw WhatsApp channel plugin",
-      openclaw: {
+      description: "Carlito WhatsApp channel plugin",
+      carlito: {
         channel: {
           id: "whatsapp",
           label: "WhatsApp",
@@ -40,7 +40,7 @@ describe("buildOfficialChannelCatalog", () => {
           blurb: "works with your own number; recommend a separate phone + eSIM.",
         },
         install: {
-          npmSpec: "@openclaw/whatsapp",
+          npmSpec: "@realcarlossanchez101/whatsapp",
           localPath: bundledPluginRoot("whatsapp"),
           defaultChoice: "npm",
         },
@@ -50,8 +50,8 @@ describe("buildOfficialChannelCatalog", () => {
       },
     });
     writeJson(path.join(repoRoot, "extensions", "local-only", "package.json"), {
-      name: "@openclaw/local-only",
-      openclaw: {
+      name: "@realcarlossanchez101/local-only",
+      carlito: {
         channel: {
           id: "local-only",
           label: "Local Only",
@@ -71,23 +71,23 @@ describe("buildOfficialChannelCatalog", () => {
     expect(buildOfficialChannelCatalog({ repoRoot }).entries).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: "@wecom/wecom-openclaw-plugin",
-          openclaw: expect.objectContaining({
+          name: "@wecom/wecom-carlito-plugin",
+          carlito: expect.objectContaining({
             channel: expect.objectContaining({
               id: "wecom",
               label: "WeCom",
             }),
             install: {
-              npmSpec: "@wecom/wecom-openclaw-plugin",
+              npmSpec: "@wecom/wecom-carlito-plugin",
               defaultChoice: "npm",
             },
           }),
         }),
         {
-          name: "@openclaw/whatsapp",
+          name: "@realcarlossanchez101/whatsapp",
           version: "2026.3.23",
-          description: "OpenClaw WhatsApp channel plugin",
-          openclaw: {
+          description: "Carlito WhatsApp channel plugin",
+          carlito: {
             channel: {
               id: "whatsapp",
               label: "WhatsApp",
@@ -97,7 +97,7 @@ describe("buildOfficialChannelCatalog", () => {
               blurb: "works with your own number; recommend a separate phone + eSIM.",
             },
             install: {
-              npmSpec: "@openclaw/whatsapp",
+              npmSpec: "@realcarlossanchez101/whatsapp",
               defaultChoice: "npm",
             },
           },
@@ -107,10 +107,10 @@ describe("buildOfficialChannelCatalog", () => {
   });
 
   it("writes the official catalog under dist", () => {
-    const repoRoot = makeRepoRoot("openclaw-official-channel-catalog-write-");
+    const repoRoot = makeRepoRoot("carlito-official-channel-catalog-write-");
     writeJson(path.join(repoRoot, "extensions", "whatsapp", "package.json"), {
-      name: "@openclaw/whatsapp",
-      openclaw: {
+      name: "@realcarlossanchez101/whatsapp",
+      carlito: {
         channel: {
           id: "whatsapp",
           label: "WhatsApp",
@@ -119,7 +119,7 @@ describe("buildOfficialChannelCatalog", () => {
           blurb: "wa",
         },
         install: {
-          npmSpec: "@openclaw/whatsapp",
+          npmSpec: "@realcarlossanchez101/whatsapp",
         },
         release: {
           publishToNpm: true,
@@ -134,11 +134,11 @@ describe("buildOfficialChannelCatalog", () => {
     expect(JSON.parse(fs.readFileSync(outputPath, "utf8")).entries).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: "@wecom/wecom-openclaw-plugin",
+          name: "@wecom/wecom-carlito-plugin",
         }),
         {
-          name: "@openclaw/whatsapp",
-          openclaw: {
+          name: "@realcarlossanchez101/whatsapp",
+          carlito: {
             channel: {
               id: "whatsapp",
               label: "WhatsApp",
@@ -147,7 +147,7 @@ describe("buildOfficialChannelCatalog", () => {
               blurb: "wa",
             },
             install: {
-              npmSpec: "@openclaw/whatsapp",
+              npmSpec: "@realcarlossanchez101/whatsapp",
             },
           },
         },

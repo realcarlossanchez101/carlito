@@ -1,8 +1,8 @@
-import OpenClawKit
+import CarlitoKit
 import Foundation
 import Testing
 import UIKit
-@testable import OpenClaw
+@testable import Carlito
 
 @Suite(.serialized) struct GatewayConnectionControllerTests {
     @Test @MainActor func resolvedDisplayNameSetsDefaultWhenMissing() {
@@ -24,61 +24,61 @@ import UIKit
             "node.instanceId": "ios-test",
             "node.displayName": "Test Node",
             "camera.enabled": true,
-            "location.enabledMode": OpenClawLocationMode.always.rawValue,
+            "location.enabledMode": CarlitoLocationMode.always.rawValue,
             VoiceWakePreferences.enabledKey: true,
         ]) {
             let appModel = NodeAppModel()
             let controller = GatewayConnectionController(appModel: appModel, startDiscovery: false)
             let caps = Set(controller._test_currentCaps())
 
-            #expect(caps.contains(OpenClawCapability.canvas.rawValue))
-            #expect(caps.contains(OpenClawCapability.screen.rawValue))
-            #expect(caps.contains(OpenClawCapability.camera.rawValue))
-            #expect(caps.contains(OpenClawCapability.location.rawValue))
-            #expect(caps.contains(OpenClawCapability.voiceWake.rawValue))
+            #expect(caps.contains(CarlitoCapability.canvas.rawValue))
+            #expect(caps.contains(CarlitoCapability.screen.rawValue))
+            #expect(caps.contains(CarlitoCapability.camera.rawValue))
+            #expect(caps.contains(CarlitoCapability.location.rawValue))
+            #expect(caps.contains(CarlitoCapability.voiceWake.rawValue))
         }
     }
 
     @Test @MainActor func currentCommandsIncludeLocationWhenEnabled() {
         withUserDefaults([
             "node.instanceId": "ios-test",
-            "location.enabledMode": OpenClawLocationMode.whileUsing.rawValue,
+            "location.enabledMode": CarlitoLocationMode.whileUsing.rawValue,
         ]) {
             let appModel = NodeAppModel()
             let controller = GatewayConnectionController(appModel: appModel, startDiscovery: false)
             let commands = Set(controller._test_currentCommands())
 
-            #expect(commands.contains(OpenClawLocationCommand.get.rawValue))
+            #expect(commands.contains(CarlitoLocationCommand.get.rawValue))
         }
     }
     @Test @MainActor func currentCommandsExcludeDangerousSystemExecCommands() {
         withUserDefaults([
             "node.instanceId": "ios-test",
             "camera.enabled": true,
-            "location.enabledMode": OpenClawLocationMode.whileUsing.rawValue,
+            "location.enabledMode": CarlitoLocationMode.whileUsing.rawValue,
         ]) {
             let appModel = NodeAppModel()
             let controller = GatewayConnectionController(appModel: appModel, startDiscovery: false)
             let commands = Set(controller._test_currentCommands())
 
             // iOS should expose notify, but not host shell/exec-approval commands.
-            #expect(commands.contains(OpenClawSystemCommand.notify.rawValue))
-            #expect(!commands.contains(OpenClawSystemCommand.run.rawValue))
-            #expect(!commands.contains(OpenClawSystemCommand.which.rawValue))
-            #expect(!commands.contains(OpenClawSystemCommand.execApprovalsGet.rawValue))
-            #expect(!commands.contains(OpenClawSystemCommand.execApprovalsSet.rawValue))
+            #expect(commands.contains(CarlitoSystemCommand.notify.rawValue))
+            #expect(!commands.contains(CarlitoSystemCommand.run.rawValue))
+            #expect(!commands.contains(CarlitoSystemCommand.which.rawValue))
+            #expect(!commands.contains(CarlitoSystemCommand.execApprovalsGet.rawValue))
+            #expect(!commands.contains(CarlitoSystemCommand.execApprovalsSet.rawValue))
         }
     }
 
     @Test @MainActor func operatorConnectOptionsOnlyRequestApprovalScopeWhenEnabled() {
         let appModel = NodeAppModel()
         let withoutApprovalScope = appModel._test_makeOperatorConnectOptions(
-            clientId: "openclaw-ios",
-            displayName: "OpenClaw iOS",
+            clientId: "carlito-ios",
+            displayName: "Carlito iOS",
             includeApprovalScope: false)
         let withApprovalScope = appModel._test_makeOperatorConnectOptions(
-            clientId: "openclaw-ios",
-            displayName: "OpenClaw iOS",
+            clientId: "carlito-ios",
+            displayName: "Carlito iOS",
             includeApprovalScope: true)
 
         #expect(withoutApprovalScope.role == "operator")
@@ -117,15 +117,15 @@ import UIKit
     }
 
     @Test @MainActor func loadLastConnectionReadsSavedValues() {
-        let prior = KeychainStore.loadString(service: "ai.openclaw.gateway", account: "lastConnection")
+        let prior = KeychainStore.loadString(service: "ai.carlito.gateway", account: "lastConnection")
         defer {
             if let prior {
-                _ = KeychainStore.saveString(prior, service: "ai.openclaw.gateway", account: "lastConnection")
+                _ = KeychainStore.saveString(prior, service: "ai.carlito.gateway", account: "lastConnection")
             } else {
-                _ = KeychainStore.delete(service: "ai.openclaw.gateway", account: "lastConnection")
+                _ = KeychainStore.delete(service: "ai.carlito.gateway", account: "lastConnection")
             }
         }
-        _ = KeychainStore.delete(service: "ai.openclaw.gateway", account: "lastConnection")
+        _ = KeychainStore.delete(service: "ai.carlito.gateway", account: "lastConnection")
 
         GatewaySettingsStore.saveLastGatewayConnectionManual(
             host: "gateway.example.com",
@@ -137,15 +137,15 @@ import UIKit
     }
 
     @Test @MainActor func loadLastConnectionReturnsNilForInvalidData() {
-        let prior = KeychainStore.loadString(service: "ai.openclaw.gateway", account: "lastConnection")
+        let prior = KeychainStore.loadString(service: "ai.carlito.gateway", account: "lastConnection")
         defer {
             if let prior {
-                _ = KeychainStore.saveString(prior, service: "ai.openclaw.gateway", account: "lastConnection")
+                _ = KeychainStore.saveString(prior, service: "ai.carlito.gateway", account: "lastConnection")
             } else {
-                _ = KeychainStore.delete(service: "ai.openclaw.gateway", account: "lastConnection")
+                _ = KeychainStore.delete(service: "ai.carlito.gateway", account: "lastConnection")
             }
         }
-        _ = KeychainStore.delete(service: "ai.openclaw.gateway", account: "lastConnection")
+        _ = KeychainStore.delete(service: "ai.carlito.gateway", account: "lastConnection")
 
         // Plant legacy UserDefaults with invalid host/port to exercise migration + validation.
         withUserDefaults([

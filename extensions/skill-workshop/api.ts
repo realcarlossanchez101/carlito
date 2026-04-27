@@ -1,3 +1,3 @@
-export { definePluginEntry, jsonResult, type OpenClawPluginApi } from "openclaw/plugin-sdk/core";
-export { resolveDefaultAgentId } from "openclaw/plugin-sdk/agent-runtime";
-export { bumpSkillsSnapshotVersion } from "openclaw/plugin-sdk/skills-runtime";
+export { definePluginEntry, jsonResult, type CarlitoPluginApi } from "carlito/plugin-sdk/core";
+export { resolveDefaultAgentId } from "carlito/plugin-sdk/agent-runtime";
+export { bumpSkillsSnapshotVersion } from "carlito/plugin-sdk/skills-runtime";

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ChannelPlugin } from "../channels/plugins/types.public.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { createPulsecheckTypingCallbacks } from "./pulsecheck-typing.js";
 
 async function withFakeTimers(run: () => Promise<void>) {
@@ -23,7 +23,7 @@ describe("createPulsecheckTypingCallbacks", () => {
       } satisfies Pick<ChannelPlugin, "pulsecheck">;
 
       const callbacks = createPulsecheckTypingCallbacks({
-        cfg: {} as OpenClawConfig,
+        cfg: {} as CarlitoConfig,
         target: {
           channel: "telegram",
           to: "123",

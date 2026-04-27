@@ -1,4 +1,4 @@
-import { resolveOpenClawAgentDir } from "openclaw/plugin-sdk/provider-auth";
+import { resolveCarlitoAgentDir } from "carlito/plugin-sdk/provider-auth";
 import { bridgeCodexAppServerStartOptions } from "./auth-bridge.js";
 import { CodexAppServerClient } from "./client.js";
 import {
@@ -14,7 +14,7 @@ type SharedCodexAppServerClientState = {
   key?: string;
 };
 
-const SHARED_CODEX_APP_SERVER_CLIENT_STATE = Symbol.for("openclaw.codexAppServerClientState");
+const SHARED_CODEX_APP_SERVER_CLIENT_STATE = Symbol.for("carlito.codexAppServerClientState");
 
 function getSharedCodexAppServerClientState(): SharedCodexAppServerClientState {
   const globalState = globalThis as typeof globalThis & {
@@ -32,7 +32,7 @@ export async function getSharedCodexAppServerClient(options?: {
   const state = getSharedCodexAppServerClientState();
   const startOptions = await bridgeCodexAppServerStartOptions({
     startOptions: options?.startOptions ?? resolveCodexAppServerRuntimeOptions().start,
-    agentDir: resolveOpenClawAgentDir(),
+    agentDir: resolveCarlitoAgentDir(),
     authProfileId: options?.authProfileId,
   });
   const key = codexAppServerStartOptionsKey(startOptions);
@@ -77,7 +77,7 @@ export async function createIsolatedCodexAppServerClient(options?: {
 }): Promise<CodexAppServerClient> {
   const startOptions = await bridgeCodexAppServerStartOptions({
     startOptions: options?.startOptions ?? resolveCodexAppServerRuntimeOptions().start,
-    agentDir: resolveOpenClawAgentDir(),
+    agentDir: resolveCarlitoAgentDir(),
     authProfileId: options?.authProfileId,
   });
   const client = CodexAppServerClient.start(startOptions);

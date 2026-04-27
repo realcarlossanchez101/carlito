@@ -1,27 +1,27 @@
 import path from "node:path";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import type {
   ImageGenerationOutputFormat,
   ImageGenerationProvider,
   ImageGenerationResult,
   ImageGenerationSourceImage,
-} from "openclaw/plugin-sdk/image-generation";
-import { createSubsystemLogger } from "openclaw/plugin-sdk/logging-core";
+} from "carlito/plugin-sdk/image-generation";
+import { createSubsystemLogger } from "carlito/plugin-sdk/logging-core";
 import {
   ensureAuthProfileStore,
   isProviderApiKeyConfigured,
   listProfilesForProvider,
   type AuthProfileStore,
-} from "openclaw/plugin-sdk/provider-auth";
-import { resolveApiKeyForProvider } from "openclaw/plugin-sdk/provider-auth-runtime";
+} from "carlito/plugin-sdk/provider-auth";
+import { resolveApiKeyForProvider } from "carlito/plugin-sdk/provider-auth-runtime";
 import {
   assertOkOrThrowHttpError,
   postJsonRequest,
   postMultipartRequest,
   resolveProviderHttpRequestConfig,
   sanitizeConfiguredModelProviderRequest,
-} from "openclaw/plugin-sdk/provider-http";
-import { isPrivateNetworkOptInEnabled } from "openclaw/plugin-sdk/ssrf-runtime";
+} from "carlito/plugin-sdk/provider-http";
+import { isPrivateNetworkOptInEnabled } from "carlito/plugin-sdk/ssrf-runtime";
 import { OPENAI_DEFAULT_IMAGE_MODEL as DEFAULT_OPENAI_IMAGE_MODEL } from "./default-models.js";
 import { resolveConfiguredOpenAIBaseUrl } from "./shared.js";
 
@@ -186,7 +186,7 @@ function appendOpenAIImageOptions(
 
 function shouldAllowPrivateImageEndpoint(req: {
   provider: string;
-  cfg: OpenClawConfig | undefined;
+  cfg: CarlitoConfig | undefined;
 }) {
   if (req.provider === MOCK_OPENAI_PROVIDER_ID) {
     return true;
@@ -198,14 +198,14 @@ function shouldAllowPrivateImageEndpoint(req: {
   if (!baseUrl.startsWith("http://127.0.0.1:") && !baseUrl.startsWith("http://localhost:")) {
     return false;
   }
-  return process.env.OPENCLAW_QA_ALLOW_LOCAL_IMAGE_PROVIDER === "1";
+  return process.env.CARLITO_QA_ALLOW_LOCAL_IMAGE_PROVIDER === "1";
 }
 
 function normalizeProviderId(value: string | undefined): string {
   return value?.trim().toLowerCase() ?? "";
 }
 
-function hasExplicitOpenAIDirectAuthConfig(cfg: OpenClawConfig | undefined): boolean {
+function hasExplicitOpenAIDirectAuthConfig(cfg: CarlitoConfig | undefined): boolean {
   const profiles = cfg?.auth?.profiles;
   if (!profiles) {
     return false;
@@ -215,7 +215,7 @@ function hasExplicitOpenAIDirectAuthConfig(cfg: OpenClawConfig | undefined): boo
   );
 }
 
-function hasExplicitOpenAIDirectProviderConfig(cfg: OpenClawConfig | undefined): boolean {
+function hasExplicitOpenAIDirectProviderConfig(cfg: CarlitoConfig | undefined): boolean {
   if (hasExplicitOpenAIDirectAuthConfig(cfg)) {
     return true;
   }

@@ -1,5 +1,5 @@
-import { createEnvPatchedAccountSetupAdapter } from "openclaw/plugin-sdk/setup-adapter-runtime";
-import type { ChannelSetupAdapter } from "openclaw/plugin-sdk/setup-runtime";
+import { createEnvPatchedAccountSetupAdapter } from "carlito/plugin-sdk/setup-adapter-runtime";
+import type { ChannelSetupAdapter } from "carlito/plugin-sdk/setup-runtime";
 
 const channel = "discord" as const;
 

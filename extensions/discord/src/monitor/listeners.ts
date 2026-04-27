@@ -8,19 +8,19 @@ import {
   ThreadUpdateListener,
   type User,
 } from "@buape/carbon";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { enqueueSystemEvent } from "openclaw/plugin-sdk/infra-runtime";
-import { resolveAgentRoute } from "openclaw/plugin-sdk/routing";
+import type { CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { enqueueSystemEvent } from "carlito/plugin-sdk/infra-runtime";
+import { resolveAgentRoute } from "carlito/plugin-sdk/routing";
 import {
   createSubsystemLogger,
   danger,
   formatDurationSeconds,
   logVerbose,
-} from "openclaw/plugin-sdk/runtime-env";
+} from "carlito/plugin-sdk/runtime-env";
 import {
   readStoreAllowFromForDmPolicy,
   resolveDmGroupAccessWithLists,
-} from "openclaw/plugin-sdk/security-runtime";
+} from "carlito/plugin-sdk/security-runtime";
 import {
   isDiscordGroupAllowedByPolicy,
   normalizeDiscordAllowList,
@@ -39,9 +39,9 @@ import { resolveFetchedDiscordThreadLikeChannelContext } from "./thread-channel-
 import { closeDiscordThreadSessions } from "./thread-session-close.js";
 import { normalizeDiscordListenerTimeoutMs, runDiscordTaskWithTimeout } from "./timeouts.js";
 
-type LoadedConfig = ReturnType<typeof import("openclaw/plugin-sdk/config-runtime").loadConfig>;
-type RuntimeEnv = import("openclaw/plugin-sdk/runtime-env").RuntimeEnv;
-type Logger = ReturnType<typeof import("openclaw/plugin-sdk/runtime-env").createSubsystemLogger>;
+type LoadedConfig = ReturnType<typeof import("carlito/plugin-sdk/config-runtime").loadConfig>;
+type RuntimeEnv = import("carlito/plugin-sdk/runtime-env").RuntimeEnv;
+type Logger = ReturnType<typeof import("carlito/plugin-sdk/runtime-env").createSubsystemLogger>;
 
 export type DiscordMessageEvent = Parameters<MessageCreateListener["handle"]>[0];
 
@@ -775,7 +775,7 @@ type ThreadUpdateEvent = Parameters<ThreadUpdateListener["handle"]>[0];
 
 export class DiscordThreadUpdateListener extends ThreadUpdateListener {
   constructor(
-    private cfg: OpenClawConfig,
+    private cfg: CarlitoConfig,
     private accountId: string,
     private logger?: Logger,
   ) {

@@ -1,7 +1,7 @@
 import type { Api, Model } from "@mariozechner/pi-ai";
 import { normalizeProviderId } from "../../agents/provider-id.js";
+import type { CarlitoConfig } from "../../config/types.carlito.js";
 import type { ModelProviderConfig } from "../../config/types.models.js";
-import type { OpenClawConfig } from "../../config/types.openclaw.js";
 import { formatErrorMessage } from "../../infra/errors.js";
 import { createSubsystemLogger } from "../../logging/subsystem.js";
 import {
@@ -20,7 +20,7 @@ const SELF_HOSTED_DISCOVERY_PROVIDER_IDS = new Set(["lmstudio", "ollama", "sglan
 const log = createSubsystemLogger("models/list-provider-catalog");
 
 export async function resolveProviderCatalogPluginIdsForFilter(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   env?: NodeJS.ProcessEnv;
   providerFilter: string;
 }): Promise<string[] | undefined> {
@@ -68,7 +68,7 @@ function modelFromProviderCatalog(params: {
 }
 
 export async function loadProviderCatalogModelsForList(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   agentDir: string;
   env?: NodeJS.ProcessEnv;
   providerFilter?: string;

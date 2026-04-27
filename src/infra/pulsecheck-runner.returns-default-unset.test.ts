@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { PULSECHECK_PROMPT } from "../auto-reply/pulsecheck.js";
 import type { ChannelOutboundAdapter } from "../channels/plugins/types.public.js";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import {
   resolveAgentIdFromSessionKey,
   resolveAgentMainSessionKey,
@@ -221,7 +221,7 @@ beforeAll(async () => {
   ]);
   setActivePluginRegistry(testRegistry);
 
-  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-pulsecheck-suite-"));
+  fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "carlito-pulsecheck-suite-"));
 });
 
 beforeEach(() => {
@@ -289,12 +289,12 @@ describe("resolvePulsecheckIntervalMs", () => {
 
 describe("resolvePulsecheckPrompt", () => {
   it.each([
-    { name: "default prompt", cfg: {} as OpenClawConfig, expected: PULSECHECK_PROMPT },
+    { name: "default prompt", cfg: {} as CarlitoConfig, expected: PULSECHECK_PROMPT },
     {
       name: "trimmed override prompt",
       cfg: {
         agents: { defaults: { pulsecheck: { prompt: "  ping  " } } },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       expected: "ping",
     },
   ])("uses $name", ({ cfg, expected }) => {
@@ -304,7 +304,7 @@ describe("resolvePulsecheckPrompt", () => {
 
 describe("isPulsecheckEnabledForAgent", () => {
   it("enables only explicit pulsecheck agents when configured", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: { pulsecheck: { every: "30m" } },
         list: [{ id: "main" }, { id: "ops", pulsecheck: { every: "1h" } }],
@@ -315,7 +315,7 @@ describe("isPulsecheckEnabledForAgent", () => {
   });
 
   it("falls back to default agent when no explicit pulsecheck entries", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: { pulsecheck: { every: "30m" } },
         list: [{ id: "main" }, { id: "ops" }],
@@ -335,7 +335,7 @@ describe("resolvePulsecheckDeliveryTarget", () => {
   it("resolves target variants across route and allowlist rules", () => {
     const cases: Array<{
       name: string;
-      cfg: OpenClawConfig;
+      cfg: CarlitoConfig;
       entry: typeof baseEntry & {
         lastChannel?: "whatsapp" | "telegram" | "webchat";
         lastTo?: string;
@@ -479,7 +479,7 @@ describe("resolvePulsecheckDeliveryTarget", () => {
   ])(
     "parses optional telegram :topic: threadId suffix: $name",
     ({ to, expectedTo, expectedThreadId }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             pulsecheck: { target: "telegram", to },
@@ -519,7 +519,7 @@ describe("resolvePulsecheckDeliveryTarget", () => {
   ] as const)(
     "handles explicit pulsecheck accountId allow/deny: $name",
     ({ accountId, expected }) => {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             pulsecheck: { target: "telegram", to: "-100123", accountId },
@@ -532,7 +532,7 @@ describe("resolvePulsecheckDeliveryTarget", () => {
   );
 
   it("prefers per-agent pulsecheck overrides when provided", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: { defaults: { pulsecheck: { target: "telegram", to: "-100123" } } },
     };
     const pulsecheck = { target: "whatsapp", to: "120363401234567890@g.us" } as const;
@@ -554,7 +554,7 @@ describe("resolvePulsecheckDeliveryTarget", () => {
 
 describe("resolvePulsecheckSenderContext", () => {
   it("prefers delivery accountId for allowFrom resolution", () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       channels: {
         telegram: {
           allowFrom: ["111"],
@@ -606,7 +606,7 @@ describe("runPulsecheckOnce", () => {
   });
 
   it("skips when agent pulsecheck is not enabled", async () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: { pulsecheck: { every: "30m" } },
         list: [{ id: "main" }, { id: "ops", pulsecheck: { every: "1h" } }],
@@ -621,7 +621,7 @@ describe("runPulsecheckOnce", () => {
   });
 
   it("skips outside active hours", async () => {
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           userTimezone: "UTC",
@@ -649,7 +649,7 @@ describe("runPulsecheckOnce", () => {
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.fn();
     try {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,
@@ -708,7 +708,7 @@ describe("runPulsecheckOnce", () => {
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.fn();
     try {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             pulsecheck: { every: "30m", prompt: "Default prompt" },
@@ -786,7 +786,7 @@ describe("runPulsecheckOnce", () => {
     const replySpy = vi.fn();
     const agentId = "ops";
     try {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             pulsecheck: { every: "30m", prompt: "Default prompt" },
@@ -872,7 +872,7 @@ describe("runPulsecheckOnce", () => {
       peerKind: "group" as const,
       peerId: "120363401234567890@g.us",
       message: "Group alert",
-      applyOverride: ({ cfg, sessionKey }: { cfg: OpenClawConfig; sessionKey: string }) => {
+      applyOverride: ({ cfg, sessionKey }: { cfg: CarlitoConfig; sessionKey: string }) => {
         if (cfg.agents?.defaults?.pulsecheck) {
           cfg.agents.defaults.pulsecheck.session = sessionKey;
         }
@@ -897,7 +897,7 @@ describe("runPulsecheckOnce", () => {
       try {
         const tmpDir = await createCaseDir(caseDir);
         const storePath = path.join(tmpDir, "sessions.json");
-        const cfg: OpenClawConfig = {
+        const cfg: CarlitoConfig = {
           agents: {
             defaults: {
               workspace: tmpDir,
@@ -988,7 +988,7 @@ describe("runPulsecheckOnce", () => {
     try {
       const tmpDir = await createCaseDir("hb-subagent-guard");
       const storePath = path.join(tmpDir, "sessions.json");
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,
@@ -1071,7 +1071,7 @@ describe("runPulsecheckOnce", () => {
     const storePath = path.join(tmpDir, "sessions.json");
     const replySpy = vi.fn();
     try {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: {
             workspace: tmpDir,
@@ -1149,7 +1149,7 @@ describe("runPulsecheckOnce", () => {
       try {
         const tmpDir = await createCaseDir(caseDir);
         const storePath = path.join(tmpDir, "sessions.json");
-        const cfg: OpenClawConfig = {
+        const cfg: CarlitoConfig = {
           agents: {
             defaults: {
               workspace: tmpDir,
@@ -1211,11 +1211,11 @@ describe("runPulsecheckOnce", () => {
   );
 
   it("loads the default agent session from templated stores", async () => {
-    const tmpDir = await createCaseDir("openclaw-hb");
+    const tmpDir = await createCaseDir("carlito-hb");
     const storeTemplate = path.join(tmpDir, "agents", "{agentId}", "sessions.json");
     const replySpy = vi.fn();
     try {
-      const cfg: OpenClawConfig = {
+      const cfg: CarlitoConfig = {
         agents: {
           defaults: { workspace: tmpDir, pulsecheck: { every: "5m", target: "whatsapp" } },
           list: [{ id: "work", default: true }],
@@ -1286,7 +1286,7 @@ describe("runPulsecheckOnce", () => {
     queueCronEvent?: boolean;
     replyText?: string;
   }) {
-    const tmpDir = await createCaseDir("openclaw-hb");
+    const tmpDir = await createCaseDir("carlito-hb");
     const storePath = path.join(tmpDir, "sessions.json");
     const workspaceDir = path.join(tmpDir, "workspace");
     await fs.mkdir(workspaceDir, { recursive: true });
@@ -1343,7 +1343,7 @@ describe("runPulsecheckOnce", () => {
       await fs.mkdir(path.join(workspaceDir, "PULSECHECK.md"), { recursive: true });
     }
 
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           workspace: workspaceDir,
@@ -1544,7 +1544,7 @@ describe("runPulsecheckOnce", () => {
   it("uses an internal-only cron prompt when pulsecheck delivery target is none", async () => {
     const tmpDir = await createCaseDir("hb-cron-target-none");
     const storePath = path.join(tmpDir, "sessions.json");
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           workspace: tmpDir,
@@ -1599,7 +1599,7 @@ describe("runPulsecheckOnce", () => {
   it("uses an internal-only exec prompt when pulsecheck delivery target is none", async () => {
     const tmpDir = await createCaseDir("hb-exec-target-none");
     const storePath = path.join(tmpDir, "sessions.json");
-    const cfg: OpenClawConfig = {
+    const cfg: CarlitoConfig = {
       agents: {
         defaults: {
           workspace: tmpDir,

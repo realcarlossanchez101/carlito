@@ -1,16 +1,16 @@
 import { getBootstrapChannelPlugin } from "../../../channels/plugins/bootstrap-registry.js";
 import { loadBundledChannelDoctorContractApi } from "../../../channels/plugins/doctor-contract-api.js";
-import type { OpenClawConfig } from "../../../config/types.js";
+import type { CarlitoConfig } from "../../../config/types.js";
 import { applyPluginDoctorCompatibilityMigrations } from "../../../plugins/doctor-contract-registry.js";
 import { isRecord } from "./legacy-config-record-shared.js";
 
 type ChannelDoctorCompatibilityMutation = {
-  config: OpenClawConfig;
+  config: CarlitoConfig;
   changes: string[];
 };
 
 type ChannelDoctorCompatibilityNormalizer = (params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
 }) => ChannelDoctorCompatibilityMutation;
 
 function collectRelevantDoctorChannelIds(raw: unknown): string[] {
@@ -38,7 +38,7 @@ export function applyChannelDoctorCompatibilityMigrations(cfg: Record<string, un
   next: Record<string, unknown>;
   changes: string[];
 } {
-  let nextCfg = cfg as OpenClawConfig;
+  let nextCfg = cfg as CarlitoConfig;
   const changes: string[] = [];
   const unresolvedChannelIds: string[] = [];
 
@@ -65,7 +65,7 @@ export function applyChannelDoctorCompatibilityMigrations(cfg: Record<string, un
   }
 
   return {
-    next: nextCfg as OpenClawConfig & Record<string, unknown>,
+    next: nextCfg as CarlitoConfig & Record<string, unknown>,
     changes,
   };
 }

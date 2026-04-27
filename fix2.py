@@ -3,7 +3,7 @@ with open('src/infra/pulsecheck-runner.ts', 'r') as f:
 
 # Fix 1: Add pulsecheckFileContent param to resolvePulsecheckRunPrompt
 old_sig = """function resolvePulsecheckRunPrompt(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   pulsecheck?: PulsecheckConfig;
   preflight: PulsecheckPreflight;
   canRelayToUser: boolean;
@@ -12,7 +12,7 @@ old_sig = """function resolvePulsecheckRunPrompt(params: {
 }): PulsecheckPromptResolution {"""
 
 new_sig = """function resolvePulsecheckRunPrompt(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   pulsecheck?: PulsecheckConfig;
   preflight: PulsecheckPreflight;
   canRelayToUser: boolean;

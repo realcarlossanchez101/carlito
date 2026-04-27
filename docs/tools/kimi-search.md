@@ -6,7 +6,7 @@ read_when:
 title: "Kimi search"
 ---
 
-OpenClaw supports Kimi as a `web_search` provider, using Moonshot web search
+Carlito supports Kimi as a `web_search` provider, using Moonshot web search
 to produce AI-synthesized answers with citations.
 
 ## Get an API key
@@ -20,14 +20,14 @@ to produce AI-synthesized answers with citations.
     configure via:
 
     ```bash
-    openclaw configure --section web
+    carlito configure --section web
     ```
 
   </Step>
 </Steps>
 
-When you choose **Kimi** during `openclaw onboard` or
-`openclaw configure --section web`, OpenClaw can also ask for:
+When you choose **Kimi** during `carlito onboard` or
+`carlito configure --section web`, Carlito can also ask for:
 
 - the Moonshot API region:
   - `https://api.moonshot.ai/v1`
@@ -62,17 +62,17 @@ When you choose **Kimi** during `openclaw onboard` or
 ```
 
 If you use the China API host for chat (`models.providers.moonshot.baseUrl`:
-`https://api.moonshot.cn/v1`), OpenClaw reuses that same host for Kimi
+`https://api.moonshot.cn/v1`), Carlito reuses that same host for Kimi
 `web_search` when `tools.web.search.kimi.baseUrl` is omitted, so keys from
 [platform.moonshot.cn](https://platform.moonshot.cn/) do not hit the
 international endpoint by mistake (which often returns HTTP 401). Override
 with `tools.web.search.kimi.baseUrl` when you need a different search base URL.
 
 **Environment alternative:** set `KIMI_API_KEY` or `MOONSHOT_API_KEY` in the
-Gateway environment. For a gateway install, put it in `~/.openclaw/.env`.
+Gateway environment. For a gateway install, put it in `~/.carlito/.env`.
 
-If you omit `baseUrl`, OpenClaw defaults to `https://api.moonshot.ai/v1`.
-If you omit `model`, OpenClaw defaults to `kimi-k2.6`.
+If you omit `baseUrl`, Carlito defaults to `https://api.moonshot.ai/v1`.
+If you omit `model`, Carlito defaults to `kimi-k2.6`.
 
 ## How it works
 

@@ -7,7 +7,6 @@ import {
   type MessagePayloadObject,
   type TopLevelComponents,
 } from "@buape/carbon";
-import { ButtonStyle, Routes } from "discord-api-types/v10";
 import type {
   ChannelApprovalCapabilityHandlerContext,
   ExecApprovalExpiredView,
@@ -17,14 +16,15 @@ import type {
   PluginApprovalExpiredView,
   PluginApprovalPendingView,
   PluginApprovalResolvedView,
-} from "openclaw/plugin-sdk/approval-handler-runtime";
-import { createChannelApprovalNativeRuntimeAdapter } from "openclaw/plugin-sdk/approval-handler-runtime";
-import type { DiscordExecApprovalConfig, OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
+} from "carlito/plugin-sdk/approval-handler-runtime";
+import { createChannelApprovalNativeRuntimeAdapter } from "carlito/plugin-sdk/approval-handler-runtime";
+import type { DiscordExecApprovalConfig, CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
 import type {
   ExecApprovalActionDescriptor,
   ExecApprovalDecision,
-} from "openclaw/plugin-sdk/infra-runtime";
-import { logDebug, logError, normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
+} from "carlito/plugin-sdk/infra-runtime";
+import { logDebug, logError, normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
+import { ButtonStyle, Routes } from "discord-api-types/v10";
 import { shouldHandleDiscordApprovalRequest } from "./approval-shared.js";
 import { isDiscordExecApprovalClientEnabled } from "./exec-approvals.js";
 import { createDiscordClient, stripUndefinedFields } from "./send.shared.js";
@@ -61,7 +61,7 @@ function resolveHandlerContext(params: ChannelApprovalCapabilityHandlerContext):
 
 class ExecApprovalContainer extends DiscordUiContainer {
   constructor(params: {
-    cfg: OpenClawConfig;
+    cfg: CarlitoConfig;
     accountId: string;
     title: string;
     description?: string;
@@ -182,7 +182,7 @@ function resolveCommandPreviews(
 
 function createExecApprovalRequestContainer(params: {
   view: ExecApprovalPendingView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   actionRow?: Row<Button>;
 }): ExecApprovalContainer {
@@ -210,7 +210,7 @@ function createExecApprovalRequestContainer(params: {
 
 function createPluginApprovalRequestContainer(params: {
   view: PluginApprovalPendingView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   actionRow?: Row<Button>;
 }): ExecApprovalContainer {
@@ -234,7 +234,7 @@ function createPluginApprovalRequestContainer(params: {
 
 function createExecResolvedContainer(params: {
   view: ExecApprovalResolvedView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
 }): ExecApprovalContainer {
   const { commandPreview, commandSecondaryPreview } = resolveCommandPreviews(
@@ -271,7 +271,7 @@ function createExecResolvedContainer(params: {
 
 function createPluginResolvedContainer(params: {
   view: PluginApprovalResolvedView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
 }): ExecApprovalContainer {
   const decisionLabel =
@@ -302,7 +302,7 @@ function createPluginResolvedContainer(params: {
 
 function createExecExpiredContainer(params: {
   view: ExecApprovalExpiredView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
 }): ExecApprovalContainer {
   const { commandPreview, commandSecondaryPreview } = resolveCommandPreviews(
@@ -326,7 +326,7 @@ function createExecExpiredContainer(params: {
 
 function createPluginExpiredContainer(params: {
   view: PluginApprovalExpiredView;
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
 }): ExecApprovalContainer {
   return new ExecApprovalContainer({
@@ -350,7 +350,7 @@ export function buildExecApprovalCustomId(
 }
 
 async function updateMessage(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   token: string;
   channelId: string;
@@ -376,7 +376,7 @@ async function updateMessage(params: {
 }
 
 async function finalizeMessage(params: {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   accountId: string;
   token: string;
   cleanupAfterResolve?: boolean;

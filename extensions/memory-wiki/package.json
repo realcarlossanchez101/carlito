@@ -1,26 +1,26 @@
 {
-  "name": "@openclaw/memory-wiki",
+  "name": "@realcarlossanchez101/memory-wiki",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw persistent wiki plugin",
+  "description": "Carlito persistent wiki plugin",
   "type": "module",
   "dependencies": {
     "typebox": "1.1.28",
     "yaml": "^2.8.3"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

@@ -62,7 +62,7 @@ jobs:
             needs_autobuild: false
             config_file: ""
           - language: swift
-            runs_on: ${{ github.repository == 'openclaw/openclaw' && 'blacksmith-12vcpu-macos-latest' || 'macos-latest' }}
+            runs_on: ${{ github.repository == 'carlito/carlito' && 'blacksmith-12vcpu-macos-latest' || 'macos-latest' }}
             needs_node: false
             needs_python: false
             needs_java: false
@@ -127,8 +127,8 @@ jobs:
           cd apps/ios
           xcodegen generate
           xcodebuild build \
-            -project OpenClaw.xcodeproj \
-            -scheme OpenClaw \
+            -project Carlito.xcodeproj \
+            -scheme Carlito \
             -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO
 

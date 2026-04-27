@@ -31,7 +31,7 @@ export type {
   CodexAppServerToolResultHandlerResult,
 } from "../plugins/codex-app-server-extension-types.js";
 
-export { VERSION as OPENCLAW_VERSION } from "../version.js";
+export { VERSION as CARLITO_VERSION } from "../version.js";
 export { formatErrorMessage } from "../infra/errors.js";
 export { log as embeddedAgentLog } from "../agents/pi-embedded-runner/logger.js";
 export { resolveEmbeddedAgentRuntime } from "../agents/pi-embedded-runner/runtime.js";
@@ -43,7 +43,7 @@ export {
   filterToolResultMediaUrls,
 } from "../agents/pi-embedded-subscribe.tools.js";
 export { normalizeUsage } from "../agents/usage.js";
-export { resolveOpenClawAgentDir } from "../agents/agent-paths.js";
+export { resolveCarlitoAgentDir } from "../agents/agent-paths.js";
 export { resolveSessionAgentIds } from "../agents/agent-scope.js";
 export { resolveModelAuthMode } from "../agents/model-auth.js";
 export { supportsModelTools } from "../agents/model-tool-support.js";

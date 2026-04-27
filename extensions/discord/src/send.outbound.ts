@@ -2,19 +2,19 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { serializePayload, type MessagePayloadObject, type RequestClient } from "@buape/carbon";
+import { requireRuntimeConfig, type CarlitoConfig } from "carlito/plugin-sdk/config-runtime";
+import { resolveMarkdownTableMode } from "carlito/plugin-sdk/config-runtime";
+import { recordChannelActivity } from "carlito/plugin-sdk/infra-runtime";
+import { maxBytesForKind } from "carlito/plugin-sdk/media-runtime";
+import { extensionForMime } from "carlito/plugin-sdk/media-runtime";
+import { unlinkIfExists } from "carlito/plugin-sdk/media-runtime";
+import type { PollInput } from "carlito/plugin-sdk/media-runtime";
+import { resolveChunkMode } from "carlito/plugin-sdk/reply-chunking";
+import type { RetryConfig } from "carlito/plugin-sdk/retry-runtime";
+import { resolvePreferredCarlitoTmpDir } from "carlito/plugin-sdk/temp-path";
+import { convertMarkdownTables, normalizeOptionalString } from "carlito/plugin-sdk/text-runtime";
+import { loadWebMediaRaw } from "carlito/plugin-sdk/web-media";
 import { ChannelType, Routes } from "discord-api-types/v10";
-import { requireRuntimeConfig, type OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { resolveMarkdownTableMode } from "openclaw/plugin-sdk/config-runtime";
-import { recordChannelActivity } from "openclaw/plugin-sdk/infra-runtime";
-import { maxBytesForKind } from "openclaw/plugin-sdk/media-runtime";
-import { extensionForMime } from "openclaw/plugin-sdk/media-runtime";
-import { unlinkIfExists } from "openclaw/plugin-sdk/media-runtime";
-import type { PollInput } from "openclaw/plugin-sdk/media-runtime";
-import { resolveChunkMode } from "openclaw/plugin-sdk/reply-chunking";
-import type { RetryConfig } from "openclaw/plugin-sdk/retry-runtime";
-import { resolvePreferredOpenClawTmpDir } from "openclaw/plugin-sdk/temp-path";
-import { convertMarkdownTables, normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
-import { loadWebMediaRaw } from "openclaw/plugin-sdk/web-media";
 import { resolveDiscordAccount } from "./accounts.js";
 import { resolveDiscordClientAccountContext } from "./client.js";
 import { rewriteDiscordKnownMentions } from "./mentions.js";
@@ -45,7 +45,7 @@ import {
 } from "./voice-message.js";
 
 type DiscordSendOpts = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   token?: string;
   accountId?: string;
   mediaUrl?: string;
@@ -330,7 +330,7 @@ export async function sendMessageDiscord(
 }
 
 type DiscordWebhookSendOpts = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   webhookId: string;
   webhookToken: string;
   accountId?: string;
@@ -499,7 +499,7 @@ async function resolveDiscordStructuredSendContext(
 }
 
 type VoiceMessageOpts = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   token?: string;
   accountId?: string;
   verbose?: boolean;
@@ -516,7 +516,7 @@ async function materializeVoiceMessageInput(mediaUrl: string): Promise<{ filePat
   const extFromName = media.fileName ? path.extname(media.fileName) : "";
   const extFromMime = media.contentType ? extensionForMime(media.contentType) : "";
   const ext = extFromName || extFromMime || ".bin";
-  const tempDir = resolvePreferredOpenClawTmpDir();
+  const tempDir = resolvePreferredCarlitoTmpDir();
   const filePath = path.join(tempDir, `voice-src-${crypto.randomUUID()}${ext}`);
   await fs.writeFile(filePath, media.buffer, { mode: 0o600 });
   return { filePath };
@@ -543,7 +543,7 @@ export async function sendVoiceMessageDiscord(
   let token: string | undefined;
   let rest: RequestClient | undefined;
   let channelId: string | undefined;
-  let cfg: OpenClawConfig | undefined;
+  let cfg: CarlitoConfig | undefined;
 
   try {
     cfg = requireRuntimeConfig(opts.cfg, "Discord voice send");

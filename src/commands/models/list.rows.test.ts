@@ -60,7 +60,7 @@ describe("appendProviderCatalogRows", () => {
           agents: { defaults: { model: { primary: "codex/gpt-5.5" } } },
           models: { providers: {} },
         },
-        agentDir: "/tmp/openclaw-agent",
+        agentDir: "/tmp/carlito-agent",
         authStore,
         configuredByKey: new Map(),
         discoveredKeys: new Set(),

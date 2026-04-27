@@ -1,13 +1,13 @@
 {
-  "name": "@openclaw/groq-provider",
+  "name": "@realcarlossanchez101/groq-provider",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Groq media-understanding provider",
+  "description": "Carlito Groq media-understanding provider",
   "type": "module",
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ]

@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   applyExtraParamsToAgentMock,
   contextEngineCompactMock,
-  createOpenClawCodingToolsMock,
+  createCarlitoCodingToolsMock,
   ensureRuntimePluginsLoaded,
   estimateTokensMock,
   getMemorySearchManagerMock,
@@ -295,7 +295,7 @@ describe("compactEmbeddedPiSessionDirect hooks", () => {
       senderE164: "+15551234567",
     });
 
-    expect(createOpenClawCodingToolsMock).toHaveBeenCalledWith(
+    expect(createCarlitoCodingToolsMock).toHaveBeenCalledWith(
       expect.objectContaining({
         senderId: "sender-1",
         senderName: "Alice",

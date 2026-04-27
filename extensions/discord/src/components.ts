@@ -22,8 +22,8 @@ import {
   UserSelectMenu,
   type TopLevelComponents,
 } from "@buape/carbon";
+import { normalizeLowercaseStringOrEmpty } from "carlito/plugin-sdk/text-runtime";
 import { ButtonStyle, MessageFlags, TextInputStyle } from "discord-api-types/v10";
-import { normalizeLowercaseStringOrEmpty } from "openclaw/plugin-sdk/text-runtime";
 import {
   buildDiscordComponentCustomId as buildDiscordComponentCustomIdImpl,
   buildDiscordModalCustomId as buildDiscordModalCustomIdImpl,

@@ -46,13 +46,13 @@ export async function modelsListCommand(
   if (providerFilter === null) {
     return;
   }
-  const { ensureAuthProfileStore, resolveOpenClawAgentDir } = await import("./list.runtime.js");
+  const { ensureAuthProfileStore, resolveCarlitoAgentDir } = await import("./list.runtime.js");
   const { resolvedConfig: cfg } = await loadModelsConfigWithSource({
     commandName: "models list",
     runtime,
   });
   const authStore = ensureAuthProfileStore();
-  const agentDir = resolveOpenClawAgentDir();
+  const agentDir = resolveCarlitoAgentDir();
 
   let modelRegistry: ModelRegistry | undefined;
   let discoveredKeys = new Set<string>();

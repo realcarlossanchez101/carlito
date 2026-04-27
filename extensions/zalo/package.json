@@ -1,24 +1,24 @@
 {
-  "name": "@openclaw/zalo",
+  "name": "@realcarlossanchez101/zalo",
   "version": "2026.4.20",
-  "description": "OpenClaw Zalo channel plugin",
+  "description": "Carlito Zalo channel plugin",
   "type": "module",
   "dependencies": {
     "undici": "8.1.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*",
-    "openclaw": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*",
+    "carlito": "workspace:*"
   },
   "peerDependencies": {
-    "openclaw": ">=2026.4.20"
+    "carlito": ">=2026.4.20"
   },
   "peerDependenciesMeta": {
-    "openclaw": {
+    "carlito": {
       "optional": true
     }
   },
-  "openclaw": {
+  "carlito": {
     "extensions": [
       "./index.ts"
     ],
@@ -37,7 +37,7 @@
       "quickstartAllowFrom": true
     },
     "install": {
-      "npmSpec": "@openclaw/zalo",
+      "npmSpec": "@realcarlossanchez101/zalo",
       "defaultChoice": "npm",
       "minHostVersion": ">=2026.4.10"
     },
@@ -45,7 +45,7 @@
       "pluginApi": ">=2026.4.20"
     },
     "build": {
-      "openclawVersion": "2026.4.20"
+      "carlitoVersion": "2026.4.20"
     },
     "release": {
       "publishToClawHub": true,

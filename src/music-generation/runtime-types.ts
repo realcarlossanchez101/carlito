@@ -1,6 +1,6 @@
 import type { AuthProfileStore } from "../agents/auth-profiles/types.js";
 import type { FallbackAttempt } from "../agents/model-fallback.types.js";
-import type { OpenClawConfig } from "../config/types.openclaw.js";
+import type { CarlitoConfig } from "../config/types.carlito.js";
 import type {
   GeneratedMusicAsset,
   MusicGenerationIgnoredOverride,
@@ -11,7 +11,7 @@ import type {
 } from "./types.js";
 
 export type GenerateMusicParams = {
-  cfg: OpenClawConfig;
+  cfg: CarlitoConfig;
   prompt: string;
   agentDir?: string;
   authStore?: AuthProfileStore;
@@ -37,7 +37,7 @@ export type GenerateMusicRuntimeResult = {
 };
 
 export type ListRuntimeMusicGenerationProvidersParams = {
-  config?: OpenClawConfig;
+  config?: CarlitoConfig;
 };
 
 export type RuntimeMusicGenerationProvider = MusicGenerationProvider;

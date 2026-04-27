@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import type { OpenClawConfig } from "../config/config.js";
+import type { CarlitoConfig } from "../config/config.js";
 import { runPulsecheckOnce, type PulsecheckDeps } from "./pulsecheck-runner.js";
 import { installPulsecheckRunnerTestRuntime } from "./pulsecheck-runner.test-harness.js";
 import {
@@ -22,7 +22,7 @@ describe("runPulsecheckOnce ack handling", () => {
     pulsecheck: Record<string, unknown>;
     channels: Record<string, unknown>;
     messages?: Record<string, unknown>;
-  }): OpenClawConfig {
+  }): CarlitoConfig {
     return {
       agents: {
         defaults: {
@@ -122,7 +122,7 @@ describe("runPulsecheckOnce ack handling", () => {
     storePath: string;
     pulsecheck?: Record<string, unknown>;
     visibility?: Record<string, unknown>;
-  }): OpenClawConfig {
+  }): CarlitoConfig {
     return createPulsecheckConfig({
       tmpDir: params.tmpDir,
       storePath: params.storePath,
@@ -145,7 +145,7 @@ describe("runPulsecheckOnce ack handling", () => {
     storePath: string;
     pulsecheck?: Record<string, unknown>;
     visibility?: Record<string, unknown>;
-  }): Promise<OpenClawConfig> {
+  }): Promise<CarlitoConfig> {
     const cfg = createWhatsAppPulsecheckConfig(params);
     await seedMainSessionStore(params.storePath, cfg, {
       lastChannel: "whatsapp",
@@ -226,8 +226,8 @@ describe("runPulsecheckOnce ack handling", () => {
     },
     {
       title: "strips responsePrefix before PULSECHECK_OK detection and suppresses short ack text",
-      replyText: "[openclaw] PULSECHECK_OK all good",
-      messages: { responsePrefix: "[openclaw]" },
+      replyText: "[carlito] PULSECHECK_OK all good",
+      messages: { responsePrefix: "[carlito]" },
       expectedCalls: 0,
     },
     {

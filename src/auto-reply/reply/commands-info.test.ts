@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resolveSessionAgentId } from "../../agents/agent-scope.js";
-import type { OpenClawConfig } from "../../config/config.js";
+import type { CarlitoConfig } from "../../config/config.js";
 import type { MsgContext } from "../templating.js";
 import { handleContextCommand } from "./commands-context-command.js";
 import { handleExportTrajectoryCommand, handleStatusCommand } from "./commands-info.js";
@@ -51,7 +51,7 @@ vi.mock("../status.js", async () => {
 
 function buildInfoParams(
   commandBodyNormalized: string,
-  cfg: OpenClawConfig,
+  cfg: CarlitoConfig,
   ctxOverrides?: Partial<MsgContext>,
 ): HandleCommandsParams {
   return {
@@ -113,7 +113,7 @@ describe("info command handlers", () => {
   it("only lets owners export trajectory bundles", async () => {
     const params = buildInfoParams("/export-trajectory", {
       commands: { text: true },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
     params.command.senderIsOwner = false;
 
     const result = await handleExportTrajectoryCommand(params, true);
@@ -129,7 +129,7 @@ describe("info command handlers", () => {
         {
           commands: { text: true },
           channels: { whatsapp: { allowFrom: ["*"] } },
-        } as OpenClawConfig,
+        } as CarlitoConfig,
         {
           SenderId: "12345",
           SenderUsername: "TestUser",
@@ -151,7 +151,7 @@ describe("info command handlers", () => {
       {
         commands: { text: true },
         channels: { whatsapp: { allowFrom: ["*"] } },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       {
         SenderId: "123@lid",
         SenderUsername: "TestUser",
@@ -172,7 +172,7 @@ describe("info command handlers", () => {
     const cfg = {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as OpenClawConfig;
+    } as CarlitoConfig;
     const cases = [
       { commandBody: "/context", expectedText: ["/context list", "Inline shortcut"] },
       { commandBody: "/context list", expectedText: ["Injected workspace files:", "AGENTS.md"] },
@@ -197,7 +197,7 @@ describe("info command handlers", () => {
       {
         commands: { text: true },
         channels: { whatsapp: { allowFrom: ["*"] } },
-      } as OpenClawConfig,
+      } as CarlitoConfig,
       {
         ParentSessionKey: undefined,
       },
@@ -223,7 +223,7 @@ describe("info command handlers", () => {
     const params = buildInfoParams("/status", {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
     params.storePath = "/tmp/target-session-store.json";
 
     const statusResult = await handleStatusCommand(params, true);
@@ -240,7 +240,7 @@ describe("info command handlers", () => {
     const params = buildInfoParams("/status", {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
     params.sessionEntry = {
       sessionId: "wrapper-session",
       updatedAt: Date.now(),
@@ -272,7 +272,7 @@ describe("info command handlers", () => {
     const params = buildInfoParams("/status", {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
     params.resolvedFastMode = true;
 
     const statusResult = await handleStatusCommand(params, true);
@@ -290,7 +290,7 @@ describe("info command handlers", () => {
     const params = buildInfoParams("/commands", {
       commands: { text: true },
       channels: { whatsapp: { allowFrom: ["*"] } },
-    } as OpenClawConfig);
+    } as CarlitoConfig);
     params.agentId = "main";
     params.sessionKey = "agent:target:whatsapp:direct:12345";
     vi.mocked(resolveSessionAgentId).mockReturnValue("target");

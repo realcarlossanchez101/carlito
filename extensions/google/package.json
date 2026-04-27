@@ -1,17 +1,17 @@
 {
-  "name": "@openclaw/google-plugin",
+  "name": "@realcarlossanchez101/google-plugin",
   "version": "2026.4.20",
   "private": true,
-  "description": "OpenClaw Google plugin",
+  "description": "Carlito Google plugin",
   "type": "module",
   "dependencies": {
     "@google/genai": "^1.50.1",
     "@mariozechner/pi-ai": "0.70.0"
   },
   "devDependencies": {
-    "@openclaw/plugin-sdk": "workspace:*"
+    "@realcarlossanchez101/plugin-sdk": "workspace:*"
   },
-  "openclaw": {
+  "carlito": {
     "bundle": {
       "stageRuntimeDependencies": true
     },

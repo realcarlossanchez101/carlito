@@ -1,4 +1,4 @@
-import { fetchWithSsrFGuard } from "openclaw/plugin-sdk/ssrf-runtime";
+import { fetchWithSsrFGuard } from "carlito/plugin-sdk/ssrf-runtime";
 
 const GOOGLE_MEET_API_BASE_URL = "https://meet.googleapis.com/v2";
 const GOOGLE_MEET_URL_HOST = "meet.google.com";

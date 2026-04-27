@@ -1,8 +1,8 @@
-import { loadConfig } from "openclaw/plugin-sdk/config-runtime";
-import { readChannelAllowFromStore } from "openclaw/plugin-sdk/conversation-runtime";
-import { getPluginCommandSpecs } from "openclaw/plugin-sdk/plugin-runtime";
-import { dispatchReplyWithBufferedBlockDispatcher } from "openclaw/plugin-sdk/reply-dispatch-runtime";
-import { listSkillCommandsForAgents } from "openclaw/plugin-sdk/skill-commands-runtime";
+import { loadConfig } from "carlito/plugin-sdk/config-runtime";
+import { readChannelAllowFromStore } from "carlito/plugin-sdk/conversation-runtime";
+import { getPluginCommandSpecs } from "carlito/plugin-sdk/plugin-runtime";
+import { dispatchReplyWithBufferedBlockDispatcher } from "carlito/plugin-sdk/reply-dispatch-runtime";
+import { listSkillCommandsForAgents } from "carlito/plugin-sdk/skill-commands-runtime";
 import type { TelegramBotDeps } from "./bot-deps.js";
 import { syncTelegramMenuCommands } from "./bot-native-command-menu.js";
 

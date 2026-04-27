@@ -1,7 +1,7 @@
 import { SessionManager } from "@mariozechner/pi-coding-agent";
 import { afterEach, describe, expect, it } from "vitest";
 import { listEmbeddedExtensionFactories } from "../plugins/embedded-extension-factory.js";
-import { loadOpenClawPlugins } from "../plugins/loader.js";
+import { loadCarlitoPlugins } from "../plugins/loader.js";
 import { buildEmbeddedExtensionFactories } from "./pi-embedded-runner/extensions.js";
 import {
   cleanupTempPluginTestEnvironment,
@@ -10,11 +10,11 @@ import {
   writeTempPlugin,
 } from "./test-helpers/temp-plugin-extension-fixtures.js";
 
-const originalBundledPluginsDir = process.env.OPENCLAW_BUNDLED_PLUGINS_DIR;
+const originalBundledPluginsDir = process.env.CARLITO_BUNDLED_PLUGINS_DIR;
 const tempDirs: string[] = [];
 
 function createTempDir(): string {
-  return createTempPluginDir(tempDirs, "openclaw-embedded-ext-");
+  return createTempPluginDir(tempDirs, "carlito-embedded-ext-");
 }
 
 afterEach(() => {
@@ -24,7 +24,7 @@ afterEach(() => {
 describe("buildEmbeddedExtensionFactories", () => {
   it("includes plugin-registered embedded extension factories and restores them from cache", async () => {
     const tmp = createTempDir();
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = tmp;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = tmp;
 
     writeTempPlugin({
       dir: tmp,
@@ -54,7 +54,7 @@ describe("buildEmbeddedExtensionFactories", () => {
       },
     };
 
-    loadOpenClawPlugins(options);
+    loadCarlitoPlugins(options);
 
     const firstFactories = buildEmbeddedExtensionFactories({
       cfg: undefined,
@@ -69,7 +69,7 @@ describe("buildEmbeddedExtensionFactories", () => {
     resetActivePluginRegistryForTest();
     expect(listEmbeddedExtensionFactories()).toHaveLength(0);
 
-    loadOpenClawPlugins(options);
+    loadCarlitoPlugins(options);
 
     const cachedFactories = buildEmbeddedExtensionFactories({
       cfg: undefined,
@@ -91,7 +91,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 
   it("rejects embedded extension factories from non-bundled plugins even when they declare the Pi manifest contract", () => {
     const tmp = createTempDir();
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = "/nonexistent/bundled/plugins";
 
     const pluginFile = writeTempPlugin({
       dir: tmp,
@@ -108,7 +108,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 } };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       workspaceDir: tmp,
       config: {
         plugins: {
@@ -139,7 +139,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 
   it("rejects bundled plugins that omit the Pi embedded extension manifest contract", () => {
     const tmp = createTempDir();
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = tmp;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = tmp;
 
     writeTempPlugin({
       dir: tmp,
@@ -152,7 +152,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 } };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       config: {
         plugins: {
           entries: {
@@ -177,7 +177,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 
   it("rejects non-function embedded extension factories from bundled plugins", () => {
     const tmp = createTempDir();
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = tmp;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = tmp;
 
     writeTempPlugin({
       dir: tmp,
@@ -193,7 +193,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 } };`,
     });
 
-    const registry = loadOpenClawPlugins({
+    const registry = loadCarlitoPlugins({
       config: {
         plugins: {
           entries: {
@@ -217,7 +217,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 
   it("contains embedded extension factory failures so one bad plugin cannot crash setup", async () => {
     const tmp = createTempDir();
-    process.env.OPENCLAW_BUNDLED_PLUGINS_DIR = tmp;
+    process.env.CARLITO_BUNDLED_PLUGINS_DIR = tmp;
 
     writeTempPlugin({
       dir: tmp,
@@ -235,7 +235,7 @@ describe("buildEmbeddedExtensionFactories", () => {
 } };`,
     });
 
-    loadOpenClawPlugins({
+    loadCarlitoPlugins({
       config: {
         plugins: {
           entries: {
