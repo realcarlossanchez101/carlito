@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import JSON5 from "json5";
 import { z } from "zod";
-import type { OpenClawConfig } from "../config/types.js";
+import type { CarlitoConfig } from "../config/types.js";
+import { resolveRequiredHomeDir } from "../infra/home-dir.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
 import { shortenHomePath } from "../utils.js";
@@ -29,7 +31,7 @@ type SetupCommandDeps = {
   ) => void | Promise<void>;
   mkdir?: (dir: string, options: { recursive: true }) => Promise<unknown>;
   resolveSessionTranscriptsDir?: () => string | Promise<string>;
-  writeConfigFile?: (config: OpenClawConfig) => Promise<void>;
+  writeConfigFile?: (config: CarlitoConfig) => Promise<void>;
 };
 
 type AgentWorkspaceModule = typeof import("../agents/workspace.js");
@@ -79,7 +81,7 @@ async function ensureDefaultAgentWorkspace(
   return ensureAgentWorkspace(params);
 }
 
-async function writeDefaultConfigFile(config: OpenClawConfig): Promise<void> {
+async function writeDefaultConfigFile(config: CarlitoConfig): Promise<void> {
   const { writeConfigFile } = await loadConfigIOModule();
   await writeConfigFile(config);
 }
@@ -104,12 +106,12 @@ async function resolveDefaultSessionTranscriptsDir(): Promise<string> {
 
 async function readConfigFileRaw(configPath: string): Promise<{
   exists: boolean;
-  parsed: OpenClawConfig;
+  parsed: CarlitoConfig;
 }> {
   try {
     const raw = await fs.readFile(configPath, "utf-8");
     const parsed = safeParseWithSchema(JsonRecordSchema, JSON5.parse(raw));
-    return { exists: true, parsed: (parsed ?? {}) as OpenClawConfig };
+    return { exists: true, parsed: (parsed ?? {}) as CarlitoConfig };
   } catch {
     return { exists: false, parsed: {} };
   }
@@ -125,6 +127,22 @@ export async function setupCommand(
       ? opts.workspace.trim()
       : undefined;
 
+  // Migrate any legacy `~/.openclaw` (or `.clawdbot`) state dir into `~/.carlito`
+  // before resolving paths, so the config write and downstream writers (which
+  // hardcode `~/.carlito/...`) all land in the same directory. Resolve home
+  // via env.HOME so the migration agrees with paths.ts under HOME overrides.
+  const { autoMigrateLegacyStateDir } = await import("./doctor-state-migrations.js");
+  const stateDirResult = await autoMigrateLegacyStateDir({
+    env: process.env,
+    homedir: () => resolveRequiredHomeDir(process.env, os.homedir),
+  });
+  for (const change of stateDirResult.changes) {
+    runtime.log(change);
+  }
+  for (const warning of stateDirResult.warnings) {
+    runtime.error(warning);
+  }
+
   const io = deps.createConfigIO?.() ?? (await createDefaultConfigIO());
   const configPath = io.configPath;
   const existingRaw = await readConfigFileRaw(configPath);
@@ -134,7 +152,7 @@ export async function setupCommand(
   const workspace =
     desiredWorkspace ?? defaults.workspace ?? (await resolveDefaultAgentWorkspaceDir(deps));
 
-  const next: OpenClawConfig = {
+  const next: CarlitoConfig = {
     ...cfg,
     agents: {
       ...cfg.agents,

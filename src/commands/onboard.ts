@@ -1,5 +1,7 @@
+import os from "node:os";
 import { formatCliCommand } from "../cli/command-format.js";
 import { readConfigFileSnapshot } from "../config/config.js";
+import { resolveRequiredHomeDir } from "../infra/home-dir.js";
 import { assertSupportedRuntime } from "../infra/runtime-guard.js";
 import type { RuntimeEnv } from "../runtime.js";
 import { defaultRuntime } from "../runtime.js";
@@ -22,6 +24,22 @@ export async function setupWizardCommand(
   runtime: RuntimeEnv = defaultRuntime,
 ) {
   assertSupportedRuntime(runtime);
+
+  // Migrate legacy `~/.openclaw` (or `.clawdbot`) state dir into `~/.carlito`
+  // before any config/workspace reads, so resolver-based and hardcoded writers
+  // converge on the same directory. Idempotent and memoized per process.
+  const { autoMigrateLegacyStateDir } = await import("./doctor-state-migrations.js");
+  const stateDirResult = await autoMigrateLegacyStateDir({
+    env: process.env,
+    homedir: () => resolveRequiredHomeDir(process.env, os.homedir),
+  });
+  for (const change of stateDirResult.changes) {
+    runtime.log(change);
+  }
+  for (const warning of stateDirResult.warnings) {
+    runtime.error(warning);
+  }
+
   const originalAuthChoice = opts.authChoice;
   const normalizedAuthChoice = normalizeLegacyOnboardAuthChoice(originalAuthChoice, {
     env: process.env,
@@ -65,8 +83,8 @@ export async function setupWizardCommand(
     runtime.error(
       [
         "Non-interactive setup requires explicit risk acknowledgement.",
-        "Read: https://docs.openclaw.ai/security",
-        `Re-run with: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
+        "Read: https://docs.carlito.ai/security",
+        `Re-run with: ${formatCliCommand("carlito onboard --non-interactive --accept-risk ...")}`,
       ].join("\n"),
     );
     runtime.exit(1);
@@ -85,10 +103,10 @@ export async function setupWizardCommand(
   if (process.platform === "win32") {
     runtime.log(
       [
-        "Windows detected - OpenClaw runs great on WSL2!",
+        "Windows detected - Carlito runs great on WSL2!",
         "Native Windows might be trickier.",
         "Quick setup: wsl --install (one command, one reboot)",
-        "Guide: https://docs.openclaw.ai/windows",
+        "Guide: https://docs.carlito.ai/windows",
       ].join("\n"),
     );
   }
