@@ -522,31 +522,5 @@ export function applyExtraParamsToAgent(
     agent.streamFn = wrapStreamFnWithCarlitoRewriter(agent.streamFn);
   }
 
-  agent.streamFn = createProviderRequestLogWrapper(agent.streamFn, {
-    provider,
-    modelId,
-  });
-
   return { effectiveExtraParams };
-}
-
-function createProviderRequestLogWrapper(
-  underlying: StreamFn | undefined,
-  meta: { provider: string; modelId: string },
-): StreamFn | undefined {
-  if (!underlying) {
-    return underlying;
-  }
-  return (model, context, options) => {
-    const originalOnPayload = options?.onPayload;
-    return underlying(model, context, {
-      ...options,
-      onPayload: (payload) => {
-        log.info(
-          `provider request payload ${meta.provider}/${meta.modelId}: ${JSON.stringify(payload)}`,
-        );
-        return originalOnPayload?.(payload, model);
-      },
-    });
-  };
 }
